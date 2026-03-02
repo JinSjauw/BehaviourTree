@@ -1,5 +1,11 @@
 using UnityEngine;
 
+public enum BlackBoardType 
+{
+    SELF = 0,
+    SQUAD = 1,
+}
+
 public class BlackBoard : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
