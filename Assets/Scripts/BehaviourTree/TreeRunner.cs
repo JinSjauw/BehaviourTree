@@ -19,7 +19,7 @@ public class TreeRunner : MonoBehaviour
         if (treeAsset == null) return;
 
         //TEST
-        nodeTypesTest = new BehaviourNodeType[100];
+        nodeTypesTest = new BehaviourNodeType[10];
         //
 
         FlattenTree(treeAsset.root);
@@ -45,6 +45,20 @@ public class TreeRunner : MonoBehaviour
         
         //Test
         nodeTypesTest[totalIndex] = node.NodeType;
+        
+        if(node.NodeType == BehaviourNodeType.ACTION) 
+        {
+            BehaviorMethod method = MethodRegistry.GetMethod(MethodID.HELLOWORLD);
+            method.Invoke(ParamSetID.NONE, null);
+        }
+        else if(node.NodeType == BehaviourNodeType.CONDITION) 
+        {
+            BehaviorMethod method = MethodRegistry.GetMethod(MethodID.BYEWORLD);
+            method.Invoke(ParamSetID.NONE, null);
+        }
+
+        //Test End
+
 
         totalIndex++;
 
