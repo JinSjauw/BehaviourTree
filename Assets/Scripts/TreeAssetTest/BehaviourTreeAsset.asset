@@ -12,5 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
   m_Name: BehaviourTreeAsset
   m_EditorClassIdentifier: Assembly-CSharp::BehaviourTreeAsset
-  nodesList: []
+  nodesList:
+  - {fileID: 11400000, guid: 147780e535bd7cc4aac63c35dc4378fe, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   root: {fileID: 11400000, guid: 147780e535bd7cc4aac63c35dc4378fe, type: 2}

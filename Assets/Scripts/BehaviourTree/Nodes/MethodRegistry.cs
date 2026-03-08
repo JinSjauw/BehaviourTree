@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 public enum MethodID 
 {
@@ -59,7 +60,7 @@ public static class MethodRegistry
 //TEST CLASS -> REMOVE LATER
 public class TestMethods 
 {
-
+    [Preserve] //FOR ILC2PP
     [BTreeMethod(MethodID.HELLOWORLD)]
     public static NodeState HelloWorld(ParamSetID input, BlackBoard blackBoard)
     {

@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SequenceNode
   children:
   - {fileID: 11400000, guid: 7107af742f6a28543b91f43701471b08, type: 2}
-  - {fileID: 11400000, guid: 7107af742f6a28543b91f43701471b08, type: 2}
+  - {fileID: 11400000, guid: a40d6bdfa6eda7446acdaad15584da5c, type: 2}
+  firstChildIndex: 7
+  lastChildIndex: 8
