@@ -39,5 +39,10 @@ public class BehaviourTreeAsset : ScriptableObject
         {
             Destroy(nodesList[i]);
         }
+
+        Destroy(rootCopy);
+
+        rootCopy = null;
+        nodesList.Clear();
     }
 }

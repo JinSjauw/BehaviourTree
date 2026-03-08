@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+//This class is meant to evaluate the tree and also handle the per node type execution logic.
 public class TreeEvaluator
 {
     //Root is needs to turn into a list/array the flattened behaviourNodes in the tree.

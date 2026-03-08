@@ -1,8 +1,9 @@
+[System.Serializable]
 public struct NodeData
 {
     public BehaviourNodeType nodeType;
     public int firstChildIndex;
-    public int childIndex;
+    public int lastChildIndex;
 
     public MethodID methodID;
     public ParamSetID paramSetTypeID;

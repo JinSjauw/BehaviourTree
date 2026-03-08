@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45a877720d7c8e945b474b3c5df57594, type: 3}
-  m_Name: Condition Node
-  m_EditorClassIdentifier: Assembly-CSharp::ConditionNode
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: Action Node A
+  m_EditorClassIdentifier: Assembly-CSharp::ActionNode
   children: []
-  methodID: 0
-  paramSetType: 0
+  firstChildIndex: 0
+  lastChildIndex: 0
+  methodID: 1
+  paramSetTypeID: 1
   BlackBoardTypeID: 0

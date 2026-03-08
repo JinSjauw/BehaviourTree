@@ -7,7 +7,6 @@ public class TreeRunner : MonoBehaviour
 
     [SerializeField] private BehaviourTreeAsset treeAsset;
     [SerializeField] private NodeData[] nodeDatas;
-    [SerializeField] private BehaviourNodeType[] nodeTypesTest;
 
     private Dictionary<BehaviourNode, int> nodeToIndex;
 
@@ -16,8 +15,6 @@ public class TreeRunner : MonoBehaviour
         if (treeAsset == null) return;
 
         treeAsset.Initialize();
-
-        nodeTypesTest = new BehaviourNodeType[20];
 
         FlattenTree(treeAsset.rootCopy);
     }
@@ -39,14 +36,23 @@ public class TreeRunner : MonoBehaviour
 
         nodeDatas = new NodeData[nodeToIndex.Count];
         Debug.Log(index + " " + nodeToIndex.Count);
+
+        FillNodeData(nodeDatas, nodeToIndex);
     }
 
     private void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex) 
     {
         Debug.Log("Assigning: " + node.name + "Index: " + totalIndex);
         if (nodeDict.ContainsValue(totalIndex)) return; //Disable for flattening debug test
+        
+        //Add root node
+        if(totalIndex == 0) 
+        {
+            nodeDict[node] = totalIndex;
+            totalIndex++;
+        }
 
-        //Test
+        //Test : this should be in the evaluator class
 
         //if(node.NodeType == BehaviourNodeType.ACTION) 
         //{
@@ -61,24 +67,15 @@ public class TreeRunner : MonoBehaviour
 
         //Test End
 
-        //if(node.children.Count <= 0) 
-        //{
-        //    nodeDict[node] = totalIndex;
-        //    totalIndex++;
-
-        //    return;
-        //}
-
         for (int i = 0; i < node.children.Count; i++)
         {
             BehaviourNode child = node.children[i];
-            nodeDict[child] = totalIndex++;
-
-            nodeTypesTest[totalIndex] = child.NodeType;
-            Debug.Log("Assigning Child: " + child.name + "Index: " + totalIndex);
+            nodeDict[child] = totalIndex;
 
             if (i == 0) node.firstChildIndex = totalIndex;
             if (i == node.children.Count - 1) node.lastChildIndex = totalIndex;
+
+            totalIndex++;
         }
 
         for (int i = 0; i < node.children.Count; i++)
@@ -88,15 +85,59 @@ public class TreeRunner : MonoBehaviour
         }
     }
 
-    private void FillNodeData(NodeData[] arrayToFill, Dictionary<BehaviourNode, int> nodeDataIndex) 
+    private void FillNodeData(NodeData[] nodeDataArray, Dictionary<BehaviourNode, int> nodeIndices) 
     {
         //Sort through node types and populate struct with relevant per nodeType data
 
-        foreach (BehaviourNode node in nodeDataIndex.Keys) 
+        //Populate NodeData structs
+        foreach (BehaviourNode node in nodeIndices.Keys)
         {
-            NodeData nodeData;
-            
+            NodeData nodeData = new NodeData();
+
+            Debug.Log(node.NodeType + " " + nodeIndices[node]);
+
+            //Default initialization
+            nodeData.nodeType = node.NodeType;
+            nodeData.firstChildIndex = -1;
+            nodeData.lastChildIndex = -1;
+            nodeData.methodID = MethodID.NONE;
+            nodeData.paramSetTypeID = ParamSetID.NONE;
+            nodeData.BlackBoardTypeID = BlackBoardType.SELF;
+
+            //Populate nodeData differently based on nodeType
+            switch (node.NodeType)
+            {
+                case BehaviourNodeType.ROOT:
+                case BehaviourNodeType.SEQUENCE:
+                case BehaviourNodeType.SELECTOR:
+
+                    nodeData.firstChildIndex = node.firstChildIndex;
+                    nodeData.lastChildIndex = node.lastChildIndex;
+
+                    break;
+
+                case BehaviourNodeType.CONDITION:
+
+                    ConditionNode conditionNode = (ConditionNode)node;
+
+                    nodeData.methodID = conditionNode.methodID;
+                    nodeData.paramSetTypeID = conditionNode.paramSetTypeID;
+                    nodeData.BlackBoardTypeID = conditionNode.BlackBoardTypeID;
+
+                    break;
+
+                case BehaviourNodeType.ACTION:
+
+                    ActionNode actionNode = (ActionNode)node;
+
+                    nodeData.methodID = actionNode.methodID;
+                    nodeData.paramSetTypeID = actionNode.paramSetTypeID;
+                    nodeData.BlackBoardTypeID = actionNode.BlackBoardTypeID;
+
+                    break;
+            }
+
+            nodeDataArray[nodeToIndex[node]] = nodeData;
         }
-        
     }
 }
