@@ -18,18 +18,18 @@ public class BTreeMethodAttribute : Attribute
     public BTreeMethodAttribute(MethodID methodID) => this.methodID = methodID;
 }
 
-public delegate NodeState BehaviorMethod(ParamSetID parameters, BlackBoard blackBoard);
+public delegate NodeState BehaviorMethod(BlackBoard blackBoard, ref NodeData nodeData);
 
 public static class MethodRegistry
 {
-    private static Dictionary<MethodID, BehaviorMethod> methodRegister = new Dictionary<MethodID, BehaviorMethod>();
+    private static Dictionary<MethodID, BehaviorMethod> methodRegistry = new Dictionary<MethodID, BehaviorMethod>();
 
     //Populate methodRegistry with all marked methods
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialize() 
     {
         Debug.Log("Registering!: ");
-        methodRegister.Clear();
+        methodRegistry.Clear();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var assembly in assemblies)
@@ -46,7 +46,7 @@ public static class MethodRegistry
                     {
                         // Create a delegate from the method
                         var del = (BehaviorMethod)Delegate.CreateDelegate(typeof(BehaviorMethod), method);
-                        methodRegister.Add(attr.methodID, del);
+                        methodRegistry.Add(attr.methodID, del);
                         Debug.Log("Registered: " + attr.methodID);
                     }
                 }
@@ -54,7 +54,21 @@ public static class MethodRegistry
         }
     }
 
-    public static BehaviorMethod GetMethod(MethodID methodID) => methodRegister[methodID]; 
+    public static BehaviorMethod GetMethod(MethodID methodID) 
+    {
+        if(methodID == MethodID.NONE) return null;
+
+        if(!methodRegistry.TryGetValue(methodID, out BehaviorMethod method)) 
+        {
+        #if UNITY_EDITOR
+            throw new KeyNotFoundException($"Missing entry ID: {methodID}");
+        #else
+            Debug.LogError($"Missing entry ID: {methodID}");
+            return null; // or a pre-allocated static empty array
+        #endif
+        }
+        return method;
+    } 
 }
 
 //TEST CLASS -> REMOVE LATER
@@ -62,7 +76,7 @@ public class TestMethods
 {
     [Preserve] //FOR ILC2PP
     [BTreeMethod(MethodID.HELLOWORLD)]
-    public static NodeState HelloWorld(ParamSetID input, BlackBoard blackBoard)
+    public static NodeState HelloWorld(BlackBoard blackBoard, ref NodeData nodeData)
     {
         Debug.Log("HELLO WORLD!");
 
@@ -70,7 +84,7 @@ public class TestMethods
     }
 
     [BTreeMethod(MethodID.BYEWORLD)]
-    public static NodeState ByeWorld(ParamSetID input, BlackBoard blackBoard)
+    public static NodeState ByeWorld(BlackBoard blackBoard, ref NodeData nodeData)
     {
         Debug.Log("Bye world... :(");
 

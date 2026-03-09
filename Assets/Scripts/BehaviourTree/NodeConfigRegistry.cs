@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public enum TreeConfigID 
+public enum NodeConfigID 
 {
     NONE = 0,
-    HELLOWORLD = 1,
+    TEST_CONFIG = 1,
+    MOVETO_CONFIG = 2,
 }
 
 //Deserialization Template
+[System.Serializable]
 [StructLayout(LayoutKind.Sequential)]
 public struct TestParams 
 {
@@ -17,11 +19,11 @@ public struct TestParams
     public float FireRange;
 }
 
-public static class TreeConfigRegistry
+public static class NodeConfigRegistry
 {
-    public static List<TreeConfigAsset> configs;
+    public static List<NodeConfigAsset> configs;
 
-    private static Dictionary<TreeConfigID, byte[]> treeConfigRegistry;
+    private static Dictionary<NodeConfigID, byte[]> treeConfigRegistry;
     
     //Save a link from treeConfigID to deserializationTemplate(Struct)
     //private static Dictionary<TreeConfigID, > 
@@ -34,14 +36,14 @@ public static class TreeConfigRegistry
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialize() 
     {
-        treeConfigRegistry = new Dictionary<TreeConfigID, byte[]>();
+        treeConfigRegistry = new Dictionary<NodeConfigID, byte[]>();
 
-        List<TreeConfigAsset> configs = new List<TreeConfigAsset>(Resources.LoadAll<TreeConfigAsset>(""));
+        List<NodeConfigAsset> configs = new List<NodeConfigAsset>(Resources.LoadAll<NodeConfigAsset>(""));
 
         for(int i = 0; i < configs.Count; i++) 
         {
 
-            TreeConfigAsset config = configs[i];
+            NodeConfigAsset config = configs[i];
             treeConfigRegistry[config.TreeConfigID] = config.GetSerializedData();
 
             Debug.Log("Name: " + config.name + " ByteBlob: " + treeConfigRegistry[config.TreeConfigID]);
@@ -49,9 +51,9 @@ public static class TreeConfigRegistry
         }
     }
 
-    public static byte[] GetStaticConfig(TreeConfigID configID)
+    public static byte[] GetStaticConfig(NodeConfigID configID)
     {
-        if(configID == TreeConfigID.NONE) return Array.Empty<byte>();
+        if(configID == NodeConfigID.NONE) return Array.Empty<byte>();
 
         if (!treeConfigRegistry.TryGetValue(configID, out byte[] blob))
         {

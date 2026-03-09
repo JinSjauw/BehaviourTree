@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 827fb0b2209423e4d86878eb8db801bf, type: 3}
-  m_Name: TreeTestConfig
+  m_Name: NodeTestConfig
   m_EditorClassIdentifier: Assembly-CSharp::TreeTestConfig
   TreeConfigID: 1
-  MoveSpeed: 2
-  FireRange: 3
+  paramFields:
+    MoveSpeed: 7
+    FireRange: 32

@@ -17,7 +17,7 @@ public class TreeRunner : MonoBehaviour
 
         treeAsset.Initialize();
 
-        FlattenTree(treeAsset.rootCopy);
+        BakeTree(treeAsset.rootCopy);
     }
 
     private void OnDestroy()
@@ -33,11 +33,10 @@ public class TreeRunner : MonoBehaviour
 
     //Tree Runner End
 
-
     //Tree flattener start
 
     //Tree flattening should happen in a separate helper class
-    private void FlattenTree(BehaviourNode root)
+    private void BakeTree(BehaviourNode root)
     {
         //Create Contiguos Array
         nodeToIndex = new Dictionary<BehaviourNode, int>();
@@ -46,32 +45,39 @@ public class TreeRunner : MonoBehaviour
         AssignIndices(root, nodeToIndex, ref index);
 
         nodeDatas = new NodeData[nodeToIndex.Count];
-        Debug.Log(index + " " + nodeToIndex.Count);
 
         FillNodeData(nodeDatas, nodeToIndex);
 
         //TESTING BYTEBUFFER
 
-        int i = 0;
+        //int i = 0;
 
-        foreach(NodeData nodeData in nodeDatas) 
-        {
-            unsafe 
-            {
-                byte* ptr = nodeData.configByteBlob;
-                
-                TestParams* values = (TestParams*)ptr;
+        //foreach (NodeData nodeData in nodeDatas)
+        //{
+        //    unsafe
+        //    {
+        //        byte* ptr = nodeData.configByteBlob;
 
-                float moveSpeed = values->MoveSpeed;
-                float fireRange = values->FireRange;
+        //        TestParams* values = (TestParams*)ptr;
 
-                Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData.treeConfigID);
-                Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
-            }
+        //        float moveSpeed = values->MoveSpeed;
+        //        float fireRange = values->FireRange;
 
-            i++;
-        }
+        //        Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData);
+        //        Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
+        //    }
 
+        //    //if (nodeData.nodeType == BehaviourNodeType.ACTION || nodeData.nodeType == BehaviourNodeType.CONDITION)
+        //    //{
+        //    //    BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
+        //    //    method.Invoke(null,);
+        //    //}
+
+        //    Debug.Log("----------------------");
+        //    i++;
+        //}
+
+        //TESTING END
     }
 
     private void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex) 
@@ -85,21 +91,6 @@ public class TreeRunner : MonoBehaviour
             nodeDict[node] = totalIndex;
             totalIndex++;
         }
-
-        //Test : this should be in the evaluator class
-
-        //if(node.NodeType == BehaviourNodeType.ACTION) 
-        //{
-        //    BehaviorMethod method = MethodRegistry.GetMethod(MethodID.HELLOWORLD);
-        //    method.Invoke(ParamSetID.NONE, null);
-        //}
-        //else if(node.NodeType == BehaviourNodeType.CONDITION) 
-        //{
-        //    BehaviorMethod method = MethodRegistry.GetMethod(MethodID.BYEWORLD);
-        //    method.Invoke(ParamSetID.NONE, null);
-        //}
-
-        //Test End
 
         for (int i = 0; i < node.children.Count; i++)
         {
@@ -135,10 +126,7 @@ public class TreeRunner : MonoBehaviour
             nodeData.firstChildIndex = -1;
             nodeData.lastChildIndex = -1;
             nodeData.methodID = MethodID.NONE;
-            nodeData.paramSetID = ParamSetID.NONE;
             nodeData.blackBoardTypeID = BlackBoardType.SELF;
-            nodeData.staticConfigSetID = StaticConfigSetID.NONE;
-            nodeData.treeConfigID = TreeConfigID.NONE;
 
             //Populate nodeData differently based on nodeType
             switch (node.NodeType)
@@ -157,10 +145,7 @@ public class TreeRunner : MonoBehaviour
                     ConditionNode conditionNode = (ConditionNode)node;
 
                     nodeData.methodID = conditionNode.methodID;
-                    nodeData.paramSetID = conditionNode.paramSetID;
                     nodeData.blackBoardTypeID = conditionNode.BlackBoardTypeID;
-                    nodeData.staticConfigSetID = conditionNode.configParamSetID;
-                    nodeData.treeConfigID = conditionNode.treeConfigID;
 
                     GetFixedByteBuffer(conditionNode.treeConfigID, ref nodeData);
 
@@ -171,10 +156,7 @@ public class TreeRunner : MonoBehaviour
                     ActionNode actionNode = (ActionNode)node;
 
                     nodeData.methodID = actionNode.methodID;
-                    nodeData.paramSetID = actionNode.paramSetID;
                     nodeData.blackBoardTypeID = actionNode.BlackBoardTypeID;
-                    nodeData.staticConfigSetID = actionNode.configParamSetID;
-                    nodeData.treeConfigID = actionNode.treeConfigID;
 
                     GetFixedByteBuffer(actionNode.treeConfigID, ref nodeData);
 
@@ -185,9 +167,9 @@ public class TreeRunner : MonoBehaviour
         }
     }
 
-    private unsafe void GetFixedByteBuffer(TreeConfigID configID, ref NodeData nodeData) 
+    private unsafe void GetFixedByteBuffer(NodeConfigID configID, ref NodeData nodeData) 
     {
-        byte[] byteArray = TreeConfigRegistry.GetStaticConfig(configID);
+        byte[] byteArray = NodeConfigRegistry.GetStaticConfig(configID);
 
         fixed (byte* destination = nodeData.configByteBlob) 
         {

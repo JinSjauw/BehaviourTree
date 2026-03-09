@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum BlackBoardType 
@@ -8,6 +9,8 @@ public enum BlackBoardType
 
 public class BlackBoard : MonoBehaviour
 {
+    private Dictionary<BlackBoardFields, object> blackBoardValues = new Dictionary<BlackBoardFields, object>();
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

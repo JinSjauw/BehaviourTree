@@ -16,5 +16,5 @@ public class ActionNode : BehaviourNode
 
     //Static DATA
     public StaticConfigSetID configParamSetID;
-    public TreeConfigID treeConfigID;
+    public NodeConfigID treeConfigID;
 }
