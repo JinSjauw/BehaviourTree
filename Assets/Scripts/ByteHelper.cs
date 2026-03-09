@@ -1,6 +1,6 @@
+using NUnit.Framework.Internal;
 using System;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 public static class ByteHelper
 {
@@ -19,5 +19,17 @@ public static class ByteHelper
             Marshal.FreeHGlobal(ptr);
         }
         return buffer;
+    }
+
+    public unsafe static void ByteArrayToFixedBuffer(byte[] source, byte* destination, int maxSize) 
+    {
+        int copyLength = Math.Min(source.Length, maxSize);
+        Marshal.Copy(source, 0, (IntPtr)destination, copyLength);
+        
+        //Pad the remainder of the buffer if empty with 0
+        for(int i = copyLength; i < maxSize; i++) 
+        {
+            destination[i] = 0;
+        }
     }
 }

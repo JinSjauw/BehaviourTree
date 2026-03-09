@@ -37,7 +37,7 @@ public class TreeRunner : MonoBehaviour
     //Tree flattener start
 
     //Tree flattening should happen in a separate helper class
-    private void FlattenTree(BehaviourNode root) 
+    private void FlattenTree(BehaviourNode root)
     {
         //Create Contiguos Array
         nodeToIndex = new Dictionary<BehaviourNode, int>();
@@ -49,6 +49,29 @@ public class TreeRunner : MonoBehaviour
         Debug.Log(index + " " + nodeToIndex.Count);
 
         FillNodeData(nodeDatas, nodeToIndex);
+
+        //TESTING BYTEBUFFER
+
+        int i = 0;
+
+        foreach(NodeData nodeData in nodeDatas) 
+        {
+            unsafe 
+            {
+                byte* ptr = nodeData.configByteBlob;
+                
+                TestParams* values = (TestParams*)ptr;
+
+                float moveSpeed = values->MoveSpeed;
+                float fireRange = values->FireRange;
+
+                Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData.treeConfigID);
+                Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
+            }
+
+            i++;
+        }
+
     }
 
     private void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex) 
@@ -139,6 +162,8 @@ public class TreeRunner : MonoBehaviour
                     nodeData.staticConfigSetID = conditionNode.configParamSetID;
                     nodeData.treeConfigID = conditionNode.treeConfigID;
 
+                    GetFixedByteBuffer(conditionNode.treeConfigID, ref nodeData);
+
                     break;
 
                 case BehaviourNodeType.ACTION:
@@ -151,9 +176,7 @@ public class TreeRunner : MonoBehaviour
                     nodeData.staticConfigSetID = actionNode.configParamSetID;
                     nodeData.treeConfigID = actionNode.treeConfigID;
 
-                    //Retrieve data for static byteBlob;
-                    //Retrieve correct treeConfig 
-                    //Retrieve correct blob with ConfigSetID
+                    GetFixedByteBuffer(actionNode.treeConfigID, ref nodeData);
 
                     break;
             }
@@ -161,5 +184,16 @@ public class TreeRunner : MonoBehaviour
             nodeDataArray[nodeIndices[node]] = nodeData;
         }
     }
+
+    private unsafe void GetFixedByteBuffer(TreeConfigID configID, ref NodeData nodeData) 
+    {
+        byte[] byteArray = TreeConfigRegistry.GetStaticConfig(configID);
+
+        fixed (byte* destination = nodeData.configByteBlob) 
+        {
+            ByteHelper.ByteArrayToFixedBuffer(byteArray, destination, 32);
+        }
+    }
+
     //Tree flattener end
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -21,6 +22,9 @@ public static class TreeConfigRegistry
     public static List<TreeConfigAsset> configs;
 
     private static Dictionary<TreeConfigID, byte[]> treeConfigRegistry;
+    
+    //Save a link from treeConfigID to deserializationTemplate(Struct)
+    //private static Dictionary<TreeConfigID, > 
 
     //Populate the dictionary
     //Get all valid ConfigAssets
@@ -45,7 +49,23 @@ public static class TreeConfigRegistry
         }
     }
 
-    static unsafe void ConvertTest(byte[] blob) 
+    public static byte[] GetStaticConfig(TreeConfigID configID)
+    {
+        if(configID == TreeConfigID.NONE) return Array.Empty<byte>();
+
+        if (!treeConfigRegistry.TryGetValue(configID, out byte[] blob))
+        {
+        #if UNITY_EDITOR
+                        throw new KeyNotFoundException($"Missing static config: {configID}");
+        #else
+                Debug.LogError($"Missing static config: {configID}");
+                return Array.Empty<byte>(); // or a pre-allocated static empty array
+        #endif
+        }
+        return blob;
+    }
+
+    public static unsafe void ConvertTest(byte[] blob) 
     {
         fixed (byte* ptr = blob) 
         {
