@@ -477,8 +477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeRunner
   treeAsset: {fileID: 11400000, guid: cfc3e187b52213749939baa4b7274b54, type: 2}
-  nodeIndices: 
-  nodeTypesTest: 
+  nodeDatas: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

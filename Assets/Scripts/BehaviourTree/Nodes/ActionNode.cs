@@ -10,6 +10,11 @@ public class ActionNode : BehaviourNode
     //Maybe also a string/enum to find the corresponding param collection.
     //paramSetType -> Find correct registry. 
 
-    public ParamSetID paramSetTypeID;
+    //Dynamic blackBoard DATA
+    public ParamSetID paramSetID;
     public BlackBoardType BlackBoardTypeID;
+
+    //Static DATA
+    public StaticConfigSetID configParamSetID;
+    public TreeConfigID treeConfigID;
 }

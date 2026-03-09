@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//This tree runner script will be where the tree gets ran. Execution logic lives elsewhere. Tick/Update calls happen here. 
 public class TreeRunner : MonoBehaviour
 {
     //Need a SO for the treeAsset with both the root node and flattened tree node array!
@@ -26,6 +27,16 @@ public class TreeRunner : MonoBehaviour
         treeAsset.ClearNodes();
     }
 
+    //Tree Runner is driving the tick operation! 
+
+    //Tree Runner Start
+
+    //Tree Runner End
+
+
+    //Tree flattener start
+
+    //Tree flattening should happen in a separate helper class
     private void FlattenTree(BehaviourNode root) 
     {
         //Create Contiguos Array
@@ -42,7 +53,7 @@ public class TreeRunner : MonoBehaviour
 
     private void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex) 
     {
-        Debug.Log("Assigning: " + node.name + "Index: " + totalIndex);
+        //Debug.Log("Assigning: " + node.name + "Index: " + totalIndex);
         if (nodeDict.ContainsValue(totalIndex)) return; //Disable for flattening debug test
         
         //Add root node
@@ -94,15 +105,17 @@ public class TreeRunner : MonoBehaviour
         {
             NodeData nodeData = new NodeData();
 
-            Debug.Log(node.NodeType + " " + nodeIndices[node]);
+            //Debug.Log(node.NodeType + " " + nodeIndices[node]);
 
             //Default initialization
             nodeData.nodeType = node.NodeType;
             nodeData.firstChildIndex = -1;
             nodeData.lastChildIndex = -1;
             nodeData.methodID = MethodID.NONE;
-            nodeData.paramSetTypeID = ParamSetID.NONE;
-            nodeData.BlackBoardTypeID = BlackBoardType.SELF;
+            nodeData.paramSetID = ParamSetID.NONE;
+            nodeData.blackBoardTypeID = BlackBoardType.SELF;
+            nodeData.staticConfigSetID = StaticConfigSetID.NONE;
+            nodeData.treeConfigID = TreeConfigID.NONE;
 
             //Populate nodeData differently based on nodeType
             switch (node.NodeType)
@@ -121,8 +134,10 @@ public class TreeRunner : MonoBehaviour
                     ConditionNode conditionNode = (ConditionNode)node;
 
                     nodeData.methodID = conditionNode.methodID;
-                    nodeData.paramSetTypeID = conditionNode.paramSetTypeID;
-                    nodeData.BlackBoardTypeID = conditionNode.BlackBoardTypeID;
+                    nodeData.paramSetID = conditionNode.paramSetID;
+                    nodeData.blackBoardTypeID = conditionNode.BlackBoardTypeID;
+                    nodeData.staticConfigSetID = conditionNode.configParamSetID;
+                    nodeData.treeConfigID = conditionNode.treeConfigID;
 
                     break;
 
@@ -131,13 +146,20 @@ public class TreeRunner : MonoBehaviour
                     ActionNode actionNode = (ActionNode)node;
 
                     nodeData.methodID = actionNode.methodID;
-                    nodeData.paramSetTypeID = actionNode.paramSetTypeID;
-                    nodeData.BlackBoardTypeID = actionNode.BlackBoardTypeID;
+                    nodeData.paramSetID = actionNode.paramSetID;
+                    nodeData.blackBoardTypeID = actionNode.BlackBoardTypeID;
+                    nodeData.staticConfigSetID = actionNode.configParamSetID;
+                    nodeData.treeConfigID = actionNode.treeConfigID;
+
+                    //Retrieve data for static byteBlob;
+                    //Retrieve correct treeConfig 
+                    //Retrieve correct blob with ConfigSetID
 
                     break;
             }
 
-            nodeDataArray[nodeToIndex[node]] = nodeData;
+            nodeDataArray[nodeIndices[node]] = nodeData;
         }
     }
+    //Tree flattener end
 }
