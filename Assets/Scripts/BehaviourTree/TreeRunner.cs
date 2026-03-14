@@ -4,6 +4,9 @@ using UnityEngine;
 //This tree runner script will be where the tree gets ran. Execution logic lives elsewhere. Tick/Update calls happen here. 
 public class TreeRunner : MonoBehaviour
 {
+
+    [SerializeField] private BlackBoard blackBoardTest;
+
     //Need a SO for the treeAsset with both the root node and flattened tree node array!
 
     [SerializeField] private BehaviourTreeAsset treeAsset;
@@ -38,7 +41,7 @@ public class TreeRunner : MonoBehaviour
     //Tree flattening should happen in a separate helper class
     private void BakeTree(BehaviourNode root)
     {
-        //Create Contiguos Array
+        //Create Contiguous Array
         nodeToIndex = new Dictionary<BehaviourNode, int>();
 
         int index = 0;
@@ -52,30 +55,34 @@ public class TreeRunner : MonoBehaviour
 
         //int i = 0;
 
-        //foreach (NodeData nodeData in nodeDatas)
-        //{
-        //    unsafe
-        //    {
-        //        byte* ptr = nodeData.configByteBlob;
+        //Init blackBoards
+        blackBoardTest.RegisterFields();
 
-        //        TestParams* values = (TestParams*)ptr;
+        for(int i = 0; i < nodeDatas.Length; i++)
+        {
+            NodeData nodeData = nodeDatas[i];
 
-        //        float moveSpeed = values->MoveSpeed;
-        //        float fireRange = values->FireRange;
+            unsafe
+            {
+                byte* ptr = nodeData.configByteBlob;
 
-        //        Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData);
-        //        Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
-        //    }
+                TestParams* values = (TestParams*)ptr;
 
-        //    //if (nodeData.nodeType == BehaviourNodeType.ACTION || nodeData.nodeType == BehaviourNodeType.CONDITION)
-        //    //{
-        //    //    BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
-        //    //    method.Invoke(null,);
-        //    //}
+                float moveSpeed = values->MoveSpeed;
+                float fireRange = values->FireRange;
 
-        //    Debug.Log("----------------------");
-        //    i++;
-        //}
+                Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData);
+                Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
+            }
+
+            if (nodeData.nodeType == BehaviourNodeType.ACTION || nodeData.nodeType == BehaviourNodeType.CONDITION)
+            {
+                BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
+                method.Invoke(blackBoardTest, ref nodeData);
+            }
+
+            Debug.Log("----------------------");
+        }
 
         //TESTING END
     }

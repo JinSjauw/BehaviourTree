@@ -80,6 +80,13 @@ public class TestMethods
     {
         Debug.Log("HELLO WORLD!");
 
+        if(blackBoard != null) 
+        {
+            Vector3 targetPosition = (Vector3)blackBoard.GetField(BlackBoardFields.TARGET_POSITION_VECTOR3);
+            Debug.Log("Target Position! " + targetPosition);
+            blackBoard.UpdateField(BlackBoardFields.TARGET_POSITION_VECTOR3, Vector3.one * UnityEngine.Random.Range(-5, 5));
+        }
+
         return NodeState.SUCCESS;
     }
 
@@ -87,6 +94,14 @@ public class TestMethods
     public static NodeState ByeWorld(BlackBoard blackBoard, ref NodeData nodeData)
     {
         Debug.Log("Bye world... :(");
+
+        if (blackBoard != null)
+        {
+            int health = (int)blackBoard.GetField(BlackBoardFields.HEALTH_INT);
+
+            Debug.Log("Taking Damage!: " + health);
+            blackBoard.UpdateField(BlackBoardFields.HEALTH_INT, health -= 3);
+        }
 
         return NodeState.FAILURE;
     }

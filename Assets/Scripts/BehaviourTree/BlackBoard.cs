@@ -7,19 +7,22 @@ public enum BlackBoardType
     SQUAD = 1,
 }
 
-public class BlackBoard : MonoBehaviour
+public abstract class BlackBoard : MonoBehaviour
 {
-    private Dictionary<BlackBoardFields, object> blackBoardValues = new Dictionary<BlackBoardFields, object>();
+    protected Dictionary<BlackBoardFields, object> blackBoardValues = new Dictionary<BlackBoardFields, object>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public abstract void RegisterFields();
+
+    public object GetField(BlackBoardFields fieldType) 
     {
-        
+        if (!blackBoardValues.ContainsKey(fieldType)) return null;
+
+        return blackBoardValues[fieldType]; 
     }
-
-    // Update is called once per frame
-    void Update()
+    public void UpdateField(BlackBoardFields fieldType, object value) 
     {
-        
+        if (!blackBoardValues.ContainsKey(fieldType)) return;
+
+        blackBoardValues[fieldType] = value;
     }
 }
