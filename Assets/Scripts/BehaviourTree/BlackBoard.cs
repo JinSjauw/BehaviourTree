@@ -13,12 +13,15 @@ public abstract class BlackBoard : MonoBehaviour
 
     public abstract void RegisterFields();
 
+    //Must think of ways to validate output and input.
+
     public object GetField(BlackBoardFields fieldType) 
     {
         if (!blackBoardValues.ContainsKey(fieldType)) return null;
 
         return blackBoardValues[fieldType]; 
     }
+
     public void UpdateField(BlackBoardFields fieldType, object value) 
     {
         if (!blackBoardValues.ContainsKey(fieldType)) return;
