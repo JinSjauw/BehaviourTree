@@ -9,11 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf3d3458aeb42447a712ebc79919c77, type: 3}
-  m_Name: Selector Node B
-  m_EditorClassIdentifier: Assembly-CSharp::SelectorNode
-  children:
-  - {fileID: 11400000, guid: 4e4c9e81200d6dd4b8f0f14212139e7e, type: 2}
-  - {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 45a877720d7c8e945b474b3c5df57594, type: 3}
+  m_Name: WaitConditionNode
+  m_EditorClassIdentifier: Assembly-CSharp::ConditionNode
+  children: []
   firstChildIndex: 0
   lastChildIndex: 0
+  methodID: 3
+  paramSetID: 1
+  BlackBoardTypeID: 0
+  configParamSetID: 1
+  treeConfigID: 2

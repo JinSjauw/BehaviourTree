@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
-  m_Name: Sequence Node B
-  m_EditorClassIdentifier: Assembly-CSharp::SequenceNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
+  m_Script: {fileID: 11500000, guid: 827fb0b2209423e4d86878eb8db801bf, type: 3}
+  m_Name: NodeTestConfig B
+  m_EditorClassIdentifier: Assembly-CSharp::TreeTestConfig
+  TreeConfigID: 2
+  paramFields:
+    MoveSpeed: 15
+    FireRange: 120

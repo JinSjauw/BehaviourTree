@@ -16,5 +16,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   methodID: 1
-  paramSetTypeID: 1
+  paramSetID: 1
   BlackBoardTypeID: 0
+  configParamSetID: 1
+  treeConfigID: 2

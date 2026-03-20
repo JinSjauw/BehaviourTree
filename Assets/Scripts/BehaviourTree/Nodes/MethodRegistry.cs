@@ -9,6 +9,7 @@ public enum MethodID
     NONE = 0,
     HELLOWORLD = 1,
     BYEWORLD = 2,
+    WAITWORLD = 3,
 }
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
@@ -101,6 +102,36 @@ public class TestMethods
 
             Debug.Log("Taking Damage!: " + health);
             blackBoard.UpdateField(BlackBoardFields.HEALTH_INT, health -= 3);
+        }
+
+        return NodeState.FAILURE;
+    }
+
+    [BTreeMethod(MethodID.WAITWORLD)]
+    public static NodeState WaitWorld(BlackBoard blackBoard, ref NodeData nodeData)
+    {
+        Debug.Log("Wait world...(");
+
+        if (blackBoard != null)
+        {
+            float time = (float)blackBoard.GetField(BlackBoardFields.TEST_TIME);
+
+            if(time < 3) 
+            {
+                time += Time.deltaTime;
+
+                Debug.Log("Waiting! " + time);
+                blackBoard.UpdateField(BlackBoardFields.TEST_TIME, time);
+
+
+                return NodeState.RUNNING;
+            }
+            else 
+            {
+                time = 0;
+                Debug.Log("Done waiting! " + time);
+                blackBoard.UpdateField(BlackBoardFields.TEST_TIME, time);
+            }
         }
 
         return NodeState.FAILURE;

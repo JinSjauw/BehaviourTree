@@ -14,6 +14,8 @@ public class TreeRunner : MonoBehaviour
 
     private Dictionary<BehaviourNode, int> nodeToIndex;
 
+    private TreeEvaluator evaluator;
+
     private void Start()
     {
         if (treeAsset == null) return;
@@ -23,32 +25,40 @@ public class TreeRunner : MonoBehaviour
         blackBoardTest.RegisterFields();
 
         TreeBaker.BakeTree(treeAsset.rootCopy, ref nodeDatas);
+        evaluator = new TreeEvaluator(nodeDatas);
+        //evaluator.Init
 
-        for (int i = 0; i < nodeDatas.Length; i++)
-        {
-            NodeData nodeData = nodeDatas[i];
+        //for (int i = 0; i < nodeDatas.Length; i++)
+        //{
+        //    NodeData nodeData = nodeDatas[i];
 
-            unsafe
-            {
-                byte* ptr = nodeData.configByteBlob;
+        //    unsafe
+        //    {
+        //        byte* ptr = nodeData.configByteBlob;
 
-                TestParams* values = (TestParams*)ptr;
+        //        TestParams* values = (TestParams*)ptr;
 
-                float moveSpeed = values->MoveSpeed;
-                float fireRange = values->FireRange;
+        //        float moveSpeed = values->MoveSpeed;
+        //        float fireRange = values->FireRange;
 
-                Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData);
-                Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
-            }
+        //        Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData);
+        //        Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
+        //    }
 
-            if (nodeData.nodeType == BehaviourNodeType.ACTION || nodeData.nodeType == BehaviourNodeType.CONDITION)
-            {
-                BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
-                method.Invoke(blackBoardTest, ref nodeData);
-            }
+        //    if (nodeData.nodeType == BehaviourNodeType.ACTION || nodeData.nodeType == BehaviourNodeType.CONDITION)
+        //    {
+        //        BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
+        //        method.Invoke(blackBoardTest, ref nodeData);
+        //    }
 
-            Debug.Log("----------------------");
-        }
+        //    Debug.Log("----------------------");
+        //}
+    }
+
+    private void Update()
+    {
+        //evaluator.Tick()
+        evaluator.Evaluate(blackBoardTest);
     }
 
     private void OnDestroy()

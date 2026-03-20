@@ -13,41 +13,6 @@ public static class TreeBaker
         nodeDatas = new NodeData[nodeToIndex.Count];
 
         FillNodeData(nodeDatas, nodeToIndex);
-
-        //TESTING BYTEBUFFER
-
-        //int i = 0;
-
-        ////Init blackBoards
-        //blackBoardTest.RegisterFields();
-
-        //for (int i = 0; i < nodeDatas.Length; i++)
-        //{
-        //    NodeData nodeData = nodeDatas[i];
-
-        //    unsafe
-        //    {
-        //        byte* ptr = nodeData.configByteBlob;
-
-        //        TestParams* values = (TestParams*)ptr;
-
-        //        float moveSpeed = values->MoveSpeed;
-        //        float fireRange = values->FireRange;
-
-        //        Debug.Log("Name: " + nodeData.nodeType + "_" + i + "_" + nodeData);
-        //        Debug.Log("FireRange: " + fireRange + " MoveSpeed: " + moveSpeed);
-        //    }
-
-        //    if (nodeData.nodeType == BehaviourNodeType.ACTION || nodeData.nodeType == BehaviourNodeType.CONDITION)
-        //    {
-        //        BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
-        //        method.Invoke(blackBoardTest, ref nodeData);
-        //    }
-
-        //    Debug.Log("----------------------");
-        //}
-
-        //TESTING END
     }
 
     private static void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex)

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BehaviourTreeAsset
   nodesList: []
   rootCopy: {fileID: 0}
-  root: {fileID: 11400000, guid: 147780e535bd7cc4aac63c35dc4378fe, type: 2}
+  root: {fileID: 11400000, guid: ab4ee26a9f0d32a428f106739d165075, type: 2}
