@@ -17,7 +17,7 @@ namespace BTreeEditor
         public BlackBoardType BlackBoardTypeID;
 
         //Static DATA
-        public StaticConfigSetID configParamSetID;
+        //public StaticConfigSetID configParamSetID;
         public NodeConfigID treeConfigID;
     }
 }
