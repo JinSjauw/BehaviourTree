@@ -1,0 +1,24 @@
+using UnityEngine;
+
+namespace BehaviourTree 
+{
+    [CreateAssetMenu(fileName = "Action Node", menuName = "Scriptable Objects/BT Nodes/Action Node")]
+    public class ActionNode : BehaviourNode
+    {
+        public override BehaviourNodeType NodeType => BehaviourNodeType.ACTION;
+
+        public MethodID methodID;
+
+        //Maybe also a string/enum to find the corresponding param collection.
+        //paramSetType -> Find correct registry. 
+
+        //Dynamic blackBoard DATA
+        //public ParamSetID paramSetID;
+        public BlackBoardType BlackBoardTypeID;
+
+        //Static DATA
+        //public StaticConfigSetID configParamSetID;
+        public NodeConfigID treeConfigID;
+    }
+}
+

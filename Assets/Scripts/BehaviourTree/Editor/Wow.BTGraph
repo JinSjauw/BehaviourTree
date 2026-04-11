@@ -1,0 +1,382 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 61
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 790b4d75d92f4b0984310a268dbd952f, type: 3}
+  m_Name: Wow
+  m_EditorClassIdentifier: Unity.GraphToolkit.Editor::Unity.GraphToolkit.Editor.Implementation.GraphObjectImp
+  m_GraphModel:
+    rid: 3334143262783176797
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3334143262783176797
+      type: {class: GraphModelImp, ns: Unity.GraphToolkit.Editor.Implementation, asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 4905378571496184421
+          m_Value1: 6584664639688736499
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: 65dad72ad2671344f3feb84d9a6d615b
+        m_Name: 
+        m_GraphNodeModels:
+        - rid: 5220756122255753371
+        - rid: 5220756122255753381
+        - rid: 5220756122255753687
+        m_GraphWireModels: []
+        m_GraphStickyNoteModels: []
+        m_GraphPlacematModels: []
+        m_GraphVariableModels:
+        - rid: 5220756122255753297
+        - rid: 5220756122255753305
+        m_GraphPortalModels: []
+        m_SectionModels:
+        - rid: 3334143262783176798
+        m_LocalSubgraphs: []
+        m_LastKnownBounds:
+          serializedVersion: 2
+          x: -433
+          y: -834
+          width: 895
+          height: 392
+        m_GraphElementMetaData:
+        - m_Guid:
+            m_Value0: 8412944412452694019
+            m_Value1: 1739364225674986730
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: 03a859935ec8c074ea4461368c762318
+          m_Category: 1
+          m_Index: 0
+        - m_Guid:
+            m_Value0: 5417849750101425965
+            m_Value1: 7013550704842221985
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: 2dff3b89a411304ba1a94fe834235561
+          m_Category: 1
+          m_Index: 1
+        - m_Guid:
+            m_Value0: 10296216624572915899
+            m_Value1: 3126954457179339473
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: bbe023e67782e38ed1bafff0822c652b
+          m_Category: 0
+          m_Index: 0
+        - m_Guid:
+            m_Value0: 346144984613079236
+            m_Value1: 6079218035731316044
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: c448a59007c1cd044cbde92b98b85d54
+          m_Category: 0
+          m_Index: 1
+        - m_Guid:
+            m_Value0: 4692516048748742400
+            m_Value1: 5094968810747076138
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: 00077dfc7b2a1f412a1e469a23f7b446
+          m_Category: 4
+          m_Index: 2
+        - m_Guid:
+            m_Value0: 11953939284911588558
+            m_Value1: 1961167717333209487
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: ce04bee771ece4a58f119cf0a577371b
+          m_Category: 0
+          m_Index: 2
+        m_EntryPoint:
+          rid: 5220756122255753371
+        m_Graph:
+          rid: 5220756122255753418
+    - rid: 3334143262783176798
+      type: {class: SectionModel, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Guid:
+          m_Value0: 15032281443902833254
+          m_Value1: 15756366028823931074
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: 6642862b54649dd0c22815236cdba9da
+        m_Version: 2
+        m_Items:
+        - rid: 5220756122255753297
+        - rid: 5220756122255753305
+        m_Title: 
+    - rid: 5220756122255753297
+      type: {class: VariableDeclarationModel, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Guid:
+          m_Value0: 8412944412452694019
+          m_Value1: 1739364225674986730
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: 03a859935ec8c074ea4461368c762318
+        m_Version: 2
+        m_Name: Output
+        m_UniqueId: 
+        m_DataType:
+          m_Identification: System.Int32, System.Private.CoreLib, Version=4.0.0.0,
+            Culture=neutral, PublicKeyToken=b77a5c561934e089
+        m_IsExposed: 0
+        m_Scope: 0
+        m_ShowOnInspectorOnly: 0
+        m_Tooltip: 
+        m_InitializationValue:
+          rid: 5220756122255753299
+        m_Modifiers: 2
+        m_VariableFlags: 0
+    - rid: 5220756122255753299
+      type: {class: 'Constant`1[[System.Int32, mscorlib]]', ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: 0
+    - rid: 5220756122255753305
+      type: {class: VariableDeclarationModel, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Guid:
+          m_Value0: 5417849750101425965
+          m_Value1: 7013550704842221985
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: 2dff3b89a411304ba1a94fe834235561
+        m_Version: 2
+        m_Name: New Variable
+        m_UniqueId: 
+        m_DataType:
+          m_Identification: System.Single, System.Private.CoreLib, Version=4.0.0.0,
+            Culture=neutral, PublicKeyToken=b77a5c561934e089
+        m_IsExposed: 0
+        m_Scope: 0
+        m_ShowOnInspectorOnly: 0
+        m_Tooltip: 
+        m_InitializationValue:
+          rid: 5220756122255753306
+        m_Modifiers: 0
+        m_VariableFlags: 0
+    - rid: 5220756122255753306
+      type: {class: 'Constant`1[[System.Single, mscorlib]]', ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: 0
+    - rid: 5220756122255753371
+      type: {class: UserNodeModelImp, ns: Unity.GraphToolkit.Editor.Implementation, asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 10296216624572915899
+          m_Value1: 3126954457179339473
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: bbe023e67782e38ed1bafff0822c652b
+        m_Version: 2
+        m_Position: {x: 210.4992, y: -833.84955}
+        m_Title: LeafNode
+        m_Tooltip: 
+        m_NodePreviewModel:
+          rid: -2
+        m_State: 0
+        m_InputConstantsById:
+          m_KeyList:
+          - __option_MethodID
+          - __option_ConfigID
+          - __option_BlackBoardTypeID
+          - Parent
+          m_ValueList:
+          - rid: 5220756122255753662
+          - rid: 5220756122255753663
+          - rid: 5220756122255753664
+          - rid: 5220756122255753665
+        m_InputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_OutputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_Collapsed: 0
+        m_CurrentModeIndex: 0
+        m_ElementColor:
+          m_Color: {r: 0, g: 0, b: 0, a: 0}
+          m_HasUserColor: 0
+        m_Node:
+          rid: 5220756122255753375
+    - rid: 5220756122255753375
+      type: {class: LeafNode, ns: BehaviourTree.Editor, asm: BehaviourTree.Editor}
+      data: 
+    - rid: 5220756122255753381
+      type: {class: UserNodeModelImp, ns: Unity.GraphToolkit.Editor.Implementation, asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 346144984613079236
+          m_Value1: 6079218035731316044
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: c448a59007c1cd044cbde92b98b85d54
+        m_Version: 2
+        m_Position: {x: 207.99731, y: -604.7004}
+        m_Title: LeafNode
+        m_Tooltip: 
+        m_NodePreviewModel:
+          rid: -2
+        m_State: 0
+        m_InputConstantsById:
+          m_KeyList:
+          - __option_MethodID
+          - __option_ConfigID
+          - __option_BlackBoardTypeID
+          - Parent
+          m_ValueList:
+          - rid: 5220756122255753666
+          - rid: 5220756122255753667
+          - rid: 5220756122255753668
+          - rid: 5220756122255753669
+        m_InputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_OutputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_Collapsed: 0
+        m_CurrentModeIndex: 0
+        m_ElementColor:
+          m_Color: {r: 0, g: 0, b: 0, a: 0}
+          m_HasUserColor: 0
+        m_Node:
+          rid: 5220756122255753385
+    - rid: 5220756122255753385
+      type: {class: LeafNode, ns: BehaviourTree.Editor, asm: BehaviourTree.Editor}
+      data: 
+    - rid: 5220756122255753418
+      type: {class: BTGraph, ns: BehaviourTree.Editor, asm: BehaviourTree.Editor}
+      data: 
+    - rid: 5220756122255753662
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BehaviourTree.MethodID, BehaviourTree.Core, Version=0.0.0.0,
+              Culture=neutral, PublicKeyToken=null
+          m_Value: 0
+        m_EnumType:
+          m_Identification: BehaviourTree.MethodID, BehaviourTree.Core, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+    - rid: 5220756122255753663
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BehaviourTree.NodeConfigID, BehaviourTree.Core, Version=0.0.0.0,
+              Culture=neutral, PublicKeyToken=null
+          m_Value: 0
+        m_EnumType:
+          m_Identification: BehaviourTree.NodeConfigID, BehaviourTree.Core, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+    - rid: 5220756122255753664
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BehaviourTree.BlackBoardType, BehaviourTree.Core, Version=0.0.0.0,
+              Culture=neutral, PublicKeyToken=null
+          m_Value: 0
+        m_EnumType:
+          m_Identification: BehaviourTree.BlackBoardType, BehaviourTree.Core, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+    - rid: 5220756122255753665
+      type: {class: 'Constant`1[[BehaviourTree.BehaviourNode, BehaviourTree.Core]]', ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: {fileID: 0}
+    - rid: 5220756122255753666
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BehaviourTree.MethodID, BehaviourTree.Core, Version=0.0.0.0,
+              Culture=neutral, PublicKeyToken=null
+          m_Value: 0
+        m_EnumType:
+          m_Identification: BehaviourTree.MethodID, BehaviourTree.Core, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+    - rid: 5220756122255753667
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BehaviourTree.NodeConfigID, BehaviourTree.Core, Version=0.0.0.0,
+              Culture=neutral, PublicKeyToken=null
+          m_Value: 0
+        m_EnumType:
+          m_Identification: BehaviourTree.NodeConfigID, BehaviourTree.Core, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+    - rid: 5220756122255753668
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BehaviourTree.BlackBoardType, BehaviourTree.Core, Version=0.0.0.0,
+              Culture=neutral, PublicKeyToken=null
+          m_Value: 0
+        m_EnumType:
+          m_Identification: BehaviourTree.BlackBoardType, BehaviourTree.Core, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+    - rid: 5220756122255753669
+      type: {class: 'Constant`1[[BehaviourTree.BehaviourNode, BehaviourTree.Core]]', ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: {fileID: 0}
+    - rid: 5220756122255753687
+      type: {class: UserNodeModelImp, ns: Unity.GraphToolkit.Editor.Implementation, asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 11953939284911588558
+          m_Value1: 1961167717333209487
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: ce04bee771ece4a58f119cf0a577371b
+        m_Version: 2
+        m_Position: {x: -433.44937, y: -796.9385}
+        m_Title: 
+        m_Tooltip: 
+        m_NodePreviewModel:
+          rid: -2
+        m_State: 0
+        m_InputConstantsById:
+          m_KeyList:
+          - Parent
+          m_ValueList:
+          - rid: 5220756122255753688
+        m_InputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_OutputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_Collapsed: 0
+        m_CurrentModeIndex: 0
+        m_ElementColor:
+          m_Color: {r: 0, g: 0, b: 0, a: 0}
+          m_HasUserColor: 0
+        m_Node:
+          rid: 5220756122255753689
+    - rid: 5220756122255753688
+      type: {class: 'Constant`1[[BehaviourTree.BehaviourNode, BehaviourTree.Core]]', ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: {fileID: 0}
+    - rid: 5220756122255753689
+      type: {class: SelectorNode, ns: BehaviourTree.Editor, asm: BehaviourTree.Editor}
+      data: 
