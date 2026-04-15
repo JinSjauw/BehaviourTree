@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4288910790184547404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
+  m_Name: SequenceNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: f0e1ffd6-4729-4e68-9f98-2e5a5142b9d4
+  graphPosition: {x: 0, y: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
+  m_Name: BehaviourTreeAsset
+  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.BehaviourTreeAsset
+  nodesList:
+  - {fileID: 8416996858029067867}
+  - {fileID: -4288910790184547404}
+  rootCopy: {fileID: 0}
+  root: {fileID: 0}
+--- !u!114 &8416996858029067867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: ActionNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.ActionNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 90e7b473-fdaa-4720-866d-28d865db9f6d
+  graphPosition: {x: 648.0251, y: 301.53}
+  methodID: 0
+  BlackBoardTypeID: 0
+  treeConfigID: 0

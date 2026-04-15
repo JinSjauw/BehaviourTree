@@ -1,0 +1,75 @@
+using Codice.CM.SEIDInfo;
+using System;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
+namespace BehaviourTree 
+{
+    [CreateAssetMenu(fileName = "BehaviourTreeAsset", menuName = "Scriptable Objects/BT")]
+    public class BehaviourTreeAsset : ScriptableObject
+    {
+        public List<BehaviourNode> nodesList;
+        public BehaviourNode rootCopy;
+        [SerializeField] private BehaviourNode root;
+
+        //Create unique runtime instances of the SO's
+        public void Initialize() 
+        {
+            nodesList = new List<BehaviourNode>();
+
+            rootCopy = Instantiate(root);
+
+            nodesList.Add(rootCopy);
+
+            for(int i = 0; i < rootCopy.children.Count; i++) 
+            {
+                BehaviourNode nodeCopy = Instantiate(rootCopy.children[i]);
+            
+                rootCopy.children[i] = nodeCopy;
+                nodesList.Add(nodeCopy);
+
+                for(int j = 0; j < nodeCopy.children.Count; j++)
+                {
+                    BehaviourNode childCopy = Instantiate(nodeCopy.children[j]);
+                    nodeCopy.children[j] = childCopy;
+                    nodesList.Add(childCopy);
+                }
+            }
+        }
+
+        public BehaviourNode CreateNode(Type type) 
+        {
+            BehaviourNode node = (BehaviourNode)CreateInstance(type);
+            node.name = type.Name;
+            node.guid = Guid.NewGuid().ToString();
+            nodesList.Add (node);
+
+            AssetDatabase.AddObjectToAsset(node, this);
+            AssetDatabase.SaveAssets();
+
+            return node;
+        }
+
+        public void DeleteNode(BehaviourNode node) 
+        {
+            nodesList.Remove(node);
+            AssetDatabase.RemoveObjectFromAsset(node);
+            AssetDatabase.SaveAssets();
+        }
+
+        public void ClearNodes() 
+        {
+            for(int i = 0; i < nodesList.Count; i++) 
+            {
+                Destroy(nodesList[i]);
+            }
+
+            Destroy(rootCopy);
+
+            rootCopy = null;
+            nodesList.Clear();
+        }
+    }
+}
+

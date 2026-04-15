@@ -9,6 +9,9 @@ namespace BehaviourTree
         public abstract BehaviourNodeType NodeType { get; }
         public int firstChildIndex;
         public int lastChildIndex;
+
+        [HideInInspector] public string guid;
+        [HideInInspector] public Vector2 graphPosition;
     }
 }
 
