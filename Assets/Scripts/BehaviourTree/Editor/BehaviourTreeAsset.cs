@@ -1,4 +1,3 @@
-using Codice.CM.SEIDInfo;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -42,8 +41,8 @@ namespace BehaviourTree
         {
             BehaviourNode node = (BehaviourNode)CreateInstance(type);
             node.name = type.Name;
-            node.guid = Guid.NewGuid().ToString();
-            nodesList.Add (node);
+            node.guid = GUID.Generate().ToString();
+            nodesList.Add(node);
 
             AssetDatabase.AddObjectToAsset(node, this);
             AssetDatabase.SaveAssets();
@@ -56,6 +55,39 @@ namespace BehaviourTree
             nodesList.Remove(node);
             AssetDatabase.RemoveObjectFromAsset(node);
             AssetDatabase.SaveAssets();
+        }
+
+        public void AddChild(BehaviourNode parent, BehaviourNode child) 
+        {
+            if(parent.NodeType != BehaviourNodeType.ACTION || parent.NodeType != BehaviourNodeType.CONDITION) 
+            {
+                if (child.NodeType == BehaviourNodeType.ROOT) 
+                {
+                    Debug.LogError("ROOT NODE CANNOT BE CHILD!");
+                    return;
+                }
+
+                if (!parent.children.Contains(child)) 
+                {
+                    parent.children.Add(child);
+                }
+                else 
+                {
+                    Debug.LogWarning("Parent already contains child!");
+                }
+            }
+        }
+
+        public void RemoveChild(BehaviourNode parent, BehaviourNode child)
+        {
+            if(parent.children.Contains(child)) 
+            {
+                parent.children.Remove(child);
+            }
+            else 
+            {
+                Debug.LogWarning("Parent does not contain child");
+            }
         }
 
         public void ClearNodes() 

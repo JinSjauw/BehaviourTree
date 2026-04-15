@@ -1,5 +1,6 @@
 using BehaviourTree;
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -7,7 +8,10 @@ public class BehaviourNodeView : Node
 {
     public BehaviourNode NodeSO { get; private set; }
     public MethodID LeafMethodID { get; set; }  //enum ID for delegate dispatch
-    public string Guid { get; private set; } = System.Guid.NewGuid().ToString();
+    public string Guid { get; private set; }
+
+    public Port input;
+    public Port output;
 
     public BehaviourNodeView(BehaviourNode nodeObject)
     {
@@ -32,6 +36,37 @@ public class BehaviourNodeView : Node
             BehaviourNodeType.CONDITION => Color.yellow,
             _ => Color.gray
         };
+
+        CreateInputPorts();
+        CreateOutputPorts();
+    }
+
+    private void CreateInputPorts()
+    {
+        if (NodeSO.NodeType == BehaviourNodeType.ROOT) return;
+
+        input = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(BehaviourNode));
+
+        if(input != null) 
+        {
+            input.portName = "";
+            inputContainer.Add(input);
+        }
+    }
+
+    private void CreateOutputPorts()
+    {
+        if (NodeSO is ActionNode || NodeSO is ConditionNode)
+        {
+            return;
+        }
+
+        output = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(BehaviourNode));
+        if (output != null)
+        {
+            output.portName = "";
+            outputContainer.Add(output);
+        }
     }
 
     public int GetChildCount() =>

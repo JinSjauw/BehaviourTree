@@ -16,11 +16,14 @@ namespace BehaviourTree.Editor
         public Action<BehaviourTreeEditorGraphView> onGraphDataChanged;
         
         private BehaviourTreeAsset tree;
+        private Dictionary<string, BehaviourNodeView> nodeViewDict;
 
         public BehaviourTreeEditorGraphView()
         {
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uss");
             styleSheets.Add(styleSheet);
+
+            nodeViewDict = new Dictionary<string, BehaviourNodeView>();   
 
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
 
@@ -101,21 +104,40 @@ namespace BehaviourTree.Editor
         private GraphViewChange OnGraphViewChanged(GraphViewChange change)
         {
             // If nodes/edges were added, removed, or moved, notify exporter
-            if (change.edgesToCreate != null || change.elementsToRemove != null)
+            if (change.elementsToRemove != null)
             {
-
-                if(change.elementsToRemove.Count > 0) 
-                { 
-                    for(int i = 0; i < change.elementsToRemove.Count; i++) 
+                for (int i = 0; i < change.elementsToRemove.Count; i++)
+                {
+                    BehaviourNodeView nodeView = change.elementsToRemove[i] as BehaviourNodeView;
+                    if (nodeView != null)
                     {
-                        BehaviourNodeView nodeView = change.elementsToRemove[i] as BehaviourNodeView;
-                        if(nodeView != null) 
-                        {
-                            tree.DeleteNode(nodeView.NodeSO);
-                        }
+                        tree.DeleteNode(nodeView.NodeSO);
+                        //Remove from dict
+                        nodeViewDict.Remove(nodeView.Guid);
+                    }
+
+                    Edge edge = change.elementsToRemove[i] as Edge;
+                    if(edge != null) 
+                    {
+                        BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
+                        BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
+                        tree.RemoveChild(parentView.NodeSO, childView.NodeSO);
                     }
                 }
 
+                onGraphDataChanged?.Invoke(this);
+            }
+
+            if(change.edgesToCreate != null) 
+            {
+                for(int i = 0; i < change.edgesToCreate.Count; i++) 
+                {
+                    Edge edge = change.edgesToCreate[i];
+                    BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
+                    BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
+
+                    tree.AddChild(parentView.NodeSO, childView.NodeSO);
+                }
                 onGraphDataChanged?.Invoke(this);
             }
 
@@ -156,9 +178,37 @@ namespace BehaviourTree.Editor
 
             graphViewChanged += OnGraphViewChanged;
 
+            if (tree.nodesList.Count <= 0) return;
+
             for (int i = 0; i < tree.nodesList.Count; i++)
             {
                 CreateNodeView(tree.nodesList[i]);
+            }
+
+            for (int i = 0; i < tree.nodesList.Count; i++)
+            {
+                BehaviourNode node = tree.nodesList[i];
+
+                for(int j = 0; j < node.children.Count; j++) 
+                {
+                    BehaviourNodeView parentView = FindNodeView(node);
+                    BehaviourNodeView childView = FindNodeView(node.children[j]);
+
+                    if (parentView == null || childView == null)
+                    {
+                        Debug.LogWarning($"Failed to connect edge: {node.guid} → {node.children[j]?.guid}");
+                        continue;
+                    }
+
+                    if (parentView.output == null || childView.input == null)
+                    {
+                        Debug.LogWarning($"Port missing: {node.NodeType} → {node.children[j].NodeType}");
+                        continue;
+                    }
+
+                    Edge edge = parentView.output.ConnectTo(childView.input);
+                    AddElement(edge);
+                }
             }
         }
 
@@ -166,6 +216,21 @@ namespace BehaviourTree.Editor
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
             AddElement(nodeView);
+
+            nodeViewDict[nodeView.Guid] = nodeView;
         }
+
+        private BehaviourNodeView FindNodeView(BehaviourNode node) 
+        {
+            if(nodeViewDict.TryGetValue(node.guid, out BehaviourNodeView nodeView)) 
+            {
+                return nodeView;
+            }
+            
+            return null;
+            //return GetNodeByGuid(node.guid) as BehaviourNodeView;
+        }
+
+       
     }
 }
