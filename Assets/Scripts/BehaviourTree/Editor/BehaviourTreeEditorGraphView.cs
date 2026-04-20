@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
+using BehaviourTree.Core;
 
 namespace BehaviourTree.Editor
 {
@@ -177,8 +178,17 @@ namespace BehaviourTree.Editor
             DeleteElements(graphElements);
 
             graphViewChanged += OnGraphViewChanged;
+            if(tree.nodesList == null)
+            {
+                tree.nodesList = new List<BehaviourNode>();
+            }
 
-            if (tree.nodesList.Count <= 0) return;
+            if(tree.rootCopy == null)
+            {
+                tree.rootCopy = tree.CreateNode(typeof(RootNode));   
+                EditorUtility.SetDirty(tree);
+                AssetDatabase.SaveAssets();
+            }
 
             for (int i = 0; i < tree.nodesList.Count; i++)
             {
@@ -216,7 +226,7 @@ namespace BehaviourTree.Editor
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
             nodeView.OnNodeSelected = OnNodeSelected;
-            
+
             AddElement(nodeView);
             nodeViewDict[nodeView.Guid] = nodeView;
         }

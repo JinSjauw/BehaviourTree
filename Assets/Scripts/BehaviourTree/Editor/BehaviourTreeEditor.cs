@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 
 public class BehaviourTreeEditor : EditorWindow
 {
-    
     BehaviourTreeEditorGraphView treeGraphView;
     
     InspectorView inspectorView;
@@ -69,6 +68,11 @@ public class BehaviourTreeEditor : EditorWindow
         // Null check for tree asset before using it
         if (tree == null) return;
 
+        if(!AssetDatabase.CanOpenAssetInEditor(tree.GetEntityId()))
+        {
+            return;
+        }
+
         // Null check for graph view before using it
         if (treeGraphView != null)
         {
@@ -87,6 +91,14 @@ public class BehaviourTreeEditor : EditorWindow
     private void OnNodeSelectionChanged(BehaviourNodeView nodeView)
     {
         inspectorView.UpdateSelection(nodeView);
+    }
+
+    private void OnDestroy()
+    {
+        if (treeGraphView != null)
+        {
+            treeGraphView.OnNodeSelected = null;
+        }
     }
 }
 

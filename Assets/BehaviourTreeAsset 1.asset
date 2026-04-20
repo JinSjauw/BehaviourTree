@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6388193171369672004
+--- !u!114 &-2840661900231664090
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,53 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
-  m_Name: SequenceNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: RootNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 4d3de2e68805f2b4ba092feb6ace9204
+  guid: 840927d3e9934b640b1511e7339b66e0
   graphPosition: {x: 0, y: 0}
---- !u!114 &-4661895014785957277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf3d3458aeb42447a712ebc79919c77, type: 3}
-  m_Name: SelectorNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SelectorNode
-  children:
-  - {fileID: 9165878434650663761}
-  - {fileID: -4597747362538557213}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: de85f62beb8bfd045a18db394cb66395
-  graphPosition: {x: 507, y: 200}
---- !u!114 &-4597747362538557213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
-  m_Name: ActionNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.ActionNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: e3b763ccac0e4e243b10aa617d3d8743
-  graphPosition: {x: 856, y: 306}
-  methodID: 0
-  BlackBoardTypeID: 0
-  treeConfigID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,48 +30,6 @@ MonoBehaviour:
   m_Name: BehaviourTreeAsset 1
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.BehaviourTreeAsset
   nodesList:
-  - {fileID: -4597747362538557213}
-  - {fileID: 9082995989860322580}
-  - {fileID: 9165878434650663761}
-  - {fileID: -4661895014785957277}
-  - {fileID: -6388193171369672004}
-  rootCopy: {fileID: 0}
+  - {fileID: -2840661900231664090}
+  rootCopy: {fileID: -2840661900231664090}
   root: {fileID: 0}
---- !u!114 &9082995989860322580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
-  m_Name: SequenceNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
-  children:
-  - {fileID: -4661895014785957277}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 8d7b5d9fe1900c945abd40a312c0e1af
-  graphPosition: {x: 330, y: 117}
---- !u!114 &9165878434650663761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45a877720d7c8e945b474b3c5df57594, type: 3}
-  m_Name: ConditionNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.ConditionNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 892c0c2bbcc015e4ea331303824305fe
-  graphPosition: {x: 843, y: 414}
-  methodID: 0
-  BlackBoardTypeID: 0
-  treeConfigID: 0

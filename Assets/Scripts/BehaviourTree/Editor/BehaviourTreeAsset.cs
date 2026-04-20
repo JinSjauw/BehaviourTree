@@ -17,7 +17,7 @@ namespace BehaviourTree
         {
             nodesList = new List<BehaviourNode>();
 
-            rootCopy = Instantiate(root);
+            //rootCopy = Instantiate(root);
 
             nodesList.Add(rootCopy);
 
@@ -42,6 +42,7 @@ namespace BehaviourTree
             BehaviourNode node = (BehaviourNode)CreateInstance(type);
             node.name = type.Name;
             node.guid = GUID.Generate().ToString();
+
             nodesList.Add(node);
 
             AssetDatabase.AddObjectToAsset(node, this);
