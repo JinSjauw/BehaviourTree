@@ -1,4 +1,5 @@
 using BehaviourTree;
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -12,6 +13,8 @@ public class BehaviourNodeView : Node
 
     public Port input;
     public Port output;
+
+    public Action<BehaviourNodeView> OnNodeSelected;
 
     public BehaviourNodeView(BehaviourNode nodeObject)
     {
@@ -67,6 +70,12 @@ public class BehaviourNodeView : Node
             output.portName = "";
             outputContainer.Add(output);
         }
+    }
+
+    public override void OnSelected()
+    {
+        base.OnSelected();
+        OnNodeSelected?.Invoke(this);
     }
 
     public int GetChildCount() =>

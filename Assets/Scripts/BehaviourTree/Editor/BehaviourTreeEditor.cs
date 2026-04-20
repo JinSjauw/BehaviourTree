@@ -8,6 +8,7 @@ public class BehaviourTreeEditor : EditorWindow
 {
     
     BehaviourTreeEditorGraphView treeGraphView;
+    
     InspectorView inspectorView;
 
     [MenuItem("BehaviourTree/BTNodeGraph")]
@@ -21,20 +22,42 @@ public class BehaviourTreeEditor : EditorWindow
     {
         VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uxml");
         
-        // Each editor window contains a root VisualElement object
+        // Null check for UXML asset
+        if (visualTree == null)
+        {
+            Debug.LogError("Failed to load BehaviourTreeEditor.uxml");
+            return;
+        }
+
         VisualElement root = visualTree.CloneTree();
-        root.style.flexGrow = 1; // 👈 Fix the thin strip
+        root.style.flexGrow = 1; // Fix the thin strip
 
         var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uss");
-        root.styleSheets.Add(styleSheet);
+
+        // Null check for USS stylesheet
+        if (styleSheet != null)
+        {
+            root.styleSheets.Add(styleSheet);
+        }
+        else
+        {
+            Debug.LogWarning("Failed to load BehaviourTreeEditor.uss");
+        }
 
         rootVisualElement.Add(root);
 
-        //// Instantiate UXML
-        //VisualElement labelFromUXML = m_VisualTreeAsset.Instantiate();
-        //root.Add(labelFromUXML);
         treeGraphView = root.Q<BehaviourTreeEditorGraphView>();
         inspectorView = root.Q<InspectorView>();
+
+        if (treeGraphView == null)
+        {
+            Debug.LogError("Could not find BehaviourTreeEditorGraphView in UXML");
+        }
+
+        if (inspectorView == null)
+        {
+            Debug.LogError("Could not find InspectorView in UXML");
+        }
 
         OnSelectionChange();
     }
@@ -42,9 +65,28 @@ public class BehaviourTreeEditor : EditorWindow
     private void OnSelectionChange()
     {
         BehaviourTreeAsset tree = Selection.activeObject as BehaviourTreeAsset;
-        if (tree) 
+
+        // Null check for tree asset before using it
+        if (tree == null) return;
+
+        // Null check for graph view before using it
+        if (treeGraphView != null)
         {
-            treeGraphView.PopulateView(tree);
+            try
+            {
+                treeGraphView.PopulateView(tree);
+                treeGraphView.OnNodeSelected = OnNodeSelectionChanged;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"Error populating view: {ex.Message}");
+            }
         }
     }
+
+    private void OnNodeSelectionChanged(BehaviourNodeView nodeView)
+    {
+        inspectorView.UpdateSelection(nodeView);
+    }
 }
+

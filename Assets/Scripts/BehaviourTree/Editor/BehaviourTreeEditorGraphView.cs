@@ -12,11 +12,13 @@ namespace BehaviourTree.Editor
     public partial class BehaviourTreeEditorGraphView : GraphView
     {
 
-        // callback for when graph changes (hook up export logic here)
+        // Callback for when graph changes (hook up export logic here)
         public Action<BehaviourTreeEditorGraphView> onGraphDataChanged;
+        public Action<BehaviourNodeView> OnNodeSelected;
         
         private BehaviourTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
+
 
         public BehaviourTreeEditorGraphView()
         {
@@ -31,15 +33,13 @@ namespace BehaviourTree.Editor
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
-            // Optional: Frame selection with 'F' key
-            //this.AddManipulator(new FrameSelection());
 
-            // Grid background (visual only)
+            // Grid background
             var grid = new GridBackground();
             Insert(0, grid);
             grid.StretchToParentSize();
 
-            // Optional: Listen for graph changes to trigger auto-save/compile
+            //Listen for graph changes to trigger auto-save/compile
             graphViewChanged += OnGraphViewChanged;
         }
 
@@ -58,23 +58,23 @@ namespace BehaviourTree.Editor
                 if (startPort.node is BehaviourNodeView startNode &&
                     port.node is BehaviourNodeView endNode)
                 {
-                    // Rule 1: Root node can't be a child
+                    //Root node can't be a child
                     if (endNode.NodeSO.NodeType == BehaviourNodeType.ROOT && port.direction == Direction.Input)
                         continue;
 
-                    // Rule 2: Leaf nodes can't have children
+                    //Leaf nodes can't have children
                     if (startNode.NodeSO.NodeType == BehaviourNodeType.ACTION && port.direction == Direction.Output)
                         continue;
                     if (startNode.NodeSO.NodeType == BehaviourNodeType.CONDITION && port.direction == Direction.Output)
                         continue;
 
-                    //// Rule 3: Decorators can only have ONE child
+                    //Decorators can only have ONE child
                     //if (startNode.NodeType == BTNodeType.Decorator &&
                     //    port.direction == Direction.Output &&
                     //    startNode.GetChildCount() >= 1)
                     //    continue;
 
-                    // Rule 4: Prevent cycles (optional but recommended)
+                    //Prevent cycles
                     if (WouldCreateCycle(startNode, endNode))
                         continue;
                 }
@@ -215,8 +215,9 @@ namespace BehaviourTree.Editor
         private void CreateNodeView(BehaviourNode node)
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
+            nodeView.OnNodeSelected = OnNodeSelected;
+            
             AddElement(nodeView);
-
             nodeViewDict[nodeView.Guid] = nodeView;
         }
 

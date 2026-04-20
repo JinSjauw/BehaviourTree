@@ -1,3 +1,5 @@
+using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -5,6 +7,8 @@ using UnityEngine.UIElements;
 public partial class InspectorView : VisualElement
 {
     private VisualElement _contentContainer;
+
+    Editor editor;
 
     public InspectorView()
     {
@@ -29,5 +33,15 @@ public partial class InspectorView : VisualElement
             }
         };
         _contentContainer.Add(placeholder);
+    }
+
+    public void UpdateSelection(BehaviourNodeView nodeView)
+    {
+        Clear();
+
+        UnityEngine.Object.DestroyImmediate(editor);
+        editor = Editor.CreateEditor(nodeView.NodeSO);
+        IMGUIContainer container = new IMGUIContainer(() => {editor.OnInspectorGUI(); });
+        Add(container);
     }
 }
