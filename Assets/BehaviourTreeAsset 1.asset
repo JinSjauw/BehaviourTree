@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2840661900231664090
+--- !u!114 &-8411631724579087544
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,14 +9,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
-  m_Name: RootNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
+  m_Name: SequenceNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 840927d3e9934b640b1511e7339b66e0
+  guid: a76aa5c0a65115e4eb67f8359e868adb
   graphPosition: {x: 0, y: 0}
+--- !u!114 &-547915646210016401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: ActionNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.ActionNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: f05adc1794119c344b5822f8bd8b00cf
+  graphPosition: {x: 330, y: 134.16}
+  methodID: 0
+  BlackBoardTypeID: 0
+  treeConfigID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30,6 +50,26 @@ MonoBehaviour:
   m_Name: BehaviourTreeAsset 1
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.BehaviourTreeAsset
   nodesList:
-  - {fileID: -2840661900231664090}
-  rootCopy: {fileID: -2840661900231664090}
+  - {fileID: 8431940648504798828}
+  - {fileID: -547915646210016401}
+  - {fileID: -8411631724579087544}
+  rootCopy: {fileID: 8431940648504798828}
   root: {fileID: 0}
+--- !u!114 &8431940648504798828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: RootNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  children:
+  - {fileID: -547915646210016401}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: fa65f12d528852f47a02788ed0026fc2
+  graphPosition: {x: 552, y: -4}

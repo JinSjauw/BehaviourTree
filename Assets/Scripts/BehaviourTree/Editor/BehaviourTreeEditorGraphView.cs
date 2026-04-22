@@ -137,6 +137,8 @@ namespace BehaviourTree.Editor
                     BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
                     BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
 
+                    edge.layer = 1;
+
                     tree.AddChild(parentView.NodeSO, childView.NodeSO);
                 }
                 onGraphDataChanged?.Invoke(this);
@@ -228,6 +230,7 @@ namespace BehaviourTree.Editor
             nodeView.OnNodeSelected = OnNodeSelected;
 
             AddElement(nodeView);
+            nodeView.layer = 0;
             nodeViewDict[nodeView.Guid] = nodeView;
         }
 

@@ -42,6 +42,7 @@ public partial class InspectorView : VisualElement
         UnityEngine.Object.DestroyImmediate(editor);
         
         editor = Editor.CreateEditor(nodeView.NodeSO);
+
         IMGUIContainer container = new IMGUIContainer(() => {editor.OnInspectorGUI(); });
         Add(container);
     }

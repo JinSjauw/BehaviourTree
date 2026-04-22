@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BehaviourNodeView : Node
 {
@@ -16,7 +17,7 @@ public class BehaviourNodeView : Node
 
     public Action<BehaviourNodeView> OnNodeSelected;
 
-    public BehaviourNodeView(BehaviourNode nodeObject)
+    public BehaviourNodeView(BehaviourNode nodeObject) : base("Assets/Scripts/BehaviourTree/Editor/GraphNodeView.uxml")
     {
         NodeSO = nodeObject;
         Guid = NodeSO.guid;
@@ -26,19 +27,19 @@ public class BehaviourNodeView : Node
         style.left = NodeSO.graphPosition.x;
         style.top = NodeSO.graphPosition.y;
 
-        style.borderTopWidth = 3;
-        style.borderBottomWidth = 3;
-        style.borderLeftWidth = 3;
-        style.borderRightWidth = 3;
-        style.borderTopColor = nodeObject.NodeType switch
-        {
-            BehaviourNodeType.ROOT => Color.green,
-            BehaviourNodeType.SELECTOR => Color.blue,
-            BehaviourNodeType.SEQUENCE => Color.purple,
-            BehaviourNodeType.ACTION => Color.red,
-            BehaviourNodeType.CONDITION => Color.yellow,
-            _ => Color.gray
-        };
+        // style.borderTopWidth = 3;
+        // style.borderBottomWidth = 3;
+        // style.borderLeftWidth = 3;
+        // style.borderRightWidth = 3;
+        // style.borderTopColor = nodeObject.NodeType switch
+        // {
+        //     BehaviourNodeType.ROOT => Color.green,
+        //     BehaviourNodeType.SELECTOR => Color.blue,
+        //     BehaviourNodeType.SEQUENCE => Color.purple,
+        //     BehaviourNodeType.ACTION => Color.red,
+        //     BehaviourNodeType.CONDITION => Color.yellow,
+        //     _ => Color.gray
+        // };
 
         CreateInputPorts();
         CreateOutputPorts();
@@ -53,6 +54,7 @@ public class BehaviourNodeView : Node
         if(input != null) 
         {
             input.portName = "";
+            input.style.flexDirection = FlexDirection.Column;
             inputContainer.Add(input);
         }
     }
@@ -68,6 +70,7 @@ public class BehaviourNodeView : Node
         if (output != null)
         {
             output.portName = "";
+            output.style.flexDirection = FlexDirection.ColumnReverse;
             outputContainer.Add(output);
         }
     }

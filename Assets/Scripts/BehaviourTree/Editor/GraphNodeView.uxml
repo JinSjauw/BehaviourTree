@@ -1,0 +1,24 @@
+<engine:UXML xmlns:engine="UnityEngine.UIElements" xmlns:ui="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/GraphNodeViewStyle.uss?fileID=7433441132597879392&amp;guid=6a8fb5d391da0ba47a76e2c532511c3c&amp;type=3#GraphNodeViewStyle"/>
+    <engine:VisualElement name="node-border">
+        <engine:VisualElement name="contents">
+            <engine:VisualElement name="top" picking-mode="Ignore" style="align-items: center; justify-content: center;">
+                <engine:VisualElement name="input"/>
+                <engine:VisualElement name="title">
+                    <engine:Label name="title-label"/>
+                    <engine:VisualElement name="title-button-container">
+                        <engine:VisualElement name="collapse-button">
+                            <engine:VisualElement name="icon"/>
+                        </engine:VisualElement>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="output"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="collapsible-area">
+                <engine:VisualElement name="divider" class="horizontal"/>
+                <engine:VisualElement name="extension"/>
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="selection-border" picking-mode="Ignore"/>
+</engine:UXML>
