@@ -20,7 +20,6 @@ namespace BehaviourTree.Editor
         private BehaviourTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
 
-
         public BehaviourTreeEditorGraphView()
         {
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uss");
@@ -42,6 +41,15 @@ namespace BehaviourTree.Editor
 
             //Listen for graph changes to trigger auto-save/compile
             graphViewChanged += OnGraphViewChanged;
+
+            Undo.undoRedoPerformed += OnUndoRedo;
+        }
+
+        private void OnUndoRedo()
+        {
+            if(tree == null) return;
+            
+            PopulateView(tree);
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)

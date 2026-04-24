@@ -12,11 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
   m_Name: SequenceNode
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
-  children: []
+  children:
+  - {fileID: -5050796705861478834}
+  - {fileID: -547915646210016401}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: a76aa5c0a65115e4eb67f8359e868adb
-  graphPosition: {x: 0, y: 0}
+  graphPosition: {x: 488.00006, y: -42.90001}
+--- !u!114 &-5050796705861478834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45a877720d7c8e945b474b3c5df57594, type: 3}
+  m_Name: ConditionNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.ConditionNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: af619bdab8a536447977ca0ea78b3f2b
+  graphPosition: {x: 691.0001, y: 148}
+  methodID: 0
+  BlackBoardTypeID: 0
+  treeConfigID: 0
 --- !u!114 &-547915646210016401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33,7 +55,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: f05adc1794119c344b5822f8bd8b00cf
-  graphPosition: {x: 330, y: 134.16}
+  graphPosition: {x: 330.4001, y: 156}
   methodID: 0
   BlackBoardTypeID: 0
   treeConfigID: 0
@@ -53,6 +75,7 @@ MonoBehaviour:
   - {fileID: 8431940648504798828}
   - {fileID: -547915646210016401}
   - {fileID: -8411631724579087544}
+  - {fileID: -5050796705861478834}
   rootCopy: {fileID: 8431940648504798828}
   root: {fileID: 0}
 --- !u!114 &8431940648504798828
@@ -68,8 +91,8 @@ MonoBehaviour:
   m_Name: RootNode
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children:
-  - {fileID: -547915646210016401}
+  - {fileID: -8411631724579087544}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: fa65f12d528852f47a02788ed0026fc2
-  graphPosition: {x: 552, y: -4}
+  graphPosition: {x: 498, y: -224}

@@ -43,9 +43,11 @@ namespace BehaviourTree
             node.name = type.Name;
             node.guid = GUID.Generate().ToString();
 
+            Undo.RecordObject(this, "(BTree) Create Node");
             nodesList.Add(node);
 
             AssetDatabase.AddObjectToAsset(node, this);
+            Undo.RegisterCreatedObjectUndo(node, "(BTree) Create Node");
             AssetDatabase.SaveAssets();
 
             return node;
@@ -53,8 +55,10 @@ namespace BehaviourTree
 
         public void DeleteNode(BehaviourNode node) 
         {
+            Undo.RecordObject(this, "(BTree) Create Node");
             nodesList.Remove(node);
-            AssetDatabase.RemoveObjectFromAsset(node);
+            //AssetDatabase.RemoveObjectFromAsset(node);
+            Undo.DestroyObjectImmediate(node);
             AssetDatabase.SaveAssets();
         }
 
@@ -70,7 +74,9 @@ namespace BehaviourTree
 
                 if (!parent.children.Contains(child)) 
                 {
+                    Undo.RecordObject(parent, "(BTree) Add Child");
                     parent.children.Add(child);
+                    EditorUtility.SetDirty(parent);
                 }
                 else 
                 {
@@ -83,7 +89,9 @@ namespace BehaviourTree
         {
             if(parent.children.Contains(child)) 
             {
+                Undo.RecordObject(parent, "(BTree) Remove Child");
                 parent.children.Remove(child);
+                EditorUtility.SetDirty(parent);
             }
             else 
             {

@@ -24,25 +24,31 @@ public class BehaviourNodeView : Node
 
         title = nodeObject.NodeType.ToString(); // Or use mainTitle/subTitle for styling
 
+        //Set position
         style.left = NodeSO.graphPosition.x;
         style.top = NodeSO.graphPosition.y;
 
-        // style.borderTopWidth = 3;
-        // style.borderBottomWidth = 3;
-        // style.borderLeftWidth = 3;
-        // style.borderRightWidth = 3;
-        // style.borderTopColor = nodeObject.NodeType switch
-        // {
-        //     BehaviourNodeType.ROOT => Color.green,
-        //     BehaviourNodeType.SELECTOR => Color.blue,
-        //     BehaviourNodeType.SEQUENCE => Color.purple,
-        //     BehaviourNodeType.ACTION => Color.red,
-        //     BehaviourNodeType.CONDITION => Color.yellow,
-        //     _ => Color.gray
-        // };
+        SetNodeColor();
 
         CreateInputPorts();
         CreateOutputPorts();
+    }
+
+    private void SetNodeColor()
+    {
+        VisualElement nodeColorElement = this.Q<VisualElement>("input");
+        if(nodeColorElement == null) return;
+
+        nodeColorElement.style.backgroundColor =
+        NodeSO.NodeType switch
+        {
+            BehaviourNodeType.ROOT => Color.green,
+            BehaviourNodeType.SELECTOR => Color.blue,
+            BehaviourNodeType.SEQUENCE => Color.purple,
+            BehaviourNodeType.ACTION => Color.red,
+            BehaviourNodeType.CONDITION => Color.yellow,
+            _ => Color.gray
+        };
     }
 
     private void CreateInputPorts()
@@ -87,8 +93,9 @@ public class BehaviourNodeView : Node
     public override void SetPosition(Rect newPos)
     {
         base.SetPosition(newPos);
-
+        Undo.RecordObject(NodeSO, "(BTree) Set Position");
         NodeSO.graphPosition.x = newPos.xMin;
         NodeSO.graphPosition.y = newPos.yMin;
+        EditorUtility.SetDirty(NodeSO);
     }
 }
