@@ -3,7 +3,7 @@
     <engine:VisualElement name="node-border">
         <engine:VisualElement name="contents">
             <engine:VisualElement name="top" picking-mode="Ignore" style="align-items: center; justify-content: center;">
-                <engine:VisualElement name="input"/>
+                <engine:VisualElement name="input" picking-mode="Position"/>
                 <engine:VisualElement name="title">
                     <engine:Label name="title-label"/>
                     <engine:VisualElement name="title-button-container">
@@ -12,7 +12,7 @@
                         </engine:VisualElement>
                     </engine:VisualElement>
                 </engine:VisualElement>
-                <engine:VisualElement name="output"/>
+                <engine:VisualElement name="output" picking-mode="Position"/>
             </engine:VisualElement>
             <engine:VisualElement name="collapsible-area">
                 <engine:VisualElement name="divider" class="horizontal"/>

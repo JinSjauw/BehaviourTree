@@ -1,45 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8411631724579087544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
-  m_Name: SequenceNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
-  children:
-  - {fileID: -5050796705861478834}
-  - {fileID: -547915646210016401}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: a76aa5c0a65115e4eb67f8359e868adb
-  graphPosition: {x: 488.00006, y: -42.90001}
---- !u!114 &-5050796705861478834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45a877720d7c8e945b474b3c5df57594, type: 3}
-  m_Name: ConditionNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.ConditionNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: af619bdab8a536447977ca0ea78b3f2b
-  graphPosition: {x: 691.0001, y: 148}
-  methodID: 0
-  BlackBoardTypeID: 0
-  treeConfigID: 0
---- !u!114 &-547915646210016401
+--- !u!114 &-5481118672024061962
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,11 +15,11 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: f05adc1794119c344b5822f8bd8b00cf
-  graphPosition: {x: 330.4001, y: 156}
-  methodID: 0
+  guid: 5572b17bcd1aa744b8a973a9be5d6629
+  graphPosition: {x: 1002.6775, y: 157.35501}
+  methodID: 1
   BlackBoardTypeID: 0
-  treeConfigID: 0
+  treeConfigID: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,13 +33,49 @@ MonoBehaviour:
   m_Name: BehaviourTreeAsset 1
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.BehaviourTreeAsset
   nodesList:
-  - {fileID: 8431940648504798828}
-  - {fileID: -547915646210016401}
-  - {fileID: -8411631724579087544}
-  - {fileID: -5050796705861478834}
-  rootCopy: {fileID: 8431940648504798828}
+  - {fileID: 8709866644342834327}
+  - {fileID: -5481118672024061962}
+  - {fileID: 4566731791559046806}
+  - {fileID: 1245961939088646636}
+  rootCopy: {fileID: 8709866644342834327}
   root: {fileID: 0}
---- !u!114 &8431940648504798828
+--- !u!114 &1245961939088646636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daf3d3458aeb42447a712ebc79919c77, type: 3}
+  m_Name: SelectorNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SelectorNode
+  children:
+  - {fileID: 4566731791559046806}
+  - {fileID: -5481118672024061962}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 276b680a3758aee4c95284c00da46255
+  graphPosition: {x: 869.0004, y: 21.000038}
+--- !u!114 &4566731791559046806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
+  m_Name: SequenceNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.SequenceNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 149deb7719a91ba479375d12dc7abe89
+  graphPosition: {x: 701.70013, y: 161.70003}
+--- !u!114 &8709866644342834327
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,8 +88,8 @@ MonoBehaviour:
   m_Name: RootNode
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children:
-  - {fileID: -8411631724579087544}
+  - {fileID: 1245961939088646636}
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: fa65f12d528852f47a02788ed0026fc2
-  graphPosition: {x: 498, y: -224}
+  guid: 040c8c650be0a7447afe74f16d3c7058
+  graphPosition: {x: 861.35504, y: -126.035}

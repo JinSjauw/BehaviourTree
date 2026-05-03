@@ -11,6 +11,7 @@ public class BehaviourTreeEditor : EditorWindow
     BehaviourTreeEditorGraphView treeGraphView;
     
     InspectorView inspectorView;
+    BlackBoardView blackBoardView;
 
     [MenuItem("BehaviourTree/BTNodeGraph")]
     public static void OpenWindow()
@@ -60,6 +61,7 @@ public class BehaviourTreeEditor : EditorWindow
 
         treeGraphView = root.Q<BehaviourTreeEditorGraphView>();
         inspectorView = root.Q<InspectorView>();
+        blackBoardView = root.Q<BlackBoardView>();
 
         if (treeGraphView == null)
         {
@@ -69,6 +71,11 @@ public class BehaviourTreeEditor : EditorWindow
         if (inspectorView == null)
         {
             Debug.LogError("Could not find InspectorView in UXML");
+        }
+
+        if(blackBoardView == null)
+        {
+            Debug.LogError("Could not find BlackBoardView in UXML");
         }
 
         OnSelectionChange();
@@ -93,6 +100,7 @@ public class BehaviourTreeEditor : EditorWindow
             {
                 treeGraphView.PopulateView(tree);
                 treeGraphView.OnNodeSelected = OnNodeSelectionChanged;
+                blackBoardView.BuildBlackboardView(tree.blackboardDefinition);
             }
             catch (System.Exception ex)
             {

@@ -1,5 +1,6 @@
 using BehaviourTree.Utility;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BehaviourTree 
 {
@@ -16,6 +17,8 @@ namespace BehaviourTree
             nodeDatas = new NodeData[nodeToIndex.Count];
 
             FillNodeData(nodeDatas, nodeToIndex);
+
+            //Create a runtime asset that contains nodeDatas
         }
 
         private static void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex)

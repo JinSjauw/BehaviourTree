@@ -5,7 +5,14 @@
     </uie:Toolbar>
     <SplitView fixed-pane-index="0" fixed-pane-initial-dimension="300" orientation="Horizontal">
         <ui:VisualElement name="InspectorPane" style="flex-grow: 1;">
-            <InspectorView style="flex-grow: 1; width: auto;"/>
+            <ui:TabView name="TabView" style="height: auto; flex-grow: 1;">
+                <ui:Tab label="Inspector" name="InspectorTab" style="flex-grow: 1; height: auto;">
+                    <InspectorView enabled="true" style="flex-grow: 1; width: auto; display: flex; visibility: visible;"/>
+                </ui:Tab>
+                <ui:Tab label="Blackboard" name="BlackBoardTab" style="flex-grow: 1;">
+                    <BlackBoardView/>
+                </ui:Tab>
+            </ui:TabView>
         </ui:VisualElement>
         <ui:VisualElement name="GraphPane" style="flex-grow: 1;">
             <BehaviourTree.Editor.BTGraphView style="flex-grow: 1;"/>

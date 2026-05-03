@@ -4,3 +4,48 @@ GridBackground {
     --thick-line-color: rgba(193, 196, 192, 0.1);
     --spacing: 15;
 }
+
+.unity-tab__content-container {
+    flex-grow: 1;
+    height: 100%;
+}
+
+.unity-tab-view__content-container {
+    flex-grow: 1;
+}
+
+.unity-tab__header:hover {
+    background-color: rgb(70, 70, 70);
+}
+
+.unity-tab__header:checked {
+    background-color: rgb(46, 46, 46);
+}
+
+
+
+.unity-tab__header {
+    border-left-color: rgb(32, 32, 32);
+    border-right-color: rgb(32, 32, 32);
+    border-top-color: rgb(32, 32, 32);
+    border-bottom-color: rgb(32, 32, 32);
+    border-right-width: 0.1px;
+    border-left-width: 0;
+    background-color: rgb(58, 58, 58);
+    color: rgb(190, 190, 190);
+    border-bottom-width: 0;
+}
+
+
+
+.unity-tab-view__content-viewport {
+    background-color: rgb(58, 58, 58);
+    border-bottom-width: 0.5px;
+    border-left-color: rgb(32, 32, 32);
+    border-right-color: rgb(32, 32, 32);
+    border-top-color: rgb(32, 32, 32);
+    border-bottom-color: rgb(32, 32, 32);
+}
+
+.unity-tab {
+}

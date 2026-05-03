@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BehaviourTree.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace BehaviourTree
     {
         public List<BehaviourNode> nodesList;
         public BehaviourNode rootCopy;
+        public BlackboardDefinition blackboardDefinition;
         [SerializeField] private BehaviourNode root;
 
         //Create unique runtime instances of the SO's

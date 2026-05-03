@@ -1,4 +1,5 @@
 using BehaviourTree;
+using BehaviourTree.Editor;
 using System;
 using System.Linq;
 using UnityEditor;
@@ -28,8 +29,15 @@ public class BehaviourNodeView : Node
         style.left = NodeSO.graphPosition.x;
         style.top = NodeSO.graphPosition.y;
 
-        SetNodeColor();
+        inputContainer.style.flexDirection  = FlexDirection.Row;
+        inputContainer.style.justifyContent = Justify.Center;
+        inputContainer.style.alignItems     = Align.Center;
 
+        outputContainer.style.flexDirection  = FlexDirection.Row;
+        outputContainer.style.justifyContent = Justify.Center;
+        outputContainer.style.alignItems     = Align.Center;
+
+        SetNodeColor();
         CreateInputPorts();
         CreateOutputPorts();
     }
@@ -61,22 +69,44 @@ public class BehaviourNodeView : Node
         {
             input.portName = "";
             input.style.flexDirection = FlexDirection.Column;
+
+            VisualElement connectorElement = input.Q<VisualElement>("connector");
+            if(connectorElement != null)
+            {
+                connectorElement.pickingMode = PickingMode.Position;
+            }
+
             inputContainer.Add(input);
         }
     }
 
     private void CreateOutputPorts()
     {
-        if (NodeSO is ActionNode || NodeSO is ConditionNode)
+        if (NodeSO.NodeType == BehaviourNodeType.ACTION || NodeSO.NodeType == BehaviourNodeType.CONDITION)
         {
             return;
         }
 
-        output = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(BehaviourNode));
+        Port.Capacity portCapacity = Port.Capacity.Multi;
+
+        if(NodeSO.NodeType == BehaviourNodeType.ROOT) 
+        {
+            portCapacity = Port.Capacity.Single;
+        }
+
+        output = InstantiatePort(Orientation.Vertical, Direction.Output, portCapacity, typeof(BehaviourNode));
+
         if (output != null)
         {
             output.portName = "";
             output.style.flexDirection = FlexDirection.ColumnReverse;
+
+            VisualElement connectorElement = output.Q<VisualElement>("connector");
+            if(connectorElement != null)
+            {
+                connectorElement.pickingMode = PickingMode.Position;
+            }
+
             outputContainer.Add(output);
         }
     }
@@ -97,5 +127,18 @@ public class BehaviourNodeView : Node
         NodeSO.graphPosition.x = newPos.xMin;
         NodeSO.graphPosition.y = newPos.yMin;
         EditorUtility.SetDirty(NodeSO);
+    }
+
+    public void SortChildren()
+    {
+        if(NodeSO.NodeType == BehaviourNodeType.SELECTOR || NodeSO.NodeType == BehaviourNodeType.SEQUENCE)
+        {
+            NodeSO.children.Sort(SortByHorizontalPosition);
+        }
+    }
+
+    private int SortByHorizontalPosition(BehaviourNode left, BehaviourNode right)
+    {
+        return left.graphPosition.x < right.graphPosition.x ? -1 : 1;
     }
 }

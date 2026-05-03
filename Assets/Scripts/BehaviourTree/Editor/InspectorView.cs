@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 [UxmlElement("InspectorView")]
 public partial class InspectorView : VisualElement
 {
-    private VisualElement _contentContainer;
+    private VisualElement contentContainer;
 
     Editor editor;
 
@@ -19,8 +19,8 @@ public partial class InspectorView : VisualElement
         style.paddingBottom = 8;
         style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
-        _contentContainer = new VisualElement { style = { flexGrow = 1 } };
-        Add(_contentContainer);
+        contentContainer = new VisualElement { style = { flexGrow = 1 } };
+        Add(contentContainer);
 
         var placeholder = new Label("Select a node in the GraphView")
         {
@@ -32,7 +32,7 @@ public partial class InspectorView : VisualElement
                 fontSize = 13
             }
         };
-        _contentContainer.Add(placeholder);
+        contentContainer.Add(placeholder);
     }
 
     public void UpdateSelection(BehaviourNodeView nodeView)

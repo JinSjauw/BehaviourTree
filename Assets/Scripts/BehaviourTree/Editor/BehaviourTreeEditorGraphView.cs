@@ -72,11 +72,12 @@ namespace BehaviourTree.Editor
                         continue;
 
                     //Leaf nodes can't have children
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.ACTION && port.direction == Direction.Output)
+                    if (startNode.NodeSO.NodeType == BehaviourNodeType.ACTION && port.direction == Direction.Input)
                         continue;
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.CONDITION && port.direction == Direction.Output)
+                    if (startNode.NodeSO.NodeType == BehaviourNodeType.CONDITION && port.direction == Direction.Input)
                         continue;
 
+                    if(endNode.NodeSO.children.Contains(startNode.NodeSO)) continue;
                     //Decorators can only have ONE child
                     //if (startNode.NodeType == BTNodeType.Decorator &&
                     //    port.direction == Direction.Output &&
@@ -145,11 +146,17 @@ namespace BehaviourTree.Editor
                     BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
                     BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
 
-                    edge.layer = 1;
-
                     tree.AddChild(parentView.NodeSO, childView.NodeSO);
                 }
                 onGraphDataChanged?.Invoke(this);
+            }
+
+            if(change.movedElements != null)
+            {
+                foreach(BehaviourNodeView nodeView in nodeViewDict.Values)
+                {
+                    nodeView.SortChildren();
+                }
             }
 
             return change;
@@ -165,6 +172,8 @@ namespace BehaviourTree.Editor
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             base.BuildContextualMenu(evt);
+
+            if(tree == null) return;
 
             var types = TypeCache.GetTypesDerivedFrom<BehaviourNode>();
             foreach (var type in types) 
@@ -236,9 +245,9 @@ namespace BehaviourTree.Editor
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
             nodeView.OnNodeSelected = OnNodeSelected;
+            nodeView.layer = 0;
 
             AddElement(nodeView);
-            nodeView.layer = 0;
             nodeViewDict[nodeView.Guid] = nodeView;
         }
 
