@@ -1,20 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BehaviourTree.Core;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Runtime 
 {
-
-    public enum MethodID 
-    {
-        NONE = 0,
-        HELLOWORLD = 1,
-        BYEWORLD = 2,
-        WAITWORLD = 3,
-    }
-
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class BTreeMethodAttribute : Attribute 
     {
@@ -22,33 +14,33 @@ namespace BehaviourTree
         public BTreeMethodAttribute(MethodID methodID) => this.methodID = methodID;
     }
 
-    public delegate NodeState BehaviorMethod(BlackBoard blackBoard, ref NodeData nodeData);
+    /// <summary>
+    /// Delegate for behaviour tree methods.
+    /// Receives the blackboard (for writing) and a raw span of FieldData (for reading).
+    /// Use <see cref="FieldReader"/> to unpack the span comfortably.
+    /// </summary>
+    public delegate NodeState BehaviorMethod(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields);
 
     public static class MethodRegistry
     {
         private static Dictionary<MethodID, BehaviorMethod> methodRegistry = new Dictionary<MethodID, BehaviorMethod>();
 
-        //Populate methodRegistry with all marked methods
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize() 
         {
-            Debug.Log("Registering!: ");
+            Debug.Log("Registering BT methods...");
             methodRegistry.Clear();
 
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
-                // Get all types in the assembly
                 foreach (var type in assembly.GetTypes())
                 {
-                    // Get all methods of the type
                     foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
                     {
-                        // Check for our custom attribute
                         var attr = method.GetCustomAttribute<BTreeMethodAttribute>();
                         if (attr != null)
                         {
-                            // Create a delegate from the method
                             var del = (BehaviorMethod)Delegate.CreateDelegate(typeof(BehaviorMethod), method);
                             methodRegistry.Add(attr.methodID, del);
                             Debug.Log("Registered: " + attr.methodID);
@@ -60,84 +52,82 @@ namespace BehaviourTree
 
         public static BehaviorMethod GetMethod(MethodID methodID) 
         {
-            if(methodID == MethodID.NONE) return null;
+            if (methodID == MethodID.NONE) return null;
 
-            if(!methodRegistry.TryGetValue(methodID, out BehaviorMethod method)) 
+            if (!methodRegistry.TryGetValue(methodID, out BehaviorMethod method))
             {
             #if UNITY_EDITOR
                 throw new KeyNotFoundException($"Missing entry ID: {methodID}");
             #else
                 Debug.LogError($"Missing entry ID: {methodID}");
-                return null; // or a pre-allocated static empty array
+                return null;
             #endif
             }
             return method;
         } 
     }
 
-    //TEST CLASS -> REMOVE LATER
+    // ─── Example Methods ─────────────────────────────────────────────
+    // Field indices for HELLOWORLD_Params: 0=Speed(const), 1=Health(var), 2=TestTime(var)
     public class TestMethods 
     {
-        [Preserve] //FOR ILC2PP
+        [Preserve]
         [BTreeMethod(MethodID.HELLOWORLD)]
-        public static NodeState HelloWorld(BlackBoard blackBoard, ref NodeData nodeData)
+        public static NodeState HelloWorld(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
             Debug.Log("HELLO WORLD!");
 
-            if(blackBoard != null) 
-            {
-                Vector3 targetPosition = (Vector3)blackBoard.GetField(BlackBoardFields.TARGET_POSITION_VECTOR3);
-                Debug.Log("Target Position! " + targetPosition);
-                blackBoard.UpdateField(BlackBoardFields.TARGET_POSITION_VECTOR3, Vector3.one * UnityEngine.Random.Range(-5, 5));
-            }
+            // fields[0] = Speed (constant float)
+            FieldReader reader = new FieldReader(fields, blackBoard);
+            float speed = reader.GetFloat(0);
+            Debug.Log("Speed: " + speed);
 
+            // fields[1] = Health (blackboard variable)
+            int health = reader.GetInt(1);
+            Debug.Log("Health: " + health);
             return NodeState.SUCCESS;
         }
 
         [BTreeMethod(MethodID.BYEWORLD)]
-        public static NodeState ByeWorld(BlackBoard blackBoard, ref NodeData nodeData)
+        public static NodeState ByeWorld(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
             Debug.Log("Bye world... :(");
 
-            if (blackBoard != null)
-            {
-                int health = (int)blackBoard.GetField(BlackBoardFields.HEALTH_INT);
+            FieldReader reader = new FieldReader(fields, blackBoard);
 
-                Debug.Log("Taking Damage!: " + health);
-                blackBoard.UpdateField(BlackBoardFields.HEALTH_INT, health -= 3);
-            }
+            // Read health (index 1 in HELLOWORLD_Params)
+            int health = reader.GetInt(1);
+            Debug.Log("Taking Damage! Health was: " + health);
 
+            health -= 3;
+            blackBoard.Set(1, health);
+            Debug.Log("Health now: " + health);
             return NodeState.FAILURE;
         }
 
         [BTreeMethod(MethodID.WAITWORLD)]
-        public static NodeState WaitWorld(BlackBoard blackBoard, ref NodeData nodeData)
+        public static NodeState WaitWorld(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            Debug.Log("Wait world...(");
+            Debug.Log("Wait world...");
 
-            if (blackBoard != null)
+            FieldReader reader = new FieldReader(fields, blackBoard);
+
+            // Read TestTime (index 2 in HELLOWORLD_Params)
+            float time = reader.GetFloat(2);
+            if (time < 3f)
             {
-                float time = (float)blackBoard.GetField(BlackBoardFields.TEST_TIME);
-
-                if(time < 3) 
-                {
                     time += Time.deltaTime;
-
                     Debug.Log("Waiting! " + time);
-                    blackBoard.UpdateField(BlackBoardFields.TEST_TIME, time);
-
-
+                blackBoard.Set(2, time);
                     return NodeState.RUNNING;
                 }
                 else 
                 {
-                    time = 0;
-                    Debug.Log("Done waiting! " + time);
-                    blackBoard.UpdateField(BlackBoardFields.TEST_TIME, time);
+                blackBoard.Set(2, 0f);
+                Debug.Log("Done waiting!");
+                return NodeState.SUCCESS;
                 }
             }
-
-            return NodeState.FAILURE;
         }
     }
-}
+

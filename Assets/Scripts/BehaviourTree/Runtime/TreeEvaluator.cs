@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
+using BehaviourTree.Core;
 using UnityEngine;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Runtime 
 {
-
     public class EvaluatorFrame 
     {
         public int nodeIndex;
@@ -11,16 +12,16 @@ namespace BehaviourTree
         public NodeState lastChildStatus;
     }
 
-    //This class is meant to evaluate the tree and also handle the per node type execution logic.
     public class TreeEvaluator
     {
-        //Root is needs to turn into a list/array the flattened behaviourNodes in the tree.
         private NodeData[] nodeDatas;
+        private FieldData[] fieldDatas;
         private Stack<EvaluatorFrame> nodeStack;
 
-        public TreeEvaluator(NodeData[] nodeDatas) 
+        public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas)
         {
             this.nodeDatas = nodeDatas;
+            this.fieldDatas = fieldDatas;
             nodeStack = new Stack<EvaluatorFrame>();
         }
 
@@ -43,26 +44,22 @@ namespace BehaviourTree
                     }
                     else
                     {
-                        nodeStack.Pop(); // leaf done
+                        nodeStack.Pop();
                         if (nodeStack.Count > 0)
                         {
-                            // Parent is now top; store the result in its frame
                             EvaluatorFrame parentFrame = nodeStack.Peek();
                             parentFrame.lastChildStatus = status;
                         }
-                        // Continue loop so parent can act on the result
                     }
                 }
                 else if (node.nodeType == BehaviourNodeType.SEQUENCE)
                 {
                     int childCount = node.lastChildIndex - node.firstChildIndex + 1;
 
-                    // If we have a lastChildStatus, it means a child just finished
                     if (frame.lastChildStatus != NodeState.NONE)
                     {
                         if (frame.lastChildStatus == NodeState.FAILURE)
                         {
-                            // Sequence fails immediately
                             nodeStack.Pop();
                             if (nodeStack.Count > 0)
                                 nodeStack.Peek().lastChildStatus = NodeState.FAILURE;
@@ -70,11 +67,8 @@ namespace BehaviourTree
                         }
                         else if (frame.lastChildStatus == NodeState.SUCCESS)
                         {
-                            // Child succeeded, move to next child
                             frame.childIndex++;
-                            frame.lastChildStatus = NodeState.NONE; // reset
-                            
-                            // If we've processed all children, sequence succeeds
+                            frame.lastChildStatus = NodeState.NONE;
                             if (frame.childIndex >= childCount)
                             {
                                 nodeStack.Pop();
@@ -84,7 +78,6 @@ namespace BehaviourTree
                             }
                         }
                     }
-                    // If we haven't finished, push the next child
                     int childNodeIndex = node.firstChildIndex + frame.childIndex;
                     nodeStack.Push(new EvaluatorFrame { nodeIndex = childNodeIndex, childIndex = 0, lastChildStatus = NodeState.NONE });
                 }
@@ -96,7 +89,6 @@ namespace BehaviourTree
                     {
                         if (frame.lastChildStatus == NodeState.SUCCESS)
                         {
-                            // Selector succeeds immediately
                             nodeStack.Pop();
                             if (nodeStack.Count > 0)
                                 nodeStack.Peek().lastChildStatus = NodeState.SUCCESS;
@@ -104,12 +96,10 @@ namespace BehaviourTree
                         }
                         else if (frame.lastChildStatus == NodeState.FAILURE)
                         {
-                            // Child failed, try next
                             frame.childIndex++;
                             frame.lastChildStatus = NodeState.NONE;
                             if (frame.childIndex >= childCount)
                             {
-                                // All children failed, selector fails
                                 nodeStack.Pop();
                                 if (nodeStack.Count > 0)
                                     nodeStack.Peek().lastChildStatus = NodeState.FAILURE;
@@ -131,11 +121,16 @@ namespace BehaviourTree
             if (method == null) 
             {
                 Debug.LogError($"Method not found! returning FAILURE state {nodeData.methodID}");
-
                 return NodeState.FAILURE;
             }
 
-            return method.Invoke(blackBoard, ref nodeData);
+            ReadOnlySpan<FieldData> fieldsSlice = default;
+            if (nodeData.fieldDataCount > 0 && fieldDatas != null && nodeData.fieldDataStartIndex >= 0)
+            {
+                fieldsSlice = new ReadOnlySpan<FieldData>(fieldDatas, nodeData.fieldDataStartIndex, nodeData.fieldDataCount);
+            }
+
+            return method.Invoke(blackBoard, fieldsSlice);
         }
     }
 }

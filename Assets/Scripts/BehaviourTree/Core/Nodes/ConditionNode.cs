@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Core 
 {
     [CreateAssetMenu(fileName = "Condition Node", menuName = "Scriptable Objects/BT Nodes/Condition Node")]
     public class ConditionNode : BehaviourNode
@@ -9,15 +10,9 @@ namespace BehaviourTree
 
         public MethodID methodID;
 
-        //Maybe also a string/enum to find the corresponding param collection.
-        //paramSetType -> Find correct registry. 
-
-        //Dynamic blackBoard DATA
-        //public ParamSetID paramSetID;
+        /// <summary>Dynamic list of field entries – generated from *_Params metadata.</summary>
+        public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();
         public BlackBoardType BlackBoardTypeID;
-
-        //Static DATA
-        //public StaticConfigSetID configParamSetID;
         public NodeConfigID treeConfigID;
     }
 }

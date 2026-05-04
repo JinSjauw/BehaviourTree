@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Core 
 {
     public class BlackBoardTest : BlackBoard
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Core 
 {
     public abstract class BehaviourNode : ScriptableObject
     {

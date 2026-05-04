@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 [UxmlElement("BlackBoardView")]
 public partial class BlackBoardView : VisualElement
 {
-    private VisualElement contentContainer;
+    private VisualElement blackBoardViewContainer;
 
     Editor editor;
 
@@ -20,8 +20,8 @@ public partial class BlackBoardView : VisualElement
         style.paddingBottom = 8;
         style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
-        contentContainer = new VisualElement { style = { flexGrow = 1 } };
-        Add(contentContainer);
+        blackBoardViewContainer = new VisualElement { style = { flexGrow = 1 } };
+        Add(blackBoardViewContainer);
 
         var placeholder = new Label("Add a blackboard definition")
         {
@@ -33,12 +33,12 @@ public partial class BlackBoardView : VisualElement
                 fontSize = 13
             }
         };
-        contentContainer.Add(placeholder);
+        blackBoardViewContainer.Add(placeholder);
     }
 
     public void BuildBlackboardView(BlackboardDefinition blackboardDefinition)
     {
-        contentContainer.Clear();
+        blackBoardViewContainer.Clear();
         // Use an IMGUIContainer to draw the serialized property
         IMGUIContainer imgui = new IMGUIContainer(() =>
         {
@@ -50,6 +50,6 @@ public partial class BlackBoardView : VisualElement
             so.ApplyModifiedProperties();
         });
 
-        contentContainer.Add(imgui);
+        blackBoardViewContainer.Add(imgui);
     }
 }

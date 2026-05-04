@@ -1,4 +1,5 @@
 using BehaviourTree;
+using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -8,10 +9,12 @@ using UnityEngine.UIElements;
 
 public class BehaviourTreeEditor : EditorWindow
 {
-    BehaviourTreeEditorGraphView treeGraphView;
+    private BehaviourTreeEditorGraphView treeGraphView;
     
-    InspectorView inspectorView;
-    BlackBoardView blackBoardView;
+    private InspectorView inspectorView;
+    private BlackBoardView blackBoardView;
+
+    public static BlackboardDefinition currenctBlackBoardDefinition { get; private set; }
 
     [MenuItem("BehaviourTree/BTNodeGraph")]
     public static void OpenWindow()
@@ -83,23 +86,26 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnSelectionChange()
     {
-        BehaviourTreeAsset tree = Selection.activeObject as BehaviourTreeAsset;
+        currenctBlackBoardDefinition = null;
 
+        BehaviourTreeAsset tree = Selection.activeObject as BehaviourTreeAsset;
         // Null check for tree asset before using it
         if (tree == null) return;
-
+        
         if(!AssetDatabase.CanOpenAssetInEditor(tree.GetEntityId()))
         {
             return;
         }
+
+        currenctBlackBoardDefinition = tree?.blackboardDefinition;
 
         // Null check for graph view before using it
         if (treeGraphView != null)
         {
             try
             {
-                treeGraphView.PopulateView(tree);
                 treeGraphView.OnNodeSelected = OnNodeSelectionChanged;
+                treeGraphView.PopulateView(tree);
                 blackBoardView.BuildBlackboardView(tree.blackboardDefinition);
             }
             catch (System.Exception ex)

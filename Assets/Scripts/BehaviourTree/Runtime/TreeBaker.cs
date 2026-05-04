@@ -1,14 +1,14 @@
+using BehaviourTree.Core;
 using BehaviourTree.Utility;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Runtime 
 {
     public static class TreeBaker
     {
-        public static void BakeTree(BehaviourNode root, ref NodeData[] nodeDatas)
+        public static void BakeTree(BehaviourNode root, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas)
         {
-            //Create Contiguous Array
             Dictionary<BehaviourNode, int> nodeToIndex = new Dictionary<BehaviourNode, int>();
 
             int index = 0;
@@ -16,17 +16,24 @@ namespace BehaviourTree
 
             nodeDatas = new NodeData[nodeToIndex.Count];
 
-            FillNodeData(nodeDatas, nodeToIndex);
+            // Count total FieldData entries first
+            int totalFieldDataCount = 0;
+            foreach (BehaviourNode node in nodeToIndex.Keys)
+            {
+                if (node is ActionNode action)
+                    totalFieldDataCount += action.fieldEntries?.Count ?? 0;
+                else if (node is ConditionNode cond)
+                    totalFieldDataCount += cond.fieldEntries?.Count ?? 0;
+            }
 
-            //Create a runtime asset that contains nodeDatas
+            fieldDatas = new FieldData[totalFieldDataCount];
+
+            FillNodeData(nodeDatas, fieldDatas, nodeToIndex);
         }
 
         private static void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex)
         {
-            //Debug.Log("Assigning: " + node.name + "Index: " + totalIndex);
-            if (nodeDict.ContainsValue(totalIndex)) return; //Disable for flattening debug test
-
-            //Add root node
+            if (nodeDict.ContainsValue(totalIndex)) return;
             if (totalIndex == 0)
             {
                 nodeDict[node] = totalIndex;
@@ -51,56 +58,66 @@ namespace BehaviourTree
             }
         }
 
-        private static void FillNodeData(NodeData[] nodeDataArray, Dictionary<BehaviourNode, int> nodeIndices)
+        private static void FillNodeData(NodeData[] nodeDataArray, FieldData[] fieldDataArray, Dictionary<BehaviourNode, int> nodeIndices)
         {
-            //Sort through node types and populate struct with relevant per nodeType data
-
-            //Populate NodeData structs
+            int currentFieldDataOffset = 0;
             foreach (BehaviourNode node in nodeIndices.Keys)
             {
                 NodeData nodeData = new NodeData();
 
-                //Debug.Log(node.NodeType + " " + nodeIndices[node]);
-
-                //Default initialization
                 nodeData.nodeType = node.NodeType;
                 nodeData.firstChildIndex = -1;
                 nodeData.lastChildIndex = -1;
                 nodeData.methodID = MethodID.NONE;
                 nodeData.blackBoardTypeID = BlackBoardType.SELF;
+                nodeData.fieldDataStartIndex = -1;
+                nodeData.fieldDataCount = 0;
 
-                //Populate nodeData differently based on nodeType
                 switch (node.NodeType)
                 {
                     case BehaviourNodeType.ROOT:
                     case BehaviourNodeType.SEQUENCE:
                     case BehaviourNodeType.SELECTOR:
-
                         nodeData.firstChildIndex = node.firstChildIndex;
                         nodeData.lastChildIndex = node.lastChildIndex;
-
                         break;
 
                     case BehaviourNodeType.CONDITION:
+                        {
+                            ConditionNode cond = (ConditionNode)node;
+                            nodeData.methodID = cond.methodID;
+                            nodeData.blackBoardTypeID = cond.BlackBoardTypeID;
+                            nodeData.fieldDataStartIndex = currentFieldDataOffset;
+                            nodeData.fieldDataCount = cond.fieldEntries?.Count ?? 0;
 
-                        ConditionNode conditionNode = (ConditionNode)node;
-
-                        nodeData.methodID = conditionNode.methodID;
-                        nodeData.blackBoardTypeID = conditionNode.BlackBoardTypeID;
-
-                        GetFixedByteBuffer(conditionNode.treeConfigID, ref nodeData);
-
+                            if (cond.fieldEntries != null)
+                            {
+                                foreach (var entry in cond.fieldEntries)
+                                {
+                                    FieldData fd = PackFieldEntry(entry);
+                                    fieldDataArray[currentFieldDataOffset++] = fd;
+                                }
+                            }
+                        }
                         break;
 
                     case BehaviourNodeType.ACTION:
+                        {
+                            ActionNode action = (ActionNode)node;
+                            nodeData.methodID = action.methodID;
+                            nodeData.blackBoardTypeID = action.BlackBoardTypeID;
+                            nodeData.fieldDataStartIndex = currentFieldDataOffset;
+                            nodeData.fieldDataCount = action.fieldEntries?.Count ?? 0;
 
-                        ActionNode actionNode = (ActionNode)node;
-
-                        nodeData.methodID = actionNode.methodID;
-                        nodeData.blackBoardTypeID = actionNode.BlackBoardTypeID;
-
-                        GetFixedByteBuffer(actionNode.treeConfigID, ref nodeData);
-
+                            if (action.fieldEntries != null)
+                            {
+                                foreach (var entry in action.fieldEntries)
+                                {
+                                    FieldData fd = PackFieldEntry(entry);
+                                    fieldDataArray[currentFieldDataOffset++] = fd;
+                                }
+                            }
+                        }
                         break;
                 }
 
@@ -108,14 +125,33 @@ namespace BehaviourTree
             }
         }
 
-        private static unsafe void GetFixedByteBuffer(NodeConfigID configID, ref NodeData nodeData)
+        private static unsafe FieldData PackFieldEntry(NodeFieldEntry entry)
         {
-            byte[] byteArray = NodeConfigRegistry.GetStaticConfig(configID);
-
-            fixed (byte* destination = nodeData.configByteBlob)
+            if (entry.isVariable)
             {
-                ByteHelper.ByteArrayToFixedBuffer(byteArray, destination, 32);
+                // For now, store variable name as a placeholder index;
+                // real index resolution happens at bake time when BlackboardDefinition is known.
+                return FieldData.FromVariable(entry.variableName.GetHashCode());
+            }
+
+            switch (entry.fieldType)
+            {
+                case NodeFieldType.Int:
+                    return FieldData.FromConstant(entry.intValue);
+                case NodeFieldType.Float:
+                    return FieldData.FromConstant(entry.floatValue);
+                case NodeFieldType.Bool:
+                    return FieldData.FromConstant(entry.boolValue);
+                case NodeFieldType.Vector2:
+                    // Pack Vector2 as two consecutive FieldData slots handled in evaluator
+                    return FieldData.FromConstant(0);
+                case NodeFieldType.Vector3:
+                    // Pack Vector3 as three consecutive FieldData slots handled in evaluator
+                    return FieldData.FromConstant(0);
+                default:
+                    return FieldData.FromConstant(0);
             }
         }
     }
 }
+

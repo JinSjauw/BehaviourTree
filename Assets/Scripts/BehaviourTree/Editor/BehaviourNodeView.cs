@@ -1,5 +1,5 @@
 using BehaviourTree;
-using BehaviourTree.Editor;
+using BehaviourTree.Core;
 using System;
 using System.Linq;
 using UnityEditor;

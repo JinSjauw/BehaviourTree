@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BehaviourTree
+namespace BehaviourTree.Core
 {
 
     [CreateAssetMenu(fileName = "Selector Node", menuName = "Scriptable Objects/BT Nodes/Selector Node")]
