@@ -1,11 +1,11 @@
-using BehaviourTree;
-using BehaviourTree.Core;
-using BehaviourTree.Editor;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
-
-using UnityEngine;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using BehaviourTree.Core;
+using BehaviourTree.Editor;
+using BehaviourTree.Runtime;
 
 public class BehaviourTreeEditor : EditorWindow
 {
@@ -13,14 +13,16 @@ public class BehaviourTreeEditor : EditorWindow
     
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
+    private ToolbarMenu assetBarMenu;
 
-    public static BlackboardDefinition currenctBlackBoardDefinition { get; private set; }
+    public static BlackboardDefinition currentBlackboardDef { get; private set; }
+    public static BehaviourTreeAsset currentTree { get; private set; }
 
     [MenuItem("BehaviourTree/BTNodeGraph")]
     public static void OpenWindow()
     {
         BehaviourTreeEditor wnd = GetWindow<BehaviourTreeEditor>();
-        wnd.titleContent = new GUIContent("BehaviourTreeEditor");
+        wnd.titleContent = new GUIContent("Behaviour Tree Editor");
     }
 
     [OnOpenAsset]
@@ -36,7 +38,7 @@ public class BehaviourTreeEditor : EditorWindow
 
     public void CreateGUI()
     {
-        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uxml");
+        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uxml");
         
         // Null check for UXML asset
         if (visualTree == null)
@@ -48,7 +50,7 @@ public class BehaviourTreeEditor : EditorWindow
         VisualElement root = visualTree.CloneTree();
         root.style.flexGrow = 1; // Fix the thin strip
 
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uss");
+        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uss");
 
         // Null check for USS stylesheet
         if (styleSheet != null)
@@ -65,6 +67,7 @@ public class BehaviourTreeEditor : EditorWindow
         treeGraphView = root.Q<BehaviourTreeEditorGraphView>();
         inspectorView = root.Q<InspectorView>();
         blackBoardView = root.Q<BlackBoardView>();
+        assetBarMenu = root.Q<ToolbarMenu>("AssetBarMenu");
 
         if (treeGraphView == null)
         {
@@ -81,23 +84,55 @@ public class BehaviourTreeEditor : EditorWindow
             Debug.LogError("Could not find BlackBoardView in UXML");
         }
 
+        if(assetBarMenu == null)
+        {
+            Debug.LogError("Could not find BlackBoardView in UXML");
+        }
+        else
+        {
+            assetBarMenu.menu.AppendAction("Bake Tree", BakeTree);    
+        }
+
         OnSelectionChange();
+    }
+
+    private void BakeTree(DropdownMenuAction dropdownMenuAction)
+    {
+        if(currentTree == null || currentBlackboardDef == null) return;
+
+        Debug.Log("Baking Tree!");
+
+        RuntimeBTreeAsset runtimeAsset = CreateInstance<RuntimeBTreeAsset>();
+        runtimeAsset.name = currentTree.name + "_Runtime";
+        runtimeAsset.blackboardDefinition = currentBlackboardDef;
+
+        TreeBaker.BakeTree(currentTree.rootCopy, currentBlackboardDef, ref runtimeAsset.runtimeNodeData, ref runtimeAsset.runtimeFieldData);
+
+        string path = $"Assets/{runtimeAsset.name}.asset";
+        AssetDatabase.CreateAsset(runtimeAsset, path);
+        AssetDatabase.SaveAssets();
     }
 
     private void OnSelectionChange()
     {
-        currenctBlackBoardDefinition = null;
+        //currentBlackBoardDefinition = null;
 
-        BehaviourTreeAsset tree = Selection.activeObject as BehaviourTreeAsset;
+        currentTree = Selection.activeObject as BehaviourTreeAsset;
         // Null check for tree asset before using it
-        if (tree == null) return;
+        if (currentTree == null) return;
         
-        if(!AssetDatabase.CanOpenAssetInEditor(tree.GetEntityId()))
+        if(!AssetDatabase.CanOpenAssetInEditor(currentTree.GetEntityId()))
         {
             return;
         }
 
-        currenctBlackBoardDefinition = tree?.blackboardDefinition;
+        if(currentTree.blackboardDefinition == null)
+        {
+            currentTree.CreateBlackBoard();
+        }
+
+        currentBlackboardDef = null;
+        currentBlackboardDef = currentTree?.blackboardDefinition;
 
         // Null check for graph view before using it
         if (treeGraphView != null)
@@ -105,8 +140,8 @@ public class BehaviourTreeEditor : EditorWindow
             try
             {
                 treeGraphView.OnNodeSelected = OnNodeSelectionChanged;
-                treeGraphView.PopulateView(tree);
-                blackBoardView.BuildBlackboardView(tree.blackboardDefinition);
+                treeGraphView.PopulateView(currentTree);
+                blackBoardView.BuildBlackboardView(currentTree.blackboardDefinition);
             }
             catch (System.Exception ex)
             {
@@ -122,6 +157,9 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnDestroy()
     {
+        currentTree = null;
+        currentBlackboardDef = null;
+
         if (treeGraphView != null)
         {
             treeGraphView.OnNodeSelected = null;

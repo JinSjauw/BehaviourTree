@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeRunner
   blackBoardTest: {fileID: 923873417}
-  treeAsset: {fileID: 11400000, guid: cfc3e187b52213749939baa4b7274b54, type: 2}
+  treeAsset: {fileID: 11400000, guid: ea4fe425454059c4d87fdc88784bec05, type: 2}
   nodeDatas: []
 --- !u!114 &923873417
 MonoBehaviour:
@@ -492,8 +492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78271c55e064b3f47a6e356133e0bc1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlackBoardTest
-  targetPosition: {x: 4, y: 5, z: 2}
-  health: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

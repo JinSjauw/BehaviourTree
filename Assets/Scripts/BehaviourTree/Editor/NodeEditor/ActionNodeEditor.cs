@@ -17,6 +17,8 @@ namespace BehaviourTree.Editor
 
         private void OnEnable()
         {
+            if (target == null) return;
+
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
@@ -31,7 +33,7 @@ namespace BehaviourTree.Editor
 
             // Check if method changed and rebuild field entries
             MethodID selectedMethod = (MethodID)methodIDProp.enumValueIndex;
-            bool methodChanged = selectedMethod != lastMethodID;   // <-- add this line
+            bool methodChanged = selectedMethod != lastMethodID;
             lastMethodID = selectedMethod;
 
             EditorGUI.BeginChangeCheck();
@@ -56,9 +58,11 @@ namespace BehaviourTree.Editor
                     SerializedProperty variableNameProp = entryProp.FindPropertyRelative("variableName");
                     SerializedProperty fieldTypeProp = entryProp.FindPropertyRelative("fieldType");
 
+                    FieldType ft = FieldTypeHelper.GetFieldType(info.fieldType);
+
                     // Set static metadata
                     fieldNameProp.stringValue = info.fieldName;
-                    fieldTypeProp.enumValueIndex = (int)GetNodeFieldType(info.fieldType);
+                    fieldTypeProp.enumValueIndex = (int)ft;
 
                     if (methodChanged)
                     {
@@ -66,9 +70,7 @@ namespace BehaviourTree.Editor
                     }
 
                     EditorGUILayout.BeginVertical("box");
-                    EditorGUILayout.LabelField($"{info.fieldName} ({info.fieldType.Name})");
-
-                    //isVariableProp.boolValue = EditorGUILayout.Toggle("Is Dynamic", isVariableProp.boolValue);
+                    EditorGUILayout.LabelField($"{info.fieldName} <{ft}>");
 
                     if (isVariableProp.boolValue)
                     {
@@ -139,29 +141,34 @@ namespace BehaviourTree.Editor
 
         private void DrawVariableDropdown(SerializedProperty variableNameProp, System.Type expectedType)
         {
-            BlackboardDefinition bbDef = BehaviourTreeEditor.currenctBlackBoardDefinition;
+            BlackboardDefinition blackBoardDef = BehaviourTreeEditor.currentBlackboardDef;
 
-            if (bbDef == null || bbDef.variables == null || bbDef.variables.Count == 0)
+            if (blackBoardDef == null)
             {
                 EditorGUILayout.HelpBox("No Blackboard Definition assigned.", MessageType.Warning);
                 return;
             }
 
-            // Filter variables whose type name matches the expected field type
-            var matchingVars = new List<string>();
-            for (int v = 0; v < bbDef.variables.Count; v++)
+            if (blackBoardDef.sharedVariables == null || blackBoardDef.sharedVariables.Count == 0)
             {
-                string typeName = bbDef.variables[v].typeName;
-                System.Type bbType = System.Type.GetType(typeName);
-                if (bbType == expectedType || (expectedType.IsValueType && bbType == expectedType))
+                EditorGUILayout.HelpBox("No Blackboard variables added.", MessageType.Warning);
+                return;
+            }
+
+            // Filter variables whose type matches the expected type using unified helper
+            var matchingVars = new List<string>();
+            for (int v = 0; v < blackBoardDef.sharedVariables.Count; v++)
+            {
+                System.Type bbType = FieldTypeHelper.GetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName);
+                if (bbType == expectedType)
                 {
-                    matchingVars.Add(bbDef.variables[v].name);
+                    matchingVars.Add(blackBoardDef.sharedVariables[v].name);
                 }
             }
 
             if (matchingVars.Count == 0)
             {
-                EditorGUILayout.HelpBox($"No matching variable of type {expectedType.Name} in Blackboard.", MessageType.Info);
+                EditorGUILayout.HelpBox($"No matching variable of type <{FieldTypeHelper.GetFieldType(expectedType)}> in Blackboard.", MessageType.Info);
                 return;
             }
 
@@ -169,20 +176,8 @@ namespace BehaviourTree.Editor
             int selectedIndex = matchingVars.IndexOf(currentVal);
             if (selectedIndex < 0) selectedIndex = 0;
 
-            selectedIndex = EditorGUILayout.Popup("Variable", selectedIndex, matchingVars.ToArray());
+            selectedIndex = EditorGUILayout.Popup("Shared Variable", selectedIndex, matchingVars.ToArray());
             variableNameProp.stringValue = matchingVars[selectedIndex];
-        }
-
-        private NodeFieldType GetNodeFieldType(System.Type type)
-        {
-            if (type == typeof(int) || type == typeof(uint)) return NodeFieldType.Int;
-            if (type == typeof(float)) return NodeFieldType.Float;
-            if (type == typeof(bool)) return NodeFieldType.Bool;
-            if (type == typeof(Vector2)) return NodeFieldType.Vector2;
-            if (type == typeof(Vector3)) return NodeFieldType.Vector3;
-            if (type == typeof(GameObject)) return NodeFieldType.GameObject;
-            if (type == typeof(Transform)) return NodeFieldType.Transform;
-            return NodeFieldType.Int;
         }
     }
 }

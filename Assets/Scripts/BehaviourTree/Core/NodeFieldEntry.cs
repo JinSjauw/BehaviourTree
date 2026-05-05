@@ -4,20 +4,6 @@ using UnityEngine;
 namespace BehaviourTree.Core
 {
     /// <summary>
-    /// Supported types for NodeFieldEntry.
-    /// </summary>
-    public enum NodeFieldType
-    {
-        Int,
-        Float,
-        Bool,
-        Vector2,
-        Vector3,
-        GameObject,
-        Transform,
-    }
-
-    /// <summary>
     /// Union struct that holds either a constant value or a blackboard variable name.
     /// Stored per-field on ActionNode/ConditionNode.
     /// </summary>
@@ -33,8 +19,8 @@ namespace BehaviourTree.Core
         /// <summary>Blackboard variable name (only used when isVariable == true).</summary>
         public string variableName;
 
-        /// <summary>Type of the constant value.</summary>
-        public NodeFieldType fieldType;
+        /// <summary>Type of the constant value (unified enum).</summary>
+        public FieldType fieldType;
 
         // Constant values (only one used, determined by fieldType)
         public int intValue;

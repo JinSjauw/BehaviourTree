@@ -8,6 +8,6 @@ namespace BehaviourTree.Core
     [CreateAssetMenu(menuName = "BehaviourTree/Blackboard Definition")]
     public class BlackboardDefinition : ScriptableObject
     {
-        public List<BlackboardVariable> variables = new();
+        public List<BlackboardVariable> sharedVariables = new();
     }
 }

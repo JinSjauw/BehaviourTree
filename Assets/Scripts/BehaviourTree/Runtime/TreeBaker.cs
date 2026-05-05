@@ -7,9 +7,14 @@ namespace BehaviourTree.Runtime
 {
     public static class TreeBaker
     {
-        public static void BakeTree(BehaviourNode root, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas)
+        public static void BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas)
         {
             Dictionary<BehaviourNode, int> nodeToIndex = new Dictionary<BehaviourNode, int>();
+
+            if(root.NodeType == BehaviourNodeType.ROOT && root.children.Count > 0)
+            {
+                root = root.children.First();
+            }
 
             int index = 0;
             AssignIndices(root, nodeToIndex, ref index);
@@ -28,7 +33,7 @@ namespace BehaviourTree.Runtime
 
             fieldDatas = new FieldData[totalFieldDataCount];
 
-            FillNodeData(nodeDatas, fieldDatas, nodeToIndex);
+            FillNodeData(nodeDatas, fieldDatas, nodeToIndex, bbDef);
         }
 
         private static void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex)
@@ -58,7 +63,7 @@ namespace BehaviourTree.Runtime
             }
         }
 
-        private static void FillNodeData(NodeData[] nodeDataArray, FieldData[] fieldDataArray, Dictionary<BehaviourNode, int> nodeIndices)
+        private static void FillNodeData(NodeData[] nodeDataArray, FieldData[] fieldDataArray, Dictionary<BehaviourNode, int> nodeIndices, BlackboardDefinition bbDef)
         {
             int currentFieldDataOffset = 0;
             foreach (BehaviourNode node in nodeIndices.Keys)
@@ -94,7 +99,7 @@ namespace BehaviourTree.Runtime
                             {
                                 foreach (var entry in cond.fieldEntries)
                                 {
-                                    FieldData fd = PackFieldEntry(entry);
+                                    FieldData fd = PackFieldEntry(entry, bbDef);
                                     fieldDataArray[currentFieldDataOffset++] = fd;
                                 }
                             }
@@ -113,7 +118,7 @@ namespace BehaviourTree.Runtime
                             {
                                 foreach (var entry in action.fieldEntries)
                                 {
-                                    FieldData fd = PackFieldEntry(entry);
+                                    FieldData fd = PackFieldEntry(entry, bbDef);
                                     fieldDataArray[currentFieldDataOffset++] = fd;
                                 }
                             }
@@ -125,27 +130,36 @@ namespace BehaviourTree.Runtime
             }
         }
 
-        private static unsafe FieldData PackFieldEntry(NodeFieldEntry entry)
+        private static unsafe FieldData PackFieldEntry(NodeFieldEntry entry, BlackboardDefinition bbDef)
         {
             if (entry.isVariable)
             {
-                // For now, store variable name as a placeholder index;
-                // real index resolution happens at bake time when BlackboardDefinition is known.
-                return FieldData.FromVariable(entry.variableName.GetHashCode());
+                int varIndex = -1;
+                if (bbDef != null && bbDef.sharedVariables != null)
+                {
+                    varIndex = bbDef.sharedVariables.FindIndex(v => v.name == entry.variableName);
+                    if (varIndex < 0)
+                    {
+                        UnityEngine.Debug.LogWarning(
+                            $"[TreeBaker] Blackboard variable '{entry.variableName}' not found in definition. " +
+                            $"Field '{entry.fieldName}' will use invalid index -1.");
+                    }
+                }
+                return FieldData.FromVariable(varIndex);
             }
 
             switch (entry.fieldType)
             {
-                case NodeFieldType.Int:
+                                case FieldType.Int:
                     return FieldData.FromConstant(entry.intValue);
-                case NodeFieldType.Float:
+                case FieldType.Float:
                     return FieldData.FromConstant(entry.floatValue);
-                case NodeFieldType.Bool:
+                case FieldType.Bool:
                     return FieldData.FromConstant(entry.boolValue);
-                case NodeFieldType.Vector2:
+                case FieldType.Vector2:
                     // Pack Vector2 as two consecutive FieldData slots handled in evaluator
                     return FieldData.FromConstant(0);
-                case NodeFieldType.Vector3:
+                case FieldType.Vector3:
                     // Pack Vector3 as three consecutive FieldData slots handled in evaluator
                     return FieldData.FromConstant(0);
                 default:

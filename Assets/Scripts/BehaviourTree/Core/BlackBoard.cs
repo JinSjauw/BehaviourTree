@@ -16,25 +16,13 @@ namespace BehaviourTree.Core
         /// <summary>Index-based storage for blackboard variables. Index corresponds to position in BlackboardDefinition.</summary>
         protected object[] values;
 
-        public abstract void RegisterFields();
+        //public abstract void RegisterFields();
 
         /// <summary>Initialize index-based storage from a definition.</summary>
         public void Initialize(BlackboardDefinition definition)
         {
             if (definition == null) return;
-            values = new object[definition.variables.Count];
-        }
-
-        public object GetField(BlackBoardFields fieldType)
-        {
-            if (!blackBoardValues.ContainsKey(fieldType)) return null;
-            return blackBoardValues[fieldType];
-        }
-
-        public void UpdateField(BlackBoardFields fieldType, object value)
-        {
-            if (!blackBoardValues.ContainsKey(fieldType)) return;
-            blackBoardValues[fieldType] = value;
+            values = new object[definition.sharedVariables.Count];
         }
 
         /// <summary>Get a value by index in the blackboard array.</summary>

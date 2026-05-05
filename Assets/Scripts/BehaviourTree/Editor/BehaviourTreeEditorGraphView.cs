@@ -12,7 +12,6 @@ namespace BehaviourTree.Editor
     [UxmlElement("BTGraphView")]
     public partial class BehaviourTreeEditorGraphView : GraphView
     {
-
         // Callback for when graph changes (hook up export logic here)
         public Action<BehaviourTreeEditorGraphView> onGraphDataChanged;
         public Action<BehaviourNodeView> OnNodeSelected;
@@ -20,9 +19,11 @@ namespace BehaviourTree.Editor
         private BehaviourTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
 
+        private Label graphTitleLabel;
+
         public BehaviourTreeEditorGraphView()
         {
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/BehaviourTreeEditor.uss");
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uss");
             styleSheets.Add(styleSheet);
 
             nodeViewDict = new Dictionary<string, BehaviourNodeView>();   
@@ -38,6 +39,22 @@ namespace BehaviourTree.Editor
             var grid = new GridBackground();
             Insert(0, grid);
             grid.StretchToParentSize();
+
+            graphTitleLabel = new Label("Behaviour Tree")
+            {
+                style =
+                {
+                    flexShrink = 1,
+                    fontSize = 18,
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    unityTextAlign = TextAnchor.MiddleLeft,
+                    paddingTop = 8,
+                    paddingLeft = 12,
+                    paddingBottom = 4,
+                    color = new Color(0.8f, 0.8f, 0.8f, 1f)
+                }
+            };
+            Add(graphTitleLabel);
 
             //Listen for graph changes to trigger auto-save/compile
             graphViewChanged += OnGraphViewChanged;
@@ -174,7 +191,7 @@ namespace BehaviourTree.Editor
             base.BuildContextualMenu(evt);
 
             if(tree == null) return;
-
+            //Create nodes from enum
             var types = TypeCache.GetTypesDerivedFrom<BehaviourNode>();
             foreach (var type in types) 
             {
@@ -191,6 +208,8 @@ namespace BehaviourTree.Editor
             }
 
             this.tree = tree;
+
+            graphTitleLabel.text = tree.name;
 
             graphViewChanged -= OnGraphViewChanged;
 

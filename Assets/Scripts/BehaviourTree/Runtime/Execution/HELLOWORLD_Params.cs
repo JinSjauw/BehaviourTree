@@ -1,10 +1,11 @@
+using UnityEngine;
 using System.Runtime.InteropServices;
 using BehaviourTree.Core;
 
-namespace BehaviourTree.Execution
+namespace BehaviourTree.Runtime
 {
     /// <summary>
-    /// Parameters for HELLOWORLD method. Fields with [BTreeVar] are blackboard variables;
+    /// Parameters for HELLOWORLD method. Fields with [SharedVar] are blackboard variables;
     /// fields without are constants.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
@@ -12,10 +13,12 @@ namespace BehaviourTree.Execution
     {
         public float Speed;
 
-        [BTreeVar]
+        public Vector2 testVector;
+
+        [SharedVar]
         public int Health;
 
-        [BTreeVar]
+        [SharedVar]
         public float TestTime;
     }
 }

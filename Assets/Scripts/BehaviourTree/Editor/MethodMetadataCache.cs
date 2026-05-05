@@ -61,7 +61,7 @@ namespace BehaviourTree.Editor
                     int idx = 0;
                     foreach (var field in fields)
                     {
-                        bool isVar = field.GetCustomAttribute<BTreeVarAttribute>() != null;
+                        bool isVar = field.GetCustomAttribute<SharedVarAttribute>() != null;
                         paramList.Add(new ParamInfo
                         {
                             fieldName = field.Name,

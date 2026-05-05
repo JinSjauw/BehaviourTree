@@ -5,9 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RuntimeBTreeAsset", menuName = "BehaviourTree/RuntimeBTreeAsset")]
 public class RuntimeBTreeAsset : ScriptableObject
 {
-    public NodeData[] runtimeTreeData;
+    public NodeData[] runtimeNodeData;
 
     /// <summary>Packed field data for all leaf nodes.</summary>
     public FieldData[] runtimeFieldData;
+
+    public BlackboardDefinition blackboardDefinition;
 }
 

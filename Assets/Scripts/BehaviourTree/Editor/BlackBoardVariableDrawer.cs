@@ -17,12 +17,24 @@ public class BlackboardVariableDrawer : PropertyDrawer
 
         nameProp.stringValue = EditorGUI.TextField(nameRect, nameProp.stringValue);
 
-        string[] displayNames = BlackboardTypes.AllowedTypeNames.Select(t => t.displayName).ToArray();
-        int currentIndex = System.Array.FindIndex(BlackboardTypes.AllowedTypeNames, t => t.typeName == typeProp.stringValue);
-        if (currentIndex < 0) currentIndex = 0;
+        // Use unified FieldTypeHelper instead of old BlackboardTypes
+        string[] displayNames = FieldTypeHelper.AllFieldTypes
+            .Select(ft => FieldTypeHelper.GetDisplayName(ft))
+            .ToArray();
 
+        // Find current index by matching typeName to the System.Type full name or assembly-qualified name
+        int currentIndex = 0;
+        for (int i = 0; i < FieldTypeHelper.AllFieldTypes.Count; i++)
+        {
+            System.Type t = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[i]);
+            if (t.FullName == typeProp.stringValue || t.AssemblyQualifiedName == typeProp.stringValue)
+            {
+                currentIndex = i;
+                break;
+            }
+        }
         currentIndex = EditorGUI.Popup(typeRect, currentIndex, displayNames);
-        typeProp.stringValue = BlackboardTypes.AllowedTypeNames[currentIndex].typeName;
+        typeProp.stringValue = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[currentIndex]).FullName;
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

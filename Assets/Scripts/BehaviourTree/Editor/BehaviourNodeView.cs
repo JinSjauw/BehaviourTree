@@ -18,7 +18,7 @@ public class BehaviourNodeView : Node
 
     public Action<BehaviourNodeView> OnNodeSelected;
 
-    public BehaviourNodeView(BehaviourNode nodeObject) : base("Assets/Scripts/BehaviourTree/Editor/GraphNodeView.uxml")
+    public BehaviourNodeView(BehaviourNode nodeObject) : base("Assets/Scripts/BehaviourTree/Editor/UIDocuments/GraphNodeView.uxml")
     {
         NodeSO = nodeObject;
         Guid = NodeSO.guid;

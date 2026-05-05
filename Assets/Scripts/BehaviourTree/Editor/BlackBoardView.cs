@@ -45,7 +45,7 @@ public partial class BlackBoardView : VisualElement
             if (blackboardDefinition == null) return;
             SerializedObject so = new SerializedObject(blackboardDefinition);
             so.Update();
-            SerializedProperty varsProp = so.FindProperty("variables");
+            SerializedProperty varsProp = so.FindProperty("sharedVariables");
             EditorGUILayout.PropertyField(varsProp, includeChildren: true);
             so.ApplyModifiedProperties();
         });

@@ -2,7 +2,8 @@
     "name": "BehaviourTree.Editor",
     "rootNamespace": "",
     "references": [
-        "BehaviourTree.Core"
+        "BehaviourTree.Core",
+        "BehaviourTree.Runtime"
     ],
     "includePlatforms": [
         "Editor"

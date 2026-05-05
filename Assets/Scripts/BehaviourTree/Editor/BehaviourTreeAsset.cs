@@ -4,15 +4,15 @@ using BehaviourTree.Core;
 using UnityEditor;
 using UnityEngine;
 
-namespace BehaviourTree 
+namespace BehaviourTree.Editor 
 {
-    [CreateAssetMenu(fileName = "BehaviourTreeAsset", menuName = "Scriptable Objects/BT")]
+    [CreateAssetMenu(fileName = "BehaviourTreeAsset", menuName = "BehaviourTree/BTAsset")]
     public class BehaviourTreeAsset : ScriptableObject
     {
         public List<BehaviourNode> nodesList;
         public BehaviourNode rootCopy;
         public BlackboardDefinition blackboardDefinition;
-        [SerializeField] private BehaviourNode root;
+        //private BehaviourNode root;
 
         //Create unique runtime instances of the SO's
         public void Initialize() 
@@ -37,6 +37,16 @@ namespace BehaviourTree
                     nodesList.Add(childCopy);
                 }
             }
+        }
+
+        public void CreateBlackBoard()
+        {
+            BlackboardDefinition createdBlackboard = CreateInstance<BlackboardDefinition>();
+            createdBlackboard.name = this.name + "_BB_Definition";
+
+            blackboardDefinition = createdBlackboard;
+            AssetDatabase.AddObjectToAsset(createdBlackboard, this);
+            AssetDatabase.SaveAssets();
         }
 
         public BehaviourNode CreateNode(Type type) 
