@@ -23,7 +23,7 @@ public class BehaviourNodeView : Node
         NodeSO = nodeObject;
         Guid = NodeSO.guid;
 
-        title = nodeObject.NodeType.ToString(); // Or use mainTitle/subTitle for styling
+        title = nodeObject.name; // Or use mainTitle/subTitle for styling
 
         //Set position
         style.left = NodeSO.graphPosition.x;

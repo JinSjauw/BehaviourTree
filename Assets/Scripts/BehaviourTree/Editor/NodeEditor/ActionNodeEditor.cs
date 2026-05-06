@@ -29,7 +29,7 @@ namespace BehaviourTree.Editor
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(methodIDProp);
+            //EditorGUILayout.PropertyField(methodIDProp);
 
             // Check if method changed and rebuild field entries
             MethodID selectedMethod = (MethodID)methodIDProp.enumValueIndex;

@@ -11,12 +11,17 @@ namespace BehaviourTree.Editor
     {
         private List<MethodID> actionMethods;
         private List<MethodID> conditionMethods;
-
         private BehaviourTreeEditorGraphView graphView;
+
+        private Texture2D identationIcon;
 
         public void Initialize(BehaviourTreeEditorGraphView sourceGraphView)
         {
             graphView = sourceGraphView;
+
+            identationIcon = new Texture2D(1, 1);
+            identationIcon.SetPixel(0, 0, Color.clear);
+            identationIcon.Apply();
 
             actionMethods = new List<MethodID>();
             conditionMethods = new List<MethodID>();
@@ -41,12 +46,12 @@ namespace BehaviourTree.Editor
             List<SearchTreeEntry> searchList = new List<SearchTreeEntry>();
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Behaviour Nodes"), 0));
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Composites"), 1));
-            searchList.Add(new SearchTreeEntry(new GUIContent("Selector"))
+            searchList.Add(new SearchTreeEntry(new GUIContent("Selector", identationIcon))
             {
                 level = 2,
                 userData = BehaviourNodeType.SELECTOR
             });
-            searchList.Add(new SearchTreeEntry(new GUIContent("Sequence"))
+            searchList.Add(new SearchTreeEntry(new GUIContent("Sequence", identationIcon))
             {
                 level = 2,
                 userData = BehaviourNodeType.SEQUENCE,
@@ -56,7 +61,7 @@ namespace BehaviourTree.Editor
 
             foreach(MethodID methodID in actionMethods)
             {
-                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString()))
+                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString(), identationIcon))
                 {
                     level = 2,
                     userData = methodID,
@@ -67,7 +72,7 @@ namespace BehaviourTree.Editor
 
             foreach(MethodID methodID in conditionMethods)
             {
-                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString()))
+                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString(), identationIcon))
                 {
                     level = 2,
                     userData = methodID,
@@ -79,21 +84,23 @@ namespace BehaviourTree.Editor
 
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
+            Vector2 graphPosition = Vector2.down;
+
             switch (SearchTreeEntry.userData)
             {
                 case BehaviourNodeType selector when selector == BehaviourNodeType.SELECTOR:
                 {
-                    graphView.CreateNode(typeof(SelectorNode));
+                    graphView.CreateNode(typeof(SelectorNode), selector.ToString());
                     return true;
                 }
                 case BehaviourNodeType sequence when sequence == BehaviourNodeType.SEQUENCE:
                 {
-                    graphView.CreateNode(typeof(SequenceNode));
+                    graphView.CreateNode(typeof(SequenceNode), sequence.ToString());
                     return true;
                 }
                 case MethodID methodID:
                 {
-                    graphView.CreateLeafNode(methodID);
+                    graphView.CreateLeafNode(methodID, methodID.ToString());
                     return true;
                 }
 

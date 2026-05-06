@@ -19,8 +19,9 @@ namespace BehaviourTree.Editor
         private BehaviourTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
         private NodeSearchProvider searchWindow;
-
         private Label graphTitleLabel;
+
+        private Vector2 nextGraphPosition;
 
         public BehaviourTreeEditorGraphView()
         {
@@ -82,7 +83,17 @@ namespace BehaviourTree.Editor
                 searchWindow.Initialize(this);
             }
 
-            nodeCreationRequest = context => OpenSearchWindow(context.screenMousePosition);
+            nodeCreationRequest = context =>
+            {
+                Rect windowRect = EditorWindow.focusedWindow.position;
+
+                Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(context.screenMousePosition - new Vector2(windowRect.x, windowRect.y)));
+        
+                //localPos -= new Vector2(windowRect.x, windowRect.y);
+
+                nextGraphPosition = localPos;
+                OpenSearchWindow(context.screenMousePosition);
+            };
         }
 
         private void OpenSearchWindow(Vector2 mousePosition)
@@ -95,49 +106,6 @@ namespace BehaviourTree.Editor
             if(tree == null) return;
             
             PopulateView(tree);
-        }
-
-        public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
-        {
-            var compatible = new List<Port>();
-
-            foreach (var port in ports)
-            {
-                // Block obvious invalid connections
-                if (port == startPort) continue;                           // No self-connect
-                if (port.node == startPort.node) continue;                 // No same-node
-                if (port.direction == startPort.direction) continue;       // Input↔Input or Output↔Output
-
-                // Cast to your custom node type for BT-specific rules
-                if (startPort.node is BehaviourNodeView startNode &&
-                    port.node is BehaviourNodeView endNode)
-                {
-                    //Root node can't be a child
-                    if (endNode.NodeSO.NodeType == BehaviourNodeType.ROOT && port.direction == Direction.Input)
-                        continue;
-
-                    //Leaf nodes can't have children
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.ACTION && port.direction == Direction.Input)
-                        continue;
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.CONDITION && port.direction == Direction.Input)
-                        continue;
-
-                    if(endNode.NodeSO.children.Contains(startNode.NodeSO)) continue;
-                    //Decorators can only have ONE child
-                    //if (startNode.NodeType == BTNodeType.Decorator &&
-                    //    port.direction == Direction.Output &&
-                    //    startNode.GetChildCount() >= 1)
-                    //    continue;
-
-                    //Prevent cycles
-                    if (WouldCreateCycle(startNode, endNode))
-                        continue;
-                }
-
-                compatible.Add(port);
-            }
-
-            return compatible;
         }
 
         // Simple cycle detection: can't connect if 'target' is an ancestor of 'source'
@@ -207,19 +175,87 @@ namespace BehaviourTree.Editor
             return change;
         }
 
-        public void CreateNode(Type type) 
+        private void CreateNodeView(BehaviourNode node)
+        {
+            BehaviourNodeView nodeView = new BehaviourNodeView(node);
+            nodeView.OnNodeSelected = OnNodeSelected;
+            nodeView.layer = 0;
+
+            AddElement(nodeView);
+            nodeViewDict[nodeView.Guid] = nodeView;
+        }
+
+        private BehaviourNodeView FindNodeView(BehaviourNode node) 
+        {
+            if(nodeViewDict.TryGetValue(node.guid, out BehaviourNodeView nodeView)) 
+            {
+                return nodeView;
+            }
+            
+            return null;
+            //return GetNodeByGuid(node.guid) as BehaviourNodeView;
+        }
+        
+        public void CreateNode(Type type, string name = "UNNAMED NODE") 
         {
             BehaviourNode node = tree.CreateNode(type);
+            node.name = name;
+            node.graphPosition = nextGraphPosition;
+            
             CreateNodeView(node);
         }
 
-        public void CreateLeafNode(MethodID methodID)
+        public void CreateLeafNode(MethodID methodID, string name = "UNNAMED NODE")
         {
             ActionNode node = (ActionNode)tree.CreateNode(typeof(ActionNode));
             node.methodID = methodID;
-            node.name = methodID.ToString();
-            
+            node.name = name;
+            node.graphPosition = nextGraphPosition;
+
             CreateNodeView(node);
+        }
+
+        public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
+        {
+            var compatible = new List<Port>();
+
+            foreach (var port in ports)
+            {
+                // Block obvious invalid connections
+                if (port == startPort) continue;                           // No self-connect
+                if (port.node == startPort.node) continue;                 // No same-node
+                if (port.direction == startPort.direction) continue;       // Input↔Input or Output↔Output
+
+                // Cast to your custom node type for BT-specific rules
+                if (startPort.node is BehaviourNodeView startNode &&
+                    port.node is BehaviourNodeView endNode)
+                {
+                    //Root node can't be a child
+                    if (endNode.NodeSO.NodeType == BehaviourNodeType.ROOT && port.direction == Direction.Input)
+                        continue;
+
+                    //Leaf nodes can't have children
+                    if (startNode.NodeSO.NodeType == BehaviourNodeType.ACTION && port.direction == Direction.Input)
+                        continue;
+                    if (startNode.NodeSO.NodeType == BehaviourNodeType.CONDITION && port.direction == Direction.Input)
+                        continue;
+
+                    if(endNode.NodeSO.children.Contains(startNode.NodeSO)) continue;
+                    //Decorators can only have ONE child
+                    //if (startNode.NodeType == BTNodeType.Decorator &&
+                    //    port.direction == Direction.Output &&
+                    //    startNode.GetChildCount() >= 1)
+                    //    continue;
+
+                    //Prevent cycles
+                    if (WouldCreateCycle(startNode, endNode))
+                        continue;
+                }
+
+                compatible.Add(port);
+            }
+
+            return compatible;
         }
 
         //Build dropdown menu
@@ -229,13 +265,6 @@ namespace BehaviourTree.Editor
 
             if(tree == null) return;
             evt.menu.AppendAction($"Create Node", (a) => OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)));
-
-            //Create nodes from enum
-            // var types = TypeCache.GetTypesDerivedFrom<BehaviourNode>();
-            // foreach (var type in types) 
-            // {
-            //     evt.menu.AppendAction($"{type.Name}", (a) => CreateNode(type));
-            // }
         }
 
         public void PopulateView(BehaviourTreeAsset tree)
@@ -298,28 +327,5 @@ namespace BehaviourTree.Editor
                 }
             }
         }
-
-        private void CreateNodeView(BehaviourNode node)
-        {
-            BehaviourNodeView nodeView = new BehaviourNodeView(node);
-            nodeView.OnNodeSelected = OnNodeSelected;
-            nodeView.layer = 0;
-
-            AddElement(nodeView);
-            nodeViewDict[nodeView.Guid] = nodeView;
-        }
-
-        private BehaviourNodeView FindNodeView(BehaviourNode node) 
-        {
-            if(nodeViewDict.TryGetValue(node.guid, out BehaviourNodeView nodeView)) 
-            {
-                return nodeView;
-            }
-            
-            return null;
-            //return GetNodeByGuid(node.guid) as BehaviourNodeView;
-        }
-
-       
     }
 }
