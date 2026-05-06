@@ -6,15 +6,6 @@ using UnityEngine.Scripting;
 
 namespace BehaviourTree
 {
-    
-    // ─── Example Methods ─────────────────────────────────────────────
-    // HELLOWORLD_Params field layout:
-    //   0: Speed      (float, constant)
-    //   1: testVector (Vector2, constant)
-    //   2: Health     (int,   blackboard variable)
-    //   3: TestTime   (float, blackboard variable)
-    // ──────────────────────────────────────────────────────────────────
-
     public class TestMethods 
     {
         [Preserve]

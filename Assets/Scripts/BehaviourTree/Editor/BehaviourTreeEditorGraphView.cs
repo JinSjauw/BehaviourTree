@@ -18,6 +18,7 @@ namespace BehaviourTree.Editor
         
         private BehaviourTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
+        private NodeSearchProvider searchWindow;
 
         private Label graphTitleLabel;
 
@@ -35,11 +36,26 @@ namespace BehaviourTree.Editor
             this.AddManipulator(new SelectionDragger());
             this.AddManipulator(new RectangleSelector());
 
+            AddGrid();
+            AddGraphTitle();
+            AddSearchWindow();
+
+            //Listen for graph changes to trigger auto-save/compile
+            graphViewChanged += OnGraphViewChanged;
+
+            Undo.undoRedoPerformed += OnUndoRedo;
+        }
+
+        private void AddGrid()
+        {
             // Grid background
-            var grid = new GridBackground();
+            GridBackground grid = new GridBackground();
             Insert(0, grid);
             grid.StretchToParentSize();
+        }
 
+        private void AddGraphTitle()
+        {
             graphTitleLabel = new Label("Behaviour Tree")
             {
                 style =
@@ -55,11 +71,23 @@ namespace BehaviourTree.Editor
                 }
             };
             Add(graphTitleLabel);
+        }
 
-            //Listen for graph changes to trigger auto-save/compile
-            graphViewChanged += OnGraphViewChanged;
+        private void AddSearchWindow()
+        {
+            if(searchWindow == null)
+            {
+                searchWindow = ScriptableObject.CreateInstance<NodeSearchProvider>();
 
-            Undo.undoRedoPerformed += OnUndoRedo;
+                searchWindow.Initialize(this);
+            }
+
+            nodeCreationRequest = context => OpenSearchWindow(context.screenMousePosition);
+        }
+
+        private void OpenSearchWindow(Vector2 mousePosition)
+        {
+            SearchWindow.Open(new SearchWindowContext(mousePosition), searchWindow);
         }
 
         private void OnUndoRedo()
@@ -185,18 +213,24 @@ namespace BehaviourTree.Editor
             CreateNodeView(node);
         }
 
+        //Build Search menu
+
+
+
         //Build dropdown menu
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             base.BuildContextualMenu(evt);
 
             if(tree == null) return;
+            evt.menu.AppendAction($"Create Node", (a) => OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)));
+
             //Create nodes from enum
-            var types = TypeCache.GetTypesDerivedFrom<BehaviourNode>();
-            foreach (var type in types) 
-            {
-                evt.menu.AppendAction($"{type.Name}", (a) => CreateNode(type));
-            }
+            // var types = TypeCache.GetTypesDerivedFrom<BehaviourNode>();
+            // foreach (var type in types) 
+            // {
+            //     evt.menu.AppendAction($"{type.Name}", (a) => CreateNode(type));
+            // }
         }
 
         public void PopulateView(BehaviourTreeAsset tree)

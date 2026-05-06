@@ -17,7 +17,7 @@ namespace BehaviourTree.Editor
     {
         private const string FilePath = "Assets/Scripts/BehaviourTree/Runtime/Execution/Generated/ParamsDeserializer.cs";
 
-        [MenuItem("BehaviourTree/Generate Params Deserializers", priority = 30)]
+        [MenuItem("BehaviourTree/Generate Struct Deserializers", priority = 30)]
         public static void Generate()
         {
             var sb = new StringBuilder();
