@@ -17,12 +17,12 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 2927f1017f8c256408a96fe43d7e3af6
   graphPosition: {x: 729, y: 417}
-  methodID: 2
+  methodID: 1
   fieldEntries:
-  - fieldName: indexValue
+  - fieldName: Speed
     isVariable: 0
     variableName: 
-    fieldType: 0
+    fieldType: 1
     intValue: 0
     floatValue: 155
     boolValue: 0
@@ -30,10 +30,10 @@ MonoBehaviour:
     vector3Value: {x: 0, y: 0, z: 0}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
-  - fieldName: wow
+  - fieldName: testVector
     isVariable: 0
     variableName: TEST3
-    fieldType: 1
+    fieldType: 3
     intValue: 0
     floatValue: 0
     boolValue: 0
@@ -41,10 +41,21 @@ MonoBehaviour:
     vector3Value: {x: 0, y: 0, z: 0}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
-  - fieldName: playerObject
+  - fieldName: Health
     isVariable: 1
-    variableName: TEST4
-    fieldType: 6
+    variableName: TEST1
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 2, y: 3}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: TestTime
+    isVariable: 1
+    variableName: TEST2
+    fieldType: 1
     intValue: 0
     floatValue: 0
     boolValue: 0

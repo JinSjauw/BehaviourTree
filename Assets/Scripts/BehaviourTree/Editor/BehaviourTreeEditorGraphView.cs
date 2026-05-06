@@ -207,15 +207,20 @@ namespace BehaviourTree.Editor
             return change;
         }
 
-        private void CreateNode(Type type) 
+        public void CreateNode(Type type) 
         {
             BehaviourNode node = tree.CreateNode(type);
             CreateNodeView(node);
         }
 
-        //Build Search menu
-
-
+        public void CreateLeafNode(MethodID methodID)
+        {
+            ActionNode node = (ActionNode)tree.CreateNode(typeof(ActionNode));
+            node.methodID = methodID;
+            node.name = methodID.ToString();
+            
+            CreateNodeView(node);
+        }
 
         //Build dropdown menu
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
