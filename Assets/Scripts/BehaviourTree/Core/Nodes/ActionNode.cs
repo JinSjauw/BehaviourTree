@@ -14,6 +14,5 @@ namespace BehaviourTree.Core
         public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();
 
         public BlackBoardType BlackBoardTypeID;
-        public NodeConfigID treeConfigID;
     }
 }

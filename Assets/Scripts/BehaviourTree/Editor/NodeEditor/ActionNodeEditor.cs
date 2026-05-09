@@ -95,7 +95,6 @@ namespace BehaviourTree.Editor
 
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(blackBoardTypeIDProp);
-            EditorGUILayout.PropertyField(treeConfigIDProp);
 
             serializedObject.ApplyModifiedProperties();
         }

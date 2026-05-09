@@ -11,8 +11,6 @@ namespace BehaviourTree.Core
 
     public abstract class BlackBoard : MonoBehaviour
     {
-        protected Dictionary<BlackBoardFields, object> blackBoardValues = new Dictionary<BlackBoardFields, object>();
-
         /// <summary>Index-based storage for blackboard variables. Index corresponds to position in BlackboardDefinition.</summary>
         protected object[] values;
 
