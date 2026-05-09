@@ -7,7 +7,6 @@ namespace BehaviourTree.Core
 {
     /// <summary>
     /// Single source of truth for all field types supported by the behaviour tree.
-    /// Replaces both the old <c>NodeFieldType</c> enum and <c>BlackboardTypes</c> class.
     /// </summary>
     public enum FieldType
     {

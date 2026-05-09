@@ -5,4 +5,5 @@ public enum BehaviourNodeType
     SEQUENCE = 2,
     CONDITION = 3,
     ACTION = 4,
+    DECORATOR = 5,
 }

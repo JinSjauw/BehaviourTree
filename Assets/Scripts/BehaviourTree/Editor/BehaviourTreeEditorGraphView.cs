@@ -6,6 +6,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEngine;
 using BehaviourTree.Core;
+using BehaviourTree.Runtime;
 
 namespace BehaviourTree.Editor
 {
@@ -292,6 +293,7 @@ namespace BehaviourTree.Editor
             if(tree.rootCopy == null)
             {
                 tree.rootCopy = tree.CreateNode(typeof(RootNode));   
+                tree.rootCopy.name = "ROOT";
                 EditorUtility.SetDirty(tree);
                 AssetDatabase.SaveAssets();
             }
@@ -325,6 +327,35 @@ namespace BehaviourTree.Editor
                     Edge edge = parentView.output.ConnectTo(childView.input);
                     AddElement(edge);
                 }
+            }
+        }
+    
+        //TEMP
+        public void RefreshDebugVisuals(TreeRunner runner)
+        {
+            // Only meaningful in Play Mode
+            if (!EditorApplication.isPlaying) return;
+
+            if (runner == null) return;
+
+            RuntimeDebugProvider provider = runner.GetComponent<RuntimeDebugProvider>();
+            if (provider == null || provider.currentNodeStates == null) return;
+
+            NodeState[] states = provider.currentNodeStates;
+            int activeIndex = provider.activeNodeIndex;
+
+            foreach (BehaviourNodeView nodeViewEntry in nodeViewDict.Values)
+            {
+                BehaviourNodeView nodeView = nodeViewEntry;
+                if (nodeView?.NodeSO == null) continue;
+
+                int runtimeIdx = nodeView.NodeSO.runtimeIndex;
+                if (runtimeIdx < 0 || runtimeIdx >= states.Length) continue;
+
+                NodeState state = states[runtimeIdx];
+                bool isActive = runtimeIdx == activeIndex;
+
+                nodeView.SetDebugState(state, isActive);
             }
         }
     }

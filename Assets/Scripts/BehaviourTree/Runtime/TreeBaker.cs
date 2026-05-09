@@ -42,6 +42,7 @@ namespace BehaviourTree.Runtime
             if (totalIndex == 0)
             {
                 nodeDict[node] = totalIndex;
+                //node.runtimeIndex = totalIndex;   // ← link for debug view
                 totalIndex++;
             }
 
@@ -49,6 +50,7 @@ namespace BehaviourTree.Runtime
             {
                 BehaviourNode child = node.children[i];
                 nodeDict[child] = totalIndex;
+                child.runtimeIndex = totalIndex;   // ← link for debug view
 
                 if (i == 0) node.firstChildIndex = totalIndex;
                 if (i == node.children.Count - 1) node.lastChildIndex = totalIndex;
@@ -130,7 +132,7 @@ namespace BehaviourTree.Runtime
             }
         }
 
-        private static unsafe FieldData PackFieldEntry(NodeFieldEntry entry, BlackboardDefinition bbDef)
+        private static FieldData PackFieldEntry(NodeFieldEntry entry, BlackboardDefinition bbDef)
         {
             if (entry.isVariable)
             {
@@ -150,7 +152,7 @@ namespace BehaviourTree.Runtime
 
             switch (entry.fieldType)
             {
-                                case FieldType.Int:
+                case FieldType.Int:
                     return FieldData.FromConstant(entry.intValue);
                 case FieldType.Float:
                     return FieldData.FromConstant(entry.floatValue);

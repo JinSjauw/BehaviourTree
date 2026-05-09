@@ -1,7 +1,7 @@
 public enum NodeState
 {
-    FAILURE = 0,
-    SUCCESS = 1,
-    RUNNING = 2,
-    NONE = 3,
+    NONE = 0,
+    FAILURE = 1,
+    SUCCESS = 2,
+    RUNNING = 3,
 }

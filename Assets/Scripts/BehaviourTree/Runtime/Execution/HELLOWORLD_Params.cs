@@ -11,7 +11,7 @@ namespace BehaviourTree.Runtime
     [StructLayout(LayoutKind.Sequential)]
     public partial struct HELLOWORLD_Params
     {
-        public float Speed;
+        //public float Speed;
 
         public Vector2 testVector;
 

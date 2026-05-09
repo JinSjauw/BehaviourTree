@@ -5,9 +5,9 @@ using UnityEngine;
 [StructLayout(LayoutKind.Sequential)]
 public partial struct BYEWORLD_Params
 {
-    public int indexValue;
-    public float wow;
-
+    public float waitingTime;
     [SharedVar]
-    public Transform playerObject;
+    public int testTimedThreshhold;
+    [SharedVar]
+    public float timer;
 }

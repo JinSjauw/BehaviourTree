@@ -13,7 +13,7 @@ namespace BehaviourTree
     {
         [FieldOffset(0)] public byte mode;
 
-        /// <summary>4 bytes – either constant bits or variable index.</summary>
+        /// <summary> 4 bytes – either constant bits or blackboard variable index.</summary>
         [FieldOffset(1)] public int value;
 
         // Helpers to pack / unpack floats and bigger types

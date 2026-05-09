@@ -161,10 +161,9 @@ namespace BehaviourTree.Editor
         /// Automatically regenerate whenever scripts reload (optional).
         /// Remove if you prefer manual generation.
         /// </summary>
-        [UnityEditor.Callbacks.DidReloadScripts]
+        //[UnityEditor.Callbacks.DidReloadScripts]
         private static void OnScriptsReloaded()
         {
-            // Uncomment the line below to auto-regenerate on script reload:
             Generate();
         }
     }

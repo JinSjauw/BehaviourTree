@@ -1,42 +1,55 @@
 using BehaviourTree.Core;
+using BehaviourTree.Editor;
 using UnityEngine;
 
 namespace BehaviourTree.Runtime 
 {
-    //This tree runner script will be where the tree gets ran. Execution logic lives elsewhere. Tick/Update calls happen here. 
-    public class TreeRunner : MonoBehaviour
-    {
+   public class TreeRunner : MonoBehaviour
+   {
+      [SerializeField] private BlackBoard blackBoardTest;
+      [SerializeField] private RuntimeBTreeAsset treeAsset;
+      [SerializeField] private NodeData[] nodeDatas;
 
-        [SerializeField] private BlackBoard blackBoardTest;
+      private TreeEvaluator evaluator;
+      private RuntimeDebugProvider debugProvider;
 
-        //Need a SO for the treeAsset with both the root node and flattened tree node array!
 
-        [SerializeField] private RuntimeBTreeAsset treeAsset;
-        [SerializeField] private NodeData[] nodeDatas;
+      private void Start()
+      {
+         if (treeAsset == null) return;
 
-        private TreeEvaluator evaluator;
+         blackBoardTest.Initialize(treeAsset.blackboardDefinition);
 
-        private void Start()
-        {
-           if (treeAsset == null) return;
+         evaluator = new TreeEvaluator(treeAsset.runtimeNodeData, treeAsset.runtimeFieldData);
 
-           blackBoardTest.Initialize(treeAsset.blackboardDefinition);
+         // Ensure debug provider exists
+         debugProvider = GetComponent<RuntimeDebugProvider>();
+         if (debugProvider == null)
+            debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();
+      }
 
-           evaluator = new TreeEvaluator(treeAsset.runtimeNodeData, treeAsset.runtimeFieldData);
-        }
+      private void Update()
+      {
+         evaluator.Evaluate(blackBoardTest);
 
-        private void Update()
-        {
-           //evaluator.Tick()
-           evaluator.Evaluate(blackBoardTest);
-        }
+         // Expose to editor
+         if (debugProvider != null)
+         {
+            debugProvider.currentNodeStates = evaluator.nodeStates;
+            debugProvider.activeNodeIndex = evaluator.currentNodeIndex;
+         }
+      }
 
-        private void OnDestroy()
-        {
-           if (treeAsset == null) return;
+      private void OnDestroy()
+      {
+         if (treeAsset == null) return;
+      }
 
-           //treeAsset.ClearNodes();
-        }
-    }
+      public BehaviourTreeAsset GetSourceTree()
+      {
+         return treeAsset.sourceTree;
+      }
+   }
 }
+
 

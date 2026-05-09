@@ -7,7 +7,7 @@ namespace BehaviourTree.Core
 {
     
 /// <summary>
-/// Static helpers for <see cref=\"FieldType\"/>: System.Type resolution, display names, etc.
+/// Static helpers for FieldType => System.Type resolution
 /// </summary>
 public static class FieldTypeHelper
     {
@@ -15,7 +15,6 @@ public static class FieldTypeHelper
         public static readonly IReadOnlyList<FieldType> AllFieldTypes =
             Enum.GetValues(typeof(FieldType)).Cast<FieldType>().ToList();
 
-        /// <summary>Resolve the <see cref=\"System.Type\"/> for a given FieldType.</summary>
         public static Type GetSystemType(FieldType ft) => ft switch
         {
             FieldType.Int => typeof(int),
@@ -28,7 +27,7 @@ public static class FieldTypeHelper
             _ => typeof(int),
         };
 
-        /// <summary>Serialised type name suitable for <see cref=\"BlackboardVariable.typeName\"/>.</summary>
+
         public static string GetTypeName(FieldType ft) => GetSystemType(ft).AssemblyQualifiedName;
 
         /// <summary>Human-readable name shown in dropdowns.</summary>
@@ -44,7 +43,7 @@ public static class FieldTypeHelper
             _ => "Unknown",
         };
 
-        /// <summary>Reverse-lookup: <c>System.Type</c> → <c>FieldType</c>.</summary>
+        /// <summary>Reverse-lookup: System.Type → FieldType</summary>
         public static FieldType GetFieldType(Type type)
         {
             if (type == typeof(int) || type == typeof(uint)) return FieldType.Int;
@@ -58,8 +57,7 @@ public static class FieldTypeHelper
         }
 
         /// <summary>
-        /// Convert a serialised type name (from a BlackboardVariable) back to a <c>System.Type</c>.
-        /// Handles both assembly-qualified and short names correctly.
+        /// Convert a serialised type name (from a BlackboardVariable) back to a System.Type.
         /// </summary>
         public static Type GetSystemTypeFromName(string typeName)
         {

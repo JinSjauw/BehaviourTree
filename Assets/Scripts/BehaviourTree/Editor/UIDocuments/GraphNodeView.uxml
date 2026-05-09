@@ -1,8 +1,8 @@
 <engine:UXML xmlns:engine="UnityEngine.UIElements" xmlns:ui="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/GraphNodeViewStyle.uss?fileID=7433441132597879392&amp;guid=6a8fb5d391da0ba47a76e2c532511c3c&amp;type=3#GraphNodeViewStyle"/>
-    <engine:VisualElement name="node-border">
-        <engine:VisualElement name="contents">
-            <engine:VisualElement name="top" picking-mode="Ignore" style="align-items: center; justify-content: center;">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/GraphNodeViewStyle.uss?fileID=7433441132597879392&amp;guid=6a8fb5d391da0ba47a76e2c532511c3c&amp;type=3#GraphNodeViewStyle"/>
+    <engine:VisualElement name="node-body" class="node-running">
+        <engine:VisualElement name="contents" style="border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
+            <engine:VisualElement name="top" picking-mode="Ignore" style="align-items: center; justify-content: center; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
                 <engine:VisualElement name="input" picking-mode="Position"/>
                 <engine:VisualElement name="title">
                     <engine:Label name="title-label"/>
@@ -21,4 +21,5 @@
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="selection-border" picking-mode="Ignore"/>
+    <engine:VisualElement name="status-border" picking-mode="Ignore"/>
 </engine:UXML>

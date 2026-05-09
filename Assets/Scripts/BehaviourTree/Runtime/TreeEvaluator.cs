@@ -18,11 +18,18 @@ namespace BehaviourTree.Runtime
         private FieldData[] fieldDatas;
         private Stack<EvaluatorFrame> nodeStack;
 
+        public int currentNodeIndex { get; private set; } = -1;
+        public NodeState[] nodeStates;
+
         public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas)
         {
+            Debug.Log("Created Tree Evaluator");
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
             nodeStack = new Stack<EvaluatorFrame>();
+            nodeStates = new NodeState[nodeDatas.Length];
+
+            NodeHandlerRegistry.RegisterDefaults();
         }
 
         public void Evaluate(BlackBoard blackBoard)
@@ -30,107 +37,26 @@ namespace BehaviourTree.Runtime
             if (nodeStack.Count == 0)
                 nodeStack.Push(new EvaluatorFrame { nodeIndex = 0, childIndex = 0, lastChildStatus = NodeState.NONE });
 
+            Array.Clear(nodeStates, 0, nodeStates.Length);
+            currentNodeIndex = -1;
+
+            EvaluatorContext context = new EvaluatorContext(nodeStack, nodeDatas, fieldDatas, nodeStates, blackBoard);
+
             while (nodeStack.Count > 0)
             {
-                EvaluatorFrame frame = nodeStack.Peek();
-                NodeData node = nodeDatas[frame.nodeIndex];
-
-                if (node.nodeType == BehaviourNodeType.ACTION || node.nodeType == BehaviourNodeType.CONDITION)
+                INodeHandler handler = NodeHandlerRegistry.GetHandler(nodeDatas[nodeStack.Peek().nodeIndex].nodeType);
+                if (handler == null)
                 {
-                    NodeState status = EvaluateLeaf(blackBoard, ref node);
-                    if (status == NodeState.RUNNING)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        nodeStack.Pop();
-                        if (nodeStack.Count > 0)
-                        {
-                            EvaluatorFrame parentFrame = nodeStack.Peek();
-                            parentFrame.lastChildStatus = status;
-                        }
-                    }
+                    Debug.LogError($"No handler registered for node type {nodeDatas[nodeStack.Peek().nodeIndex].nodeType}");
+                    nodeStack.Pop();
+                    continue;
                 }
-                else if (node.nodeType == BehaviourNodeType.SEQUENCE)
-                {
-                    int childCount = node.lastChildIndex - node.firstChildIndex + 1;
 
-                    if (frame.lastChildStatus != NodeState.NONE)
-                    {
-                        if (frame.lastChildStatus == NodeState.FAILURE)
-                        {
-                            nodeStack.Pop();
-                            if (nodeStack.Count > 0)
-                                nodeStack.Peek().lastChildStatus = NodeState.FAILURE;
-                            continue;
-                        }
-                        else if (frame.lastChildStatus == NodeState.SUCCESS)
-                        {
-                            frame.childIndex++;
-                            frame.lastChildStatus = NodeState.NONE;
-                            if (frame.childIndex >= childCount)
-                            {
-                                nodeStack.Pop();
-                                if (nodeStack.Count > 0)
-                                    nodeStack.Peek().lastChildStatus = NodeState.SUCCESS;
-                                continue;
-                            }
-                        }
-                    }
-                    int childNodeIndex = node.firstChildIndex + frame.childIndex;
-                    nodeStack.Push(new EvaluatorFrame { nodeIndex = childNodeIndex, childIndex = 0, lastChildStatus = NodeState.NONE });
-                }
-                else if (node.nodeType == BehaviourNodeType.SELECTOR)
-                {
-                    int childCount = node.lastChildIndex - node.firstChildIndex + 1;
+                handler.Process(context);
 
-                    if (frame.lastChildStatus != NodeState.NONE)
-                    {
-                        if (frame.lastChildStatus == NodeState.SUCCESS)
-                        {
-                            nodeStack.Pop();
-                            if (nodeStack.Count > 0)
-                                nodeStack.Peek().lastChildStatus = NodeState.SUCCESS;
-                            continue;
-                        }
-                        else if (frame.lastChildStatus == NodeState.FAILURE)
-                        {
-                            frame.childIndex++;
-                            frame.lastChildStatus = NodeState.NONE;
-                            if (frame.childIndex >= childCount)
-                            {
-                                nodeStack.Pop();
-                                if (nodeStack.Count > 0)
-                                    nodeStack.Peek().lastChildStatus = NodeState.FAILURE;
-                                continue;
-                            }
-                        }
-                    }
-
-                    int childNodeIndex = node.firstChildIndex + frame.childIndex;
-                    nodeStack.Push(new EvaluatorFrame { nodeIndex = childNodeIndex, childIndex = 0, lastChildStatus = NodeState.NONE });
-                }
+                if (context.ShouldBreak)
+                    break;
             }
-        }
-
-        private NodeState EvaluateLeaf(BlackBoard blackBoard, ref NodeData nodeData) 
-        {
-            BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
-
-            if (method == null) 
-            {
-                Debug.LogError($"Method not found! returning FAILURE state {nodeData.methodID}");
-                return NodeState.FAILURE;
-            }
-
-            ReadOnlySpan<FieldData> fieldsSlice = default;
-            if (nodeData.fieldDataCount > 0 && fieldDatas != null && nodeData.fieldDataStartIndex >= 0)
-            {
-                fieldsSlice = new ReadOnlySpan<FieldData>(fieldDatas, nodeData.fieldDataStartIndex, nodeData.fieldDataCount);
-            }
-
-            return method.Invoke(blackBoard, fieldsSlice);
         }
     }
 }

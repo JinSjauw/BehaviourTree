@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using BehaviourTree.Runtime;
+using System;
 
 public class BehaviourTreeEditor : EditorWindow
 {
@@ -14,9 +15,11 @@ public class BehaviourTreeEditor : EditorWindow
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
     private ToolbarMenu assetBarMenu;
+    private bool isPollingDebug;
 
     public static BlackboardDefinition currentBlackboardDef { get; private set; }
     public static BehaviourTreeAsset currentTree { get; private set; }
+    public static TreeRunner currentRunner { get; private set; }
 
     [MenuItem("BehaviourTree/BTNodeGraph")]
     public static void OpenWindow()
@@ -94,6 +97,43 @@ public class BehaviourTreeEditor : EditorWindow
         }
 
         OnSelectionChange();
+
+        if (!isPollingDebug)
+        {
+            EditorApplication.update += PollDebugState;
+            isPollingDebug = true;
+        }
+    }
+
+    private void PollDebugState()
+    {
+        treeGraphView?.RefreshDebugVisuals(currentRunner);
+    }
+
+    private BehaviourTreeAsset OnSelectTree()
+    {
+        //if(!EditorApplication.isPlaying) return;
+        GameObject selected = Selection.activeGameObject;
+
+        if(selected != null && selected.TryGetComponent(out TreeRunner runner))
+        {
+            currentRunner = runner;
+
+            return runner.GetSourceTree();
+        }
+        else
+        {
+            return Selection.activeObject as BehaviourTreeAsset;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (isPollingDebug)
+        {
+            EditorApplication.update -= PollDebugState;
+            isPollingDebug = false;
+        }
     }
 
     private void BakeTree(DropdownMenuAction dropdownMenuAction)
@@ -105,6 +145,7 @@ public class BehaviourTreeEditor : EditorWindow
         RuntimeBTreeAsset runtimeAsset = CreateInstance<RuntimeBTreeAsset>();
         runtimeAsset.name = currentTree.name + "_Runtime";
         runtimeAsset.blackboardDefinition = currentBlackboardDef;
+        runtimeAsset.sourceTree = currentTree;
 
         TreeBaker.BakeTree(currentTree.rootCopy, currentBlackboardDef, ref runtimeAsset.runtimeNodeData, ref runtimeAsset.runtimeFieldData);
 
@@ -115,9 +156,8 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnSelectionChange()
     {
-        //currentBlackBoardDefinition = null;
+        currentTree = OnSelectTree();
 
-        currentTree = Selection.activeObject as BehaviourTreeAsset;
         // Null check for tree asset before using it
         if (currentTree == null) return;
         

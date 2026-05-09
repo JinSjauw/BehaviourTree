@@ -17,19 +17,20 @@ namespace BehaviourTree.Runtime
             FieldReader reader = new FieldReader(fields, blackboard);
             return new BYEWORLD_Params
             {
-                // index 0: indexValue (constant)
-                indexValue = reader.GetInt(0),
-                // index 1: wow (constant)
-                wow = reader.GetFloat(1),
-                // index 2: playerObject (blackboard variable)
-                playerObject = reader.GetTransform(2),
+                // index 0: waitingTime (constant)
+                waitingTime = reader.GetFloat(0),
+                // index 1: testTimedThreshhold (blackboard variable)
+                testTimedThreshhold = reader.GetInt(1),
+                // index 2: timer (blackboard variable)
+                timer = reader.GetFloat(2),
             };
         }
 
         public static void SerializeBYEWORLD(BYEWORLD_Params p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
         {
             FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetTransform(2, p.playerObject);
+            writer.SetInt(1, p.testTimedThreshhold);
+            writer.SetFloat(2, p.timer);
         }
 
         public static HELLOWORLD_Params DeserializeHELLOWORLD(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
@@ -37,22 +38,20 @@ namespace BehaviourTree.Runtime
             FieldReader reader = new FieldReader(fields, blackboard);
             return new HELLOWORLD_Params
             {
-                // index 0: Speed (constant)
-                Speed = reader.GetFloat(0),
-                // index 1: testVector (constant)
-                testVector = reader.GetVector2(1),
-                // index 2: Health (blackboard variable)
-                Health = reader.GetInt(2),
-                // index 3: TestTime (blackboard variable)
-                TestTime = reader.GetFloat(3),
+                // index 0: testVector (constant)
+                testVector = reader.GetVector2(0),
+                // index 1: Health (blackboard variable)
+                Health = reader.GetInt(1),
+                // index 2: TestTime (blackboard variable)
+                TestTime = reader.GetFloat(2),
             };
         }
 
         public static void SerializeHELLOWORLD(HELLOWORLD_Params p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
         {
             FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetInt(2, p.Health);
-            writer.SetFloat(3, p.TestTime);
+            writer.SetInt(1, p.Health);
+            writer.SetFloat(2, p.TestTime);
         }
 
         public static WAITWORLD_Params DeserializeWAITWORLD(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
@@ -60,17 +59,18 @@ namespace BehaviourTree.Runtime
             FieldReader reader = new FieldReader(fields, blackboard);
             return new WAITWORLD_Params
             {
-                // index 0: test (constant)
-                test = reader.GetVector3(0),
-                // index 1: testObject (blackboard variable)
-                testObject = reader.GetGameObject(1),
+                // index 0: testTimedThreshhold (blackboard variable)
+                testTimedThreshhold = reader.GetInt(0),
+                // index 1: timer (blackboard variable)
+                timer = reader.GetFloat(1),
             };
         }
 
         public static void SerializeWAITWORLD(WAITWORLD_Params p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
         {
             FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetGameObject(1, p.testObject);
+            writer.SetInt(0, p.testTimedThreshhold);
+            writer.SetFloat(1, p.timer);
         }
 
     }

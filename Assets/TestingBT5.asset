@@ -1,0 +1,193 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9164806176354696129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: HELLOWORLD
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.ActionNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 06bfebc3fb0b0c54d91e78d4a1e834a4
+  graphPosition: {x: 900, y: 688}
+  runtimeIndex: 1
+  methodID: 1
+  fieldEntries:
+  - fieldName: testVector
+    isVariable: 0
+    variableName: 
+    fieldType: 3
+    intValue: 0
+    floatValue: 211
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: Health
+    isVariable: 1
+    variableName: HEALTH
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: TestTime
+    isVariable: 1
+    variableName: TIMER
+    fieldType: 1
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+  treeConfigID: 0
+--- !u!114 &-7567070598173125031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  children:
+  - {fileID: -7546540637080290919}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 06b9a365491b2ec42ade6d4b730ab03e
+  graphPosition: {x: 868, y: 78}
+  runtimeIndex: 0
+--- !u!114 &-7546540637080290919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411a4e5260757ca4e87da8e179a01170, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SequenceNode
+  children:
+  - {fileID: -9164806176354696129}
+  - {fileID: -2636709279989495723}
+  firstChildIndex: 1
+  lastChildIndex: 2
+  guid: fdcf6babc60142e4eb7e207c5759f5f8
+  graphPosition: {x: 1020, y: 492}
+  runtimeIndex: 2
+--- !u!114 &-2636709279989495723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: BYEWORLD
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.ActionNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 35460b333855ca24cbcaae554b1da1fa
+  graphPosition: {x: 1168, y: 689}
+  runtimeIndex: 2
+  methodID: 2
+  fieldEntries:
+  - fieldName: waitingTime
+    isVariable: 0
+    variableName: 
+    fieldType: 1
+    intValue: 0
+    floatValue: 3
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: testTimedThreshhold
+    isVariable: 1
+    variableName: TIMEDCOUNTER
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: timer
+    isVariable: 1
+    variableName: TIMER
+    fieldType: 1
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+  treeConfigID: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
+  m_Name: TestingBT5
+  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.BehaviourTreeAsset
+  nodesList:
+  - {fileID: -7546540637080290919}
+  - {fileID: -9164806176354696129}
+  - {fileID: -2636709279989495723}
+  - {fileID: -7567070598173125031}
+  rootCopy: {fileID: -7567070598173125031}
+  blackboardDefinition: {fileID: 4657369730296033978}
+--- !u!114 &4657369730296033978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
+  m_Name: TestingBT5_BB_Definition
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
+  sharedVariables:
+  - name: TIMER
+    typeName: System.Single
+  - name: HEALTH
+    typeName: System.Int32
+  - name: TIMEDCOUNTER
+    typeName: System.Int32
+  - name: TIMERHELLO
+    typeName: System.Single
+  - name: TEST4
+    typeName: UnityEngine.Transform

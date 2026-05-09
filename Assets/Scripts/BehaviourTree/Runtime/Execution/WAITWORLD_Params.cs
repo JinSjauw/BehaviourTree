@@ -7,9 +7,9 @@ namespace BehaviourTree.Runtime
     [StructLayout(LayoutKind.Sequential)]
     public partial struct WAITWORLD_Params
     {
-        public Vector3 test;
-
         [SharedVar]
-        public GameObject testObject;
+        public int testTimedThreshhold;
+        [SharedVar]
+        public float timer;
     }
 }

@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 public class BehaviourNodeView : Node
 {
     public BehaviourNode NodeSO { get; private set; }
-    public MethodID LeafMethodID { get; set; }  //enum ID for delegate dispatch
+    public MethodID LeafMethodID { get; set; }
     public string Guid { get; private set; }
 
     public Port input;
@@ -18,14 +18,15 @@ public class BehaviourNodeView : Node
 
     public Action<BehaviourNodeView> OnNodeSelected;
 
+    // ── Runtime debug visuals ──────────────────────
+    private VisualElement statusborder;
+
     public BehaviourNodeView(BehaviourNode nodeObject) : base("Assets/Scripts/BehaviourTree/Editor/UIDocuments/GraphNodeView.uxml")
     {
         NodeSO = nodeObject;
         Guid = NodeSO.guid;
 
-        title = nodeObject.name; // Or use mainTitle/subTitle for styling
-
-        //Set position
+        title = nodeObject.name;
         style.left = NodeSO.graphPosition.x;
         style.top = NodeSO.graphPosition.y;
 
@@ -33,9 +34,16 @@ public class BehaviourNodeView : Node
         inputContainer.style.justifyContent = Justify.Center;
         inputContainer.style.alignItems     = Align.Center;
 
+        float borderRadius = 10;
+        inputContainer.style.borderTopLeftRadius = borderRadius;
+        inputContainer.style.borderTopRightRadius = borderRadius;
+
         outputContainer.style.flexDirection  = FlexDirection.Row;
         outputContainer.style.justifyContent = Justify.Center;
         outputContainer.style.alignItems     = Align.Center;
+
+        // Cache debug visuals
+        statusborder = this.Q<VisualElement>("status-border");
 
         SetNodeColor();
         CreateInputPorts();
@@ -89,7 +97,7 @@ public class BehaviourNodeView : Node
 
         Port.Capacity portCapacity = Port.Capacity.Multi;
 
-        if(NodeSO.NodeType == BehaviourNodeType.ROOT) 
+        if(NodeSO.NodeType == BehaviourNodeType.ROOT)
         {
             portCapacity = Port.Capacity.Single;
         }
@@ -141,4 +149,27 @@ public class BehaviourNodeView : Node
     {
         return left.graphPosition.x < right.graphPosition.x ? -1 : 1;
     }
+
+    public void SetDebugState(NodeState state, bool isActive)
+    {
+        if (statusborder != null)
+        {
+            
+            string nodeStatusClass;
+            
+            statusborder.ClearClassList();
+
+            nodeStatusClass = state switch
+            {
+                NodeState.RUNNING => "node-running",
+                NodeState.SUCCESS => "node-success",
+                NodeState.FAILURE => "node-failure",
+                _ => "node-none"
+            };
+            
+            statusborder.AddToClassList(nodeStatusClass);
+        }
+    }
 }
+
+

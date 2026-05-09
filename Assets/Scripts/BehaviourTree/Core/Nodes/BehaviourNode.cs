@@ -12,6 +12,7 @@ namespace BehaviourTree.Core
 
         [HideInInspector] public string guid;
         [HideInInspector] public Vector2 graphPosition;
+        [HideInInspector] public int runtimeIndex;
     }
 }
 
