@@ -73,7 +73,7 @@ namespace BehaviourTree.Runtime
         }
 
         /// <summary>
-        /// Invokes the leaf node's method from the registry.
+        /// Invokes the leaf node's method from the MethodRegistry.
         /// </summary>
         public NodeState EvaluateLeaf(ref NodeData nodeData)
         {

@@ -54,7 +54,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
-  treeConfigID: 0
 --- !u!114 &-7567070598173125031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,7 +109,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 35460b333855ca24cbcaae554b1da1fa
-  graphPosition: {x: 1168, y: 689}
+  graphPosition: {x: 1178, y: 696}
   runtimeIndex: 2
   methodID: 2
   fieldEntries:
@@ -148,7 +147,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
-  treeConfigID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

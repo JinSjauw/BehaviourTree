@@ -11,6 +11,7 @@ namespace BehaviourTree.Editor
     {
         private List<MethodID> actionMethods;
         private List<MethodID> conditionMethods;
+        private List<MethodID> decoratorMethods;
         private BehaviourTreeEditorGraphView graphView;
 
         private Texture2D identationIcon;
@@ -25,6 +26,8 @@ namespace BehaviourTree.Editor
 
             actionMethods = new List<MethodID>();
             conditionMethods = new List<MethodID>();
+            decoratorMethods = new List<MethodID>();
+
             foreach (var field in typeof(MethodID).GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 MethodCategoryAttribute attribute = field.GetCustomAttribute<MethodCategoryAttribute>();
@@ -34,9 +37,13 @@ namespace BehaviourTree.Editor
                 {
                     actionMethods.Add((MethodID)field.GetValue(null));
                 }
-                else
+                else if(attribute.nodeCategory == BehaviourNodeType.CONDITION)
                 {
                     conditionMethods.Add((MethodID)field.GetValue(null));    
+                }
+                else
+                {
+                    decoratorMethods.Add((MethodID)field.GetValue(null));
                 }
             }
         }
@@ -79,12 +86,23 @@ namespace BehaviourTree.Editor
                 });
             }
 
+            searchList.Add(new SearchTreeGroupEntry(new GUIContent("Decorators"), 1));
+
+            foreach(MethodID methodID in decoratorMethods)
+            {
+                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString(), identationIcon))
+                {
+                    level = 2,
+                    userData = methodID,
+                });
+            }
+
+
             return searchList;
         }
 
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
-            Vector2 graphPosition = Vector2.down;
 
             switch (SearchTreeEntry.userData)
             {
@@ -96,6 +114,11 @@ namespace BehaviourTree.Editor
                 case BehaviourNodeType sequence when sequence == BehaviourNodeType.SEQUENCE:
                 {
                     graphView.CreateNode(typeof(SequenceNode), sequence.ToString());
+                    return true;
+                }
+                case MethodID methodID when decoratorMethods.Contains(methodID):
+                {
+                    graphView.CreateDecoratorNode(methodID, methodID.ToString());
                     return true;
                 }
                 case MethodID methodID:

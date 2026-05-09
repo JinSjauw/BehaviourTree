@@ -6,5 +6,6 @@ namespace BehaviourTree.Core
         [MethodCategory(BehaviourNodeType.ACTION)]HELLOWORLD = 1,
         [MethodCategory(BehaviourNodeType.ACTION)]BYEWORLD = 2,
         [MethodCategory(BehaviourNodeType.CONDITION)]WAITWORLD = 3,
+        [MethodCategory(BehaviourNodeType.DECORATOR)]INVERTER = 4,
     }
 }

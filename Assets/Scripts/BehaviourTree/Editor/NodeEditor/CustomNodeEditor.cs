@@ -6,14 +6,13 @@ using BehaviourTree.Core;
 
 namespace BehaviourTree.Editor
 {
-    [CustomEditor(typeof(ActionNode))]
-    public class ActionNodeEditor : UnityEditor.Editor
+    [CustomEditor(typeof(BehaviourNode), true)]
+    public class CustomNodeEditor : UnityEditor.Editor
     {
         private MethodID lastMethodID;
         private SerializedProperty methodIDProp;
         private SerializedProperty fieldEntriesProp;
         private SerializedProperty blackBoardTypeIDProp;
-        private SerializedProperty treeConfigIDProp;
 
         private void OnEnable()
         {
@@ -22,14 +21,20 @@ namespace BehaviourTree.Editor
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
-            treeConfigIDProp = serializedObject.FindProperty("treeConfigID");
         }
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
+            if(!(target is ActionNode || target is ConditionNode || target is DecoratorNode)) 
+            {
+                DrawDefaultInspector();
+                return;
+            }
 
-            //EditorGUILayout.PropertyField(methodIDProp);
+            serializedObject.Update();
+            
+            GUIStyle style = new GUIStyle(EditorStyles.label);
+            style.richText = true;
 
             // Check if method changed and rebuild field entries
             MethodID selectedMethod = (MethodID)methodIDProp.enumValueIndex;
@@ -58,11 +63,11 @@ namespace BehaviourTree.Editor
                     SerializedProperty variableNameProp = entryProp.FindPropertyRelative("variableName");
                     SerializedProperty fieldTypeProp = entryProp.FindPropertyRelative("fieldType");
 
-                    FieldType ft = FieldTypeHelper.GetFieldType(info.fieldType);
+                    FieldType fieldType = FieldTypeHelper.GetFieldType(info.fieldType);
 
                     // Set static metadata
                     fieldNameProp.stringValue = info.fieldName;
-                    fieldTypeProp.enumValueIndex = (int)ft;
+                    fieldTypeProp.enumValueIndex = (int)fieldType;
 
                     if (methodChanged)
                     {
@@ -70,7 +75,7 @@ namespace BehaviourTree.Editor
                     }
 
                     EditorGUILayout.BeginVertical("box");
-                    EditorGUILayout.LabelField($"{info.fieldName} <{ft}>");
+                    EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{fieldType}</color>", style);
 
                     if (isVariableProp.boolValue)
                     {

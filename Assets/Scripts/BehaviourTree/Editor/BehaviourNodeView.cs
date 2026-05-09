@@ -63,6 +63,7 @@ public class BehaviourNodeView : Node
             BehaviourNodeType.SEQUENCE => Color.purple,
             BehaviourNodeType.ACTION => Color.red,
             BehaviourNodeType.CONDITION => Color.yellow,
+            BehaviourNodeType.DECORATOR => Color.chocolate,
             _ => Color.gray
         };
     }
@@ -97,7 +98,7 @@ public class BehaviourNodeView : Node
 
         Port.Capacity portCapacity = Port.Capacity.Multi;
 
-        if(NodeSO.NodeType == BehaviourNodeType.ROOT)
+        if(NodeSO.NodeType == BehaviourNodeType.ROOT || NodeSO.NodeType == BehaviourNodeType.DECORATOR) 
         {
             portCapacity = Port.Capacity.Single;
         }

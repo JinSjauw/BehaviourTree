@@ -216,6 +216,16 @@ namespace BehaviourTree.Editor
             CreateNodeView(node);
         }
 
+        public void CreateDecoratorNode(MethodID methodID, string name = "UNNAMED NODE")
+        {
+            DecoratorNode node = (DecoratorNode)tree.CreateNode(typeof(DecoratorNode));
+            node.methodID = methodID;
+            node.name = name;
+            node.graphPosition = nextGraphPosition;
+
+            CreateNodeView(node);
+        }
+
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             var compatible = new List<Port>();

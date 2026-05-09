@@ -17,7 +17,6 @@ namespace BehaviourTree.Runtime
         private NodeData[] nodeDatas;
         private FieldData[] fieldDatas;
         private Stack<EvaluatorFrame> nodeStack;
-
         public int currentNodeIndex { get; private set; } = -1;
         public NodeState[] nodeStates;
 

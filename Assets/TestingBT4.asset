@@ -16,7 +16,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 06bfebc3fb0b0c54d91e78d4a1e834a4
-  graphPosition: {x: 900, y: 688}
+  graphPosition: {x: 929, y: 619}
   runtimeIndex: 3
   methodID: 1
   fieldEntries:
@@ -54,7 +54,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
-  treeConfigID: 0
 --- !u!114 &-7567070598173125031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,7 +71,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 06b9a365491b2ec42ade6d4b730ab03e
-  graphPosition: {x: 868, y: 78}
+  graphPosition: {x: 861, y: 101}
   runtimeIndex: 0
 --- !u!114 &-7546540637080290919
 MonoBehaviour:
@@ -92,7 +91,7 @@ MonoBehaviour:
   firstChildIndex: 3
   lastChildIndex: 4
   guid: fdcf6babc60142e4eb7e207c5759f5f8
-  graphPosition: {x: 1020, y: 492}
+  graphPosition: {x: 1019, y: 457}
   runtimeIndex: 2
 --- !u!114 &-2636709279989495723
 MonoBehaviour:
@@ -110,7 +109,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 35460b333855ca24cbcaae554b1da1fa
-  graphPosition: {x: 1168, y: 689}
+  graphPosition: {x: 1157, y: 627}
   runtimeIndex: 4
   methodID: 2
   fieldEntries:
@@ -148,7 +147,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
-  treeConfigID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +166,7 @@ MonoBehaviour:
   - {fileID: 4767961611062358396}
   - {fileID: -2636709279989495723}
   - {fileID: -7567070598173125031}
+  - {fileID: 6530134743821642541}
   rootCopy: {fileID: -7567070598173125031}
   blackboardDefinition: {fileID: 4657369730296033978}
 --- !u!114 &3956109054217539504
@@ -186,7 +185,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 8ce7a42b461b1a64890f8e2d6ff3db9d
-  graphPosition: {x: 695, y: 484}
+  graphPosition: {x: 654, y: 600}
   runtimeIndex: 1
   methodID: 3
   fieldEntries:
@@ -213,7 +212,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
-  treeConfigID: 0
 --- !u!114 &4657369730296033978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,10 +248,54 @@ MonoBehaviour:
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SelectorNode
   children:
-  - {fileID: 3956109054217539504}
+  - {fileID: 6530134743821642541}
   - {fileID: -7546540637080290919}
   firstChildIndex: 1
   lastChildIndex: 2
   guid: 5e097f3c10e3f254d9ebefcd720445c6
-  graphPosition: {x: 860, y: 281}
+  graphPosition: {x: 861, y: 283}
   runtimeIndex: 0
+--- !u!114 &6530134743821642541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7481cfd050e4cc741a9e04f011e99a2f, type: 3}
+  m_Name: INVERTER
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
+  children:
+  - {fileID: 3956109054217539504}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 2b4bb102083f23f459c5824f7da3f472
+  graphPosition: {x: 674, y: 465}
+  runtimeIndex: 0
+  methodID: 4
+  fieldEntries:
+  - fieldName: alwaysFailure
+    isVariable: 0
+    variableName: 
+    fieldType: 2
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: alwaysSuccess
+    isVariable: 0
+    variableName: 
+    fieldType: 2
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
