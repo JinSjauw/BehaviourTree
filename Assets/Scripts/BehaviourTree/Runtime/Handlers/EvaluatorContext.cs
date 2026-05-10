@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BehaviourTree.Core;
 
@@ -17,12 +18,7 @@ namespace BehaviourTree.Runtime
         public int CurrentNodeIndex { get; set; }
         public bool ShouldBreak { get; set; }
 
-        public EvaluatorContext(
-            Stack<EvaluatorFrame> stack,
-            NodeData[] nodeDatas,
-            FieldData[] fieldDatas,
-            NodeState[] nodeStates,
-            BlackBoard blackBoard)
+        public EvaluatorContext( Stack<EvaluatorFrame> stack, NodeData[] nodeDatas, FieldData[] fieldDatas, NodeState[] nodeStates, BlackBoard blackBoard)
         {
             this.stack = stack;
             this.nodeDatas = nodeDatas;
@@ -36,6 +32,7 @@ namespace BehaviourTree.Runtime
         public EvaluatorFrame CurrentFrame => stack.Peek();
         public ref NodeData CurrentNode => ref nodeDatas[stack.Peek().nodeIndex];
         public NodeState[] NodeStates => nodeStates;
+        //public ReadOnlySpan<FieldData> FieldDatas => fieldDatas;
 
         /// <summary>
         /// Push a child node with a fresh frame.
@@ -85,17 +82,25 @@ namespace BehaviourTree.Runtime
             }
 
             System.ReadOnlySpan<FieldData> fieldsSlice = default;
-            if (nodeData.fieldDataCount > 0 &&
-                fieldDatas != null &&
-                nodeData.fieldDataStartIndex >= 0)
+            if (nodeData.fieldDataCount > 0 && fieldDatas != null && nodeData.fieldDataStartIndex >= 0)
             {
                 fieldsSlice = new System.ReadOnlySpan<FieldData>(
                     fieldDatas,
                     nodeData.fieldDataStartIndex,
-                    nodeData.fieldDataCount);
+                    nodeData.fieldDataCount
+                );
             }
 
             return method.Invoke(BlackBoard, fieldsSlice);
+        }
+
+        public ReadOnlySpan<FieldData> GetNodeFields(NodeData node)
+        {
+            if (node.fieldDataCount > 0 && fieldDatas != null && node.fieldDataStartIndex >= 0)
+            {
+                return new ReadOnlySpan<FieldData>(fieldDatas, node.fieldDataStartIndex, node.fieldDataCount);
+            }
+            return default;
         }
 
         public void SetStackRunning()
@@ -103,7 +108,9 @@ namespace BehaviourTree.Runtime
             foreach (var frame in stack)
             {
                 if (nodeStates[frame.nodeIndex] == NodeState.NONE)
+                {
                     nodeStates[frame.nodeIndex] = NodeState.RUNNING;
+                }
             }
         }
     }

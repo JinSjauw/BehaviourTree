@@ -37,32 +37,45 @@ MonoBehaviour:
   - nodeType: 4
     firstChildIndex: -1
     lastChildIndex: -1
-    methodID: 1
+    methodID: 2
     blackBoardTypeID: 0
     fieldDataStartIndex: 2
     fieldDataCount: 3
+  - nodeType: 5
+    firstChildIndex: 5
+    lastChildIndex: 5
+    methodID: 5
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 5
+    fieldDataCount: 2
   - nodeType: 4
     firstChildIndex: -1
     lastChildIndex: -1
-    methodID: 2
+    methodID: 1
     blackBoardTypeID: 0
-    fieldDataStartIndex: 5
-    fieldDataCount: 3
+    fieldDataStartIndex: 7
+    fieldDataCount: 4
   runtimeFieldData:
   - mode: 1
     value: 2
   - mode: 1
     value: 0
   - mode: 0
-    value: 0
-  - mode: 1
-    value: 1
-  - mode: 1
-    value: 0
-  - mode: 0
     value: 1077936128
   - mode: 1
     value: 2
+  - mode: 1
+    value: 0
+  - mode: 0
+    value: 3
+  - mode: 1
+    value: 5
+  - mode: 0
+    value: 0
+  - mode: 1
+    value: 6
+  - mode: 1
+    value: 1
   - mode: 1
     value: 0
   blackboardDefinition: {fileID: 4657369730296033978, guid: bb1e6064d24ae2b40ba22cbe293704eb, type: 2}

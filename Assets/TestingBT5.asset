@@ -20,23 +20,12 @@ MonoBehaviour:
   runtimeIndex: 1
   methodID: 1
   fieldEntries:
-  - fieldName: testVector
-    isVariable: 0
-    variableName: 
-    fieldType: 3
-    intValue: 0
-    floatValue: 211
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
   - fieldName: Health
     isVariable: 1
     variableName: HEALTH
     fieldType: 0
     intValue: 0
-    floatValue: 0
+    floatValue: 211
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}

@@ -1,13 +1,14 @@
 using System.Runtime.InteropServices;
 using BehaviourTree.Core;
-using UnityEngine;
 
 namespace BehaviourTree.Runtime
 {
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct INVERTER_Params
+    public partial struct REPEATER_Params
     {
-        public bool alwaysFailure;
-        public bool alwaysSuccess;
+        public int targetCount;
+
+        [SharedVar]
+        public int currentCount;
     }
 }

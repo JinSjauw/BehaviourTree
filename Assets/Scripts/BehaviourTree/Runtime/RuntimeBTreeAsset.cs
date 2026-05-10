@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RuntimeBTreeAsset", menuName = "BehaviourTree/RuntimeBTreeAsset")]
 public class RuntimeBTreeAsset : ScriptableObject
 {
+    /// <summary>flattened behaviour tree</summary>
     public NodeData[] runtimeNodeData;
 
     /// <summary>Packed field data for all leaf nodes.</summary>

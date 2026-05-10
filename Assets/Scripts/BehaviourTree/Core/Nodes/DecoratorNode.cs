@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviourTree.Core
 {
-    [CreateAssetMenu(fileName = "Action Node", menuName = "Scriptable Objects/BT Nodes/Action Node")]
+    //[CreateAssetMenu(fileName = "Action Node", menuName = "Scriptable Objects/BT Nodes/Action Node")]
     public class DecoratorNode : BehaviourNode
     {
         public override BehaviourNodeType NodeType => BehaviourNodeType.DECORATOR;

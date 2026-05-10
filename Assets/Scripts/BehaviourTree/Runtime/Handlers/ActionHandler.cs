@@ -15,7 +15,7 @@ namespace BehaviourTree.Runtime
                 context.CurrentNodeIndex = context.CurrentFrame.nodeIndex;
                 context.ShouldBreak = true;
                 context.SetStackRunning();
-                return false; // break evaluation loop
+                return false;
             }
             else
             {

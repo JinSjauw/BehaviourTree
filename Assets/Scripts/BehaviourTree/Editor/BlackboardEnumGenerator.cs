@@ -116,13 +116,6 @@ namespace BehaviourTree.Editor
                 return name;
             return Regex.Replace(name, @"[^a-zA-Z0-9_]", "_");
         }
-
-        // Optionally auto-regenerate on script reload:
-        //[UnityEditor.Callbacks.DidReloadScripts]
-        //private static void OnScriptsReloaded()
-        //{
-        //    Generate();
-        //}
     }
 }
 

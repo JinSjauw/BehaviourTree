@@ -19,6 +19,7 @@ namespace BehaviourTree.Runtime
          if (treeAsset == null) return;
 
          blackBoardTest.Initialize(treeAsset.blackboardDefinition);
+         blackBoardTest.Set<Vector2>((int)TestingBT4_BB_Keys.Velocity2D, new Vector2(5, 7));
 
          evaluator = new TreeEvaluator(treeAsset.runtimeNodeData, treeAsset.runtimeFieldData);
 

@@ -18,6 +18,7 @@ namespace BehaviourTree.Runtime
             Register(BehaviourNodeType.CONDITION, new ConditionHandler());
             Register(BehaviourNodeType.SEQUENCE, new SequenceHandler());
             Register(BehaviourNodeType.SELECTOR, new SelectorHandler());
+            Register(BehaviourNodeType.DECORATOR, new DecoratorHandler());
             //_initialized = true;
         }
 

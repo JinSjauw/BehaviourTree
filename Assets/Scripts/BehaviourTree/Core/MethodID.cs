@@ -1,11 +1,12 @@
 namespace BehaviourTree.Core
 {
-        public enum MethodID 
+    public enum MethodID 
     {
         NONE = 0,
         [MethodCategory(BehaviourNodeType.ACTION)]HELLOWORLD = 1,
         [MethodCategory(BehaviourNodeType.ACTION)]BYEWORLD = 2,
         [MethodCategory(BehaviourNodeType.CONDITION)]WAITWORLD = 3,
         [MethodCategory(BehaviourNodeType.DECORATOR)]INVERTER = 4,
+        [MethodCategory(BehaviourNodeType.DECORATOR)]REPEATER = 5,
     }
 }

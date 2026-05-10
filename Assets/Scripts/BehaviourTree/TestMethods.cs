@@ -15,7 +15,7 @@ namespace BehaviourTree
             Debug.Log("HELLO WORLD!");
 
             var p = ParamsDeserializer.DeserializeHELLOWORLD(fields, blackBoard);
-            Debug.Log($"Speed: , Health: {p.Health}, TestTime: {p.TestTime}");
+            Debug.Log($"Speed: {p.Velocity} , Health: {p.Health}, TestTime: {p.TestTime}");
 
             p.Health += 3;
             p.TestTime += 1;
@@ -40,7 +40,8 @@ namespace BehaviourTree
             {
                 p.timer = 0;
                 p.testTimedThreshhold++;
-                Debug.Log("Added a timer counter!");
+
+                Debug.Log($"Added a timer counter!");
             }
             else
             {

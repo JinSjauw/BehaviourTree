@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviourTree.Core 
 {
-    [CreateAssetMenu(fileName = "Condition Node", menuName = "Scriptable Objects/BT Nodes/Condition Node")]
+    //[CreateAssetMenu(fileName = "Condition Node", menuName = "Scriptable Objects/BT Nodes/Condition Node")]
     public class ConditionNode : BehaviourNode
     {
         public override BehaviourNodeType NodeType => BehaviourNodeType.CONDITION;

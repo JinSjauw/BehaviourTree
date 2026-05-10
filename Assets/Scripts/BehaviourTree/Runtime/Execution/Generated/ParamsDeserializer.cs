@@ -38,20 +38,53 @@ namespace BehaviourTree.Runtime
             FieldReader reader = new FieldReader(fields, blackboard);
             return new HELLOWORLD_Params
             {
-                // index 0: testVector (constant)
-                testVector = reader.GetVector2(0),
-                // index 1: Health (blackboard variable)
-                Health = reader.GetInt(1),
-                // index 2: TestTime (blackboard variable)
-                TestTime = reader.GetFloat(2),
+                // index 0: Speed (constant)
+                Speed = reader.GetVector2(0),
+                // index 1: Velocity (blackboard variable)
+                Velocity = reader.GetVector2(1),
+                // index 2: Health (blackboard variable)
+                Health = reader.GetInt(2),
+                // index 3: TestTime (blackboard variable)
+                TestTime = reader.GetFloat(3),
             };
         }
 
         public static void SerializeHELLOWORLD(HELLOWORLD_Params p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
         {
             FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetInt(1, p.Health);
-            writer.SetFloat(2, p.TestTime);
+            writer.SetVector2(1, p.Velocity);
+            writer.SetInt(2, p.Health);
+            writer.SetFloat(3, p.TestTime);
+        }
+
+        public static INVERTER_Params DeserializeINVERTER(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new INVERTER_Params
+            {
+                // index 0: alwaysFailure (constant)
+                alwaysFailure = reader.GetBool(0),
+                // index 1: alwaysSuccess (constant)
+                alwaysSuccess = reader.GetBool(1),
+            };
+        }
+
+        public static REPEATER_Params DeserializeREPEATER(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new REPEATER_Params
+            {
+                // index 0: targetCount (constant)
+                targetCount = reader.GetInt(0),
+                // index 1: currentCount (blackboard variable)
+                currentCount = reader.GetInt(1),
+            };
+        }
+
+        public static void SerializeREPEATER(REPEATER_Params p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetInt(1, p.currentCount);
         }
 
         public static WAITWORLD_Params DeserializeWAITWORLD(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)

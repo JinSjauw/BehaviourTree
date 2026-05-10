@@ -81,7 +81,7 @@ namespace BehaviourTree
 
         /// <summary>
         /// Fields larger than 4 bytes (Vector2, Vector3, GameObject, Transform)
-        /// cannot be stored as constants — they are always fetched from the blackboard.
+        /// cannot be stored as constants
         /// </summary>
         public Vector2 GetVector2(int index)
         {

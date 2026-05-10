@@ -11,7 +11,9 @@ namespace BehaviourTree.Runtime
         HEALTH = 1,
         TIMEDCOUNTER = 2,
         TIMERHELLO = 3,
-        TEST4 = 4
+        TEST4 = 4,
+        RepeaterAmount = 5,
+        Velocity2D = 6
     }
 
     public enum TestingBT5_BB_Keys : int

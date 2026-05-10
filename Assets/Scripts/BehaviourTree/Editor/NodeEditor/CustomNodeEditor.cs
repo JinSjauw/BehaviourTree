@@ -121,25 +121,9 @@ namespace BehaviourTree.Editor
                 SerializedProperty prop = entryProp.FindPropertyRelative("boolValue");
                 prop.boolValue = EditorGUILayout.Toggle("Value", prop.boolValue);
             }
-            else if (fieldType == typeof(Vector2))
+            else
             {
-                SerializedProperty prop = entryProp.FindPropertyRelative("vector2Value");
-                prop.vector2Value = EditorGUILayout.Vector2Field("Value", prop.vector2Value);
-            }
-            else if (fieldType == typeof(Vector3))
-            {
-                SerializedProperty prop = entryProp.FindPropertyRelative("vector3Value");
-                prop.vector3Value = EditorGUILayout.Vector3Field("Value", prop.vector3Value);
-            }
-            else if (fieldType == typeof(GameObject))
-            {
-                SerializedProperty prop = entryProp.FindPropertyRelative("gameObjectValue");
-                prop.objectReferenceValue = EditorGUILayout.ObjectField("Value", prop.objectReferenceValue, typeof(GameObject), true);
-            }
-            else if (fieldType == typeof(Transform))
-            {
-                SerializedProperty prop = entryProp.FindPropertyRelative("transformValue");
-                prop.objectReferenceValue = EditorGUILayout.ObjectField("Value", prop.objectReferenceValue, typeof(Transform), true);
+                EditorGUILayout.HelpBox($"Value type can't be static! Add [SharedVar] attribute", MessageType.Warning);
             }
         }
 

@@ -26,9 +26,17 @@ namespace BehaviourTree.Runtime
             foreach (BehaviourNode node in nodeToIndex.Keys)
             {
                 if (node is ActionNode action)
+                {
                     totalFieldDataCount += action.fieldEntries?.Count ?? 0;
+                }
                 else if (node is ConditionNode cond)
+                {
                     totalFieldDataCount += cond.fieldEntries?.Count ?? 0;
+                }
+                else if (node is DecoratorNode decorator)
+                {
+                    totalFieldDataCount += decorator.fieldEntries?.Count ?? 0; 
+                }
             }
 
             fieldDatas = new FieldData[totalFieldDataCount];
@@ -126,6 +134,25 @@ namespace BehaviourTree.Runtime
                             }
                         }
                         break;
+                    case BehaviourNodeType.DECORATOR:
+                        {
+                            DecoratorNode decorator = (DecoratorNode)node;
+                            nodeData.methodID = decorator.methodID;
+                            nodeData.blackBoardTypeID = decorator.BlackBoardTypeID;
+                            nodeData.firstChildIndex = node.firstChildIndex;   // single child
+                            nodeData.lastChildIndex  = node.firstChildIndex;   // same as first
+                            nodeData.fieldDataStartIndex = currentFieldDataOffset;
+                            nodeData.fieldDataCount = decorator.fieldEntries?.Count ?? 0;
+
+                            if (decorator.fieldEntries != null)
+                            {
+                                foreach (var entry in decorator.fieldEntries)
+                                {
+                                    fieldDataArray[currentFieldDataOffset++] = PackFieldEntry(entry, bbDef);
+                                }
+                            }
+                        }
+                    break;
                 }
 
                 nodeDataArray[nodeIndices[node]] = nodeData;
