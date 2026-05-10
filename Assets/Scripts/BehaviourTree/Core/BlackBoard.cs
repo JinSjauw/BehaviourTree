@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviourTree.Core 
@@ -14,8 +13,6 @@ namespace BehaviourTree.Core
         /// <summary>Index-based storage for blackboard variables. Index corresponds to position in BlackboardDefinition.</summary>
         protected object[] values;
 
-        //public abstract void RegisterFields();
-
         /// <summary>Initialize index-based storage from a definition.</summary>
         public void Initialize(BlackboardDefinition definition)
         {
@@ -27,10 +24,25 @@ namespace BehaviourTree.Core
         public T Get<T>(int index)
         {
             if (values == null || index < 0 || index >= values.Length)
+            {
+                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL, returning default");
                 return default;
+            }
+
             object val = values[index];
             if (val is T tVal)
+            {
                 return tVal;
+            }
+            else if(val != null)
+            {
+                Debug.LogWarning(
+                    $"[Blackboard] Type mismatch at index {index} — " +
+                    $"Expected: {typeof(T).Name}, Retrieved: {val.GetType().Name}. " +
+                    $"Returning default.");
+                return default;
+            }
+
             return default;
         }
 
@@ -38,7 +50,25 @@ namespace BehaviourTree.Core
         public void Set<T>(int index, T value)
         {
             if (values == null || index < 0 || index >= values.Length)
+            {
+                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL");
                 return;
+            }
+
+            object existingObject = values[index];
+
+            if(existingObject != null && existingObject is not T)
+            {
+                Debug.LogWarning(
+                    $"[Blackboard] Type mismatch at index: {index}" +
+                    $"Stored = {existingObject.GetType().Name}, Trying to write type: {typeof(T).Name}" +
+                    $"Cancelling write"
+                );
+
+                return;
+            }
+
+
             values[index] = value;
         }
     }
