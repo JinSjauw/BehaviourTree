@@ -106,24 +106,19 @@ namespace BehaviourTree.Editor
 
             switch (SearchTreeEntry.userData)
             {
-                case BehaviourNodeType selector when selector == BehaviourNodeType.SELECTOR:
+                case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE:
                 {
-                    graphView.CreateNode(typeof(SelectorNode), selector.ToString());
-                    return true;
-                }
-                case BehaviourNodeType sequence when sequence == BehaviourNodeType.SEQUENCE:
-                {
-                    graphView.CreateNode(typeof(SequenceNode), sequence.ToString());
+                    graphView.CreateCompositeNode(compositeType);
                     return true;
                 }
                 case MethodID methodID when decoratorMethods.Contains(methodID):
                 {
-                    graphView.CreateDecoratorNode(methodID, methodID.ToString());
+                    graphView.CreateDecoratorNode(methodID);
                     return true;
                 }
                 case MethodID methodID:
                 {
-                    graphView.CreateLeafNode(methodID, methodID.ToString());
+                    graphView.CreateLeafNode(methodID);
                     return true;
                 }
 

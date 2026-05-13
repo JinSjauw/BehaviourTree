@@ -218,33 +218,34 @@ namespace BehaviourTree.Editor
             }
             
             return null;
-            //return GetNodeByGuid(node.guid) as BehaviourNodeView;
         }
         
-        public void CreateNode(Type type, string name = "UNNAMED NODE") 
+        public BehaviourNode CreateCompositeNode(BehaviourNodeType compositeType) 
         {
-            BehaviourNode node = tree.CreateNode(type);
-            node.name = name;
+            CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
+            node.SetCompositeType(compositeType);
+            node.name = compositeType.ToString();
             node.graphPosition = nextGraphPosition;
             
             CreateNodeView(node);
+            return node;
         }
-
-        public void CreateLeafNode(MethodID methodID, string name = "UNNAMED NODE")
+        
+        public void CreateLeafNode(MethodID methodID)
         {
             ActionNode node = (ActionNode)tree.CreateNode(typeof(ActionNode));
             node.methodID = methodID;
-            node.name = name;
+            node.name = methodID.ToString();
             node.graphPosition = nextGraphPosition;
 
             CreateNodeView(node);
         }
 
-        public void CreateDecoratorNode(MethodID methodID, string name = "UNNAMED NODE")
+        public void CreateDecoratorNode(MethodID methodID)
         {
             DecoratorNode node = (DecoratorNode)tree.CreateNode(typeof(DecoratorNode));
             node.methodID = methodID;
-            node.name = name;
+            node.name = methodID.ToString();
             node.graphPosition = nextGraphPosition;
 
             CreateNodeView(node);

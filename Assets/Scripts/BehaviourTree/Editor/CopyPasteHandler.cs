@@ -154,14 +154,11 @@ namespace BehaviourTree.Editor
                     node = decoratorNode;
                     break;
                 case BehaviourNodeType.SELECTOR:
-                    SelectorNode selectorNode = ScriptableObject.CreateInstance<SelectorNode>();
-                    selectorNode.name = selectorNode.NodeType.ToString();
-                    node = selectorNode;
-                    break;
                 case BehaviourNodeType.SEQUENCE:
-                    SequenceNode sequenceNode = ScriptableObject.CreateInstance<SequenceNode>();
-                    sequenceNode.name = sequenceNode.NodeType.ToString();
-                    node = sequenceNode;
+                    CompositeNode compositeNode = ScriptableObject.CreateInstance<CompositeNode>();
+                    compositeNode.SetCompositeType(data.nodeType);
+                    compositeNode.name = data.nodeType.ToString();
+                    node = compositeNode;
                     break;
                 default:
                     node = ScriptableObject.CreateInstance<BehaviourNode>();

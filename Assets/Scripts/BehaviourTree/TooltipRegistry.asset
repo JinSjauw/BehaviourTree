@@ -33,7 +33,7 @@ MonoBehaviour:
     returnValues: 
     fieldDescriptions: []
   - nodeName: HELLOWORLD
-    description: TEST
+    description: No description available.
     returnValues: 
     fieldDescriptions:
     - fieldName: Speed
@@ -71,10 +71,10 @@ MonoBehaviour:
     - fieldName: alwaysSuccess
       description: 
   - nodeName: REPEATER
-    description: Repeats the child
+    description: No description available.
     returnValues: 
     fieldDescriptions:
     - fieldName: targetCount
-      description: Amount of times to be repeated
+      description: 
     - fieldName: currentCount
-      description: Current amount repeated
+      description: 
