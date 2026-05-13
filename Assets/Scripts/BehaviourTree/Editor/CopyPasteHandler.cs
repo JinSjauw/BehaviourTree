@@ -78,7 +78,7 @@ namespace BehaviourTree.Editor
             Dictionary<string, string> guidMap = new Dictionary<string, string>();
             List<BehaviourNodeView> pastedViews = new List<BehaviourNodeView>();
 
-            foreach (var serializedNode in clipBoard.nodeDatas)
+            foreach (SerializedNodeData serializedNode in clipBoard.nodeDatas)
             {
                 string newGuid = GUID.Generate().ToString();
                 guidMap[serializedNode.guid] = newGuid;
@@ -87,9 +87,12 @@ namespace BehaviourTree.Editor
                 newNode.guid = newGuid;
                 newNode.graphPosition = serializedNode.graphPosition + new Vector2(30, 30); // offset
 
-                BehaviourNodeView nodeView = graphView.CreateNodeView(newNode); // adjust to your API
+                BehaviourNodeView nodeView = graphView.CreateNodeView(newNode);
 
-                pastedViews.Add(nodeView);
+                if(!pastedViews.Contains(nodeView))
+                {
+                    pastedViews.Add(nodeView);
+                }
             }
 
             //Use GUID to recreate edges
@@ -118,10 +121,11 @@ namespace BehaviourTree.Editor
             clipBoard.nodeDatas.Clear();
             clipBoard.edgeDatas.Clear();
 
-            // Step 3: Clear selection and select pasted nodes
             graphView.ClearSelection();
-            foreach (var view in pastedViews)
+            foreach (BehaviourNodeView view in pastedViews)
+            {
                 graphView.AddToSelection(view);
+            }
         }
 
 
@@ -129,7 +133,7 @@ namespace BehaviourTree.Editor
 
         private BehaviourNode CreateNodeDataFromSerialized(SerializedNodeData data, BehaviourTreeAsset treeAsset)
         {
-            // Factory method: instantiate correct node type based on data.nodeType
+            //Instantiate correct node type based on data.nodeType
             BehaviourNode node = null;
             switch (data.nodeType)
             {

@@ -20,16 +20,23 @@ MonoBehaviour:
     blackBoardTypeID: 0
     fieldDataStartIndex: -1
     fieldDataCount: 0
-  - nodeType: 4
-    firstChildIndex: -1
-    lastChildIndex: -1
-    methodID: 3
+  - nodeType: 5
+    firstChildIndex: 3
+    lastChildIndex: 3
+    methodID: 4
     blackBoardTypeID: 0
     fieldDataStartIndex: 0
     fieldDataCount: 2
   - nodeType: 2
-    firstChildIndex: 3
-    lastChildIndex: 4
+    firstChildIndex: 6
+    lastChildIndex: 7
+    methodID: 0
+    blackBoardTypeID: 0
+    fieldDataStartIndex: -1
+    fieldDataCount: 0
+  - nodeType: 2
+    firstChildIndex: 4
+    lastChildIndex: 5
     methodID: 0
     blackBoardTypeID: 0
     fieldDataStartIndex: -1
@@ -37,25 +44,49 @@ MonoBehaviour:
   - nodeType: 4
     firstChildIndex: -1
     lastChildIndex: -1
-    methodID: 2
+    methodID: 3
     blackBoardTypeID: 0
     fieldDataStartIndex: 2
+    fieldDataCount: 2
+  - nodeType: 4
+    firstChildIndex: -1
+    lastChildIndex: -1
+    methodID: 2
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 4
+    fieldDataCount: 3
+  - nodeType: 4
+    firstChildIndex: -1
+    lastChildIndex: -1
+    methodID: 2
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 7
     fieldDataCount: 3
   - nodeType: 5
-    firstChildIndex: 5
-    lastChildIndex: 5
+    firstChildIndex: 8
+    lastChildIndex: 8
     methodID: 5
     blackBoardTypeID: 0
-    fieldDataStartIndex: 5
+    fieldDataStartIndex: 10
     fieldDataCount: 2
   - nodeType: 4
     firstChildIndex: -1
     lastChildIndex: -1
     methodID: 1
     blackBoardTypeID: 0
-    fieldDataStartIndex: 7
+    fieldDataStartIndex: 12
     fieldDataCount: 4
   runtimeFieldData:
+  - mode: 0
+    value: 1
+  - mode: 0
+    value: 0
+  - mode: 1
+    value: 2
+  - mode: 1
+    value: 0
+  - mode: 0
+    value: 1077936128
   - mode: 1
     value: 2
   - mode: 1
