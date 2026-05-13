@@ -17,7 +17,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 06bfebc3fb0b0c54d91e78d4a1e834a4
   graphPosition: {x: 1177, y: 788}
-  runtimeIndex: 5
+  runtimeIndex: 8
   methodID: 1
   fieldEntries:
   - fieldName: Speed
@@ -80,11 +80,11 @@ MonoBehaviour:
   children:
   - {fileID: 3956109054217539504}
   - {fileID: -3693845163359571556}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 4
+  lastChildIndex: 5
   guid: f54e8fe7764ca0043a0e54c4b36c7d67
-  graphPosition: {x: 597, y: 558}
-  runtimeIndex: 0
+  graphPosition: {x: 613, y: 614}
+  runtimeIndex: 3
 --- !u!114 &-7567070598173125031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,10 +119,10 @@ MonoBehaviour:
   children:
   - {fileID: -2636709279989495723}
   - {fileID: -3237147717330732358}
-  firstChildIndex: 3
-  lastChildIndex: 4
+  firstChildIndex: 6
+  lastChildIndex: 7
   guid: fdcf6babc60142e4eb7e207c5759f5f8
-  graphPosition: {x: 1019, y: 457}
+  graphPosition: {x: 1035, y: 453}
   runtimeIndex: 2
 --- !u!114 &-3693845163359571556
 MonoBehaviour:
@@ -140,8 +140,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 00f51b33ae14409428fbbeab6137bd69
-  graphPosition: {x: 755, y: 779}
-  runtimeIndex: 0
+  graphPosition: {x: 745, y: 771}
+  runtimeIndex: 5
   methodID: 2
   fieldEntries:
   - fieldName: waitingTime
@@ -192,11 +192,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
   children:
   - {fileID: -9164806176354696129}
-  firstChildIndex: 5
-  lastChildIndex: 5
+  firstChildIndex: 8
+  lastChildIndex: 8
   guid: f1bd11e5b115eff43a7e2df57fcb0a5b
-  graphPosition: {x: 1177, y: 623}
-  runtimeIndex: 4
+  graphPosition: {x: 1177, y: 622}
+  runtimeIndex: 7
   methodID: 5
   fieldEntries:
   - fieldName: targetCount
@@ -212,7 +212,7 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   - fieldName: currentCount
     isVariable: 1
-    variableName: RepeaterAmount
+    variableName: HEALTH
     fieldType: 0
     intValue: 0
     floatValue: 0
@@ -239,7 +239,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 35460b333855ca24cbcaae554b1da1fa
   graphPosition: {x: 877, y: 615}
-  runtimeIndex: 3
+  runtimeIndex: 6
   methodID: 2
   fieldEntries:
   - fieldName: waitingTime
@@ -317,8 +317,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 8ce7a42b461b1a64890f8e2d6ff3db9d
-  graphPosition: {x: 495, y: 710}
-  runtimeIndex: 1
+  graphPosition: {x: 471, y: 775}
+  runtimeIndex: 4
   methodID: 3
   fieldEntries:
   - fieldName: testTimedThreshhold
@@ -439,7 +439,7 @@ MonoBehaviour:
   firstChildIndex: 1
   lastChildIndex: 2
   guid: 5e097f3c10e3f254d9ebefcd720445c6
-  graphPosition: {x: 861, y: 283}
+  graphPosition: {x: 861, y: 284}
   runtimeIndex: 0
 --- !u!114 &7023496985496552754
 MonoBehaviour:
@@ -455,11 +455,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
   children:
   - {fileID: -7736982290675740278}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 3
+  lastChildIndex: 3
   guid: b11b10093c2b0374680d384db59be667
-  graphPosition: {x: 648, y: 404}
-  runtimeIndex: 0
+  graphPosition: {x: 719, y: 445}
+  runtimeIndex: 1
   methodID: 4
   fieldEntries:
   - fieldName: alwaysFailure

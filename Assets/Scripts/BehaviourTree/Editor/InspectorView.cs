@@ -1,7 +1,7 @@
-using System;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor;
+using BehaviourTree.Editor;
 
 [UxmlElement("InspectorView")]
 public partial class InspectorView : VisualElement
@@ -25,12 +25,12 @@ public partial class InspectorView : VisualElement
         var placeholder = new Label("Select a node in the GraphView")
         {
             style =
-            {
-                color = Color.grey,
-                unityTextAlign = TextAnchor.MiddleCenter,
-                marginTop = 40,
-                fontSize = 13
-            }
+        {
+            color = Color.grey,
+            unityTextAlign = TextAnchor.MiddleCenter,
+            marginTop = 40,
+            fontSize = 13
+        }
         };
         inspectorViewContainer.Add(placeholder);
     }
@@ -40,17 +40,18 @@ public partial class InspectorView : VisualElement
         Clear();
 
         UnityEngine.Object.DestroyImmediate(editor);
-        
+
         editor = Editor.CreateEditor(nodeView.NodeSO);
 
-        IMGUIContainer container = new IMGUIContainer(() => 
+        IMGUIContainer container = new IMGUIContainer(() =>
         {
-            if(editor.target)
+            if (editor.target)
             {
-                editor.OnInspectorGUI(); 
+                editor.OnInspectorGUI();
             }
         });
 
         Add(container);
     }
 }
+
