@@ -26,7 +26,7 @@ namespace BehaviourTree
             *(float*)&fd.value = v;
             return fd;
         }
-        public static unsafe FieldData FromConstant(bool v)
+        public static FieldData FromConstant(bool v)
         {
             FieldData fd = default;
             fd.mode = 0;
@@ -38,7 +38,6 @@ namespace BehaviourTree
 
         public bool IsVariable => mode == 1;
         public bool IsConstant => mode == 0;
-
         public int GetInt() => value;
         public unsafe float GetFloat() { int tmp = value; return *(float*)&tmp; }
         public bool GetBool() => value != 0;

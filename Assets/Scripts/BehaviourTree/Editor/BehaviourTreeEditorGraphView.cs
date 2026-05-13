@@ -21,8 +21,8 @@ namespace BehaviourTree.Editor
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
         private NodeSearchProvider searchWindow;
         private Label graphTitleLabel;
-
         private Vector2 nextGraphPosition;
+        private CopyPasteHandler copyPasteHandler;
 
         public BehaviourTreeEditorGraphView()
         {
@@ -41,11 +41,35 @@ namespace BehaviourTree.Editor
             AddGrid();
             AddGraphTitle();
             AddSearchWindow();
+            
+            //Setup copy/paste callbacks
+            copyPasteHandler = new CopyPasteHandler(this);
+
+            serializeGraphElements = SerializeGraphSelection;
+            unserializeAndPaste = UnSerializeAndPaste;
 
             //Listen for graph changes to trigger auto-save/compile
             graphViewChanged += OnGraphViewChanged;
 
             Undo.undoRedoPerformed += OnUndoRedo;
+        }
+
+        private void UnSerializeAndPaste(string operationName, string data)
+        {
+            if (string.IsNullOrEmpty(data)) return;
+
+            // Restore the static clipboard from the string
+            copyPasteHandler.DeserializeClipboard(data);
+
+            // Paste the nodes using the handler’s existing logic
+            copyPasteHandler.PasteNodes(tree);
+        }
+
+        private string SerializeGraphSelection(IEnumerable<GraphElement> elements)
+        {
+            copyPasteHandler.CopySelectedNodes();
+
+            return copyPasteHandler.SerializeClipboard();
         }
 
         private void AddGrid()
@@ -89,8 +113,6 @@ namespace BehaviourTree.Editor
                 Rect windowRect = EditorWindow.focusedWindow.position;
 
                 Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(context.screenMousePosition - new Vector2(windowRect.x, windowRect.y)));
-        
-                //localPos -= new Vector2(windowRect.x, windowRect.y);
 
                 nextGraphPosition = localPos;
                 OpenSearchWindow(context.screenMousePosition);
@@ -176,7 +198,7 @@ namespace BehaviourTree.Editor
             return change;
         }
 
-        private void CreateNodeView(BehaviourNode node)
+        public BehaviourNodeView CreateNodeView(BehaviourNode node)
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
             nodeView.OnNodeSelected = OnNodeSelected;
@@ -184,6 +206,8 @@ namespace BehaviourTree.Editor
 
             AddElement(nodeView);
             nodeViewDict[nodeView.Guid] = nodeView;
+
+            return nodeView;
         }
 
         private BehaviourNodeView FindNodeView(BehaviourNode node) 

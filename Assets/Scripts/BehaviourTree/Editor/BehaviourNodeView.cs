@@ -18,7 +18,6 @@ public class BehaviourNodeView : Node
 
     public Action<BehaviourNodeView> OnNodeSelected;
 
-    // ── Runtime debug visuals ──────────────────────
     private VisualElement statusborder;
 
     public BehaviourNodeView(BehaviourNode nodeObject) : base("Assets/Scripts/BehaviourTree/Editor/UIDocuments/GraphNodeView.uxml")

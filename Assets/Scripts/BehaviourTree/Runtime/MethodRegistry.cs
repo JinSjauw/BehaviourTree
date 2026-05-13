@@ -16,7 +16,7 @@ namespace BehaviourTree.Runtime
     /// <summary>
     /// Delegate for behaviour tree methods.
     /// Receives the blackboard (for writing) and a raw span of FieldData (for reading).
-    /// Use <see cref="FieldReader"/> to unpack the span comfortably.
+    /// Use <see cref="FieldReader"/> to unpack the span.
     /// </summary>
     public delegate NodeState BehaviorMethod(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields);
 

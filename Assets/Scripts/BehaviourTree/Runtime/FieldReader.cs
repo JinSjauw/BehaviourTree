@@ -26,7 +26,10 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsConstant)
-                return fd.GetInt();
+            {
+                return fd.GetInt();                
+            }
+
             return blackboard.Get<int>(fd.value);
         }
 
@@ -34,9 +37,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-                blackboard.Set(fd.value, value);
+            {
+                blackboard.Set(fd.value, value);                
+            }
             else
-                Debug.LogWarning($"[FieldReader.SetInt] Field {index} is constant — write ignored.");
+            {
+                Debug.LogWarning($"[FieldReader.SetInt] Field {index} is constant — write ignored.");                
+            }
         }
 
         // ─── Float ────────────────────────────────────────────────────
@@ -45,7 +52,10 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsConstant)
+            {
                 return fd.GetFloat();
+            }
+
             return blackboard.Get<float>(fd.value);
         }
 
@@ -53,9 +63,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
+            {
                 blackboard.Set(fd.value, value);
+            }
             else
+            {
                 Debug.LogWarning($"[FieldReader.SetFloat] Field {index} is constant — write ignored.");
+            }
         }
 
         // ─── Bool ─────────────────────────────────────────────────────
@@ -64,7 +78,9 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsConstant)
+            {
                 return fd.GetBool();
+            }
             return blackboard.Get<bool>(fd.value);
         }
 
@@ -72,9 +88,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-                blackboard.Set(fd.value, value);
+            {
+                blackboard.Set(fd.value, value);                
+            }
             else
+            {
                 Debug.LogWarning($"[FieldReader.SetBool] Field {index} is constant — write ignored.");
+            }
         }
 
         // ─── Vector2 ──────────────────────────────────────────────────
@@ -86,6 +106,11 @@ namespace BehaviourTree
         public Vector2 GetVector2(int index)
         {
             ref readonly FieldData fd = ref fields[index];
+            if(fd.IsConstant)
+            {
+                Debug.LogWarning($"[FieldReader.SetVector2] field is constant. Vector2 not supported");
+                return Vector2.zero;
+            }
             // Both branches use blackboard because 8 bytes don't fit in FieldData's 4-byte value slot.
             return blackboard.Get<Vector2>(fd.value);
         }
@@ -94,9 +119,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
+            {
                 blackboard.Set(fd.value, value);
+            }
             else
+            {
                 Debug.LogWarning($"[FieldReader.SetVector2] Field {index} is constant — write ignored.");
+            }
         }
 
         // ─── Vector3 ──────────────────────────────────────────────────
@@ -104,6 +133,11 @@ namespace BehaviourTree
         public Vector3 GetVector3(int index)
         {
             ref readonly FieldData fd = ref fields[index];
+            if(fd.IsConstant)
+            {
+                Debug.LogWarning($"[FieldReader.GetVector3] field is constant. Vector3 not supported");
+                return Vector3.zero;
+            }
             return blackboard.Get<Vector3>(fd.value);
         }
 
@@ -111,9 +145,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
+            {
                 blackboard.Set(fd.value, value);
+            }
             else
+            {
                 Debug.LogWarning($"[FieldReader.SetVector3] Field {index} is constant — write ignored.");
+            }
         }
 
         // ─── GameObject ───────────────────────────────────────────────
@@ -121,6 +159,13 @@ namespace BehaviourTree
         public GameObject GetGameObject(int index)
         {
             ref readonly FieldData fd = ref fields[index];
+
+            if(fd.IsConstant)
+            {
+                Debug.LogWarning($"[FieldReader.GetGameObject] field is constant. GameObject not supported");
+                return null;
+            }
+
             return blackboard.Get<GameObject>(fd.value);
         }
 
@@ -128,9 +173,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
+            {
                 blackboard.Set(fd.value, value);
+            }
             else
+            {
                 Debug.LogWarning($"[FieldReader.SetGameObject] Field {index} is constant — write ignored.");
+            }
         }
 
         // ─── Transform ────────────────────────────────────────────────
@@ -138,6 +187,12 @@ namespace BehaviourTree
         public Transform GetTransform(int index)
         {
             ref readonly FieldData fd = ref fields[index];
+            if(fd.IsConstant)
+            {
+                Debug.LogWarning($"[FieldReader.GetGameObject] field is constant. Transform not supported");
+                return null;
+            }
+
             return blackboard.Get<Transform>(fd.value);
         }
 
@@ -145,9 +200,13 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
+            {
                 blackboard.Set(fd.value, value);
+            }
             else
+            {
                 Debug.LogWarning($"[FieldReader.SetTransform] Field {index} is constant — write ignored.");
+            }
         }
     }
 }

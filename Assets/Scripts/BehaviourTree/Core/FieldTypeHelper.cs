@@ -12,8 +12,7 @@ namespace BehaviourTree.Core
 public static class FieldTypeHelper
     {
         /// <summary>Every supported FieldType.</summary>
-        public static readonly IReadOnlyList<FieldType> AllFieldTypes =
-            Enum.GetValues(typeof(FieldType)).Cast<FieldType>().ToList();
+        public static readonly IReadOnlyList<FieldType> AllFieldTypes = Enum.GetValues(typeof(FieldType)).Cast<FieldType>().ToList();
 
         public static Type GetSystemType(FieldType ft) => ft switch
         {

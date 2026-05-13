@@ -1,6 +1,6 @@
 {
     "name": "BehaviourTree.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "BehaviourTree.Editor",
     "references": [
         "BehaviourTree.Core",
         "BehaviourTree.Runtime"

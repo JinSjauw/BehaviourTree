@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace BehaviourTree.Runtime 
 {
+   [RequireComponent(typeof(BlackBoard))]
    public class TreeRunner : MonoBehaviour
    {
-      [SerializeField] private BlackBoard blackBoardTest;
-      [SerializeField] private RuntimeBTreeAsset treeAsset;
-      [SerializeField] private NodeData[] nodeDatas;
+      [SerializeField] private BlackBoard blackBoard;
+      [SerializeField] private RuntimeBTreeAsset runtimeAsset;
+      [SerializeField] private BehaviourTreeAsset authoringAsset;
 
       private TreeEvaluator evaluator;
       private RuntimeDebugProvider debugProvider;
@@ -16,12 +17,26 @@ namespace BehaviourTree.Runtime
 
       private void Start()
       {
-         if (treeAsset == null) return;
+         //Check for runtime asset
+         if (runtimeAsset == null)
+         {
+            //Check for authoring time asset
+            if(authoringAsset == null) return;
 
-         blackBoardTest.Initialize(treeAsset.blackboardDefinition);
-         blackBoardTest.Set<Vector2>((int)TestingBT4_BB_Keys.Velocity2D, new Vector2(5, 7));
+            //bake temp runtime asset
+            RuntimeBTreeAsset tempRuntimeAsset = ScriptableObject.CreateInstance<RuntimeBTreeAsset>();
+            tempRuntimeAsset.name = authoringAsset.name + "_Runtime";
+            tempRuntimeAsset.blackboardDefinition = authoringAsset.blackboardDefinition;
+            tempRuntimeAsset.sourceTree = authoringAsset;
 
-         evaluator = new TreeEvaluator(treeAsset.runtimeNodeData, treeAsset.runtimeFieldData);
+            TreeBaker.BakeTree(authoringAsset.rootCopy, authoringAsset.blackboardDefinition, ref tempRuntimeAsset.runtimeNodeData, ref tempRuntimeAsset.runtimeFieldData);
+
+            runtimeAsset = tempRuntimeAsset;
+         }
+
+         blackBoard.Initialize(runtimeAsset.blackboardDefinition);
+
+         evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData);
 
          // Ensure debug provider exists
          debugProvider = GetComponent<RuntimeDebugProvider>();
@@ -31,7 +46,7 @@ namespace BehaviourTree.Runtime
 
       private void Update()
       {
-         evaluator.Evaluate(blackBoardTest);
+         evaluator.Evaluate(blackBoard);
 
          // Expose to editor
          if (debugProvider != null)
@@ -43,12 +58,40 @@ namespace BehaviourTree.Runtime
 
       private void OnDestroy()
       {
-         if (treeAsset == null) return;
+         if (runtimeAsset == null) return;
+      }
+
+      private void OnValidate()
+      {
+         if(runtimeAsset != null)
+         {
+            blackBoard?.BuildSerializedReferences(runtimeAsset.blackboardDefinition);
+         }
+         else if(authoringAsset != null)
+         {
+            blackBoard?.BuildSerializedReferences(authoringAsset.blackboardDefinition);
+         }
+
+         if(runtimeAsset == null && authoringAsset == null)
+         {
+            blackBoard?.ClearSerializedReferences();
+         }
       }
 
       public BehaviourTreeAsset GetSourceTree()
       {
-         return treeAsset.sourceTree;
+         BehaviourTreeAsset sourceTree = null;
+
+         if(runtimeAsset != null)
+         {
+            sourceTree = runtimeAsset.sourceTree;
+         }
+         else if(authoringAsset != null)
+         {
+            sourceTree = authoringAsset;
+         }
+
+         return sourceTree;
       }
    }
 }

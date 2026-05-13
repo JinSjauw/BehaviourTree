@@ -185,12 +185,6 @@ namespace BehaviourTree.Runtime
                     return FieldData.FromConstant(entry.floatValue);
                 case FieldType.Bool:
                     return FieldData.FromConstant(entry.boolValue);
-                case FieldType.Vector2:
-                    // Pack Vector2 as two consecutive FieldData slots handled in evaluator
-                    return FieldData.FromConstant(0);
-                case FieldType.Vector3:
-                    // Pack Vector3 as three consecutive FieldData slots handled in evaluator
-                    return FieldData.FromConstant(0);
                 default:
                     return FieldData.FromConstant(0);
             }

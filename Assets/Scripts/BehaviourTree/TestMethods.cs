@@ -1,6 +1,7 @@
 using System;
 using BehaviourTree.Core;
 using BehaviourTree.Runtime;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -15,10 +16,10 @@ namespace BehaviourTree
             Debug.Log("HELLO WORLD!");
 
             var p = ParamsDeserializer.DeserializeHELLOWORLD(fields, blackBoard);
-            Debug.Log($"Speed: {p.Velocity} , Health: {p.Health}, TestTime: {p.TestTime}");
+            Debug.Log($"Speed: {p.Velocity} , Health: {p.Health}, TestTime: {p.TestTime} Position: {blackBoard.Get<Transform>((int)TestingBT4_BB_Keys.TEST4)?.position}");
 
             p.Health += 3;
-            p.TestTime += 1;
+            //p.TestTime += 1;
 
             ParamsDeserializer.SerializeHELLOWORLD(p, fields, blackBoard);
 

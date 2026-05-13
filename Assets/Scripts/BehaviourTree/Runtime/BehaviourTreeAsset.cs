@@ -65,6 +65,16 @@ namespace BehaviourTree.Editor
             return node;
         }
 
+        public void RegisterNode(BehaviourNode node)
+        {
+            Undo.RecordObject(this, "(BTree) Register Node");
+            nodesList.Add(node);
+
+            AssetDatabase.AddObjectToAsset(node, this);
+            Undo.RegisterCreatedObjectUndo(node, "(BTree) Register Node");
+            AssetDatabase.SaveAssets();
+        }
+
         public void DeleteNode(BehaviourNode node) 
         {
             Undo.RecordObject(this, "(BTree) Create Node");

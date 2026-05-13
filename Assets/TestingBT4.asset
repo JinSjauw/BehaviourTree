@@ -16,7 +16,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 06bfebc3fb0b0c54d91e78d4a1e834a4
-  graphPosition: {x: 1177, y: 769}
+  graphPosition: {x: 1185, y: 792}
   runtimeIndex: 5
   methodID: 1
   fieldEntries:
@@ -82,7 +82,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 06b9a365491b2ec42ade6d4b730ab03e
-  graphPosition: {x: 856, y: 110}
+  graphPosition: {x: 869, y: 110}
   runtimeIndex: 0
 --- !u!114 &-7546540637080290919
 MonoBehaviour:
@@ -121,7 +121,7 @@ MonoBehaviour:
   firstChildIndex: 5
   lastChildIndex: 5
   guid: f1bd11e5b115eff43a7e2df57fcb0a5b
-  graphPosition: {x: 1177, y: 607}
+  graphPosition: {x: 1177, y: 623}
   runtimeIndex: 4
   methodID: 5
   fieldEntries:
@@ -240,7 +240,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 8ce7a42b461b1a64890f8e2d6ff3db9d
-  graphPosition: {x: 698, y: 452}
+  graphPosition: {x: 685, y: 451}
   runtimeIndex: 1
   methodID: 3
   fieldEntries:
@@ -282,18 +282,68 @@ MonoBehaviour:
   sharedVariables:
   - name: TIMER
     typeName: System.Single
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
   - name: HEALTH
     typeName: System.Int32
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
   - name: TIMEDCOUNTER
     typeName: System.Int32
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
   - name: TIMERHELLO
     typeName: System.Single
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
   - name: TEST4
     typeName: UnityEngine.Transform
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
   - name: RepeaterAmount
     typeName: System.Int32
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
   - name: Velocity2D
     typeName: UnityEngine.Vector2
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+  - name: Wow
+    typeName: UnityEngine.GameObject
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
 --- !u!114 &4767961611062358396
 MonoBehaviour:
   m_ObjectHideFlags: 0
