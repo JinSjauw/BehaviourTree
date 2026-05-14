@@ -12,7 +12,18 @@ namespace BehaviourTree.Editor
         private SerializedProperty methodIDProp;
         private SerializedProperty fieldEntriesProp;
         private SerializedProperty blackBoardTypeIDProp;
-        GUIStyle style = new GUIStyle(EditorStyles.label);
+        private GUIStyle style;
+        private GUIStyle RichTextLabelStyle
+        {
+            get
+            {
+                if (style == null) 
+                {
+                    style = new GUIStyle(EditorStyles.label) { richText = true };
+                }
+                return style;
+            }
+        }
 
         private void OnEnable()
         {
@@ -21,8 +32,6 @@ namespace BehaviourTree.Editor
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
-
-            style.richText = true;
         }
 
         public override void OnInspectorGUI()
@@ -80,7 +89,7 @@ namespace BehaviourTree.Editor
                     isVariableProp.boolValue = info.isVariable;
 
                     EditorGUILayout.BeginVertical("box");
-                    EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{fieldType}</color>", style);
+                    EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{fieldType}</color>", RichTextLabelStyle);
 
                     if (isVariableProp.boolValue)
                     {

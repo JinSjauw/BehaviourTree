@@ -34,9 +34,20 @@ namespace BehaviourTree.Runtime
             runtimeAsset = tempRuntimeAsset;
          }
 
-         blackBoard.Initialize(runtimeAsset.blackboardDefinition);
+         if(blackBoard == null)
+         {
+            Debug.LogError("BlackBoard is null");
+            return;
+         };
 
+         blackBoard.Initialize(runtimeAsset.blackboardDefinition);
          evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData);
+
+         if(evaluator == null)
+         {
+            Debug.LogError("TreeEvaluator is null");
+            return;
+         };
 
          // Ensure debug provider exists
          debugProvider = GetComponent<RuntimeDebugProvider>();
@@ -46,7 +57,8 @@ namespace BehaviourTree.Runtime
 
       private void Update()
       {
-         evaluator.Evaluate(blackBoard);
+         if(evaluator == null || blackBoard == null) return;
+         evaluator.Evaluate(blackBoard);  
 
          // Expose to editor
          if (debugProvider != null)
