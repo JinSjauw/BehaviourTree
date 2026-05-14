@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using BehaviourTree.Core;
+using UnityEngine;
 
 namespace BehaviourTree.Runtime
 {
@@ -8,10 +8,9 @@ namespace BehaviourTree.Runtime
     /// </summary>
     public static class NodeHandlerRegistry
     {
-        private static readonly Dictionary<BehaviourNodeType, INodeHandler> handlers = new Dictionary<BehaviourNodeType, INodeHandler>();
+        private static readonly Dictionary<BehaviourNodeType, INodeHandler> handlers = new();
 
-        //private static bool _initialized;
-
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void RegisterDefaults()
         {
             Register(BehaviourNodeType.ACTION, new ActionHandler());

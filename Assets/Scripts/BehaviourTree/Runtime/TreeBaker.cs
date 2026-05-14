@@ -46,7 +46,7 @@ namespace BehaviourTree.Runtime
             if (totalIndex == 0)
             {
                 nodeDict[node] = totalIndex;
-                //node.runtimeIndex = totalIndex;   // ← link for debug view
+                node.runtimeIndex = totalIndex;
                 totalIndex++;
             }
 
@@ -54,7 +54,7 @@ namespace BehaviourTree.Runtime
             {
                 BehaviourNode child = node.children[i];
                 nodeDict[child] = totalIndex;
-                child.runtimeIndex = totalIndex;   // ← link for debug view
+                child.runtimeIndex = totalIndex;
 
                 if (i == 0) node.firstChildIndex = totalIndex;
                 if (i == node.children.Count - 1) node.lastChildIndex = totalIndex;
@@ -164,6 +164,7 @@ namespace BehaviourTree.Runtime
                 case FieldType.Bool:
                     return FieldData.FromConstant(entry.boolValue);
                 default:
+                    UnityEngine.Debug.LogWarning($"[TreeBaker] Unsupported field type for '{entry.fieldType}' for STATIC field '{entry.fieldName}'");
                     return FieldData.FromConstant(0);
             }
         }

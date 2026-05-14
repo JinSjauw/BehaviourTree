@@ -23,8 +23,14 @@ namespace BehaviourTree.Editor
 
         private VisualElement statusborder;
 
-        public BehaviourNodeView(BehaviourNode nodeObject) : base("Assets/Scripts/BehaviourTree/Editor/UIDocuments/GraphNodeView.uxml")
+        public BehaviourNodeView(BehaviourNode nodeObject) : base(BehaviourTreeEditorPaths.GraphNodeViewUxml)
         {
+            if (nodeObject == null)
+            {
+                Debug.LogError("Cannot create BehaviourNodeView for null node object");
+                return;
+            }
+
             NodeSO = nodeObject;
             Guid = NodeSO.guid;
 
@@ -33,18 +39,7 @@ namespace BehaviourTree.Editor
             style.top = NodeSO.graphPosition.y;
 
             SetTooltip();
-
-            inputContainer.style.flexDirection  = FlexDirection.Row;
-            inputContainer.style.justifyContent = Justify.Center;
-            inputContainer.style.alignItems     = Align.Center;
-
-            float borderRadius = 10;
-            inputContainer.style.borderTopLeftRadius = borderRadius;
-            inputContainer.style.borderTopRightRadius = borderRadius;
-
-            outputContainer.style.flexDirection = FlexDirection.Row;
-            outputContainer.style.justifyContent = Justify.Center;
-            outputContainer.style.alignItems = Align.Center;
+            SetPortStyles();
 
             // Cache debug visuals
             statusborder = this.Q<VisualElement>("status-border");
@@ -70,6 +65,21 @@ namespace BehaviourTree.Editor
                 BehaviourNodeType.DECORATOR => Color.chocolate,
                 _ => Color.gray
             };
+        }
+
+        private void SetPortStyles()
+        {
+            inputContainer.style.flexDirection  = FlexDirection.Row;
+            inputContainer.style.justifyContent = Justify.Center;
+            inputContainer.style.alignItems     = Align.Center;
+
+            float borderRadius = 10;
+            inputContainer.style.borderTopLeftRadius = borderRadius;
+            inputContainer.style.borderTopRightRadius = borderRadius;
+
+            outputContainer.style.flexDirection = FlexDirection.Row;
+            outputContainer.style.justifyContent = Justify.Center;
+            outputContainer.style.alignItems = Align.Center;
         }
 
         private void SetTooltip()

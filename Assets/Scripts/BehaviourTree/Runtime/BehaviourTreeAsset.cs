@@ -12,16 +12,11 @@ namespace BehaviourTree.Editor
         public List<BehaviourNode> nodesList;
         public BehaviourNode rootCopy;
         public BlackboardDefinition blackboardDefinition;
-        //private BehaviourNode root;
 
         //Create unique runtime instances of the SO's
         public void Initialize() 
         {
-            nodesList = new List<BehaviourNode>();
-
-            //rootCopy = Instantiate(root);
-
-            nodesList.Add(rootCopy);
+            nodesList = new List<BehaviourNode>{ rootCopy };
 
             for(int i = 0; i < rootCopy.children.Count; i++) 
             {
@@ -79,9 +74,7 @@ namespace BehaviourTree.Editor
         {
             Undo.RecordObject(this, "(BTree) Create Node");
             nodesList.Remove(node);
-            //AssetDatabase.RemoveObjectFromAsset(node);
             Undo.DestroyObjectImmediate(node);
-            AssetDatabase.SaveAssets();
         }
 
         public void AddChild(BehaviourNode parent, BehaviourNode child) 

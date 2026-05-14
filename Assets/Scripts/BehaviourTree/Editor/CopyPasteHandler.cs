@@ -19,7 +19,7 @@ namespace BehaviourTree.Editor
     // <summary> Handles the copy paste actions. Contains the functions supposed to be bound to the graphView copy paste callbacks </summary>
     public class CopyPasteHandler
     {
-        private static ClipBoardData clipBoard;
+        private ClipBoardData clipBoard;
         private BehaviourTreeEditorGraphView graphView;
 
         public CopyPasteHandler(BehaviourTreeEditorGraphView graphView)

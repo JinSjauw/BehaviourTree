@@ -37,9 +37,13 @@ public partial class InspectorView : VisualElement
 
     public void UpdateSelection(BehaviourNodeView nodeView)
     {
+        if(editor != null)
+        {
+            UnityEngine.Object.DestroyImmediate(editor);
+            editor = null;
+        }
+        
         Clear();
-
-        UnityEngine.Object.DestroyImmediate(editor);
 
         editor = Editor.CreateEditor(nodeView.NodeSO);
 

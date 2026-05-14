@@ -26,7 +26,7 @@ namespace BehaviourTree.Editor
 
         public BehaviourTreeEditorGraphView()
         {
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uss");
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.EditorUss);
             styleSheets.Add(styleSheet);
 
             nodeViewDict = new Dictionary<string, BehaviourNodeView>();   
@@ -321,6 +321,7 @@ namespace BehaviourTree.Editor
             DeleteElements(graphElements);
 
             graphViewChanged += OnGraphViewChanged;
+            
             if(tree.nodesList == null)
             {
                 tree.nodesList = new List<BehaviourNode>();
@@ -330,18 +331,33 @@ namespace BehaviourTree.Editor
             {
                 tree.rootCopy = tree.CreateNode(typeof(RootNode));   
                 tree.rootCopy.name = "ROOT";
+                tree.rootCopy.graphPosition = ViewportCenter();
                 EditorUtility.SetDirty(tree);
                 AssetDatabase.SaveAssets();
             }
 
-            for (int i = 0; i < tree.nodesList.Count; i++)
+            for (int i = tree.nodesList.Count - 1; i >= 0; i--)
             {
+                if (tree.nodesList[i] == null)
+                {
+                    tree.nodesList.RemoveAt(i);
+                    continue;
+                }
                 CreateNodeView(tree.nodesList[i]);
             }
 
             for (int i = 0; i < tree.nodesList.Count; i++)
             {
                 BehaviourNode node = tree.nodesList[i];
+
+                for(int j = node.children.Count - 1; j >= 0; j--) 
+                {
+                    if (node.children[j] == null)
+                    {
+                        node.children.RemoveAt(j);
+                        continue;
+                    }
+                }
 
                 for(int j = 0; j < node.children.Count; j++) 
                 {
@@ -393,6 +409,16 @@ namespace BehaviourTree.Editor
 
                 nodeView.SetDebugState(state, isActive);
             }
+        }
+
+        private Vector2 ViewportCenter()
+        {
+            Rect layout = contentViewContainer.layout;
+            if (layout.width > 0 && layout.height > 0)
+            {
+                return new Vector2(layout.width * 0.5f, layout.height * 0.5f);
+            }
+            return new Vector2(400, 300);
         }
     }
 }

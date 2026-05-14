@@ -12,6 +12,7 @@ namespace BehaviourTree.Editor
         private SerializedProperty methodIDProp;
         private SerializedProperty fieldEntriesProp;
         private SerializedProperty blackBoardTypeIDProp;
+        GUIStyle style = new GUIStyle(EditorStyles.label);
 
         private void OnEnable()
         {
@@ -20,6 +21,8 @@ namespace BehaviourTree.Editor
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
+
+            style.richText = true;
         }
 
         public override void OnInspectorGUI()
@@ -31,9 +34,6 @@ namespace BehaviourTree.Editor
             }
 
             serializedObject.Update();
-            
-            GUIStyle style = new GUIStyle(EditorStyles.label);
-            style.richText = true;
 
             // Check if method changed and rebuild field entries
             MethodID selectedMethod = (MethodID)methodIDProp.enumValueIndex;
@@ -42,16 +42,25 @@ namespace BehaviourTree.Editor
 
             EditorGUI.BeginChangeCheck();
 
+            BuildFieldEntries(selectedMethod, methodChanged);
+
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(blackBoardTypeIDProp);
+
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        private void BuildFieldEntries(MethodID selectedMethod, bool methodChanged)
+        {
             // Draw dynamic field entries based on metadata
             List<ParamInfo> paramInfoList = MethodMetadataCache.GetParamsForMethod(selectedMethod);
 
             if (paramInfoList != null && paramInfoList.Count > 0)
             {
-                // Ensure the list size matches
-                while (fieldEntriesProp.arraySize < paramInfoList.Count)
-                    fieldEntriesProp.InsertArrayElementAtIndex(fieldEntriesProp.arraySize);
-                while (fieldEntriesProp.arraySize > paramInfoList.Count)
-                    fieldEntriesProp.DeleteArrayElementAtIndex(fieldEntriesProp.arraySize - 1);
+                if(methodChanged)
+                {
+                    ResizeFieldEntries(paramInfoList);
+                }
 
                 for (int i = 0; i < paramInfoList.Count; i++)
                 {
@@ -68,10 +77,7 @@ namespace BehaviourTree.Editor
                     fieldNameProp.stringValue = info.fieldName;
                     fieldTypeProp.enumValueIndex = (int)fieldType;
 
-                    if (methodChanged)
-                    {
-                        isVariableProp.boolValue = info.isVariable;
-                    }
+                    isVariableProp.boolValue = info.isVariable;
 
                     EditorGUILayout.BeginVertical("box");
                     EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{fieldType}</color>", style);
@@ -94,13 +100,14 @@ namespace BehaviourTree.Editor
                 fieldEntriesProp.ClearArray();
                 EditorGUILayout.HelpBox($"No *_Params struct found for method {selectedMethod}. Create a struct named {selectedMethod}_Params.", MessageType.Warning);
             }
+        }
 
-            serializedObject.ApplyModifiedProperties();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(blackBoardTypeIDProp);
-
-            serializedObject.ApplyModifiedProperties();
+        private void ResizeFieldEntries(List<ParamInfo> paramInfoList)
+        {
+            while (fieldEntriesProp.arraySize < paramInfoList.Count)
+                fieldEntriesProp.InsertArrayElementAtIndex(fieldEntriesProp.arraySize);
+            while (fieldEntriesProp.arraySize > paramInfoList.Count)
+                fieldEntriesProp.DeleteArrayElementAtIndex(fieldEntriesProp.arraySize - 1);
         }
 
         private void DrawConstantField(SerializedProperty entryProp, System.Type fieldType)

@@ -41,7 +41,7 @@ public class BehaviourTreeEditor : EditorWindow
 
     public void CreateGUI()
     {
-        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uxml");
+        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.EditorUxml);
         
         // Null check for UXML asset
         if (visualTree == null)
@@ -53,7 +53,7 @@ public class BehaviourTreeEditor : EditorWindow
         VisualElement root = visualTree.CloneTree();
         root.style.flexGrow = 1; // Fix the thin strip
 
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uss");
+        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.EditorUss);
 
         // Null check for USS stylesheet
         if (styleSheet != null)
@@ -89,7 +89,7 @@ public class BehaviourTreeEditor : EditorWindow
 
         if(assetBarMenu == null)
         {
-            Debug.LogError("Could not find BlackBoardView in UXML");
+            Debug.LogError("Could not find AssetBarMenu in UXML");
         }
         else
         {

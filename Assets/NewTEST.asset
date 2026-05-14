@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
   - {fileID: -1535170593281819264}
-  - {fileID: -1615398001348619793}
   firstChildIndex: 3
   lastChildIndex: 4
   guid: 9851e3e675a8de64da59e782341a49af
@@ -40,6 +39,26 @@ MonoBehaviour:
   guid: 236e1fdc1965f9443941da5559124455
   graphPosition: {x: 469, y: 36.880005}
   runtimeIndex: 0
+--- !u!114 &-4384754180613739280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: 0}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: a805bc7fe1a9eb54b9ff0ce2b9f8e080
+  graphPosition: {x: 902.9987, y: 447}
+  runtimeIndex: 0
+  compositeType: 2
 --- !u!114 &-2211801444963105676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,7 +75,7 @@ MonoBehaviour:
   - name: TIMERCOUNTER
     typeName: System.Int32
     showInitialValue: 0
-    intValue: 0
+    intValue: 1
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -69,72 +88,14 @@ MonoBehaviour:
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
---- !u!114 &-1615398001348619793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
-  m_Name: HELLOWORLD
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.ActionNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: f763d99ffb6e8f64fafc37bccf96e1aa
-  graphPosition: {x: 617.3992, y: 589.4151}
-  runtimeIndex: 4
-  leafType: 4
-  methodID: 1
-  fieldEntries:
-  - fieldName: Speed
-    isVariable: 0
-    variableName: 
-    fieldType: 3
+  - name: TIMER2
+    typeName: System.Single
+    showInitialValue: 0
     intValue: 0
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: Velocity
-    isVariable: 1
-    variableName: 
-    fieldType: 3
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: Health
-    isVariable: 1
-    variableName: TIMERCOUNTER
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: TestTime
-    isVariable: 1
-    variableName: TIMER
-    fieldType: 1
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  BlackBoardTypeID: 0
 --- !u!114 &-1535170593281819264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +112,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: a387691baf48aed42a54b15377fe70f2
-  graphPosition: {x: 401.99994, y: 597}
+  graphPosition: {x: 419, y: 606}
   runtimeIndex: 3
   leafType: 4
   methodID: 2
@@ -203,6 +164,7 @@ MonoBehaviour:
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
+  - {fileID: 61187404755080734}
   - {fileID: -8943115100841911158}
   firstChildIndex: 1
   lastChildIndex: 2
@@ -226,7 +188,6 @@ MonoBehaviour:
   - {fileID: -7947492844474799976}
   - {fileID: -764470658276670382}
   - {fileID: -8943115100841911158}
-  - {fileID: -1615398001348619793}
   - {fileID: -1535170593281819264}
   - {fileID: 61187404755080734}
   rootCopy: {fileID: -7947492844474799976}
@@ -247,8 +208,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 9fca7e2c23467584a9e8511938b3498f
-  graphPosition: {x: 833.175, y: 378.235}
-  runtimeIndex: 0
+  graphPosition: {x: 173, y: 417}
+  runtimeIndex: 1
   leafType: 3
   methodID: 3
   fieldEntries:
@@ -265,7 +226,7 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   - fieldName: timer
     isVariable: 1
-    variableName: TIMER
+    variableName: TIMER2
     fieldType: 1
     intValue: 0
     floatValue: 0
@@ -275,3 +236,23 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
+--- !u!114 &5324547859137487454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: 0}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 93c3d86baa2811b4b93815d4921210fe
+  graphPosition: {x: 794.38556, y: 451.02264}
+  runtimeIndex: 0
+  compositeType: 2

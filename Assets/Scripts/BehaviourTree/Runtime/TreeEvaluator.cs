@@ -27,8 +27,6 @@ namespace BehaviourTree.Runtime
             this.fieldDatas = fieldDatas;
             nodeStack = new Stack<EvaluatorFrame>();
             nodeStates = new NodeState[nodeDatas.Length];
-
-            NodeHandlerRegistry.RegisterDefaults();
         }
 
         public void Evaluate(BlackBoard blackBoard)
