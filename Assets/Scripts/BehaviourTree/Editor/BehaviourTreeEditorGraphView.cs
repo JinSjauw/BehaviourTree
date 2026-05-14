@@ -21,7 +21,6 @@ namespace BehaviourTree.Editor
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
         private NodeSearchProvider searchWindow;
         private Label graphTitleLabel;
-        private Vector2 nextGraphPosition;
         private CopyPasteHandler copyPasteHandler;
 
         public BehaviourTreeEditorGraphView()
@@ -114,7 +113,7 @@ namespace BehaviourTree.Editor
 
                 Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(context.screenMousePosition - new Vector2(windowRect.x, windowRect.y)));
 
-                nextGraphPosition = localPos;
+                searchWindow.SetCreationPosition(localPos);
                 OpenSearchWindow(context.screenMousePosition);
             };
         }
@@ -149,65 +148,79 @@ namespace BehaviourTree.Editor
 
         private GraphViewChange OnGraphViewChanged(GraphViewChange change)
         {
-            // If nodes/edges were added, removed, or moved, notify exporter
             if (change.elementsToRemove != null)
-            {
-                for (int i = 0; i < change.elementsToRemove.Count; i++)
-                {
-                    BehaviourNodeView nodeView = change.elementsToRemove[i] as BehaviourNodeView;
-                    if (nodeView != null)
-                    {
-                        tree.DeleteNode(nodeView.NodeSO);
-                        //Remove from dict
-                        nodeViewDict.Remove(nodeView.Guid);
-                    }
+                HandleElementRemoval(change.elementsToRemove);
 
-                    Edge edge = change.elementsToRemove[i] as Edge;
-                    if(edge != null) 
-                    {
-                        BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
-                        BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
-                        tree.RemoveChild(parentView.NodeSO, childView.NodeSO);
-                    }
-                }
+            if (change.edgesToCreate != null)
+                HandleEdgeCreation(change.edgesToCreate);
 
-                onGraphDataChanged?.Invoke(this);
-            }
-
-            if(change.edgesToCreate != null) 
-            {
-                for(int i = 0; i < change.edgesToCreate.Count; i++) 
-                {
-                    Edge edge = change.edgesToCreate[i];
-                    BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
-                    BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
-
-                    tree.AddChild(parentView.NodeSO, childView.NodeSO);
-                }
-                onGraphDataChanged?.Invoke(this);
-            }
-
-            if(change.movedElements != null)
-            {
-                foreach(BehaviourNodeView nodeView in nodeViewDict.Values)
-                {
-                    nodeView.SortChildren();
-                }
-            }
+            if (change.movedElements != null)
+                HandleElementsMoved();
 
             return change;
         }
 
+        private void HandleElementRemoval(List<GraphElement> elementsToRemove)
+        {
+            for (int i = 0; i < elementsToRemove.Count; i++)
+            {
+                if (elementsToRemove[i] is BehaviourNodeView nodeView)
+                {
+                    tree.DeleteNode(nodeView.NodeSO);
+                    nodeViewDict.Remove(nodeView.Guid);
+                }
+                else if (elementsToRemove[i] is Edge edge)
+                {
+                    BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
+                    BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
+                    tree.RemoveChild(parentView.NodeSO, childView.NodeSO);
+                }
+            }
+
+            onGraphDataChanged?.Invoke(this);
+        }
+
+        private void HandleEdgeCreation(List<Edge> edgesToCreate)
+        {
+            for (int i = 0; i < edgesToCreate.Count; i++)
+            {
+                Edge edge = edgesToCreate[i];
+                BehaviourNodeView parentView = edge.output.node as BehaviourNodeView;
+                BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
+
+                tree.AddChild(parentView.NodeSO, childView.NodeSO);
+            }
+
+            onGraphDataChanged?.Invoke(this);
+        }
+
+        private void HandleElementsMoved()
+        {
+            foreach (BehaviourNodeView nodeView in nodeViewDict.Values)
+                nodeView.SortChildren();
+        }
+
         public BehaviourNodeView CreateNodeView(BehaviourNode node)
+        {
+            BehaviourNodeView nodeView = BuildNodeView(node);
+            RegisterNodeView(nodeView);
+            return nodeView;
+        }
+
+        private BehaviourNodeView BuildNodeView(BehaviourNode node)
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
             nodeView.OnNodeSelected = OnNodeSelected;
             nodeView.layer = 0;
-
-            AddElement(nodeView);
-            nodeViewDict[nodeView.Guid] = nodeView;
-
             return nodeView;
+        }
+
+        private void RegisterNodeView(BehaviourNodeView nodeView)
+        {
+            AddElement(nodeView);
+
+            if (!nodeViewDict.TryAdd(nodeView.Guid, nodeView))
+                Debug.LogWarning($"Duplicate GUID in graph view: {nodeView.Guid}");
         }
 
         private BehaviourNodeView FindNodeView(BehaviourNode node) 
@@ -220,34 +233,34 @@ namespace BehaviourTree.Editor
             return null;
         }
         
-        public BehaviourNode CreateCompositeNode(BehaviourNodeType compositeType) 
+        public BehaviourNode CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
         {
             CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
             node.SetCompositeType(compositeType);
             node.name = compositeType.ToString();
-            node.graphPosition = nextGraphPosition;
+            node.graphPosition = position;
             
             CreateNodeView(node);
             return node;
         }
         
-        public void CreateLeafNode(MethodID methodID, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
+        public void CreateLeafNode(MethodID methodID, Vector2 position, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
         {
             LeafNode node = (LeafNode)tree.CreateNode(typeof(LeafNode));
             node.SetLeafType(leafType);
             node.methodID = methodID;
             node.name = methodID.ToString();
-            node.graphPosition = nextGraphPosition;
+            node.graphPosition = position;
 
             CreateNodeView(node);
         }
 
-        public void CreateDecoratorNode(MethodID methodID)
+        public void CreateDecoratorNode(MethodID methodID, Vector2 position)
         {
             DecoratorNode node = (DecoratorNode)tree.CreateNode(typeof(DecoratorNode));
             node.methodID = methodID;
             node.name = methodID.ToString();
-            node.graphPosition = nextGraphPosition;
+            node.graphPosition = position;
 
             CreateNodeView(node);
         }
@@ -258,41 +271,52 @@ namespace BehaviourTree.Editor
 
             foreach (var port in ports)
             {
-                // Block obvious invalid connections
-                if (port == startPort) continue;                           // No self-connect
-                if (port.node == startPort.node) continue;                 // No same-node
-                if (port.direction == startPort.direction) continue;       // Input↔Input or Output↔Output
+                if (IsSelfOrSameNode(port, startPort)) continue;
+                if (IsWrongDirection(port, startPort)) continue;
 
-                // Cast to your custom node type for BT-specific rules
                 if (startPort.node is BehaviourNodeView startNode &&
                     port.node is BehaviourNodeView endNode)
                 {
-                    //Root node can't be a child
-                    if (endNode.NodeSO.NodeType == BehaviourNodeType.ROOT && port.direction == Direction.Input)
-                        continue;
-
-                    //Leaf nodes can't have children
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.ACTION && port.direction == Direction.Input)
-                        continue;
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.CONDITION && port.direction == Direction.Input)
-                        continue;
-
-                    if(endNode.NodeSO.children.Contains(startNode.NodeSO)) continue;
-                    //Decorators can only have ONE child
-                    //if (startNode.NodeType == BTNodeType.Decorator &&
-                    //    port.direction == Direction.Output &&
-                    //    startNode.GetChildCount() >= 1)
-                    //    continue;
-
-                    //Prevent cycles
-                    if (WouldCreateCycle(startNode, endNode))
-                        continue;
+                    if (IsRootAsChild(endNode, port)) continue;
+                    if (IsLeafNodeParenting(startNode, port)) continue;
+                    if (IsDuplicateChild(endNode, startNode)) continue;
+                    if (WouldCreateCycle(startNode, endNode)) continue;
                 }
 
                 compatible.Add(port);
             }
 
             return compatible;
+        }
+
+        private static bool IsSelfOrSameNode(Port port, Port startPort)
+        {
+            return port == startPort || port.node == startPort.node;
+        }
+
+        private static bool IsWrongDirection(Port port, Port startPort)
+        {
+            return port.direction == startPort.direction;
+        }
+
+        private static bool IsRootAsChild(BehaviourNodeView endNode, Port port)
+        {
+            return endNode.NodeSO.NodeType == BehaviourNodeType.ROOT
+                && port.direction == Direction.Input;
+        }
+
+        private static bool IsLeafNodeParenting(BehaviourNodeView startNode, Port port)
+        {
+            if (port.direction != Direction.Input) return false;
+
+            var nodeType = startNode.NodeSO.NodeType;
+            return nodeType == BehaviourNodeType.ACTION
+                || nodeType == BehaviourNodeType.CONDITION;
+        }
+
+        private static bool IsDuplicateChild(BehaviourNodeView endNode, BehaviourNodeView startNode)
+        {
+            return endNode.NodeSO.children.Contains(startNode.NodeSO);
         }
 
         //Build dropdown menu
@@ -306,36 +330,51 @@ namespace BehaviourTree.Editor
 
         public void PopulateView(BehaviourTreeAsset tree)
         {
-            if (!tree) 
+            if (!tree)
             {
-                Debug.LogWarning($"No treeAsset selected");
-                return; 
+                Debug.LogWarning("No treeAsset selected");
+                return;
             }
 
-            this.tree = tree;
+            InitTree(tree);
+            ClearAndRebuildViews();
+            EnsureRootNodeExists();
+            CleanupAndCreateViews();
+            CleanupAndWireEdges();
+        }
 
+        private void InitTree(BehaviourTreeAsset tree)
+        {
+            this.tree = tree;
             graphTitleLabel.text = tree.name;
 
-            graphViewChanged -= OnGraphViewChanged;
-
-            DeleteElements(graphElements);
-
-            graphViewChanged += OnGraphViewChanged;
-            
-            if(tree.nodesList == null)
-            {
+            if (tree.nodesList == null)
                 tree.nodesList = new List<BehaviourNode>();
-            }
+        }
 
-            if(tree.rootCopy == null)
+        private void ClearAndRebuildViews()
+        {
+            graphViewChanged -= OnGraphViewChanged;
+            try
             {
-                tree.rootCopy = tree.CreateNode(typeof(RootNode));   
-                tree.rootCopy.name = "ROOT";
-                tree.rootCopy.graphPosition = ViewportCenter();
-                EditorUtility.SetDirty(tree);
-                AssetDatabase.SaveAssets();
+                DeleteElements(graphElements);
+                nodeViewDict.Clear();
             }
+            finally { graphViewChanged += OnGraphViewChanged; }
+        }
 
+        private void EnsureRootNodeExists()
+        {
+            if (tree.rootCopy != null) return;
+
+            tree.rootCopy = tree.CreateNode(typeof(RootNode));
+            tree.rootCopy.name = "ROOT";
+            tree.rootCopy.graphPosition = ViewportCenter();
+            EditorUtility.SetDirty(tree);
+        }
+
+        private void CleanupAndCreateViews()
+        {
             for (int i = tree.nodesList.Count - 1; i >= 0; i--)
             {
                 if (tree.nodesList[i] == null)
@@ -345,21 +384,21 @@ namespace BehaviourTree.Editor
                 }
                 CreateNodeView(tree.nodesList[i]);
             }
+        }
 
+        private void CleanupAndWireEdges()
+        {
             for (int i = 0; i < tree.nodesList.Count; i++)
             {
                 BehaviourNode node = tree.nodesList[i];
 
-                for(int j = node.children.Count - 1; j >= 0; j--) 
+                for (int j = node.children.Count - 1; j >= 0; j--)
                 {
                     if (node.children[j] == null)
-                    {
                         node.children.RemoveAt(j);
-                        continue;
-                    }
                 }
 
-                for(int j = 0; j < node.children.Count; j++) 
+                for (int j = 0; j < node.children.Count; j++)
                 {
                     BehaviourNodeView parentView = FindNodeView(node);
                     BehaviourNodeView childView = FindNodeView(node.children[j]);
@@ -382,7 +421,6 @@ namespace BehaviourTree.Editor
             }
         }
     
-        //TEMP
         public void RefreshDebugVisuals(TreeRunner runner)
         {
             // Only meaningful in Play Mode

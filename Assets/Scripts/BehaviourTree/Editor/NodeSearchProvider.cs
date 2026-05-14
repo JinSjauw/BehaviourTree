@@ -13,6 +13,7 @@ namespace BehaviourTree.Editor
         private List<MethodID> conditionMethods;
         private List<MethodID> decoratorMethods;
         private BehaviourTreeEditorGraphView graphView;
+        private Vector2 creationPosition;
 
         private Texture2D identationIcon;
 
@@ -46,6 +47,11 @@ namespace BehaviourTree.Editor
                     decoratorMethods.Add((MethodID)field.GetValue(null));
                 }
             }
+        }
+
+        public void SetCreationPosition(Vector2 position)
+        {
+            creationPosition = position;
         }
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
@@ -108,22 +114,22 @@ namespace BehaviourTree.Editor
             {
                 case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE:
                 {
-                    graphView.CreateCompositeNode(compositeType);
+                    graphView.CreateCompositeNode(compositeType, creationPosition);
                     return true;
                 }
                 case MethodID methodID when decoratorMethods.Contains(methodID):
                 {
-                    graphView.CreateDecoratorNode(methodID);
+                    graphView.CreateDecoratorNode(methodID, creationPosition);
                     return true;
                 }
                 case MethodID methodID when conditionMethods.Contains(methodID):
                 {
-                    graphView.CreateLeafNode(methodID, BehaviourNodeType.CONDITION);
+                    graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.CONDITION);
                     return true;
                 }
                 case MethodID methodID when actionMethods.Contains(methodID):
                 {
-                    graphView.CreateLeafNode(methodID, BehaviourNodeType.ACTION);
+                    graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.ACTION);
                     return true;
                 }
 
