@@ -87,6 +87,7 @@ MonoBehaviour:
   guid: f763d99ffb6e8f64fafc37bccf96e1aa
   graphPosition: {x: 617.3992, y: 589.4151}
   runtimeIndex: 4
+  leafType: 4
   methodID: 1
   fieldEntries:
   - fieldName: Speed
@@ -152,6 +153,7 @@ MonoBehaviour:
   guid: a387691baf48aed42a54b15377fe70f2
   graphPosition: {x: 401.99994, y: 597}
   runtimeIndex: 3
+  leafType: 4
   methodID: 2
   fieldEntries:
   - fieldName: waitingTime
@@ -201,7 +203,6 @@ MonoBehaviour:
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
-  - {fileID: 6524429169826552558}
   - {fileID: -8943115100841911158}
   firstChildIndex: 1
   lastChildIndex: 2
@@ -225,12 +226,12 @@ MonoBehaviour:
   - {fileID: -7947492844474799976}
   - {fileID: -764470658276670382}
   - {fileID: -8943115100841911158}
-  - {fileID: 6524429169826552558}
   - {fileID: -1615398001348619793}
   - {fileID: -1535170593281819264}
+  - {fileID: 61187404755080734}
   rootCopy: {fileID: -7947492844474799976}
   blackboardDefinition: {fileID: -2211801444963105676}
---- !u!114 &6524429169826552558
+--- !u!114 &61187404755080734
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,9 +246,10 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 4beddd2591ea5ae4e85a1e4579bc223b
-  graphPosition: {x: 128.0119, y: 423.5}
-  runtimeIndex: 1
+  guid: 9fca7e2c23467584a9e8511938b3498f
+  graphPosition: {x: 833.175, y: 378.235}
+  runtimeIndex: 0
+  leafType: 3
   methodID: 3
   fieldEntries:
   - fieldName: testTimedThreshhold

@@ -231,9 +231,10 @@ namespace BehaviourTree.Editor
             return node;
         }
         
-        public void CreateLeafNode(MethodID methodID)
+        public void CreateLeafNode(MethodID methodID, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
         {
-            ActionNode node = (ActionNode)tree.CreateNode(typeof(ActionNode));
+            LeafNode node = (LeafNode)tree.CreateNode(typeof(LeafNode));
+            node.SetLeafType(leafType);
             node.methodID = methodID;
             node.name = methodID.ToString();
             node.graphPosition = nextGraphPosition;

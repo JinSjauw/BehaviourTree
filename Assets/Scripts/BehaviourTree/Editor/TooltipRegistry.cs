@@ -72,10 +72,8 @@ namespace BehaviourTree.Editor
 
         public static NodeTooltipData GetTooltip(BehaviourNode node)
         {
-            if (node is ActionNode actionNode)
+            if (node is LeafNode actionNode)
                 return GetTooltip(actionNode.methodID);
-            if (node is ConditionNode conditionNode)
-                return GetTooltip(conditionNode.methodID);
             if (node is DecoratorNode decoratorNode)
                 return GetTooltip(decoratorNode.methodID);
 

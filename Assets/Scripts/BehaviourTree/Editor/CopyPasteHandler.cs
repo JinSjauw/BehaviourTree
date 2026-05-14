@@ -138,7 +138,9 @@ namespace BehaviourTree.Editor
             switch (data.nodeType)
             {
                 case BehaviourNodeType.ACTION:
-                    ActionNode actionNode = ScriptableObject.CreateInstance<ActionNode>();
+                case BehaviourNodeType.CONDITION:
+                    LeafNode actionNode = ScriptableObject.CreateInstance<LeafNode>();
+                    actionNode.SetLeafType(data.nodeType);
                     actionNode.name = data.methodID.ToString();
                     actionNode.methodID = data.methodID;
                     actionNode.fieldEntries = data.fieldEntries;
@@ -192,9 +194,9 @@ namespace BehaviourTree.Editor
                 graphPosition = node.graphPosition
             };
 
-            if(node.NodeType == BehaviourNodeType.ACTION)
+            if(node.NodeType == BehaviourNodeType.ACTION || node.NodeType == BehaviourNodeType.CONDITION)
             {
-                ActionNode actionNode = (ActionNode)node;
+                LeafNode actionNode = (LeafNode)node;
                 serializedNode.methodID = actionNode.methodID;
                 serializedNode.fieldEntries = actionNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = actionNode.BlackBoardTypeID;

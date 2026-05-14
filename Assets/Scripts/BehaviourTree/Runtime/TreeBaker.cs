@@ -25,13 +25,9 @@ namespace BehaviourTree.Runtime
             int totalFieldDataCount = 0;
             foreach (BehaviourNode node in nodeToIndex.Keys)
             {
-                if (node is ActionNode action)
+                if (node is LeafNode action)
                 {
                     totalFieldDataCount += action.fieldEntries?.Count ?? 0;
-                }
-                else if (node is ConditionNode cond)
-                {
-                    totalFieldDataCount += cond.fieldEntries?.Count ?? 0;
                 }
                 else if (node is DecoratorNode decorator)
                 {
@@ -98,27 +94,9 @@ namespace BehaviourTree.Runtime
                         break;
 
                     case BehaviourNodeType.CONDITION:
-                        {
-                            ConditionNode cond = (ConditionNode)node;
-                            nodeData.methodID = cond.methodID;
-                            nodeData.blackBoardTypeID = cond.BlackBoardTypeID;
-                            nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                            nodeData.fieldDataCount = cond.fieldEntries?.Count ?? 0;
-
-                            if (cond.fieldEntries != null)
-                            {
-                                foreach (var entry in cond.fieldEntries)
-                                {
-                                    FieldData fd = PackFieldEntry(entry, bbDef);
-                                    fieldDataArray[currentFieldDataOffset++] = fd;
-                                }
-                            }
-                        }
-                        break;
-
                     case BehaviourNodeType.ACTION:
                         {
-                            ActionNode action = (ActionNode)node;
+                            LeafNode action = (LeafNode)node;
                             nodeData.methodID = action.methodID;
                             nodeData.blackBoardTypeID = action.BlackBoardTypeID;
                             nodeData.fieldDataStartIndex = currentFieldDataOffset;

@@ -116,9 +116,14 @@ namespace BehaviourTree.Editor
                     graphView.CreateDecoratorNode(methodID);
                     return true;
                 }
-                case MethodID methodID:
+                case MethodID methodID when conditionMethods.Contains(methodID):
                 {
-                    graphView.CreateLeafNode(methodID);
+                    graphView.CreateLeafNode(methodID, BehaviourNodeType.CONDITION);
+                    return true;
+                }
+                case MethodID methodID when actionMethods.Contains(methodID):
+                {
+                    graphView.CreateLeafNode(methodID, BehaviourNodeType.ACTION);
                     return true;
                 }
 

@@ -24,7 +24,7 @@ namespace BehaviourTree.Editor
 
         public override void OnInspectorGUI()
         {
-            if(!(target is ActionNode || target is ConditionNode || target is DecoratorNode)) 
+            if(!(target is LeafNode || target is DecoratorNode)) 
             {
                 DrawDefaultInspector();
                 return;

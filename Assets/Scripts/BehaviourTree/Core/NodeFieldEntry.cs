@@ -5,7 +5,7 @@ namespace BehaviourTree.Core
 {
     /// <summary>
     /// Union struct that holds either a constant value or a blackboard variable name.
-    /// Stored per-field on ActionNode/ConditionNode.
+    /// Stored per-field on ActionNode.
     /// </summary>
     [Serializable]
     public struct NodeFieldEntry

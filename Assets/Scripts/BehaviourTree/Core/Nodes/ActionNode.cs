@@ -4,9 +4,11 @@ using UnityEngine;
 namespace BehaviourTree.Core
 {
     //[CreateAssetMenu(fileName = "Action Node", menuName = "Scriptable Objects/BT Nodes/Action Node")]
-    public class ActionNode : BehaviourNode
+    public class LeafNode : BehaviourNode
     {
-        public override BehaviourNodeType NodeType => BehaviourNodeType.ACTION;
+        [HideInInspector] [SerializeField] private BehaviourNodeType leafType = BehaviourNodeType.ACTION;
+
+        public override BehaviourNodeType NodeType => leafType;
 
         public MethodID methodID;
         
@@ -14,5 +16,10 @@ namespace BehaviourTree.Core
         public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();
 
         public BlackBoardType BlackBoardTypeID;
+
+        public void SetLeafType(BehaviourNodeType type)
+        {
+            leafType = type;
+        }
     }
 }
