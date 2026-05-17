@@ -41,5 +41,8 @@ namespace BehaviourTree.Core
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_HasChangedTransform = 36,
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_EdgeRisingBool = 37,
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_EdgeFallingBool = 38,
+        [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckBool = 39,
+        [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckGameObject = 40,
+        [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckTransform = 41,
     }
 }

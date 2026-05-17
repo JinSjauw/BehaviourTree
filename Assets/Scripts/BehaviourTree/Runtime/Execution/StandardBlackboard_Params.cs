@@ -64,6 +64,27 @@ namespace BehaviourTree.Runtime
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_CheckBool_NodeFields
+    {
+        [SharedVar] public bool Value;
+        public BoolCheckOp Operation;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_CheckGameObject_NodeFields
+    {
+        [SharedVar] public GameObject Value;
+        public NullCheckOp Operation;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_CheckTransform_NodeFields
+    {
+        [SharedVar] public Transform Value;
+        public NullCheckOp Operation;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public partial struct BB_SetInt_NodeFields
     {
         [SharedVar] public int Target;

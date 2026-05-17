@@ -154,8 +154,6 @@ namespace BehaviourTree
             {
                 ObjectCompareOp.Equal => a == b,
                 ObjectCompareOp.NotEqual => a != b,
-                ObjectCompareOp.IsNull => a == null,
-                ObjectCompareOp.IsNotNull => a != null,
                 _ => false
             };
 
@@ -175,8 +173,60 @@ namespace BehaviourTree
             {
                 ObjectCompareOp.Equal => a == b,
                 ObjectCompareOp.NotEqual => a != b,
-                ObjectCompareOp.IsNull => a == null,
-                ObjectCompareOp.IsNotNull => a != null,
+                _ => false
+            };
+
+            return result ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+
+        [BTreeMethod(MethodID.BB_CheckBool)]
+        public static NodeState BB_CheckBool(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
+
+            bool value = blackBoard.Get<bool>(fields[0].value);
+            BoolCheckOp op = (BoolCheckOp)fields[1].GetInt();
+
+            bool result = op switch
+            {
+                BoolCheckOp.IsTrue => value,
+                BoolCheckOp.IsFalse => !value,
+                _ => false
+            };
+
+            return result ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+
+        [BTreeMethod(MethodID.BB_CheckGameObject)]
+        public static NodeState BB_CheckGameObject(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
+
+            GameObject value = blackBoard.Get<GameObject>(fields[0].value);
+            NullCheckOp op = (NullCheckOp)fields[1].GetInt();
+
+            bool result = op switch
+            {
+                NullCheckOp.IsNull => value == null,
+                NullCheckOp.IsNotNull => value != null,
+                _ => false
+            };
+
+            return result ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+
+        [BTreeMethod(MethodID.BB_CheckTransform)]
+        public static NodeState BB_CheckTransform(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
+
+            Transform value = blackBoard.Get<Transform>(fields[0].value);
+            NullCheckOp op = (NullCheckOp)fields[1].GetInt();
+
+            bool result = op switch
+            {
+                NullCheckOp.IsNull => value == null,
+                NullCheckOp.IsNotNull => value != null,
                 _ => false
             };
 
