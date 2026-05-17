@@ -97,6 +97,54 @@ namespace BehaviourTree
             }
         }
 
+        public T GetEnum<T>(int index) where T : struct
+        {
+            Type t = typeof(T);
+            if (!t.IsEnum)
+            {
+                Debug.LogWarning($"[FieldReader.GetEnum] {t.Name} is not an enum. Returning default.");
+                return default;
+            }
+
+            ref readonly FieldData fd = ref fields[index];
+            if (fd.IsConstant)
+            {
+                return (T)Enum.ToObject(t, fd.value);
+            }
+
+            object raw = blackboard.Get<object>(fd.value);
+            if (raw is T typed)
+            {
+                return typed;
+            }
+            if (raw is int rawInt)
+            {
+                return (T)Enum.ToObject(t, rawInt);
+            }
+
+            return default;
+        }
+
+        public void SetEnum<T>(int index, T value) where T : struct
+        {
+            Type t = typeof(T);
+            if (!t.IsEnum)
+            {
+                Debug.LogWarning($"[FieldReader.SetEnum] {t.Name} is not an enum. Write ignored.");
+                return;
+            }
+
+            ref readonly FieldData fd = ref fields[index];
+            if (fd.IsVariable)
+            {
+                blackboard.Set(fd.value, value);
+            }
+            else
+            {
+                Debug.LogWarning($"[FieldReader.SetEnum] Field {index} is constant — write ignored.");
+            }
+        }
+
         // ─── Vector2 ──────────────────────────────────────────────────
 
         /// <summary>

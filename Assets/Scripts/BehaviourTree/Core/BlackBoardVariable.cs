@@ -24,7 +24,7 @@ namespace BehaviourTree.Core
         public bool SupportsInitialValue()
         {
             Type type = FieldTypeHelper.GetSystemTypeFromName(typeName);
-            return type != null && type.IsValueType;
+            return type != null && type.IsValueType && !type.IsEnum;
         }
 
         /// <summary>

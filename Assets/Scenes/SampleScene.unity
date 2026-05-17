@@ -479,7 +479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
   blackBoard: {fileID: 923873417}
   runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 57634f0c932b5d743a50618b08714ad8, type: 2}
+  authoringAsset: {fileID: 0}
 --- !u!114 &923873417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -492,10 +492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  serializedReferences: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

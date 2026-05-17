@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using BehaviourTree.Core;
+using System;
 
 namespace BehaviourTree.Editor
 {
@@ -12,6 +13,7 @@ namespace BehaviourTree.Editor
         private SerializedProperty methodIDProp;
         private SerializedProperty fieldEntriesProp;
         private SerializedProperty blackBoardTypeIDProp;
+        private SerializedProperty childrenProp;
         private GUIStyle style;
         private GUIStyle RichTextLabelStyle
         {
@@ -32,17 +34,20 @@ namespace BehaviourTree.Editor
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
+            childrenProp = serializedObject.FindProperty("children");
         }
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             if(!(target is LeafNode || target is DecoratorNode)) 
             {
                 DrawDefaultInspector();
+                DrawChildrenDebug();
+                serializedObject.ApplyModifiedProperties();
                 return;
             }
-
-            serializedObject.Update();
 
             // Check if method changed and rebuild field entries
             MethodID selectedMethod = (MethodID)methodIDProp.enumValueIndex;
@@ -56,7 +61,18 @@ namespace BehaviourTree.Editor
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(blackBoardTypeIDProp);
 
+            DrawChildrenDebug();
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private void DrawChildrenDebug()
+        {
+            if (childrenProp == null) return;
+
+            EditorGUILayout.Space();
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.PropertyField(childrenProp, true);
+            EditorGUI.EndDisabledGroup();
         }
 
         private void BuildFieldEntries(MethodID selectedMethod, bool methodChanged)
@@ -119,9 +135,17 @@ namespace BehaviourTree.Editor
                 fieldEntriesProp.DeleteArrayElementAtIndex(fieldEntriesProp.arraySize - 1);
         }
 
-        private void DrawConstantField(SerializedProperty entryProp, System.Type fieldType)
+        private void DrawConstantField(SerializedProperty entryProp, Type fieldType)
         {
-            if (fieldType == typeof(int) || fieldType == typeof(uint))
+            if (fieldType != null && fieldType.IsEnum)
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("intValue");
+                int currentRaw = prop.intValue;
+                Enum current = (Enum)Enum.ToObject(fieldType, currentRaw);
+                Enum next = EditorGUILayout.EnumPopup("Value", current);
+                prop.intValue = Convert.ToInt32(next);
+            }
+            else if (fieldType == typeof(int) || fieldType == typeof(uint))
             {
                 SerializedProperty prop = entryProp.FindPropertyRelative("intValue");
                 prop.intValue = EditorGUILayout.IntField("Value", prop.intValue);
@@ -142,8 +166,36 @@ namespace BehaviourTree.Editor
             }
         }
 
-        private void DrawVariableDropdown(SerializedProperty variableNameProp, System.Type expectedType)
+        private void DrawVariableDropdown(SerializedProperty variableNameProp, Type expectedType)
         {
+            if (expectedType == null)
+            {
+                EditorGUILayout.HelpBox("[SharedVar] field type could not be resolved.", MessageType.Warning);
+                return;
+            }
+
+            if (expectedType.IsEnum)
+            {
+                EditorGUILayout.HelpBox($"[SharedVar] enum fields are not supported. Use an int SharedVar instead.", MessageType.Warning);
+                return;
+            }
+
+            bool isSupportedType = false;
+            for (int i = 0; i < FieldTypeHelper.AllFieldTypes.Count; i++)
+            {
+                if (FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[i]) == expectedType)
+                {
+                    isSupportedType = true;
+                    break;
+                }
+            }
+
+            if (!isSupportedType)
+            {
+                EditorGUILayout.HelpBox($"[SharedVar] type '{expectedType.FullName}' is not supported as a blackboard variable.", MessageType.Warning);
+                return;
+            }
+
             BlackboardDefinition blackBoardDef = BehaviourTreeEditor.currentBlackboardDef;
 
             if (blackBoardDef == null)
@@ -162,7 +214,7 @@ namespace BehaviourTree.Editor
             var matchingVars = new List<string>();
             for (int v = 0; v < blackBoardDef.sharedVariables.Count; v++)
             {
-                System.Type bbType = FieldTypeHelper.GetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName);
+                Type bbType = FieldTypeHelper.GetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName);
                 if (bbType == expectedType)
                 {
                     matchingVars.Add(blackBoardDef.sharedVariables[v].name);

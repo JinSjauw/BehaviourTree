@@ -116,6 +116,8 @@ namespace BehaviourTree.Editor
 
         private static string GetReaderCall(System.Type fieldType, int index)
         {
+            if (fieldType != null && fieldType.IsEnum)
+                return $"reader.GetEnum<{GetTypeNameForCode(fieldType)}>({index})";
             if (fieldType == typeof(int))
                 return $"reader.GetInt({index})";
             if (fieldType == typeof(float))
@@ -138,6 +140,8 @@ namespace BehaviourTree.Editor
         private static string GetWriterCall(System.Type fieldType, int index, string fieldName)
         {
             string access = $"p.{fieldName}";
+            if (fieldType != null && fieldType.IsEnum)
+                return $"writer.SetEnum({index}, {access});";
             if (fieldType == typeof(int))
                 return $"writer.SetInt({index}, {access});";
             if (fieldType == typeof(float))
@@ -155,6 +159,12 @@ namespace BehaviourTree.Editor
 
             Debug.LogWarning($"[ParamsDeserializerGenerator] Unsupported type {fieldType.FullName} — defaulting to SetInt({index}, {access})");
             return $"writer.SetInt({index}, {access});";
+        }
+
+        private static string GetTypeNameForCode(System.Type type)
+        {
+            string fullName = type.FullName.Replace("+", ".");
+            return "global::" + fullName;
         }
 
         /// <summary>
