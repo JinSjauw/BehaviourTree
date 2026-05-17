@@ -18,12 +18,11 @@ namespace BehaviourTree.Core
         /// Value types are stored as null </summary>
         [SerializeField] private List<UnityEngine.Object> serializedReferences = new();
 
-        // ── Runtime ────────────────────────────────────────
-        /// <summary>Index-based storage for blackboard variables. Index corresponds to position in BlackboardDefinition.</summary>
         private BlackboardDefinition definition;
-        private object[] values;
+        private IBlackboardStorage storage;
 
         public BlackboardDefinition Definition => definition;
+        public IBlackboardStorage Storage => storage;
 
         /// <summary>Initialize index-based storage from a definition.</summary>
         public void Initialize(BlackboardDefinition blackboardDefinition)
@@ -36,7 +35,8 @@ namespace BehaviourTree.Core
             if (definition == null) return;
 
             int count = definition.sharedVariables.Count;
-            values = new object[count];
+            storage ??= new ManagedBlackboardStorage();
+            storage.Initialize(definition);
 
             while (serializedReferences.Count < count)
             {
@@ -45,12 +45,9 @@ namespace BehaviourTree.Core
 
             for (int i = 0; i < count; i++)
             {
-                values[i] = definition.sharedVariables[i].GetInitialValue();
-                
-                Type type = FieldTypeHelper.GetSystemTypeFromName(definition.sharedVariables[i].typeName);
-                if (type != null && !type.IsValueType && serializedReferences[i] != null)
+                if (storage.GetSlotKind(i) == BlackboardSlotKind.Reference && serializedReferences[i] != null)
                 {
-                    values[i] = serializedReferences[i];
+                    storage.SetBoxed(i, serializedReferences[i]);
                 }
             }
         }
@@ -76,66 +73,46 @@ namespace BehaviourTree.Core
         public void ClearSerializedReferences()
         {
             definition = null;
+            storage = null;
             serializedReferences.Clear();
         }
 
         /// <summary>Get a value by index in the blackboard array.</summary>
         public T Get<T>(int index)
         {
-            if (values == null || index < 0 || index >= values.Length)
+            if (storage == null)
             {
-                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL, returning default");
+#if UNITY_EDITOR
+                Debug.LogWarning($"[Blackboard] Storage is NULL, returning default");
+#endif
                 return default;
             }
-
-            object val = values[index];
-            if (val is T tVal)
-            {
-                return tVal;
-            }
-            else if(val != null)
-            {
-                Debug.LogWarning(
-                    $"[Blackboard] Type mismatch at index {index} — " +
-                    $"Expected: {typeof(T).Name}, Retrieved: {val.GetType().Name}. " +
-                    $"Returning default.");
-                return default;
-            }
-
-            return default;
+            return storage.Get<T>(index);
         }
 
         /// <summary>Set a value by index in the blackboard array.</summary>
         public void Set<T>(int index, T value)
         {
-            if (values == null || index < 0 || index >= values.Length)
+            if (storage == null)
             {
-                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL");
+#if UNITY_EDITOR
+                Debug.LogWarning($"[Blackboard] Storage is NULL");
+#endif
                 return;
             }
 
-            object existingObject = values[index];
-
-            if(existingObject != null && existingObject is not T)
-            {
-                Debug.LogWarning(
-                    $"[Blackboard] Type mismatch at index: {index}" +
-                    $"Stored = {existingObject.GetType().Name}, Trying to write type: {typeof(T).Name}" +
-                    $"Cancelling write"
-                );
-
-                return;
-            }
-
-            values[index] = value;
+            storage.Set(index, value);
 
             // Keep serialized reference in sync for reference types
-            if (definition != null && index < definition.sharedVariables.Count)
+            if (definition != null && index >= 0 && index < definition.sharedVariables.Count && index < serializedReferences.Count)
             {
-                Type type = FieldTypeHelper.GetSystemTypeFromName(definition.sharedVariables[index].typeName);
-                if (type != null && !type.IsValueType && value is UnityEngine.Object unityObject)
+                if (storage.GetSlotKind(index) == BlackboardSlotKind.Reference)
                 {
-                    if (index < serializedReferences.Count)
+                    if (value == null)
+                    {
+                        serializedReferences[index] = null;
+                    }
+                    else if (value is UnityEngine.Object unityObject)
                     {
                         serializedReferences[index] = unityObject;
                     }

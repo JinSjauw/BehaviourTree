@@ -23,11 +23,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
-  m_Name: BehaviourTreeAsset
+  m_Name: BehaviourTreeAsset 1
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Editor.BehaviourTreeAsset
   nodesList:
   - {fileID: 8456155695440827630}
-  - {fileID: 5042817009708437579}
   - {fileID: 4093097468391701784}
   rootCopy: {fileID: 8456155695440827630}
   blackboardDefinition: {fileID: -6918678299252432223}
@@ -97,25 +96,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
---- !u!114 &5042817009708437579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SELECTOR
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 4093097468391701784}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 0aef535080a28424f9a48f8e6fa04060
-  graphPosition: {x: 237, y: 446}
-  runtimeIndex: 0
 --- !u!114 &8456155695440827630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,7 +109,7 @@ MonoBehaviour:
   m_Name: ROOT
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children:
-  - {fileID: 5042817009708437579}
+  - {fileID: 0}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 96eba1a50feb3804eb02384a7091d3bf

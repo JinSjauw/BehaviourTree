@@ -7,11 +7,15 @@ using UnityEngine;
 namespace BehaviourTree.Editor 
 {
     [CreateAssetMenu(fileName = "BehaviourTreeAsset", menuName = "BehaviourTree/BTAsset")]
-    public class BehaviourTreeAsset : ScriptableObject
+    public class BehaviourTreeAsset : ScriptableObject, IBehaviourTreeAuthoringAsset
     {
         public List<BehaviourNode> nodesList;
         public BehaviourNode rootCopy;
         public BlackboardDefinition blackboardDefinition;
+
+        public BehaviourNode Root => rootCopy;
+        public BlackboardDefinition BlackboardDefinition => blackboardDefinition;
+        public string DisplayName => name;
 
         //Create unique runtime instances of the SO's
         public void Initialize() 
@@ -128,4 +132,3 @@ namespace BehaviourTree.Editor
         }
     }
 }
-

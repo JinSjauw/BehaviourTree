@@ -66,17 +66,6 @@ public class BlackboardVariableDrawer : PropertyDrawer
             isValueType = resolvedType != null && resolvedType.IsValueType && !resolvedType.IsEnum;
         }
 
-        if (!typeMatched)
-        {
-            Rect warnRect = new Rect(position.x, position.y + lineHeight + spacing, position.width, lineHeight);
-            EditorGUI.HelpBox(warnRect, $"Unsupported Blackboard variable type '{typeProp.stringValue}'. Please reselect a supported type.", MessageType.Warning);
-        }
-        else if (resolvedType != null && resolvedType.IsEnum)
-        {
-            Rect warnRect = new Rect(position.x, position.y + lineHeight + spacing, position.width, lineHeight);
-            EditorGUI.HelpBox(warnRect, "Enum Blackboard variables are not supported.", MessageType.Warning);
-        }
-
         // ── Row 1+: initial value (only if value type and foldout open) ──
         if (isValueType && showFoldoutProp.boolValue)
         {
@@ -129,23 +118,6 @@ public class BlackboardVariableDrawer : PropertyDrawer
 
         float lineHeight = EditorGUIUtility.singleLineHeight;
         float spacing = EditorGUIUtility.standardVerticalSpacing;
-
-        bool typeMatched = false;
-        for (int i = 0; i < FieldTypeHelper.AllFieldTypes.Count; i++)
-        {
-            Type type = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[i]);
-            if (type.FullName == typeProp.stringValue || type.AssemblyQualifiedName == typeProp.stringValue)
-            {
-                typeMatched = true;
-                break;
-            }
-        }
-
-        if (!typeMatched)
-            return lineHeight * 2f + spacing * 2f;
-
-        if (resolvedType != null && resolvedType.IsEnum)
-            return lineHeight * 2f + spacing * 2f;
 
         if (isValueType && showFoldoutProp.boolValue)
         {

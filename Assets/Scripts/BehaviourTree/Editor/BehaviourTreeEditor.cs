@@ -119,7 +119,7 @@ public class BehaviourTreeEditor : EditorWindow
         {
             currentRunner = runner;
 
-            return runner.GetSourceTree();
+            return runner.GetSourceTree() as BehaviourTreeAsset;
         }
         else
         {

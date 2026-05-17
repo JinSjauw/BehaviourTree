@@ -65,12 +65,12 @@ namespace BehaviourTree.Runtime
 
             if (!methodRegistry.TryGetValue(methodID, out BehaviorMethod method))
             {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
                 throw new KeyNotFoundException($"Missing entry ID: {methodID}");
-            #else
+#else
                 Debug.LogError($"Missing entry ID: {methodID}");
                 return null;
-            #endif
+#endif
             }
             return method;
         } 
@@ -81,12 +81,12 @@ namespace BehaviourTree.Runtime
 
             if (!decoratorRegistry.TryGetValue(methodID, out var method))
             {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
                 throw new KeyNotFoundException($"Missing decorator entry ID: {methodID}");
-            #else
+#else
                 Debug.LogError($"Missing decorator entry ID: {methodID}");
                 return null;
-            #endif
+#endif
             }
             return method;
         }

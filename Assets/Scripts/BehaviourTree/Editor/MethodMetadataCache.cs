@@ -17,7 +17,7 @@ namespace BehaviourTree.Editor
         public int index;
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
 
     public static class MethodMetadataCache
     {
@@ -75,5 +75,5 @@ namespace BehaviourTree.Editor
             }
         }
     }
-    #endif
+#endif
 }

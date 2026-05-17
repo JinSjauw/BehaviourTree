@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BehaviourTree.Core;
+using Codice.Client.Common.TreeGrouper;
 
 namespace BehaviourTree.Runtime
 {
@@ -81,10 +82,10 @@ namespace BehaviourTree.Runtime
                 return NodeState.FAILURE;
             }
 
-            System.ReadOnlySpan<FieldData> fieldsSlice = default;
+            ReadOnlySpan<FieldData> fieldsSlice = default;
             if (nodeData.fieldDataCount > 0 && fieldDatas != null && nodeData.fieldDataStartIndex >= 0)
             {
-                fieldsSlice = new System.ReadOnlySpan<FieldData>(
+                fieldsSlice = new ReadOnlySpan<FieldData>(
                     fieldDatas,
                     nodeData.fieldDataStartIndex,
                     nodeData.fieldDataCount
