@@ -9,7 +9,7 @@ namespace BehaviourTree
     {
         private static bool RequireVariable(ReadOnlySpan<FieldData> fields, int index)
         {
-            return fields.Length > index && fields[index].IsVariable;
+            return fields.Length > index && fields[index].IsVariable && fields[index].value >= 0;
         }
 
         private static bool RequireConstant(ReadOnlySpan<FieldData> fields, int index)
@@ -490,6 +490,64 @@ namespace BehaviourTree
             bool previous = blackBoard.Get<bool>(previousIndex);
             blackBoard.Set(previousIndex, current);
             return !current && previous ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+
+        [BTreeMethod(MethodID.BB_LogInt)]
+        public static NodeState BB_LogInt(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            Debug.Log(blackBoard.Get<int>(fields[0].value));
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_LogFloat)]
+        public static NodeState BB_LogFloat(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            Debug.Log(blackBoard.Get<float>(fields[0].value));
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_LogBool)]
+        public static NodeState BB_LogBool(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            Debug.Log(blackBoard.Get<bool>(fields[0].value));
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_LogVector2)]
+        public static NodeState BB_LogVector2(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            Debug.Log(blackBoard.Get<Vector2>(fields[0].value));
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_LogVector3)]
+        public static NodeState BB_LogVector3(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            Debug.Log(blackBoard.Get<Vector3>(fields[0].value));
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_LogGameObject)]
+        public static NodeState BB_LogGameObject(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            GameObject obj = blackBoard.Get<GameObject>(fields[0].value);
+            Debug.Log(obj != null ? obj.name : "null");
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_LogTransform)]
+        public static NodeState BB_LogTransform(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
+            Transform tr = blackBoard.Get<Transform>(fields[0].value);
+            Debug.Log(tr != null ? tr.name : "null");
+            return NodeState.SUCCESS;
         }
     }
 }

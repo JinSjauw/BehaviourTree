@@ -92,14 +92,14 @@ namespace BehaviourTree.Runtime
          }
          else
          {
-            BehaviourTree.Core.IBehaviourTreeAuthoringAsset authoring = authoringAsset as BehaviourTree.Core.IBehaviourTreeAuthoringAsset;
+            IBehaviourTreeAuthoringAsset authoring = authoringAsset as IBehaviourTreeAuthoringAsset;
             if (authoring != null)
             {
                blackBoard?.BuildSerializedReferences(authoring.BlackboardDefinition);
             }
          }
 
-         if(runtimeAsset == null)
+         if(runtimeAsset == null && authoringAsset == null)
          {
             blackBoard?.ClearSerializedReferences();
          }

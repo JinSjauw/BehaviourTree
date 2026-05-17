@@ -85,6 +85,14 @@ namespace BehaviourTree.Runtime
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_Log_NodeFields
+    {
+        public string Message;
+        public bool UseVariable;
+        [SharedVar] public string MessageVar;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public partial struct BB_SetInt_NodeFields
     {
         [SharedVar] public int Target;
@@ -256,5 +264,47 @@ namespace BehaviourTree.Runtime
     {
         [SharedVar] public bool Current;
         [SharedVar] public bool Previous;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogInt_NodeFields
+    {
+        [SharedVar] public int Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogFloat_NodeFields
+    {
+        [SharedVar] public float Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogBool_NodeFields
+    {
+        [SharedVar] public bool Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogVector2_NodeFields
+    {
+        [SharedVar] public Vector2 Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogVector3_NodeFields
+    {
+        [SharedVar] public Vector3 Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogGameObject_NodeFields
+    {
+        [SharedVar] public GameObject Value;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogTransform_NodeFields
+    {
+        [SharedVar] public Transform Value;
     }
 }

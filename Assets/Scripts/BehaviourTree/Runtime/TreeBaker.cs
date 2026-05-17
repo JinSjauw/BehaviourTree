@@ -1,5 +1,6 @@
 using BehaviourTree.Core;
 using BehaviourTree.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -150,6 +151,19 @@ namespace BehaviourTree.Runtime
                         UnityEngine.Debug.LogWarning(
                             $"[TreeBaker] Blackboard variable '{entry.variableName}' not found in definition. " +
                             $"Field '{entry.fieldName}' will use invalid index -1.");
+                    }
+                    else
+                    {
+                        Type bbType = FieldTypeHelper.GetSystemTypeFromName(bbDef.sharedVariables[varIndex].typeName);
+                        FieldType bbFieldType = FieldTypeHelper.GetFieldType(bbType);
+                        if (bbFieldType != entry.fieldType)
+                        {
+                            UnityEngine.Debug.LogWarning(
+                                $"[TreeBaker] Blackboard variable '{entry.variableName}' type mismatch. " +
+                                $"Field '{entry.fieldName}' expects {entry.fieldType} but blackboard has {bbFieldType}. " +
+                                $"Using invalid index -1.");
+                            varIndex = -1;
+                        }
                     }
                 }
                 return FieldData.FromVariable(varIndex);

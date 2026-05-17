@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using BehaviourTree.Runtime;
-using System;
 
 public class BehaviourTreeEditor : EditorWindow
 {

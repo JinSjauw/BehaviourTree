@@ -44,5 +44,12 @@ namespace BehaviourTree.Core
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckBool = 39,
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckGameObject = 40,
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckTransform = 41,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogInt = 42,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogFloat = 43,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogBool = 44,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogVector2 = 45,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogVector3 = 46,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogGameObject = 47,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_LogTransform = 48,
     }
 }

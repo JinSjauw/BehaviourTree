@@ -224,6 +224,7 @@ namespace BehaviourTree.Editor
             if (matchingVars.Count == 0)
             {
                 EditorGUILayout.HelpBox($"No matching variable of type <{FieldTypeHelper.GetFieldType(expectedType)}> in Blackboard.", MessageType.Info);
+                variableNameProp.stringValue = "";
                 return;
             }
 

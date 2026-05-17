@@ -16,7 +16,7 @@ namespace BehaviourTree
             Debug.Log("HELLO WORLD!");
 
             var p = NodeFieldBindings.DeserializeHELLOWORLD(fields, blackBoard);
-            Debug.Log($"Speed: {p.Velocity} , Health: {p.Health}, TestTime: {p.TestTime} Position: {blackBoard.Get<Transform>((int)TestingBT4_BB_Keys.TEST4)?.position}");
+            Debug.Log($"Speed: {p.Velocity} , Health: {p.Health}, TestTime: {p.TestTime} Position: {blackBoard.Get<Vector2>((int)BehaviourTreeAsset_BB_Keys.POSITION)}");
 
             p.Health += 3;
             //p.TestTime += 1;
