@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BehaviourTree
 {
-    public class StandardMethods
+    public partial class StandardMethods
     {
         [BTreeDecoratorMethod(MethodID.INVERTER)]
         public static NodeState Inverter(NodeState childResult, BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)

@@ -13,6 +13,28 @@ MonoBehaviour:
   m_Name: BehaviourTreeAsset_BB_Definition
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables: []
+--- !u!114 &-2344687900962644512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: LeafNode
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: dcc7e3646d2611140920940a7fad5176
+  graphPosition: {x: 0, y: 0}
+  runtimeIndex: 0
+  leafType: 4
+  methodID: 0
+  fieldEntries: []
+  BlackBoardTypeID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29,6 +51,7 @@ MonoBehaviour:
   - {fileID: 8456155695440827630}
   - {fileID: 5042817009708437579}
   - {fileID: 4093097468391701784}
+  - {fileID: -2344687900962644512}
   rootCopy: {fileID: 8456155695440827630}
   blackboardDefinition: {fileID: -6918678299252432223}
 --- !u!114 &4093097468391701784
@@ -47,8 +70,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 8fed670dcda967f4880410c66401738f
-  graphPosition: {x: 233, y: 615}
-  runtimeIndex: 0
+  graphPosition: {x: 245, y: 623}
+  runtimeIndex: 1
   leafType: 4
   methodID: 1
   fieldEntries:
@@ -111,8 +134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
   - {fileID: 4093097468391701784}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 1
+  lastChildIndex: 1
   guid: 0aef535080a28424f9a48f8e6fa04060
   graphPosition: {x: 237, y: 446}
   runtimeIndex: 0

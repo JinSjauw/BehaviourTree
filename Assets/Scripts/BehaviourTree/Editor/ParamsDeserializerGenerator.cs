@@ -44,6 +44,7 @@ namespace BehaviourTree.Editor
                 List<ParamInfo> fields = kvp.Value;
 
                 if (fields == null || fields.Count == 0) continue;
+                if (!MethodMetadataCache.ShouldGenerateDeserializer(methodId)) continue;
 
                 string structName = methodId.ToString() + "_Params";
                 string methodName = methodId.ToString();

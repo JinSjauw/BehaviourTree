@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using BehaviourTree.Core;
 using UnityEngine;
 
+[GenerateParamsDeserializer]
 [StructLayout(LayoutKind.Sequential)]
 public partial struct BYEWORLD_Params
 {

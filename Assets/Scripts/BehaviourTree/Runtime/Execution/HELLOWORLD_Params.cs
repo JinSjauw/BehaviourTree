@@ -8,6 +8,7 @@ namespace BehaviourTree.Runtime
     /// Parameters for HELLOWORLD method. Fields with [SharedVar] are blackboard variables;
     /// fields without are constants.
     /// </summary>
+    [GenerateParamsDeserializer]
     [StructLayout(LayoutKind.Sequential)]
     public partial struct HELLOWORLD_Params
     {

@@ -3,6 +3,7 @@ using BehaviourTree.Core;
 
 namespace BehaviourTree.Runtime
 {
+    [GenerateParamsDeserializer]
     [StructLayout(LayoutKind.Sequential)]
     public partial struct REPEATER_Params
     {

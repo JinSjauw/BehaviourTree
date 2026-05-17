@@ -22,6 +22,7 @@ namespace BehaviourTree.Editor
     public static class MethodMetadataCache
     {
         private static Dictionary<MethodID, List<ParamInfo>> _cache;
+        private static HashSet<MethodID> _generateDeserializer;
 
         public static IReadOnlyDictionary<MethodID, List<ParamInfo>> Cache
         {
@@ -39,10 +40,17 @@ namespace BehaviourTree.Editor
             return list;
         }
 
+        public static bool ShouldGenerateDeserializer(MethodID id)
+        {
+            BuildIfNeeded();
+            return _generateDeserializer != null && _generateDeserializer.Contains(id);
+        }
+
         private static void BuildIfNeeded()
         {
             if (_cache != null) return;
             _cache = new Dictionary<MethodID, List<ParamInfo>>();
+            _generateDeserializer = new HashSet<MethodID>();
 
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var asm in assemblies)
@@ -55,6 +63,11 @@ namespace BehaviourTree.Editor
                     // Infer MethodID from the name (e.g. HELLOWORLD_Params -> HELLOWORLD)
                     string methodName = type.Name.Replace("_Params", "");
                     if (!Enum.TryParse<MethodID>(methodName, out var methodId)) continue;
+
+                    if (type.GetCustomAttribute<GenerateParamsDeserializerAttribute>() != null)
+                    {
+                        _generateDeserializer.Add(methodId);
+                    }
 
                     var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
                     var paramList = new List<ParamInfo>();

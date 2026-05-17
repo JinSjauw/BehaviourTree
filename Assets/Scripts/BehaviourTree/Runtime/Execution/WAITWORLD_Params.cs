@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace BehaviourTree.Runtime
 {
+    [GenerateParamsDeserializer]
     [StructLayout(LayoutKind.Sequential)]
     public partial struct WAITWORLD_Params
     {
