@@ -40,7 +40,7 @@ namespace BehaviourTree.Editor
             return list;
         }
 
-        public static bool ShouldGenerateDeserializer(MethodID id)
+        public static bool ShouldGenerateBindings(MethodID id)
         {
             BuildIfNeeded();
             return _generateDeserializer != null && _generateDeserializer.Contains(id);
@@ -57,14 +57,14 @@ namespace BehaviourTree.Editor
             {
                 foreach (var type in asm.GetTypes())
                 {
-                    // Look for partial struct types named *_Params
-                    if (!type.IsValueType || !type.Name.EndsWith("_Params")) continue;
+                    // Look for partial struct types named *_NodeFields
+                    if (!type.IsValueType || !type.Name.EndsWith("_NodeFields")) continue;
 
-                    // Infer MethodID from the name (e.g. HELLOWORLD_Params -> HELLOWORLD)
-                    string methodName = type.Name.Replace("_Params", "");
+                    // Infer MethodID from the name (e.g. HELLOWORLD_NodeFields -> HELLOWORLD)
+                    string methodName = type.Name.Replace("_NodeFields", "");
                     if (!Enum.TryParse<MethodID>(methodName, out var methodId)) continue;
 
-                    if (type.GetCustomAttribute<GenerateParamsDeserializerAttribute>() != null)
+                    if (type.GetCustomAttribute<GenerateNodeFieldBindingsAttribute>() != null)
                     {
                         _generateDeserializer.Add(methodId);
                     }

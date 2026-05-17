@@ -123,7 +123,7 @@ namespace BehaviourTree.Editor
             {
                 // No metadata; clear entries
                 fieldEntriesProp.ClearArray();
-                EditorGUILayout.HelpBox($"No *_Params struct found for method {selectedMethod}. Create a struct named {selectedMethod}_Params.", MessageType.Warning);
+                EditorGUILayout.HelpBox($"No *_NodeFields struct found for method {selectedMethod}. Create a struct named {selectedMethod}_NodeFields.", MessageType.Warning);
             }
         }
 

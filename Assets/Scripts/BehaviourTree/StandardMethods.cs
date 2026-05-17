@@ -10,7 +10,7 @@ namespace BehaviourTree
         [BTreeDecoratorMethod(MethodID.INVERTER)]
         public static NodeState Inverter(NodeState childResult, BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            INVERTER_Params p = ParamsDeserializer.DeserializeINVERTER(fields, blackBoard);
+            INVERTER_NodeFields p = NodeFieldBindings.DeserializeINVERTER(fields, blackBoard);
 
             if (p.alwaysFailure) return NodeState.FAILURE;
             if (p.alwaysSuccess) return NodeState.SUCCESS;
@@ -29,18 +29,18 @@ namespace BehaviourTree
             if (childResult == NodeState.RUNNING)
                 return NodeState.RUNNING;
 
-            REPEATER_Params p = ParamsDeserializer.DeserializeREPEATER(fields, blackBoard);
+            REPEATER_NodeFields p = NodeFieldBindings.DeserializeREPEATER(fields, blackBoard);
 
             if (childResult == NodeState.SUCCESS && p.currentCount < p.targetCount)
             {
                 p.currentCount++;
-                ParamsDeserializer.SerializeREPEATER(p, fields, blackBoard);
+                NodeFieldBindings.SerializeREPEATER(p, fields, blackBoard);
                 Debug.Log($"Repeating! {p.currentCount}");
                 return NodeState.RUNNING;   // signals handler to re-push child
             }
 
             p.currentCount = 0;
-            ParamsDeserializer.SerializeREPEATER(p, fields, blackBoard);
+            NodeFieldBindings.SerializeREPEATER(p, fields, blackBoard);
             return childResult;
         }
     }

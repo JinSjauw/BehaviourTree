@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace BehaviourTree.Runtime
 {
-    [GenerateParamsDeserializer]
+    [GenerateNodeFieldBindings]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct INVERTER_Params
+    public partial struct INVERTER_NodeFields
     {
         public bool alwaysFailure;
         public bool alwaysSuccess;

@@ -15,13 +15,13 @@ namespace BehaviourTree
         {
             Debug.Log("HELLO WORLD!");
 
-            var p = ParamsDeserializer.DeserializeHELLOWORLD(fields, blackBoard);
+            var p = NodeFieldBindings.DeserializeHELLOWORLD(fields, blackBoard);
             Debug.Log($"Speed: {p.Velocity} , Health: {p.Health}, TestTime: {p.TestTime} Position: {blackBoard.Get<Transform>((int)TestingBT4_BB_Keys.TEST4)?.position}");
 
             p.Health += 3;
             //p.TestTime += 1;
 
-            ParamsDeserializer.SerializeHELLOWORLD(p, fields, blackBoard);
+            NodeFieldBindings.SerializeHELLOWORLD(p, fields, blackBoard);
 
             return NodeState.SUCCESS;
         }
@@ -29,7 +29,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.BYEWORLD)]
         public static NodeState ByeWorld(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            var p = ParamsDeserializer.DeserializeBYEWORLD(fields, blackBoard);
+            var p = NodeFieldBindings.DeserializeBYEWORLD(fields, blackBoard);
 
             p.timer += Time.deltaTime;
 
@@ -49,7 +49,7 @@ namespace BehaviourTree
                 state = NodeState.RUNNING;
             }
 
-            ParamsDeserializer.SerializeBYEWORLD(p, fields, blackBoard);
+            NodeFieldBindings.SerializeBYEWORLD(p, fields, blackBoard);
 
             return state;
         }
@@ -57,7 +57,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.WAITWORLD)]
         public static NodeState WaitWorld(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            var p = ParamsDeserializer.DeserializeWAITWORLD(fields, blackBoard);
+            var p = NodeFieldBindings.DeserializeWAITWORLD(fields, blackBoard);
             
             Debug.Log($"WAITWORLD TIMEDCOUNTER: {p.testTimedThreshhold}");
 

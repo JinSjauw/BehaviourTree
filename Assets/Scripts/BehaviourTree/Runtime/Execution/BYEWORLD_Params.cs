@@ -2,9 +2,9 @@ using System.Runtime.InteropServices;
 using BehaviourTree.Core;
 using UnityEngine;
 
-[GenerateParamsDeserializer]
+[GenerateNodeFieldBindings]
 [StructLayout(LayoutKind.Sequential)]
-public partial struct BYEWORLD_Params
+public partial struct BYEWORLD_NodeFields
 {
     public float waitingTime;
     [SharedVar]

@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace BehaviourTree.Runtime
 {
-    [GenerateParamsDeserializer]
+    [GenerateNodeFieldBindings]
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct WAITWORLD_Params
+    public partial struct WAITWORLD_NodeFields
     {
         [SharedVar]
         public int testTimedThreshhold;
