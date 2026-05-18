@@ -31,7 +31,7 @@ public class BlackboardVariableDrawer : PropertyDrawer
 
         nameProp.stringValue = EditorGUI.TextField(nameRect, nameProp.stringValue);
 
-                // Placeholder text when name is empty
+        // Placeholder text when name is empty
         if (string.IsNullOrEmpty(nameProp.stringValue))
         {
             GUIStyle placeholderStyle = new GUIStyle(EditorStyles.label)

@@ -20,9 +20,11 @@ namespace BehaviourTree.Editor
         private BehaviourTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
         private NodeSearchProvider searchWindow;
-        private Label graphTitleLabel;
+        private TextField graphTitleLabel;
         private CopyPasteHandler copyPasteHandler;
         private BtEdgeConnectorListener edgeConnectorListener;
+
+        public bool HasTree => tree != null;
 
         public BehaviourTreeEditorGraphView()
         {
@@ -83,20 +85,60 @@ namespace BehaviourTree.Editor
 
         private void AddGraphTitle()
         {
-            graphTitleLabel = new Label("Behaviour Tree")
+            graphTitleLabel = new TextField
             {
-                style =
-                {
-                    flexShrink = 1,
-                    fontSize = 18,
-                    unityFontStyleAndWeight = FontStyle.Bold,
-                    unityTextAlign = TextAnchor.MiddleLeft,
-                    paddingTop = 8,
-                    paddingLeft = 12,
-                    paddingBottom = 4,
-                    color = new Color(0.8f, 0.8f, 0.8f, 1f)
-                }
+                value = "Behaviour Tree",
+                isDelayed = true
             };
+            graphTitleLabel.label = string.Empty;
+            graphTitleLabel.style.flexShrink = 1;
+            graphTitleLabel.style.fontSize = 18;
+            graphTitleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            graphTitleLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
+            graphTitleLabel.style.paddingTop = 8;
+            graphTitleLabel.style.paddingLeft = 12;
+            graphTitleLabel.style.paddingBottom = 4;
+            graphTitleLabel.style.color = new Color(0.8f, 0.8f, 0.8f, 1f);
+
+            graphTitleLabel.RegisterValueChangedCallback(evt =>
+            {
+                if (tree == null)
+                {
+                    graphTitleLabel.SetValueWithoutNotify("Behaviour Tree");
+                    return;
+                }
+
+                string newName = evt.newValue?.Trim();
+                if (string.IsNullOrEmpty(newName) || newName == tree.name)
+                {
+                    RefreshTitle();
+                    return;
+                }
+
+                if (EditorApplication.isPlaying)
+                {
+                    RefreshTitle();
+                    return;
+                }
+
+                string path = AssetDatabase.GetAssetPath(tree);
+                if (string.IsNullOrEmpty(path))
+                {
+                    RefreshTitle();
+                    return;
+                }
+
+                string err = AssetDatabase.RenameAsset(path, newName);
+                if (!string.IsNullOrEmpty(err))
+                {
+                    Debug.LogError(err);
+                    RefreshTitle();
+                    return;
+                }
+
+                AssetDatabase.SaveAssets();
+                RefreshTitle();
+            });
             Add(graphTitleLabel);
         }
 
@@ -112,6 +154,7 @@ namespace BehaviourTree.Editor
             nodeCreationRequest = context =>
             {
                 EnsureSearchWindow();
+                if (tree == null) return;
 
                 Rect windowRect = EditorWindow.focusedWindow.position;
 
@@ -126,6 +169,7 @@ namespace BehaviourTree.Editor
         private void OpenSearchWindow(Vector2 mousePosition)
         {
             EnsureSearchWindow();
+            if (tree == null) return;
             SearchWindow.Open(new SearchWindowContext(mousePosition), searchWindow);
         }
 
@@ -143,6 +187,7 @@ namespace BehaviourTree.Editor
             if (startPort == null) return;
             EnsureSearchWindow();
             if (searchWindow == null) return;
+            if (tree == null) return;
 
             Vector2 screenPos = GUIUtility.GUIToScreenPoint(graphMousePosition);
             Rect windowRect = EditorWindow.focusedWindow.position;
@@ -152,6 +197,23 @@ namespace BehaviourTree.Editor
             searchWindow.SetCreationPosition(localPos);
             searchWindow.SetPendingConnection(startPort);
             OpenSearchWindow(screenPos);
+        }
+
+        public void ClearView()
+        {
+            tree = null;
+            graphTitleLabel.SetValueWithoutNotify("Behaviour Tree");
+
+            graphViewChanged -= OnGraphViewChanged;
+            try
+            {
+                DeleteElements(graphElements);
+                nodeViewDict.Clear();
+            }
+            finally
+            {
+                graphViewChanged += OnGraphViewChanged;
+            }
         }
 
         public bool TryConnectPorts(Port from, Port to)
@@ -406,12 +468,11 @@ namespace BehaviourTree.Editor
         {
             base.BuildContextualMenu(evt);
 
-            if(tree == null) return;
             evt.menu.AppendAction($"Create Node", (a) =>
             {
                 searchWindow.ClearPendingConnection();
                 OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
-            });
+            }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
         }
 
         public void PopulateView(BehaviourTreeAsset tree)
@@ -432,10 +493,16 @@ namespace BehaviourTree.Editor
         private void InitTree(BehaviourTreeAsset tree)
         {
             this.tree = tree;
-            graphTitleLabel.text = tree.name;
+            RefreshTitle();
 
             if (tree.nodesList == null)
                 tree.nodesList = new List<BehaviourNode>();
+        }
+
+        public void RefreshTitle()
+        {
+            if (graphTitleLabel == null) return;
+            graphTitleLabel.SetValueWithoutNotify(tree != null ? tree.name : "Behaviour Tree");
         }
 
         private void ClearAndRebuildViews()

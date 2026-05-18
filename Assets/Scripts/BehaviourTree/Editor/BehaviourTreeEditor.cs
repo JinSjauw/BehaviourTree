@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using BehaviourTree.Runtime;
+using System;
 
 public class BehaviourTreeEditor : EditorWindow
 {
@@ -92,7 +93,11 @@ public class BehaviourTreeEditor : EditorWindow
         }
         else
         {
+            assetBarMenu.menu.AppendAction("Create New Tree", CreateNewTree);
+            assetBarMenu.menu.AppendSeparator();
             assetBarMenu.menu.AppendAction("Bake Tree", BakeTree);    
+            assetBarMenu.menu.AppendAction("Save Tree", SaveTree);
+            assetBarMenu.menu.AppendAction("Sync Tree", SyncTree);
         }
 
         OnSelectionChange();
@@ -104,6 +109,43 @@ public class BehaviourTreeEditor : EditorWindow
         }
     }
 
+    private void SyncTree(DropdownMenuAction action)
+    {
+        if(currentTree == null) return;
+        currentTree.SyncNodesListFromAssets();
+    }
+
+    private void OnEnable()
+    {
+        EditorApplication.projectChanged += OnProjectChanged;
+    }
+
+    private void CreateNewTree(DropdownMenuAction action)
+    {
+        string path = EditorUtility.SaveFilePanelInProject("Create Behaviour Tree", "NewTree", "asset", "Create a new BehaviourTreeAsset");
+        if (string.IsNullOrEmpty(path)) return;
+
+        BehaviourTreeAsset treeAsset = CreateInstance<BehaviourTreeAsset>();
+        treeAsset.name = System.IO.Path.GetFileNameWithoutExtension(path);
+        AssetDatabase.CreateAsset(treeAsset, path);
+
+        treeAsset.nodesList = new System.Collections.Generic.List<BehaviourNode>();
+        treeAsset.CreateBlackBoard();
+        EditorUtility.SetDirty(treeAsset);
+        AssetDatabase.SaveAssets();
+
+        Selection.activeObject = treeAsset;
+        currentTree = treeAsset;
+        OnSelectionChange();
+    }
+
+    private void SaveTree(DropdownMenuAction action)
+    {
+        if(currentTree == null) return;
+        EditorUtility.SetDirty(currentTree);
+        AssetDatabase.SaveAssets();
+    }
+
     private void PollDebugState()
     {
         treeGraphView?.RefreshDebugVisuals(currentRunner);
@@ -111,7 +153,6 @@ public class BehaviourTreeEditor : EditorWindow
 
     private BehaviourTreeAsset OnSelectTree()
     {
-        //if(!EditorApplication.isPlaying) return;
         GameObject selected = Selection.activeGameObject;
 
         if(selected != null && selected.TryGetComponent(out TreeRunner runner))
@@ -128,6 +169,8 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnDisable()
     {
+        EditorApplication.projectChanged -= OnProjectChanged;
+
         if (isPollingDebug)
         {
             EditorApplication.update -= PollDebugState;
@@ -158,7 +201,12 @@ public class BehaviourTreeEditor : EditorWindow
         currentTree = OnSelectTree();
 
         // Null check for tree asset before using it
-        if (currentTree == null) return;
+        if (currentTree == null)
+        {
+            currentBlackboardDef = null;
+            treeGraphView?.ClearView();
+            return;
+        }
         
         if(!AssetDatabase.CanOpenAssetInEditor(currentTree.GetEntityId()))
         {
@@ -187,6 +235,21 @@ public class BehaviourTreeEditor : EditorWindow
                 Debug.LogError($"Error populating view: {ex.Message}");
             }
         }
+    }
+
+    private void OnProjectChanged()
+    {
+        if (currentTree == null) return;
+
+        if (!AssetDatabase.Contains(currentTree))
+        {
+            currentTree = null;
+            currentBlackboardDef = null;
+            treeGraphView?.ClearView();
+            return;
+        }
+
+        treeGraphView?.RefreshTitle();
     }
 
     private void OnNodeSelectionChanged(BehaviourNodeView nodeView)

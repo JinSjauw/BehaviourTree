@@ -208,6 +208,12 @@ namespace BehaviourTree.Editor
 
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
+            if (graphView == null || !graphView.HasTree)
+            {
+                pendingConnectionPort = null;
+                return true;
+            }
+
             Undo.IncrementCurrentGroup();
             int undoGroup = Undo.GetCurrentGroup();
             Undo.SetCurrentGroupName("(BTree) Create Node");

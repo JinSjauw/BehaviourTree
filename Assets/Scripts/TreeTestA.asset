@@ -38,7 +38,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: b27d0579876edb64da9a0bdd29af7827
-  graphPosition: {x: -78.48752, y: 901.0325}
+  graphPosition: {x: -87.999954, y: 902.1869}
   runtimeIndex: 6
   leafType: 4
   methodID: 28
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
-  m_Name: BehaviourTreeAsset 2_BB_Definition
+  m_Name: TreeTestA_BB_Definition
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
   - name: TIMER
@@ -408,7 +408,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
-  m_Name: BehaviourTreeAsset 2
+  m_Name: TreeTestA
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
   nodesList:
   - {fileID: -1738120031703607826}
