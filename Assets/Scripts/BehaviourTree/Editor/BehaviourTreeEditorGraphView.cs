@@ -90,15 +90,12 @@ namespace BehaviourTree.Editor
                 value = "Behaviour Tree",
                 isDelayed = true
             };
-            graphTitleLabel.label = string.Empty;
-            graphTitleLabel.style.flexShrink = 1;
-            graphTitleLabel.style.fontSize = 18;
-            graphTitleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            graphTitleLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
-            graphTitleLabel.style.paddingTop = 8;
-            graphTitleLabel.style.paddingLeft = 12;
-            graphTitleLabel.style.paddingBottom = 4;
-            graphTitleLabel.style.color = new Color(0.8f, 0.8f, 0.8f, 1f);
+            graphTitleLabel.name = "GraphTitle";
+            graphTitleLabel.ClearClassList();
+
+            VisualElement input = graphTitleLabel.Q<VisualElement>("unity-text-input");
+            input.name = "GraphTitleInput";
+            input.ClearClassList();
 
             graphTitleLabel.RegisterValueChangedCallback(evt =>
             {

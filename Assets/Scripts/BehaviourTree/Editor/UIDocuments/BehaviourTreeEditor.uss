@@ -22,8 +22,6 @@ GridBackground {
     background-color: rgb(46, 46, 46);
 }
 
-
-
 .unity-tab__header {
     border-left-color: rgb(32, 32, 32);
     border-right-color: rgb(32, 32, 32);
@@ -36,8 +34,6 @@ GridBackground {
     border-bottom-width: 0;
 }
 
-
-
 .unity-tab-view__content-viewport {
     background-color: rgb(58, 58, 58);
     border-bottom-width: 0.5px;
@@ -48,4 +44,20 @@ GridBackground {
 }
 
 .unity-tab {
+}
+
+#GraphTitle {
+    background-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    max-width: 15%;
+    margin-top: 12px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    margin-left: 12px;
+}
+
+#GraphTitleInput {
+    -unity-font-style: bold;
+    color: rgb(188, 188, 188);
+    font-size: 24px;
 }
