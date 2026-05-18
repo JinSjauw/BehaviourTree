@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 using UnityEngine;
 using BehaviourTree.Core;
 using BehaviourTree.Runtime;
+using System.Net.NetworkInformation;
+using Codice.Client.Common.GameUI;
 
 namespace BehaviourTree.Editor
 {
@@ -23,6 +25,9 @@ namespace BehaviourTree.Editor
         private TextField graphTitleLabel;
         private CopyPasteHandler copyPasteHandler;
         private BtEdgeConnectorListener edgeConnectorListener;
+        private bool shouldCenterNodes;
+        private bool centerOnNextGeometry;
+        private bool geometryCallbackRegistered;
 
         public bool HasTree => tree != null;
 
@@ -485,6 +490,13 @@ namespace BehaviourTree.Editor
             EnsureRootNodeExists();
             CleanupAndCreateViews();
             CleanupAndWireEdges();
+            
+            if (shouldCenterNodes)
+            {
+                shouldCenterNodes = false;
+                Debug.Log($"[BTGraphView] Scheduling CenterViewOnNodes for tree='{tree.name}' nodes={nodeViewDict.Count}");
+                RequestCenterNodes();
+            }
         }
 
         private void InitTree(BehaviourTreeAsset tree)
@@ -500,6 +512,11 @@ namespace BehaviourTree.Editor
         {
             if (graphTitleLabel == null) return;
             graphTitleLabel.SetValueWithoutNotify(tree != null ? tree.name : "Behaviour Tree");
+        }
+
+        public void CenterOnNextPopulate()
+        {
+            shouldCenterNodes = true;
         }
 
         private void ClearAndRebuildViews()
@@ -518,9 +535,7 @@ namespace BehaviourTree.Editor
             if (tree.rootCopy != null) return;
 
             tree.rootCopy = tree.CreateNode(typeof(RootNode));
-            //Undo.RecordObject(tree.rootCopy, "(BTree) Configure Node");
             tree.rootCopy.name = "ROOT";
-            tree.rootCopy.graphPosition = ViewportCenter();
             tree.RegisterNode(tree.rootCopy);
         }
 
@@ -607,14 +622,40 @@ namespace BehaviourTree.Editor
             }
         }
 
-        private Vector2 ViewportCenter()
+        private void CenterViewOnNodes()
         {
-            Rect layout = contentViewContainer.layout;
-            if (layout.width > 0 && layout.height > 0)
+            this.ClearSelection();
+            foreach (BehaviourNodeView nodeView in nodeViewDict.Values)
             {
-                return new Vector2(layout.width * 0.5f, layout.height * 0.5f);
+                this.AddToSelection(nodeView);
             }
-            return new Vector2(400, 300);
+            this.FrameSelection();
+        }
+
+        private void RequestCenterNodes()
+        {
+            centerOnNextGeometry = true;
+
+            if (!geometryCallbackRegistered)
+            {
+                geometryCallbackRegistered = true;
+                RegisterCallback<GeometryChangedEvent>(OnGraphGeometryChanged);
+            }
+        }
+
+        private void OnGraphGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (!centerOnNextGeometry) return;
+
+            centerOnNextGeometry = false;
+
+            if (geometryCallbackRegistered)
+            {
+                geometryCallbackRegistered = false;
+                UnregisterCallback<GeometryChangedEvent>(OnGraphGeometryChanged);
+            }
+
+            CenterViewOnNodes();
         }
 
         private sealed class BtEdgeConnectorListener : IEdgeConnectorListener
@@ -625,7 +666,6 @@ namespace BehaviourTree.Editor
             {
                 this.graphView = graphView;
             }
-
             public void OnDropOutsidePort(Edge edge, Vector2 position)
             {
                 Port startPort = edge?.output ?? edge?.input;

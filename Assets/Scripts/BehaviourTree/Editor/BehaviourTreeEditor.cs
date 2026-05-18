@@ -76,6 +76,10 @@ public class BehaviourTreeEditor : EditorWindow
         {
             Debug.LogError("Could not find BehaviourTreeEditorGraphView in UXML");
         }
+        else
+        {
+            treeGraphView.CenterOnNextPopulate();
+        }
 
         if (inspectorView == null)
         {

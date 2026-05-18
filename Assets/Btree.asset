@@ -26,10 +26,10 @@ MonoBehaviour:
   m_Name: Btree
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
   nodesList:
-  - {fileID: 8093474664304505720}
-  rootCopy: {fileID: 8093474664304505720}
+  - {fileID: 2403736685377524010}
+  rootCopy: {fileID: 2403736685377524010}
   blackboardDefinition: {fileID: -4721649393636533876}
---- !u!114 &8093474664304505720
+--- !u!114 &2403736685377524010
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,6 +44,6 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 4dbcb7ad0a384b4498d51d5dc723dab6
-  graphPosition: {x: 400, y: 300}
+  guid: 1d27476c382c435419321dbaa0fc0e47
+  graphPosition: {x: 0, y: 0}
   runtimeIndex: 0
