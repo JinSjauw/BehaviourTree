@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BehaviourTree.Core;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace BehaviourTree.Editor
         private List<SearchTreeEntry> cachedSearchTree;
         private BehaviourTreeEditorGraphView graphView;
         private Vector2 creationPosition;
+        private Port pendingConnectionPort;
 
         private Texture2D identationIcon;
 
@@ -54,6 +56,16 @@ namespace BehaviourTree.Editor
         public void SetCreationPosition(Vector2 position)
         {
             creationPosition = position;
+        }
+
+        public void SetPendingConnection(Port port)
+        {
+            pendingConnectionPort = port;
+        }
+
+        public void ClearPendingConnection()
+        {
+            pendingConnectionPort = null;
         }
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
@@ -196,37 +208,53 @@ namespace BehaviourTree.Editor
 
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
+            Undo.IncrementCurrentGroup();
+            int undoGroup = Undo.GetCurrentGroup();
+            Undo.SetCurrentGroupName("(BTree) Create Node");
 
-            switch (SearchTreeEntry.userData)
+            BehaviourNodeView createdNodeView = null;
+            try
             {
-                case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE:
+                switch (SearchTreeEntry.userData)
                 {
-                    graphView.CreateCompositeNode(compositeType, creationPosition);
-                    return true;
-                }
-                case MethodID methodID when decoratorMethods.Contains(methodID):
-                {
-                    graphView.CreateDecoratorNode(methodID, creationPosition);
-                    return true;
-                }
-                case MethodID methodID when conditionMethods.Contains(methodID):
-                {
-                    graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.CONDITION);
-                    return true;
-                }
-                case MethodID methodID when actionMethods.Contains(methodID):
-                {
-                    graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.ACTION);
-                    return true;
+                    case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE:
+                    {
+                        createdNodeView = graphView.CreateCompositeNode(compositeType, creationPosition);
+                        break;
+                    }
+                    case MethodID methodID when decoratorMethods.Contains(methodID):
+                    {
+                        createdNodeView = graphView.CreateDecoratorNode(methodID, creationPosition);
+                        break;
+                    }
+                    case MethodID methodID when conditionMethods.Contains(methodID):
+                    {
+                        createdNodeView = graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.CONDITION);
+                        break;
+                    }
+                    case MethodID methodID when actionMethods.Contains(methodID):
+                    {
+                        createdNodeView = graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.ACTION);
+                        break;
+                    }
+
+                    case Group _:
+
+                    break;
                 }
 
-                case Group _:
-
-                break;
+                if (pendingConnectionPort != null && createdNodeView != null)
+                {
+                    if (pendingConnectionPort.direction == Direction.Output && createdNodeView.input != null)
+                        graphView.TryConnectPorts(pendingConnectionPort, createdNodeView.input);
+                }
             }
-
+            finally
+            {
+                pendingConnectionPort = null;
+                Undo.CollapseUndoOperations(undoGroup);
+            }
             return true;
         }
     }
 }
-

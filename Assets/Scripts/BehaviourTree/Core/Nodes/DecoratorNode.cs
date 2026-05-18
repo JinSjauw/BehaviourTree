@@ -13,6 +13,6 @@ namespace BehaviourTree.Core
         /// <summary>Dynamic list of field entries – generated from *_Params metadata.</summary>
         public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();
 
-        public BlackBoardType BlackBoardTypeID;
+        [HideInInspector] public BlackBoardType BlackBoardTypeID;
     }
 }

@@ -4,7 +4,7 @@ namespace BehaviourTree.Core
 {
     public class CompositeNode : BehaviourNode
     {
-        private BehaviourNodeType compositeType;
+        [HideInInspector] [SerializeField] private BehaviourNodeType compositeType = BehaviourNodeType.SELECTOR;
 
         public override BehaviourNodeType NodeType => compositeType;
 

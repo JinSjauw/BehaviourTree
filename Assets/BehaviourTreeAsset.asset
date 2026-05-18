@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8684045151711361473
+--- !u!114 &-8087385796118224653
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,19 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
-  m_Name: LeafNode
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SELECTOR
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 41fbdd33de0c4124a80d81f7bb0fce64
-  graphPosition: {x: 0, y: 0}
+  guid: 01564fc1b56e2314aa49fb444ac05c21
+  graphPosition: {x: 1158.05, y: 434.70004}
   runtimeIndex: 0
-  leafType: 4
-  methodID: 0
-  fieldEntries: []
-  BlackBoardTypeID: 0
+  compositeType: 1
 --- !u!114 &-7301631892141765838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +148,7 @@ MonoBehaviour:
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
-  - {fileID: 4301839140537498798}
+  - {fileID: 0}
   - {fileID: -7301631892141765838}
   - {fileID: 3089379268662315221}
   firstChildIndex: 3
@@ -159,6 +156,7 @@ MonoBehaviour:
   guid: 8028b7c07f5b6924ca9a1ea8786f6f61
   graphPosition: {x: 370, y: 560}
   runtimeIndex: 1
+  compositeType: 1
 --- !u!114 &-6064600257996106765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,7 +173,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cd457b27dbccd89429efffd777f5cb11
-  graphPosition: {x: 1112, y: 705}
+  graphPosition: {x: 1052, y: 704}
   runtimeIndex: 10
   leafType: 4
   methodID: 20
@@ -192,7 +190,7 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
---- !u!114 &-182336036922581062
+--- !u!114 &-1380642663918823006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -205,13 +203,15 @@ MonoBehaviour:
   m_Name: SEQUENCE
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
-  - {fileID: -6235858156897317315}
-  - {fileID: 4542503331046143246}
-  firstChildIndex: 1
-  lastChildIndex: 2
-  guid: cf684c58e05364d459c8787e2479eb34
-  graphPosition: {x: 575, y: 405}
+  - {fileID: 7259543792739200041}
+  - {fileID: 5499442871966708662}
+  - {fileID: -6064600257996106765}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 04c9cac4673bb0240a6d3e41aa24dbbb
+  graphPosition: {x: 893.99994, y: 546.52576}
   runtimeIndex: 0
+  compositeType: 2
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,18 +226,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Editor.BehaviourTreeAsset
   nodesList:
   - {fileID: 8456155695440827630}
-  - {fileID: -182336036922581062}
   - {fileID: -6235858156897317315}
   - {fileID: 4114292254871627176}
-  - {fileID: 4301839140537498798}
   - {fileID: 1864164947731672017}
   - {fileID: 3089379268662315221}
   - {fileID: -7301631892141765838}
-  - {fileID: 4542503331046143246}
   - {fileID: 7259543792739200041}
   - {fileID: 5499442871966708662}
   - {fileID: -6064600257996106765}
-  - {fileID: -8684045151711361473}
+  - {fileID: -1380642663918823006}
   rootCopy: {fileID: 8456155695440827630}
   blackboardDefinition: {fileID: -6918678299252432223}
 --- !u!114 &1864164947731672017
@@ -416,47 +413,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
---- !u!114 &4301839140537498798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 4114292254871627176}
-  - {fileID: 1864164947731672017}
-  firstChildIndex: 6
-  lastChildIndex: 7
-  guid: c2aa6772a3152ed408d96879b6accfd7
-  graphPosition: {x: 168, y: 697}
-  runtimeIndex: 3
---- !u!114 &4542503331046143246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 7259543792739200041}
-  - {fileID: 5499442871966708662}
-  - {fileID: -6064600257996106765}
-  firstChildIndex: 8
-  lastChildIndex: 10
-  guid: 49a8e447b3a117e41a93ba1fcffb07d0
-  graphPosition: {x: 806, y: 556}
-  runtimeIndex: 2
 --- !u!114 &5499442871966708662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,7 +429,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 141225b17b0181341b99509ffc23bafc
-  graphPosition: {x: 931, y: 705}
+  graphPosition: {x: 894, y: 704}
   runtimeIndex: 9
   leafType: 4
   methodID: 1
@@ -539,7 +495,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 35949768d57c16d44a6c01ccb35901c8
-  graphPosition: {x: 749, y: 705}
+  graphPosition: {x: 736.00006, y: 695.8075}
   runtimeIndex: 8
   leafType: 3
   methodID: 6
@@ -578,6 +534,25 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
+--- !u!114 &7429602586620547760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SELECTOR
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: b5f668f880a38e54191cd7b7a8bd7ad2
+  graphPosition: {x: 1241.7944, y: 376.03632}
+  runtimeIndex: 0
+  compositeType: 1
 --- !u!114 &8456155695440827630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,9 +566,9 @@ MonoBehaviour:
   m_Name: ROOT
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children:
-  - {fileID: -182336036922581062}
+  - {fileID: 0}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 96eba1a50feb3804eb02384a7091d3bf
-  graphPosition: {x: 576, y: 226}
+  graphPosition: {x: 643, y: 236.645}
   runtimeIndex: 0

@@ -48,19 +48,12 @@ namespace BehaviourTree.Editor
             AssetDatabase.SaveAssets();
         }
 
-        public BehaviourNode CreateNode(Type type) 
+        public BehaviourNode CreateNode(Type type)
         {
             BehaviourNode node = (BehaviourNode)CreateInstance(type);
             node.name = type.Name;
             node.guid = GUID.Generate().ToString();
-
-            Undo.RecordObject(this, "(BTree) Create Node");
-            nodesList.Add(node);
-
-            AssetDatabase.AddObjectToAsset(node, this);
-            Undo.RegisterCreatedObjectUndo(node, "(BTree) Create Node");
-            AssetDatabase.SaveAssets();
-
+        
             return node;
         }
 
@@ -71,19 +64,20 @@ namespace BehaviourTree.Editor
 
             AssetDatabase.AddObjectToAsset(node, this);
             Undo.RegisterCreatedObjectUndo(node, "(BTree) Register Node");
-            AssetDatabase.SaveAssets();
+            
+            EditorUtility.SetDirty(this);
         }
 
         public void DeleteNode(BehaviourNode node) 
         {
-            Undo.RecordObject(this, "(BTree) Create Node");
+            Undo.RecordObject(this, "(BTree) Delete Node");
             nodesList.Remove(node);
             Undo.DestroyObjectImmediate(node);
         }
 
         public void AddChild(BehaviourNode parent, BehaviourNode child) 
         {
-            if(parent.NodeType != BehaviourNodeType.ACTION || parent.NodeType != BehaviourNodeType.CONDITION) 
+            if(parent.NodeType != BehaviourNodeType.ACTION && parent.NodeType != BehaviourNodeType.CONDITION) 
             {
                 if (child.NodeType == BehaviourNodeType.ROOT) 
                 {
@@ -93,6 +87,11 @@ namespace BehaviourTree.Editor
 
                 if (!parent.children.Contains(child)) 
                 {
+                    if (!nodesList.Contains(child))
+                    {
+                        RegisterNode(child);
+                    }
+
                     Undo.RecordObject(parent, "(BTree) Add Child");
                     parent.children.Add(child);
                     EditorUtility.SetDirty(parent);

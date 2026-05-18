@@ -22,6 +22,7 @@ namespace BehaviourTree.Editor
         private NodeSearchProvider searchWindow;
         private Label graphTitleLabel;
         private CopyPasteHandler copyPasteHandler;
+        private BtEdgeConnectorListener edgeConnectorListener;
 
         public BehaviourTreeEditorGraphView()
         {
@@ -40,6 +41,7 @@ namespace BehaviourTree.Editor
             AddGrid();
             AddGraphTitle();
             AddSearchWindow();
+            edgeConnectorListener = new BtEdgeConnectorListener(this);
             
             //Setup copy/paste callbacks
             copyPasteHandler = new CopyPasteHandler(this);
@@ -114,6 +116,7 @@ namespace BehaviourTree.Editor
                 Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(context.screenMousePosition - new Vector2(windowRect.x, windowRect.y)));
 
                 searchWindow.SetCreationPosition(localPos);
+                searchWindow.ClearPendingConnection();
                 OpenSearchWindow(context.screenMousePosition);
             };
         }
@@ -121,6 +124,71 @@ namespace BehaviourTree.Editor
         private void OpenSearchWindow(Vector2 mousePosition)
         {
             SearchWindow.Open(new SearchWindowContext(mousePosition), searchWindow);
+        }
+
+        private void SetupEdgeConnectors(BehaviourNodeView nodeView)
+        {
+            if (nodeView?.input != null)
+                nodeView.input.AddManipulator(new EdgeConnector<Edge>(edgeConnectorListener));
+
+            if (nodeView?.output != null)
+                nodeView.output.AddManipulator(new EdgeConnector<Edge>(edgeConnectorListener));
+        }
+
+        private void OpenSearchWindowForEdgeDrop(Port startPort, Vector2 graphMousePosition)
+        {
+            if (startPort == null || searchWindow == null) return;
+
+            Vector2 screenPos = GUIUtility.GUIToScreenPoint(graphMousePosition);
+            Rect windowRect = EditorWindow.focusedWindow.position;
+            Vector2 windowMouse = screenPos - new Vector2(windowRect.x, windowRect.y);
+            Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(windowMouse));
+
+            searchWindow.SetCreationPosition(localPos);
+            searchWindow.SetPendingConnection(startPort);
+            OpenSearchWindow(screenPos);
+        }
+
+        public bool TryConnectPorts(Port from, Port to)
+        {
+            if (from == null || to == null) return false;
+            if (from.direction == to.direction) return false;
+
+            Port output = from.direction == Direction.Output ? from : to;
+            Port input = from.direction == Direction.Input ? from : to;
+
+            if (!GetCompatiblePorts(output, null).Contains(input)) return false;
+
+            List<GraphElement> edgesToRemove = new List<GraphElement>();
+
+            if (input.capacity == Port.Capacity.Single)
+            {
+                foreach (Edge e in input.connections.ToList())
+                    edgesToRemove.Add(e);
+            }
+
+            if (output.capacity == Port.Capacity.Single)
+            {
+                foreach (Edge e in output.connections.ToList())
+                    edgesToRemove.Add(e);
+            }
+
+            if (edgesToRemove.Count > 0)
+                DeleteElements(edgesToRemove);
+
+            BehaviourNodeView parentView = output.node as BehaviourNodeView;
+            BehaviourNodeView childView = input.node as BehaviourNodeView;
+
+            if (parentView == null || childView == null) return false;
+            if (tree == null) return false;
+
+            tree.AddChild(parentView.NodeSO, childView.NodeSO);
+
+            Edge edge = output.ConnectTo(input);
+            AddElement(edge);
+
+            onGraphDataChanged?.Invoke(this);
+            return true;
         }
 
         private void OnUndoRedo()
@@ -218,6 +286,7 @@ namespace BehaviourTree.Editor
         private void RegisterNodeView(BehaviourNodeView nodeView)
         {
             AddElement(nodeView);
+            SetupEdgeConnectors(nodeView);
 
             if (!nodeViewDict.TryAdd(nodeView.Guid, nodeView))
                 Debug.LogWarning($"Duplicate GUID in graph view: {nodeView.Guid}");
@@ -233,36 +302,41 @@ namespace BehaviourTree.Editor
             return null;
         }
         
-        public BehaviourNode CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
+        public BehaviourNodeView CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
         {
             CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
+            //Undo.RecordObject(node, "(BTree) Configure Node");
             node.SetCompositeType(compositeType);
             node.name = compositeType.ToString();
             node.graphPosition = position;
+            tree.RegisterNode(node);
             
-            CreateNodeView(node);
-            return node;
+            return CreateNodeView(node);
         }
         
-        public void CreateLeafNode(MethodID methodID, Vector2 position, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
+        public BehaviourNodeView CreateLeafNode(MethodID methodID, Vector2 position, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
         {
             LeafNode node = (LeafNode)tree.CreateNode(typeof(LeafNode));
+            //Undo.RecordObject(node, "(BTree) Configure Node");
             node.SetLeafType(leafType);
             node.methodID = methodID;
             node.name = methodID.ToString();
             node.graphPosition = position;
+            tree.RegisterNode(node);
 
-            CreateNodeView(node);
+            return CreateNodeView(node);
         }
 
-        public void CreateDecoratorNode(MethodID methodID, Vector2 position)
+        public BehaviourNodeView CreateDecoratorNode(MethodID methodID, Vector2 position)
         {
             DecoratorNode node = (DecoratorNode)tree.CreateNode(typeof(DecoratorNode));
+            //Undo.RecordObject(node, "(BTree) Configure Node");
             node.methodID = methodID;
             node.name = methodID.ToString();
             node.graphPosition = position;
-
-            CreateNodeView(node);
+            tree.RegisterNode(node);
+            
+            return CreateNodeView(node);
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -325,7 +399,11 @@ namespace BehaviourTree.Editor
             base.BuildContextualMenu(evt);
 
             if(tree == null) return;
-            evt.menu.AppendAction($"Create Node", (a) => OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition)));
+            evt.menu.AppendAction($"Create Node", (a) =>
+            {
+                searchWindow.ClearPendingConnection();
+                OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
+            });
         }
 
         public void PopulateView(BehaviourTreeAsset tree)
@@ -368,9 +446,10 @@ namespace BehaviourTree.Editor
             if (tree.rootCopy != null) return;
 
             tree.rootCopy = tree.CreateNode(typeof(RootNode));
+            //Undo.RecordObject(tree.rootCopy, "(BTree) Configure Node");
             tree.rootCopy.name = "ROOT";
             tree.rootCopy.graphPosition = ViewportCenter();
-            EditorUtility.SetDirty(tree);
+            tree.RegisterNode(tree.rootCopy);
         }
 
         private void CleanupAndCreateViews()
@@ -400,12 +479,19 @@ namespace BehaviourTree.Editor
 
                 for (int j = 0; j < node.children.Count; j++)
                 {
+                    BehaviourNode child = node.children[j];
+
                     BehaviourNodeView parentView = FindNodeView(node);
-                    BehaviourNodeView childView = FindNodeView(node.children[j]);
+                    if (parentView == null && node != null)
+                        parentView = CreateNodeView(node);
+
+                    BehaviourNodeView childView = FindNodeView(child);
+                    if (childView == null && child != null)
+                        childView = CreateNodeView(child);
 
                     if (parentView == null || childView == null)
                     {
-                        Debug.LogWarning($"Failed to connect edge: {node.guid} → {node.children[j]?.guid}");
+                        Debug.LogWarning($"Failed to connect edge: {node.guid} → {child?.guid}");
                         continue;
                     }
 
@@ -457,6 +543,70 @@ namespace BehaviourTree.Editor
                 return new Vector2(layout.width * 0.5f, layout.height * 0.5f);
             }
             return new Vector2(400, 300);
+        }
+
+        private sealed class BtEdgeConnectorListener : IEdgeConnectorListener
+        {
+            private readonly BehaviourTreeEditorGraphView graphView;
+
+            public BtEdgeConnectorListener(BehaviourTreeEditorGraphView graphView)
+            {
+                this.graphView = graphView;
+            }
+
+            public void OnDropOutsidePort(Edge edge, Vector2 position)
+            {
+                Port startPort = edge?.output ?? edge?.input;
+
+                edge?.output?.Disconnect(edge);
+                edge?.input?.Disconnect(edge);
+                edge?.RemoveFromHierarchy();
+
+                if (startPort != null && startPort.direction == Direction.Output)
+                    graphView.OpenSearchWindowForEdgeDrop(startPort, position);
+            }
+
+            public void OnDrop(GraphView graphView, Edge edge)
+            {
+                if (graphView == null || edge == null) return;
+                if (edge.input == null || edge.output == null) return;
+
+                List<GraphElement> elementsToRemove = new List<GraphElement>();
+
+                if (edge.input.capacity == Port.Capacity.Single)
+                {
+                    foreach (Edge connection in edge.input.connections.ToList())
+                    {
+                        if (connection != edge)
+                            elementsToRemove.Add(connection);
+                    }
+                }
+
+                if (edge.output.capacity == Port.Capacity.Single)
+                {
+                    foreach (Edge connection in edge.output.connections.ToList())
+                    {
+                        if (connection != edge)
+                            elementsToRemove.Add(connection);
+                    }
+                }
+
+                if (elementsToRemove.Count > 0)
+                    graphView.DeleteElements(elementsToRemove);
+
+                edge.input.Connect(edge);
+                edge.output.Connect(edge);
+
+                var edgesToCreate = new List<Edge> { edge };
+                var graphViewChange = new GraphViewChange { edgesToCreate = edgesToCreate };
+                graphViewChange = graphView.graphViewChanged?.Invoke(graphViewChange) ?? graphViewChange;
+
+                if (graphViewChange.edgesToCreate != null)
+                {
+                    for (int i = 0; i < graphViewChange.edgesToCreate.Count; i++)
+                        graphView.AddElement(graphViewChange.edgesToCreate[i]);
+                }
+            }
         }
     }
 }
