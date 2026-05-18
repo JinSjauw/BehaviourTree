@@ -195,6 +195,9 @@ namespace BehaviourTree.Editor
         {
             if(tree == null) return;
             
+            if (tree.NeedsNodesListSync())
+                tree.SyncNodesListFromAssets();
+
             PopulateView(tree);
         }
 

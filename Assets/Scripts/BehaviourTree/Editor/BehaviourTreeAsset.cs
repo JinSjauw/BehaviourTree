@@ -9,9 +9,9 @@ namespace BehaviourTree.Editor
     [CreateAssetMenu(fileName = "BehaviourTreeAsset", menuName = "BehaviourTree/BTAsset")]
     public class BehaviourTreeAsset : ScriptableObject, IBehaviourTreeAuthoringAsset
     {
-        public List<BehaviourNode> nodesList;
-        public BehaviourNode rootCopy;
-        public BlackboardDefinition blackboardDefinition;
+        [HideInInspector] public List<BehaviourNode> nodesList;
+        [HideInInspector] public BehaviourNode rootCopy;
+        [HideInInspector] public BlackboardDefinition blackboardDefinition;
 
         public BehaviourNode Root => rootCopy;
         public BlackboardDefinition BlackboardDefinition => blackboardDefinition;
@@ -65,6 +65,119 @@ namespace BehaviourTree.Editor
             AssetDatabase.AddObjectToAsset(node, this);
             Undo.RegisterCreatedObjectUndo(node, "(BTree) Register Node");
             
+            EditorUtility.SetDirty(this);
+        }
+
+        public bool NeedsNodesListSync()
+        {
+            if (nodesList == null) return true;
+
+            HashSet<BehaviourNode> nodeSet = new HashSet<BehaviourNode>();
+            HashSet<string> guidSet = new HashSet<string>();
+
+            for (int i = 0; i < nodesList.Count; i++)
+            {
+                BehaviourNode node = nodesList[i];
+                if (node == null) return true;
+
+                if (!nodeSet.Add(node)) return true;
+
+                string key = !string.IsNullOrEmpty(node.guid) ? node.guid : node.GetInstanceID().ToString();
+                if (!guidSet.Add(key)) return true;
+            }
+
+            if (rootCopy != null && !nodeSet.Contains(rootCopy)) return true;
+
+            for (int i = 0; i < nodesList.Count; i++)
+            {
+                BehaviourNode node = nodesList[i];
+                if (node == null) continue;
+
+                List<BehaviourNode> children = node.children;
+                if (children == null) continue;
+
+                for (int j = 0; j < children.Count; j++)
+                {
+                    BehaviourNode child = children[j];
+                    if (child == null) continue;
+                    if (!nodeSet.Contains(child)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void SyncNodesListFromAssets()
+        {
+            string path = AssetDatabase.GetAssetPath(this);
+            if (string.IsNullOrEmpty(path)) return;
+
+            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
+            if (assets == null || assets.Length == 0) return;
+
+            List<BehaviourNode> found = new List<BehaviourNode>();
+            HashSet<string> seen = new HashSet<string>();
+
+            for (int i = 0; i < assets.Length; i++)
+            {
+                if (assets[i] is not BehaviourNode node) continue;
+
+                string key = !string.IsNullOrEmpty(node.guid) ? node.guid : node.GetInstanceID().ToString();
+                if (!seen.Add(key)) continue;
+
+                found.Add(node);
+            }
+
+            if (rootCopy != null)
+            {
+                for (int i = found.Count - 1; i >= 0; i--)
+                {
+                    if (found[i] == rootCopy)
+                        found.RemoveAt(i);
+                }
+                found.Insert(0, rootCopy);
+            }
+
+            if (found.Count > 1)
+            {
+                int startIdx = rootCopy != null ? 1 : 0;
+                List<BehaviourNode> rest = new List<BehaviourNode>();
+                for (int i = startIdx; i < found.Count; i++)
+                    rest.Add(found[i]);
+
+                rest.Sort((a, b) =>
+                {
+                    int cmp = a.graphPosition.y.CompareTo(b.graphPosition.y);
+                    if (cmp != 0) return cmp;
+                    cmp = a.graphPosition.x.CompareTo(b.graphPosition.x);
+                    if (cmp != 0) return cmp;
+                    cmp = string.CompareOrdinal(a.name, b.name);
+                    if (cmp != 0) return cmp;
+                    return string.CompareOrdinal(a.guid, b.guid);
+                });
+
+                int write = startIdx;
+                for (int i = 0; i < rest.Count; i++)
+                    found[write++] = rest[i];
+            }
+
+            bool changed = nodesList == null || nodesList.Count != found.Count;
+            if (!changed && nodesList != null)
+            {
+                for (int i = 0; i < found.Count; i++)
+                {
+                    if (nodesList[i] != found[i])
+                    {
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!changed) return;
+
+            Undo.RecordObject(this, "(BTree) Sync Nodes");
+            nodesList = found;
             EditorUtility.SetDirty(this);
         }
 
