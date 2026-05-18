@@ -58,6 +58,8 @@ namespace BehaviourTree.Editor
 
         public void RegisterNode(BehaviourNode node)
         {
+            if (node == null) return;
+            
             Undo.RecordObject(this, "(BTree) Register Node");
             nodesList.Add(node);
 

@@ -42,7 +42,8 @@ namespace BehaviourTree.Editor
             {
                 BehaviourNode node = nodeView.NodeSO;
 
-                if(node== null) return;
+                if(node == null) return;
+                if(node.NodeType == BehaviourNodeType.ROOT || node is RootNode) continue;
 
                 SerializedNodeData serializedNode = SerializeNode(node);
 
@@ -163,7 +164,7 @@ namespace BehaviourTree.Editor
                     node = compositeNode;
                     break;
                 default:
-                    node = ScriptableObject.CreateInstance<BehaviourNode>();
+                    node = null;
                     break;
             }
             

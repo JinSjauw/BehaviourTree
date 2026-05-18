@@ -494,7 +494,6 @@ namespace BehaviourTree.Editor
             if (shouldCenterNodes)
             {
                 shouldCenterNodes = false;
-                Debug.Log($"[BTGraphView] Scheduling CenterViewOnNodes for tree='{tree.name}' nodes={nodeViewDict.Count}");
                 RequestCenterNodes();
             }
         }
