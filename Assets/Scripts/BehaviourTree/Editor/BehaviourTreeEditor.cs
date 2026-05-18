@@ -141,7 +141,7 @@ public class BehaviourTreeEditor : EditorWindow
 
         Debug.Log("Baking Tree!");
 
-        RuntimeBTreeAsset runtimeAsset = CreateInstance<RuntimeBTreeAsset>();
+        RuntimeBehaviourTreeAsset runtimeAsset = CreateInstance<RuntimeBehaviourTreeAsset>();
         runtimeAsset.name = currentTree.name + "_Runtime";
         runtimeAsset.blackboardDefinition = currentBlackboardDef;
         runtimeAsset.sourceTree = currentTree;

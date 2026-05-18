@@ -2,8 +2,7 @@ using BehaviourTree;
 using BehaviourTree.Core;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "RuntimeBTreeAsset", menuName = "BehaviourTree/RuntimeBTreeAsset")]
-public class RuntimeBTreeAsset : ScriptableObject
+public class RuntimeBehaviourTreeAsset : ScriptableObject
 {
     /// <summary>flattened behaviour tree</summary>
     public NodeData[] runtimeNodeData;

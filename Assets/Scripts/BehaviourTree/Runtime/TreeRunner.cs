@@ -7,7 +7,7 @@ namespace BehaviourTree.Runtime
    public class TreeRunner : MonoBehaviour
    {
       [SerializeField] private BlackBoard blackBoard;
-      [SerializeField] private RuntimeBTreeAsset runtimeAsset;
+      [SerializeField] private RuntimeBehaviourTreeAsset runtimeAsset;
 #if UNITY_EDITOR
       [SerializeField] private UnityEngine.Object authoringAsset;
 #endif
@@ -24,7 +24,7 @@ namespace BehaviourTree.Runtime
             BehaviourTree.Core.IBehaviourTreeAuthoringAsset authoring = authoringAsset as BehaviourTree.Core.IBehaviourTreeAuthoringAsset;
             if (authoring != null)
             {
-               RuntimeBTreeAsset tempRuntimeAsset = ScriptableObject.CreateInstance<RuntimeBTreeAsset>();
+               RuntimeBehaviourTreeAsset tempRuntimeAsset = ScriptableObject.CreateInstance<RuntimeBehaviourTreeAsset>();
                tempRuntimeAsset.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
                tempRuntimeAsset.name = authoring.DisplayName + "_Runtime";
                tempRuntimeAsset.blackboardDefinition = authoring.BlackboardDefinition;
@@ -35,11 +35,11 @@ namespace BehaviourTree.Runtime
             }
             else
             {
-               Debug.LogError("RuntimeBTreeAsset is null");
+               Debug.LogError("RuntimeBehaviourTreeAsset is null");
                return;
             }
 #else
-            Debug.LogError("RuntimeBTreeAsset is null");
+            Debug.LogError("RuntimeBehaviourTreeAsset is null");
             return;
 #endif
          }

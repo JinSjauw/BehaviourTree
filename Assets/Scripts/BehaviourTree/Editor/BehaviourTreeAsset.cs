@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace BehaviourTree.Editor 
 {
-    [CreateAssetMenu(fileName = "BehaviourTreeAsset", menuName = "BehaviourTree/BTAsset")]
     public class BehaviourTreeAsset : ScriptableObject, IBehaviourTreeAuthoringAsset
     {
         [HideInInspector] public List<BehaviourNode> nodesList;

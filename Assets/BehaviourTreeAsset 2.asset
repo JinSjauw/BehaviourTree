@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
-  - {fileID: 7399971472411141622}
   - {fileID: -2388626760523455919}
+  - {fileID: 7399971472411141622}
   - {fileID: 6351010905527966408}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 3
+  lastChildIndex: 5
   guid: 6c39133f5f67fff438859bddc6c48bd8
-  graphPosition: {x: 125.82632, y: 558.00006}
-  runtimeIndex: 0
+  graphPosition: {x: 52, y: 570}
+  runtimeIndex: 1
   compositeType: 1
 --- !u!114 &-6660082802888072172
 MonoBehaviour:
@@ -38,8 +38,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: b27d0579876edb64da9a0bdd29af7827
-  graphPosition: {x: -146.17374, y: 897.00006}
-  runtimeIndex: 0
+  graphPosition: {x: -78.48752, y: 901.0325}
+  runtimeIndex: 6
   leafType: 4
   methodID: 28
   fieldEntries:
@@ -83,7 +83,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 831391dcc009fcc4bbf6dc99782e7e62
   graphPosition: {x: 828, y: 723}
-  runtimeIndex: 0
+  runtimeIndex: 10
   leafType: 4
   methodID: 20
   fieldEntries:
@@ -115,8 +115,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 61351e1565b73c64ba05d488c787fb08
-  graphPosition: {x: 476.91644, y: 731}
-  runtimeIndex: 0
+  graphPosition: {x: 470.00015, y: 731.00006}
+  runtimeIndex: 8
   leafType: 3
   methodID: 6
   fieldEntries:
@@ -146,7 +146,7 @@ MonoBehaviour:
     isVariable: 0
     variableName: 
     fieldType: 0
-    intValue: 3
+    intValue: 5
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -170,11 +170,11 @@ MonoBehaviour:
   - {fileID: -5103446367343537540}
   - {fileID: -666504314262524490}
   - {fileID: -6446956115568358721}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 8
+  lastChildIndex: 10
   guid: 3090e88c73e9c2143aeab7899dd9ec5e
-  graphPosition: {x: 643.5345, y: 549.82117}
-  runtimeIndex: 0
+  graphPosition: {x: 651, y: 567}
+  runtimeIndex: 2
   compositeType: 2
 --- !u!114 &-4003088083825054018
 MonoBehaviour:
@@ -191,10 +191,10 @@ MonoBehaviour:
   children:
   - {fileID: -6847340617088800026}
   - {fileID: -5059039290753998693}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 1
+  lastChildIndex: 2
   guid: 4f003f02ddfdeae4f97d31dc8578b6bb
-  graphPosition: {x: 387.06815, y: 402.93176}
+  graphPosition: {x: 337, y: 410}
   runtimeIndex: 0
   compositeType: 2
 --- !u!114 &-2388626760523455919
@@ -213,8 +213,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 90483cf00a0669d41a5bbd0d1fe85eac
-  graphPosition: {x: 99.82631, y: 744.00006}
-  runtimeIndex: 0
+  graphPosition: {x: -147.99988, y: 731}
+  runtimeIndex: 3
   leafType: 3
   methodID: 11
   fieldEntries:
@@ -244,7 +244,7 @@ MonoBehaviour:
     isVariable: 0
     variableName: 
     fieldType: 0
-    intValue: 1
+    intValue: 0
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -330,7 +330,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: c88f556c2f5309e4aa65f15ff7e7f36b
-  graphPosition: {x: 387.06815, y: 207.93176}
+  graphPosition: {x: 345, y: 236}
   runtimeIndex: 0
 --- !u!114 &-666504314262524490
 MonoBehaviour:
@@ -349,7 +349,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: f1ba82bc64bf92e49a0259ef1866f640
   graphPosition: {x: 651.99994, y: 723}
-  runtimeIndex: 0
+  runtimeIndex: 9
   leafType: 4
   methodID: 1
   fieldEntries:
@@ -441,8 +441,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: b8eeb2e2844cf5849887056d253fafa8
-  graphPosition: {x: 283.82623, y: 741.00006}
-  runtimeIndex: 0
+  graphPosition: {x: 244.9999, y: 731}
+  runtimeIndex: 5
   leafType: 4
   methodID: 1
   fieldEntries:
@@ -506,11 +506,11 @@ MonoBehaviour:
   children:
   - {fileID: -6660082802888072172}
   - {fileID: 7547983875321800468}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 6
+  lastChildIndex: 7
   guid: d5d00172589ec6542b6e68d9a241271a
-  graphPosition: {x: -78.17377, y: 746.0001}
-  runtimeIndex: 0
+  graphPosition: {x: 54.000076, y: 731}
+  runtimeIndex: 4
   compositeType: 2
 --- !u!114 &7547983875321800468
 MonoBehaviour:
@@ -528,8 +528,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 3b6f8a6ef0b21aa46b4df2844cf71e33
-  graphPosition: {x: 42.826237, y: 895.00006}
-  runtimeIndex: 0
+  graphPosition: {x: 193.71326, y: 909}
+  runtimeIndex: 7
   leafType: 4
   methodID: 1
   fieldEntries:
@@ -557,7 +557,7 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   - fieldName: Health
     isVariable: 1
-    variableName: HEALTHTHRESHHOLD
+    variableName: HEALTH
     fieldType: 0
     intValue: 0
     floatValue: 0

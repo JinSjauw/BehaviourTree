@@ -40,7 +40,7 @@ namespace BehaviourTree.Editor
 
             AddGrid();
             AddGraphTitle();
-            AddSearchWindow();
+            EnsureSearchWindow();
             edgeConnectorListener = new BtEdgeConnectorListener(this);
             
             //Setup copy/paste callbacks
@@ -100,7 +100,7 @@ namespace BehaviourTree.Editor
             Add(graphTitleLabel);
         }
 
-        private void AddSearchWindow()
+        public void EnsureSearchWindow()
         {
             if(searchWindow == null)
             {
@@ -111,6 +111,8 @@ namespace BehaviourTree.Editor
 
             nodeCreationRequest = context =>
             {
+                EnsureSearchWindow();
+
                 Rect windowRect = EditorWindow.focusedWindow.position;
 
                 Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(context.screenMousePosition - new Vector2(windowRect.x, windowRect.y)));
@@ -123,6 +125,7 @@ namespace BehaviourTree.Editor
 
         private void OpenSearchWindow(Vector2 mousePosition)
         {
+            EnsureSearchWindow();
             SearchWindow.Open(new SearchWindowContext(mousePosition), searchWindow);
         }
 
@@ -137,7 +140,9 @@ namespace BehaviourTree.Editor
 
         private void OpenSearchWindowForEdgeDrop(Port startPort, Vector2 graphMousePosition)
         {
-            if (startPort == null || searchWindow == null) return;
+            if (startPort == null) return;
+            EnsureSearchWindow();
+            if (searchWindow == null) return;
 
             Vector2 screenPos = GUIUtility.GUIToScreenPoint(graphMousePosition);
             Rect windowRect = EditorWindow.focusedWindow.position;

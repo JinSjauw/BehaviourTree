@@ -479,7 +479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
   blackBoard: {fileID: 923873417}
   runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 964ad5884dcedb649bf6228d88bf2c2f, type: 2}
+  authoringAsset: {fileID: 11400000, guid: 0333a4886c43a3243bef0b8bb8dc9770, type: 2}
 --- !u!114 &923873417
 MonoBehaviour:
   m_ObjectHideFlags: 0

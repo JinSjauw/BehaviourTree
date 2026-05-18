@@ -1,5 +1,23 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7017910317345365746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: b6a058ba8c3effe48a6fe474f3283dbc
+  graphPosition: {x: 400, y: 300}
+  runtimeIndex: 0
 --- !u!114 &-6918678299252432223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26,92 +44,6 @@ MonoBehaviour:
   m_Name: BehaviourTreeAsset 1
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Editor.BehaviourTreeAsset
   nodesList:
-  - {fileID: 8456155695440827630}
-  - {fileID: 4093097468391701784}
-  rootCopy: {fileID: 8456155695440827630}
+  - {fileID: -7017910317345365746}
+  rootCopy: {fileID: -7017910317345365746}
   blackboardDefinition: {fileID: -6918678299252432223}
---- !u!114 &4093097468391701784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
-  m_Name: HELLOWORLD
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 8fed670dcda967f4880410c66401738f
-  graphPosition: {x: 233, y: 615}
-  runtimeIndex: 0
-  leafType: 4
-  methodID: 1
-  fieldEntries:
-  - fieldName: Speed
-    isVariable: 0
-    variableName: 
-    fieldType: 3
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: Velocity
-    isVariable: 1
-    variableName: 
-    fieldType: 3
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: Health
-    isVariable: 1
-    variableName: 
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: TestTime
-    isVariable: 1
-    variableName: 
-    fieldType: 1
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  BlackBoardTypeID: 0
---- !u!114 &8456155695440827630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
-  m_Name: ROOT
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  children:
-  - {fileID: 0}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 96eba1a50feb3804eb02384a7091d3bf
-  graphPosition: {x: 400, y: 300}
-  runtimeIndex: 0
