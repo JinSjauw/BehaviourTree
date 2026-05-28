@@ -103,7 +103,18 @@ namespace BehaviourTree.Editor
                     fieldTypeProp.enumValueIndex = (int)fieldType;
 
                     EditorGUILayout.BeginVertical("box");
-                    EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{fieldType}</color>", RichTextLabelStyle);
+
+                    string typeLabel = "";
+                    if(info.fieldType != null && info.fieldType.IsEnum)
+                    {
+                        typeLabel = $"Enum( {info.fieldType.Name} )";
+                    }
+                    else
+                    {
+                        typeLabel = fieldType.ToString();
+                    }
+                    
+                    EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
 
                     isVariableProp.boolValue = info.isVariable;
 
@@ -221,7 +232,8 @@ namespace BehaviourTree.Editor
             var matchingVars = new List<string>();
             for (int v = 0; v < blackBoardDef.sharedVariables.Count; v++)
             {
-                Type bbType = FieldTypeHelper.GetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName);
+                if (!FieldTypeHelper.TryGetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName, out Type bbType) || bbType == null)
+                    continue;
                 if (bbType == expectedType)
                 {
                     matchingVars.Add(blackBoardDef.sharedVariables[v].name);

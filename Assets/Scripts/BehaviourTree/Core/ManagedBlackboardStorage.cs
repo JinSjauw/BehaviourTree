@@ -32,7 +32,14 @@ namespace BehaviourTree.Core
             for (int i = 0; i < count; i++)
             {
                 BlackboardVariable variable = definition.sharedVariables[i];
-                Type t = FieldTypeHelper.GetSystemTypeFromName(variable.typeName);
+                Type t = null;
+                if (!FieldTypeHelper.TryGetSystemTypeFromName(variable.typeName, out t))
+                {
+                    if (Debug.isDebugBuild)
+                    {
+                        Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.typeName}' for variable '{variable.name}' (index {i}).");
+                    }
+                }
                 slotTypes[i] = t;
                 slotKinds[i] = (t != null && !t.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
                 values[i] = variable.GetInitialValue();

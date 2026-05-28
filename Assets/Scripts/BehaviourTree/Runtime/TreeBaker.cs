@@ -156,15 +156,24 @@ namespace BehaviourTree.Runtime
                     }
                     else
                     {
-                        Type bbType = FieldTypeHelper.GetSystemTypeFromName(bbDef.sharedVariables[varIndex].typeName);
-                        FieldType bbFieldType = FieldTypeHelper.GetFieldType(bbType);
-                        if (bbFieldType != entry.fieldType)
+                        if (!FieldTypeHelper.TryGetSystemTypeFromName(bbDef.sharedVariables[varIndex].typeName, out Type bbType) || bbType == null)
                         {
                             UnityEngine.Debug.LogWarning(
-                                $"[TreeBaker] Blackboard variable '{entry.variableName}' type mismatch. " +
-                                $"Field '{entry.fieldName}' expects {entry.fieldType} but blackboard has {bbFieldType}. " +
-                                $"Using invalid index -1.");
+                                $"[TreeBaker] Blackboard variable '{entry.variableName}' has an unresolved typeName '{bbDef.sharedVariables[varIndex].typeName}'. " +
+                                $"Field '{entry.fieldName}' will use invalid index -1.");
                             varIndex = -1;
+                        }
+                        else
+                        {
+                            FieldType bbFieldType = FieldTypeHelper.GetFieldType(bbType);
+                            if (bbFieldType != entry.fieldType)
+                            {
+                                UnityEngine.Debug.LogWarning(
+                                    $"[TreeBaker] Blackboard variable '{entry.variableName}' type mismatch. " +
+                                    $"Field '{entry.fieldName}' expects {entry.fieldType} but blackboard has {bbFieldType}. " +
+                                    $"Using invalid index -1.");
+                                varIndex = -1;
+                            }
                         }
                     }
                 }

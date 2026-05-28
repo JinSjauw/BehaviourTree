@@ -16,7 +16,7 @@ MonoBehaviour:
   - {fileID: 4163046956757552579}
   - {fileID: 7399971472411141622}
   firstChildIndex: 3
-  lastChildIndex: 5
+  lastChildIndex: 4
   guid: 6c39133f5f67fff438859bddc6c48bd8
   graphPosition: {x: 52, y: 570}
   runtimeIndex: 1
@@ -36,7 +36,7 @@ MonoBehaviour:
   children:
   - {fileID: -3486459417008222060}
   - {fileID: -4357791289798047468}
-  firstChildIndex: 8
+  firstChildIndex: 9
   lastChildIndex: 10
   guid: 3090e88c73e9c2143aeab7899dd9ec5e
   graphPosition: {x: 651, y: 567}
@@ -59,7 +59,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 4cf1d17639c352643a8f3df5385caa14
   graphPosition: {x: 769, y: 739}
-  runtimeIndex: 0
+  runtimeIndex: 10
   leafType: 4
   methodID: 39
   fieldEntries:
@@ -114,7 +114,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 00847be6d4910d34994ea4ffca9077d5
   graphPosition: {x: 570, y: 739}
-  runtimeIndex: 0
+  runtimeIndex: 9
   leafType: 4
   methodID: 39
   fieldEntries:
@@ -161,7 +161,7 @@ MonoBehaviour:
     vector2Value: {x: 5, y: 5}
     vector3Value: {x: 0, y: 0, z: 0}
   - name: HEALTHTHRESHHOLD
-    typeName: 
+    typeName: System.Int32
     showInitialValue: 1
     intValue: 200
     floatValue: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
   - name: HEALTH
-    typeName: 
+    typeName: System.Int32
     showInitialValue: 1
     intValue: 100
     floatValue: 0
@@ -228,7 +228,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 4e3b27840b6f3434e9b98e07f7d1f1b1
   graphPosition: {x: -90, y: 866}
-  runtimeIndex: 0
+  runtimeIndex: 6
   leafType: 4
   methodID: 25
   fieldEntries:
@@ -298,11 +298,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
   children:
   - {fileID: 8573896546414159086}
-  firstChildIndex: 0
-  lastChildIndex: 0
+  firstChildIndex: 5
+  lastChildIndex: 5
   guid: 3e2549c79ffdeaf46a414656d54596be
   graphPosition: {x: -332, y: 723}
-  runtimeIndex: 0
+  runtimeIndex: 3
   methodID: 1
   fieldEntries:
   - fieldName: alwaysFailure
@@ -346,8 +346,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 862a009237fa4224a86563131dc99a61
-  graphPosition: {x: 270, y: 862}
-  runtimeIndex: 0
+  graphPosition: {x: 277.99988, y: 874}
+  runtimeIndex: 8
   leafType: 4
   methodID: 10
   fieldEntries:
@@ -368,7 +368,7 @@ MonoBehaviour:
     isToggleVariable: 0
     variableName: HEALTHTHRESHHOLD
     fieldType: 0
-    intValue: 100
+    intValue: 155
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -393,7 +393,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: a075c86c74beb1d40a0fb89e24a7ff79
   graphPosition: {x: 89, y: 865}
-  runtimeIndex: 0
+  runtimeIndex: 7
   leafType: 3
   methodID: 37
   fieldEntries:
@@ -414,7 +414,7 @@ MonoBehaviour:
     isToggleVariable: 0
     variableName: 
     fieldType: 0
-    intValue: 0
+    intValue: 1
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -439,7 +439,7 @@ MonoBehaviour:
   - {fileID: 7328667337934238659}
   - {fileID: 4796380451558442255}
   firstChildIndex: 6
-  lastChildIndex: 7
+  lastChildIndex: 8
   guid: d5d00172589ec6542b6e68d9a241271a
   graphPosition: {x: 54.000076, y: 731}
   runtimeIndex: 4
@@ -461,14 +461,14 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 9df34a069d157ff42bd4030d8b451ce8
   graphPosition: {x: -429, y: 908}
-  runtimeIndex: 0
+  runtimeIndex: 5
   leafType: 4
   methodID: 39
   fieldEntries:
   - fieldName: Value
     isVariable: 1
     isToggleVariable: 0
-    variableName: HEALTH
+    variableName: HEALTHTHRESHHOLD
     fieldType: 0
     intValue: 0
     floatValue: 0

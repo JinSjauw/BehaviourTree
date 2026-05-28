@@ -58,19 +58,33 @@ public static class FieldTypeHelper
         /// <summary>
         /// Convert a serialised type name (from a BlackboardVariable) back to a System.Type.
         /// </summary>
-        public static Type GetSystemTypeFromName(string typeName)
+        public static bool TryGetSystemTypeFromName(string typeName, out Type type)
         {
-            // Try assembly-qualified first, fall back to known types
+            type = null;
+            if (string.IsNullOrEmpty(typeName)) return false;
+
             Type t = Type.GetType(typeName);
-            if (t != null) return t;
+            if (t != null)
+            {
+                type = t;
+                return true;
+            }
 
             foreach (FieldType ft in AllFieldTypes)
             {
                 Type candidate = GetSystemType(ft);
                 if (candidate.FullName == typeName || candidate.AssemblyQualifiedName == typeName)
-                    return candidate;
+                {
+                    type = candidate;
+                    return true;
+                }
             }
-            return typeof(int);
+            return false;
+        }
+
+        public static Type GetSystemTypeFromName(string typeName)
+        {
+            return TryGetSystemTypeFromName(typeName, out Type type) ? type : null;
         }
     }
 }
