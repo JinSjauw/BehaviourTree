@@ -32,6 +32,8 @@ namespace BehaviourTree.Editor
         [SerializeField] private NodeTooltipData rootTooltip;
         [SerializeField] private NodeTooltipData selectorTooltip;
         [SerializeField] private NodeTooltipData sequenceTooltip;
+        [SerializeField] private NodeTooltipData parallelTooltip;
+        [SerializeField] private NodeTooltipData priorityTooltip;
 
         [Header("Method IDs (Actions, Conditions & Decorators)")]
         [Tooltip("Auto-sized to match the MethodID enum. Fill in each entry manually.")]
@@ -87,6 +89,8 @@ namespace BehaviourTree.Editor
                 BehaviourNodeType.ROOT => rootTooltip,
                 BehaviourNodeType.SELECTOR => selectorTooltip,
                 BehaviourNodeType.SEQUENCE => sequenceTooltip,
+                BehaviourNodeType.PARALLEL => parallelTooltip,
+                BehaviourNodeType.PRIORITY => priorityTooltip,
                 _ => GetDefaultTooltip(nodeType.ToString())
             };
         }
@@ -227,6 +231,12 @@ namespace BehaviourTree.Editor
                     break;
                 case BehaviourNodeType.SEQUENCE:
                     sequenceTooltip = data;
+                    break;
+                case BehaviourNodeType.PARALLEL:
+                    parallelTooltip = data;
+                    break;
+                case BehaviourNodeType.PRIORITY:
+                    priorityTooltip = data;
                     break;
             }
         }

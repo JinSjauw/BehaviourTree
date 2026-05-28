@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 using BehaviourTree.Core;
-using Codice.Client.Common.TreeGrouper;
 
 namespace BehaviourTree.Runtime
 {
-    /// <summary>
-    /// Provides handlers with safe access to the evaluator's stack, data, and blackboard.
-    /// </summary>
     public class EvaluatorContext
     {
-        private readonly Stack<EvaluatorFrame> stack;
+        private readonly List<EvaluatorFrame> stack;
         private readonly NodeData[] nodeDatas;
         private readonly FieldData[] fieldDatas;
         private readonly NodeState[] nodeStates;
@@ -19,7 +15,7 @@ namespace BehaviourTree.Runtime
         public int CurrentNodeIndex { get; set; }
         public bool ShouldBreak { get; set; }
 
-        public EvaluatorContext( Stack<EvaluatorFrame> stack, NodeData[] nodeDatas, FieldData[] fieldDatas, NodeState[] nodeStates, BlackBoard blackBoard)
+        public EvaluatorContext(List<EvaluatorFrame> stack, NodeData[] nodeDatas, FieldData[] fieldDatas, NodeState[] nodeStates, BlackBoard blackBoard)
         {
             this.stack = stack;
             this.nodeDatas = nodeDatas;
@@ -30,17 +26,13 @@ namespace BehaviourTree.Runtime
             ShouldBreak = false;
         }
 
-        public EvaluatorFrame CurrentFrame => stack.Peek();
-        public ref NodeData CurrentNode => ref nodeDatas[stack.Peek().nodeIndex];
+        public EvaluatorFrame CurrentFrame => stack[stack.Count - 1];
+        public ref NodeData CurrentNode => ref nodeDatas[stack[stack.Count - 1].nodeIndex];
         public NodeState[] NodeStates => nodeStates;
-        //public ReadOnlySpan<FieldData> FieldDatas => fieldDatas;
 
-        /// <summary>
-        /// Push a child node with a fresh frame.
-        /// </summary>
         public void PushChild(int childNodeIndex)
         {
-            stack.Push(new EvaluatorFrame
+            stack.Add(new EvaluatorFrame
             {
                 nodeIndex = childNodeIndex,
                 childIndex = 0,
@@ -48,31 +40,29 @@ namespace BehaviourTree.Runtime
             });
         }
 
-        /// <summary>
-        /// Pop the current frame and notify the parent of the result.
-        /// </summary>
         public void PopAndNotifyParent(NodeState result)
         {
-            nodeStates[stack.Peek().nodeIndex] = result;
-            stack.Pop();
+            nodeStates[stack[stack.Count - 1].nodeIndex] = result;
+            stack.RemoveAt(stack.Count - 1);
 
             if (stack.Count > 0)
             {
-                stack.Peek().lastChildStatus = result;
+                var parentFrame = stack[stack.Count - 1];
+                parentFrame.lastChildStatus = result;
+                stack[stack.Count - 1] = parentFrame;
             }
         }
 
-        /// <summary>
-        /// Mark the current node as RUNNING in the state array.
-        /// </summary>
-        public void MarkCurrentNodeRunning()
+        public void UpdateNodeStatus(NodeState status, int nodeIndex)
         {
-            nodeStates[stack.Peek().nodeIndex] = NodeState.RUNNING;
+            nodeStates[nodeIndex] = status;
         }
 
-        /// <summary>
-        /// Invokes the leaf node's method from the MethodRegistry.
-        /// </summary>
+        public void MarkCurrentNodeRunning()
+        {
+            nodeStates[stack[stack.Count - 1].nodeIndex] = NodeState.RUNNING;
+        }
+
         public NodeState EvaluateLeaf(ref NodeData nodeData)
         {
             BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
@@ -104,13 +94,18 @@ namespace BehaviourTree.Runtime
             return default;
         }
 
+        public ref NodeData GetNodeData(int nodeIndex)
+        {
+            return ref nodeDatas[nodeIndex];
+        }
+
         public void SetStackRunning()
         {
-            foreach (var frame in stack)
+            for (int i = 0; i < stack.Count; i++)
             {
-                if (nodeStates[frame.nodeIndex] == NodeState.NONE)
+                if (nodeStates[stack[i].nodeIndex] == NodeState.NONE)
                 {
-                    nodeStates[frame.nodeIndex] = NodeState.RUNNING;
+                    nodeStates[stack[i].nodeIndex] = NodeState.RUNNING;
                 }
             }
         }

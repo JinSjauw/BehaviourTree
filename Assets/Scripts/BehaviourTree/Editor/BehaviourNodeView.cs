@@ -60,6 +60,8 @@ namespace BehaviourTree.Editor
                 BehaviourNodeType.ROOT => Color.green,
                 BehaviourNodeType.SELECTOR => Color.blue,
                 BehaviourNodeType.SEQUENCE => Color.purple,
+                BehaviourNodeType.PARALLEL => Color.magenta,
+                BehaviourNodeType.PRIORITY => Color.cyan,
                 BehaviourNodeType.ACTION => Color.red,
                 BehaviourNodeType.CONDITION => Color.yellow,
                 BehaviourNodeType.DECORATOR => Color.chocolate,
@@ -196,7 +198,7 @@ namespace BehaviourTree.Editor
 
         public void SortChildren()
         {
-            if (NodeSO.NodeType == BehaviourNodeType.SELECTOR || NodeSO.NodeType == BehaviourNodeType.SEQUENCE)
+            if (NodeSO.NodeType == BehaviourNodeType.SELECTOR || NodeSO.NodeType == BehaviourNodeType.SEQUENCE || NodeSO.NodeType == BehaviourNodeType.PARALLEL || NodeSO.NodeType == BehaviourNodeType.PRIORITY)
             {
                 NodeSO.children.Sort(SortByHorizontalPosition);
             }

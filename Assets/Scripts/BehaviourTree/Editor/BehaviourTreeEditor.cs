@@ -202,8 +202,12 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnSelectionChange()
     {
-        currentTree = OnSelectTree();
+        BehaviourTreeAsset selectedAsset = OnSelectTree();
 
+        if(selectedAsset == null) return;
+
+        currentTree = selectedAsset;
+        
         // Null check for tree asset before using it
         if (currentTree == null)
         {
@@ -234,7 +238,7 @@ public class BehaviourTreeEditor : EditorWindow
                 treeGraphView.PopulateView(currentTree);
                 blackBoardView.BuildBlackboardView(currentTree.blackboardDefinition);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogError($"Error populating view: {ex.Message}");
             }

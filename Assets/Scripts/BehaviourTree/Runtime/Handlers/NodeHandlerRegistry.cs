@@ -18,6 +18,8 @@ namespace BehaviourTree.Runtime
             Register(BehaviourNodeType.SEQUENCE, new SequenceHandler());
             Register(BehaviourNodeType.SELECTOR, new SelectorHandler());
             Register(BehaviourNodeType.DECORATOR, new DecoratorHandler());
+            Register(BehaviourNodeType.PARALLEL, new ParallelHandler());
+            Register(BehaviourNodeType.PRIORITY, new PriorityHandler());
             //_initialized = true;
         }
 

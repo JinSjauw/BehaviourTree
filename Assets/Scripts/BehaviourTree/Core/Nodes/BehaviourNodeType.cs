@@ -6,4 +6,6 @@ public enum BehaviourNodeType
     CONDITION = 3,
     ACTION = 4,
     DECORATOR = 5,
+    PARALLEL = 6,
+    PRIORITY = 7,
 }

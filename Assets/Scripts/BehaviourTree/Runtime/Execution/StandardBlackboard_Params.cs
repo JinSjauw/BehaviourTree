@@ -18,7 +18,6 @@ namespace BehaviourTree.Runtime
         [SharedVar] public float A;
         [SharedVar] public float B;
         public NumericCompareOp Operation;
-        public float Epsilon;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -35,7 +34,6 @@ namespace BehaviourTree.Runtime
         [SharedVar] public Vector2 A;
         [SharedVar] public Vector2 B;
         public VectorCompareOp Operation;
-        public float Epsilon;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -44,7 +42,6 @@ namespace BehaviourTree.Runtime
         [SharedVar] public Vector3 A;
         [SharedVar] public Vector3 B;
         public VectorCompareOp Operation;
-        public float Epsilon;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -85,6 +82,20 @@ namespace BehaviourTree.Runtime
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_CheckVector2_NodeFields
+    {
+        [SharedVar] public Vector2 Value;
+        public VectorCheckOp Operation;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_CheckVector3_NodeFields
+    {
+        [SharedVar] public Vector3 Value;
+        public VectorCheckOp Operation;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public partial struct BB_Log_NodeFields
     {
         public string Message;
@@ -96,21 +107,21 @@ namespace BehaviourTree.Runtime
     public partial struct BB_SetInt_NodeFields
     {
         [SharedVar] public int Target;
-        [SharedVar] public int Value;
+        [SharedVar(true)] public int Value;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct BB_SetFloat_NodeFields
     {
         [SharedVar] public float Target;
-        [SharedVar] public float Value;
+        [SharedVar(true)] public float Value;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public partial struct BB_SetBool_NodeFields
     {
         [SharedVar] public bool Target;
-        [SharedVar] public bool Value;
+        [SharedVar(true)] public bool Value;
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using BehaviourTree.Core;
 using BehaviourTree.Runtime;
 using UnityEngine;
@@ -7,14 +8,31 @@ namespace BehaviourTree
 {
     public partial class StandardMethods
     {
-        private static bool RequireVariable(ReadOnlySpan<FieldData> fields, int index)
+        private static bool GuardFail(string caller, int index, string expected, ReadOnlySpan<FieldData> fields)
         {
-            return fields.Length > index && fields[index].IsVariable && fields[index].value >= 0;
+            if (Debug.isDebugBuild) Debug.LogWarning($"[BT] Guard failed in {caller}: field[{index}] expected {expected} (len={fields.Length})");
+            return false;
         }
 
-        private static bool RequireConstant(ReadOnlySpan<FieldData> fields, int index)
+        private static bool RequireVariable(ReadOnlySpan<FieldData> fields, int index, [CallerMemberName] string caller = null)
         {
-            return fields.Length > index && fields[index].IsConstant;
+            if (fields.Length <= index) return GuardFail(caller, index, "Variable", fields);
+            FieldData field = fields[index];
+            return field.IsVariable && field.value >= 0 ? true : GuardFail(caller, index, "Variable", fields);
+        }
+
+        private static bool RequireVariableOrConstant(ReadOnlySpan<FieldData> fields, int index, [CallerMemberName] string caller = null)
+        {       
+            if (fields.Length <= index) return GuardFail(caller, index, "VariableOrConstant", fields);
+            FieldData field = fields[index];
+            return field.IsConstant || (field.IsVariable && field.value >= 0) ? true : GuardFail(caller, index, "VariableOrConstant", fields);
+        }
+
+        private static bool RequireConstant(ReadOnlySpan<FieldData> fields, int index, [CallerMemberName] string caller = null)
+        {
+            if (fields.Length <= index) return GuardFail(caller, index, "Constant", fields);
+            FieldData field = fields[index];
+            return field.IsConstant ? true : GuardFail(caller, index, "Constant", fields);
         }
 
         [BTreeMethod(MethodID.BB_CompareInt)]
@@ -34,7 +52,6 @@ namespace BehaviourTree
                 NumericCompareOp.LessOrEqual => a <= b,
                 NumericCompareOp.Greater => a > b,
                 NumericCompareOp.GreaterOrEqual => a >= b,
-                NumericCompareOp.ApproxEqual => a == b,
                 _ => false
             };
 
@@ -49,7 +66,6 @@ namespace BehaviourTree
             float a = blackBoard.Get<float>(fields[0].value);
             float b = blackBoard.Get<float>(fields[1].value);
             NumericCompareOp op = (NumericCompareOp)fields[2].GetInt();
-            float epsilon = fields[3].GetFloat();
 
             bool result = op switch
             {
@@ -59,7 +75,6 @@ namespace BehaviourTree
                 NumericCompareOp.LessOrEqual => a <= b,
                 NumericCompareOp.Greater => a > b,
                 NumericCompareOp.GreaterOrEqual => a >= b,
-                NumericCompareOp.ApproxEqual => Mathf.Abs(a - b) <= epsilon,
                 _ => false
             };
 
@@ -93,7 +108,6 @@ namespace BehaviourTree
             Vector2 a = blackBoard.Get<Vector2>(fields[0].value);
             Vector2 b = blackBoard.Get<Vector2>(fields[1].value);
             VectorCompareOp op = (VectorCompareOp)fields[2].GetInt();
-            float epsilon = fields[3].GetFloat();
 
             float aMag = a.magnitude;
             float bMag = b.magnitude;
@@ -106,7 +120,6 @@ namespace BehaviourTree
                 VectorCompareOp.MagnitudeLessOrEqual => aMag <= bMag,
                 VectorCompareOp.MagnitudeGreater => aMag > bMag,
                 VectorCompareOp.MagnitudeGreaterOrEqual => aMag >= bMag,
-                VectorCompareOp.MagnitudeApproxEqual => Mathf.Abs(aMag - bMag) <= epsilon,
                 _ => false
             };
 
@@ -121,7 +134,6 @@ namespace BehaviourTree
             Vector3 a = blackBoard.Get<Vector3>(fields[0].value);
             Vector3 b = blackBoard.Get<Vector3>(fields[1].value);
             VectorCompareOp op = (VectorCompareOp)fields[2].GetInt();
-            float epsilon = fields[3].GetFloat();
 
             float aMag = a.magnitude;
             float bMag = b.magnitude;
@@ -134,7 +146,6 @@ namespace BehaviourTree
                 VectorCompareOp.MagnitudeLessOrEqual => aMag <= bMag,
                 VectorCompareOp.MagnitudeGreater => aMag > bMag,
                 VectorCompareOp.MagnitudeGreaterOrEqual => aMag >= bMag,
-                VectorCompareOp.MagnitudeApproxEqual => Mathf.Abs(aMag - bMag) <= epsilon,
                 _ => false
             };
 
@@ -233,27 +244,68 @@ namespace BehaviourTree
             return result ? NodeState.SUCCESS : NodeState.FAILURE;
         }
 
+        [BTreeMethod(MethodID.BB_CheckVector2)]
+        public static NodeState BB_CheckVector2(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
+
+            Vector2 value = blackBoard.Get<Vector2>(fields[0].value);
+            VectorCheckOp op = (VectorCheckOp)fields[1].GetInt();
+
+            bool result = op switch
+            {
+                VectorCheckOp.IsZero => value.sqrMagnitude < 0.0001f,
+                VectorCheckOp.IsNotZero => value.sqrMagnitude >= 0.0001f,
+                _ => false
+            };
+
+            return result ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+
+        [BTreeMethod(MethodID.BB_CheckVector3)]
+        public static NodeState BB_CheckVector3(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
+
+            Vector3 value = blackBoard.Get<Vector3>(fields[0].value);
+            VectorCheckOp op = (VectorCheckOp)fields[1].GetInt();
+
+            bool result = op switch
+            {
+                VectorCheckOp.IsZero => value.sqrMagnitude < 0.0001f,
+                VectorCheckOp.IsNotZero => value.sqrMagnitude >= 0.0001f,
+                _ => false
+            };
+
+            Debug.Log("result: " + result + " : " + value);
+
+            return result ? NodeState.SUCCESS : NodeState.FAILURE;
+        }
+
         [BTreeMethod(MethodID.BB_SetInt)]
         public static NodeState BB_SetInt(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1)) return NodeState.FAILURE;
-            blackBoard.Set(fields[0].value, blackBoard.Get<int>(fields[1].value));
+            if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1)) return NodeState.FAILURE;
+            int value = fields[1].IsVariable ? blackBoard.Get<int>(fields[1].value) : fields[1].GetInt();
+            blackBoard.Set(fields[0].value, value);
             return NodeState.SUCCESS;
         }
 
         [BTreeMethod(MethodID.BB_SetFloat)]
         public static NodeState BB_SetFloat(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1)) return NodeState.FAILURE;
-            blackBoard.Set(fields[0].value, blackBoard.Get<float>(fields[1].value));
+            if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1)) return NodeState.FAILURE;
+            float value = fields[1].IsVariable ? blackBoard.Get<float>(fields[1].value) : fields[1].GetFloat();
+            blackBoard.Set(fields[0].value, value);
             return NodeState.SUCCESS;
         }
 
         [BTreeMethod(MethodID.BB_SetBool)]
         public static NodeState BB_SetBool(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1)) return NodeState.FAILURE;
-            blackBoard.Set(fields[0].value, blackBoard.Get<bool>(fields[1].value));
+            if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1)) return NodeState.FAILURE;
+            bool value = fields[1].IsVariable ? blackBoard.Get<bool>(fields[1].value) : fields[1].GetBool();
+            blackBoard.Set(fields[0].value, value);
             return NodeState.SUCCESS;
         }
 

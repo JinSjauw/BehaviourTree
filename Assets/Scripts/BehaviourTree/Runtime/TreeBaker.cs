@@ -90,6 +90,8 @@ namespace BehaviourTree.Runtime
                     case BehaviourNodeType.ROOT:
                     case BehaviourNodeType.SEQUENCE:
                     case BehaviourNodeType.SELECTOR:
+                    case BehaviourNodeType.PARALLEL:
+                    case BehaviourNodeType.PRIORITY:
                         nodeData.firstChildIndex = node.firstChildIndex;
                         nodeData.lastChildIndex = node.lastChildIndex;
                         break;

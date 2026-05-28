@@ -16,7 +16,7 @@ namespace BehaviourTree.Runtime
     {
         private NodeData[] nodeDatas;
         private FieldData[] fieldDatas;
-        private Stack<EvaluatorFrame> nodeStack;
+        private List<EvaluatorFrame> nodeStack;
         public int currentNodeIndex { get; private set; } = -1;
         public NodeState[] nodeStates;
 
@@ -25,27 +25,29 @@ namespace BehaviourTree.Runtime
             Debug.Log("Created Tree Evaluator");
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
-            nodeStack = new Stack<EvaluatorFrame>();
+            nodeStack = new List<EvaluatorFrame>();
             nodeStates = new NodeState[nodeDatas.Length];
         }
 
         public void Evaluate(BlackBoard blackBoard)
         {
             if (nodeStack.Count == 0)
-                nodeStack.Push(new EvaluatorFrame { nodeIndex = 0, childIndex = 0, lastChildStatus = NodeState.NONE });
+                nodeStack.Add(new EvaluatorFrame { nodeIndex = 0, childIndex = 0, lastChildStatus = NodeState.NONE });
 
             Array.Clear(nodeStates, 0, nodeStates.Length);
             currentNodeIndex = -1;
+
+            UnwindSpecialComposites();
 
             EvaluatorContext context = new EvaluatorContext(nodeStack, nodeDatas, fieldDatas, nodeStates, blackBoard);
 
             while (nodeStack.Count > 0)
             {
-                INodeHandler handler = NodeHandlerRegistry.GetHandler(nodeDatas[nodeStack.Peek().nodeIndex].nodeType);
+                INodeHandler handler = NodeHandlerRegistry.GetHandler(nodeDatas[nodeStack[nodeStack.Count - 1].nodeIndex].nodeType);
                 if (handler == null)
                 {
-                    Debug.LogError($"No handler registered for node type {nodeDatas[nodeStack.Peek().nodeIndex].nodeType}");
-                    nodeStack.Pop();
+                    Debug.LogError($"No handler registered for node type {nodeDatas[nodeStack[nodeStack.Count - 1].nodeIndex].nodeType}");
+                    nodeStack.RemoveAt(nodeStack.Count - 1);
                     continue;
                 }
 
@@ -55,6 +57,23 @@ namespace BehaviourTree.Runtime
                     break;
             }
         }
+
+        private void UnwindSpecialComposites()
+        {
+            for (int i = nodeStack.Count - 1; i >= 0; i--)
+            {
+                var nodeType = nodeDatas[nodeStack[i].nodeIndex].nodeType;
+
+                if (nodeType == BehaviourNodeType.PRIORITY)
+                {
+                    if (nodeStack.Count > i + 1)
+                        nodeStack.RemoveRange(i + 1, nodeStack.Count - i - 1);
+
+                    var frame = nodeStack[i];
+                    frame.childIndex = 0;
+                    frame.lastChildStatus = NodeState.NONE;
+                }
+            }
+        }
     }
 }
-

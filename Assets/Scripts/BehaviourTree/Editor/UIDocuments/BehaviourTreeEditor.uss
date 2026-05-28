@@ -49,15 +49,17 @@ GridBackground {
 #GraphTitle {
     background-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
-    max-width: 15%;
+    max-width: 30%;
     margin-top: 12px;
     margin-right: 12px;
     margin-bottom: 12px;
     margin-left: 12px;
+    min-width: 20%;
 }
 
 #GraphTitleInput {
     -unity-font-style: bold;
     color: rgb(188, 188, 188);
     font-size: 24px;
+    white-space: nowrap;
 }

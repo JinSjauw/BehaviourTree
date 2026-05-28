@@ -8,7 +8,6 @@ namespace BehaviourTree.Runtime
         LessOrEqual = 3,
         Greater = 4,
         GreaterOrEqual = 5,
-        ApproxEqual = 6,
     }
 
     public enum BoolCompareOp : int
@@ -25,7 +24,6 @@ namespace BehaviourTree.Runtime
         MagnitudeLessOrEqual = 3,
         MagnitudeGreater = 4,
         MagnitudeGreaterOrEqual = 5,
-        MagnitudeApproxEqual = 6,
     }
 
     public enum ObjectCompareOp : int
@@ -44,5 +42,11 @@ namespace BehaviourTree.Runtime
     {
         IsTrue = 0,
         IsFalse = 1,
+    }
+
+    public enum VectorCheckOp : int
+    {
+        IsZero = 0,
+        IsNotZero = 1,
     }
 }

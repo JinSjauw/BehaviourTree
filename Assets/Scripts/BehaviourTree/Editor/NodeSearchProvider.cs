@@ -89,6 +89,16 @@ namespace BehaviourTree.Editor
                 level = 2,
                 userData = BehaviourNodeType.SEQUENCE,
             });
+            searchList.Add(new SearchTreeEntry(new GUIContent("Parallel", identationIcon))
+            {
+                level = 2,
+                userData = BehaviourNodeType.PARALLEL,
+            });
+            searchList.Add(new SearchTreeEntry(new GUIContent("Priority", identationIcon))
+            {
+                level = 2,
+                userData = BehaviourNodeType.PRIORITY,
+            });
 
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Actions"), 1));
             AddUnprefixedEntries(searchList, 2, actionMethods);
@@ -223,7 +233,7 @@ namespace BehaviourTree.Editor
             {
                 switch (SearchTreeEntry.userData)
                 {
-                    case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE:
+                    case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE || compositeType == BehaviourNodeType.PARALLEL || compositeType == BehaviourNodeType.PRIORITY:
                     {
                         createdNodeView = graphView.CreateCompositeNode(compositeType, creationPosition);
                         break;

@@ -12,51 +12,6 @@ namespace BehaviourTree.Runtime
 {
     public static partial class NodeFieldBindings
     {
-        public static BYEWORLD_NodeFields DeserializeBYEWORLD(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
-        {
-            FieldReader reader = new FieldReader(fields, blackboard);
-            return new BYEWORLD_NodeFields
-            {
-                // index 0: waitingTime (constant)
-                waitingTime = reader.GetFloat(0),
-                // index 1: testTimedThreshhold (blackboard variable)
-                testTimedThreshhold = reader.GetInt(1),
-                // index 2: timer (blackboard variable)
-                timer = reader.GetFloat(2),
-            };
-        }
-
-        public static void SerializeBYEWORLD(BYEWORLD_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
-        {
-            FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetInt(1, p.testTimedThreshhold);
-            writer.SetFloat(2, p.timer);
-        }
-
-        public static HELLOWORLD_NodeFields DeserializeHELLOWORLD(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
-        {
-            FieldReader reader = new FieldReader(fields, blackboard);
-            return new HELLOWORLD_NodeFields
-            {
-                // index 0: Speed (constant)
-                Speed = reader.GetVector2(0),
-                // index 1: Velocity (blackboard variable)
-                Velocity = reader.GetVector2(1),
-                // index 2: Health (blackboard variable)
-                Health = reader.GetInt(2),
-                // index 3: TestTime (blackboard variable)
-                TestTime = reader.GetFloat(3),
-            };
-        }
-
-        public static void SerializeHELLOWORLD(HELLOWORLD_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
-        {
-            FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetVector2(1, p.Velocity);
-            writer.SetInt(2, p.Health);
-            writer.SetFloat(3, p.TestTime);
-        }
-
         public static INVERTER_NodeFields DeserializeINVERTER(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
         {
             FieldReader reader = new FieldReader(fields, blackboard);
@@ -87,24 +42,5 @@ namespace BehaviourTree.Runtime
             writer.SetInt(1, p.currentCount);
         }
 
-        public static WAITWORLD_NodeFields DeserializeWAITWORLD(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
-        {
-            FieldReader reader = new FieldReader(fields, blackboard);
-            return new WAITWORLD_NodeFields
-            {
-                // index 0: testTimedThreshhold (blackboard variable)
-                testTimedThreshhold = reader.GetInt(0),
-                // index 1: timer (blackboard variable)
-                timer = reader.GetFloat(1),
-            };
-        }
-
-        public static void SerializeWAITWORLD(WAITWORLD_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
-        {
-            FieldReader writer = new FieldReader(fields, blackboard);
-            writer.SetInt(0, p.testTimedThreshhold);
-            writer.SetFloat(1, p.timer);
-        }
     }
 }
-

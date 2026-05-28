@@ -15,6 +15,9 @@ namespace BehaviourTree.Core
 
         /// <summary>Whether this entry points to a blackboard variable.</summary>
         public bool isVariable;
+        
+        /// <summary>Whether this entry can be a toggled to blackboard variable.</summary>
+        public bool isToggleVariable;
 
         /// <summary>Blackboard variable name (only used when isVariable == true).</summary>
         public string variableName;

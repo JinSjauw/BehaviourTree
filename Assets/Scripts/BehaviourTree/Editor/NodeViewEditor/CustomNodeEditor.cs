@@ -59,9 +59,8 @@ namespace BehaviourTree.Editor
             BuildFieldEntries(selectedMethod, methodChanged);
 
             EditorGUILayout.Space();
-            EditorGUILayout.PropertyField(blackBoardTypeIDProp);
+            //EditorGUILayout.PropertyField(blackBoardTypeIDProp);
 
-            DrawChildrenDebug();
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -93,6 +92,7 @@ namespace BehaviourTree.Editor
                     SerializedProperty entryProp = fieldEntriesProp.GetArrayElementAtIndex(i);
                     SerializedProperty fieldNameProp = entryProp.FindPropertyRelative("fieldName");
                     SerializedProperty isVariableProp = entryProp.FindPropertyRelative("isVariable");
+                    SerializedProperty isToggleVariableProp = entryProp.FindPropertyRelative("isToggleVariable");
                     SerializedProperty variableNameProp = entryProp.FindPropertyRelative("variableName");
                     SerializedProperty fieldTypeProp = entryProp.FindPropertyRelative("fieldType");
 
@@ -102,10 +102,17 @@ namespace BehaviourTree.Editor
                     fieldNameProp.stringValue = info.fieldName;
                     fieldTypeProp.enumValueIndex = (int)fieldType;
 
-                    isVariableProp.boolValue = info.isVariable;
-
                     EditorGUILayout.BeginVertical("box");
                     EditorGUILayout.LabelField($"<b>{info.fieldName}</b> : <color=lightblue>{fieldType}</color>", RichTextLabelStyle);
+
+                    isVariableProp.boolValue = info.isVariable;
+
+                    if(info.isToggleVariable)
+                    {
+                        bool varToggle = EditorGUILayout.Toggle("is Variable", isToggleVariableProp.boolValue);
+                        entryProp.FindPropertyRelative("isVariable").boolValue = varToggle;
+                        entryProp.FindPropertyRelative("isToggleVariable").boolValue = varToggle;
+                    }
 
                     if (isVariableProp.boolValue)
                     {

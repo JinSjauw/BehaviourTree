@@ -158,6 +158,8 @@ namespace BehaviourTree.Editor
                     break;
                 case BehaviourNodeType.SELECTOR:
                 case BehaviourNodeType.SEQUENCE:
+                case BehaviourNodeType.PARALLEL:
+                case BehaviourNodeType.PRIORITY:
                     CompositeNode compositeNode = ScriptableObject.CreateInstance<CompositeNode>();
                     compositeNode.SetCompositeType(data.nodeType);
                     compositeNode.name = data.nodeType.ToString();

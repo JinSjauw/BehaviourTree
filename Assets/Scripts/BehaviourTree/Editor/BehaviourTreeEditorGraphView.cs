@@ -420,13 +420,14 @@ namespace BehaviourTree.Editor
                 if (IsSelfOrSameNode(port, startPort)) continue;
                 if (IsWrongDirection(port, startPort)) continue;
 
-                if (startPort.node is BehaviourNodeView startNode &&
-                    port.node is BehaviourNodeView endNode)
+                if (startPort.node is BehaviourNodeView startNode && port.node is BehaviourNodeView endNode)
                 {
                     if (IsRootAsChild(endNode, port)) continue;
                     if (IsLeafNodeParenting(startNode, port)) continue;
                     if (IsDuplicateChild(endNode, startNode)) continue;
                     if (WouldCreateCycle(startNode, endNode)) continue;
+                    if (startNode.NodeSO.NodeType == BehaviourNodeType.PARALLEL 
+                    && (endNode.NodeSO.NodeType != BehaviourNodeType.ACTION && endNode.NodeSO.NodeType != BehaviourNodeType.CONDITION)) continue;    
                 }
 
                 compatible.Add(port);
@@ -455,7 +456,7 @@ namespace BehaviourTree.Editor
         {
             if (port.direction != Direction.Input) return false;
 
-            var nodeType = startNode.NodeSO.NodeType;
+            BehaviourNodeType nodeType = startNode.NodeSO.NodeType;
             return nodeType == BehaviourNodeType.ACTION
                 || nodeType == BehaviourNodeType.CONDITION;
         }

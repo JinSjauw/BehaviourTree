@@ -14,6 +14,7 @@ namespace BehaviourTree.Editor
         public string fieldName;
         public Type fieldType;
         public bool isVariable; // true if [BTreeVar] is present
+        public bool isToggleVariable;
         public int index;
     }
 
@@ -74,12 +75,16 @@ namespace BehaviourTree.Editor
                     int idx = 0;
                     foreach (var field in fields)
                     {
-                        bool isVar = field.GetCustomAttribute<SharedVarAttribute>() != null;
+                        SharedVarAttribute varAttribute = field.GetCustomAttribute<SharedVarAttribute>();
+                        bool isVar = varAttribute != null;
+                        bool isToggle = varAttribute?.IsToggleVariable ?? false;
+
                         paramList.Add(new ParamInfo
                         {
                             fieldName = field.Name,
                             fieldType = field.FieldType,
                             isVariable = isVar,
+                            isToggleVariable = isToggle,
                             index = idx++
                         });
                     }

@@ -7,5 +7,10 @@ namespace BehaviourTree.Core
     /// Fields without this attribute are treated as constants.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class SharedVarAttribute : Attribute { }
+    public class SharedVarAttribute : Attribute
+    {
+        public bool IsToggleVariable = false;
+
+        public SharedVarAttribute(bool isToggleVariable = false) => IsToggleVariable = isToggleVariable;
+    }
 }
