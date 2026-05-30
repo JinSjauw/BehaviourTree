@@ -8,4 +8,5 @@ public enum BehaviourNodeType
     DECORATOR = 5,
     PARALLEL = 6,
     PRIORITY = 7,
+    SUBTREE = 8,
 }

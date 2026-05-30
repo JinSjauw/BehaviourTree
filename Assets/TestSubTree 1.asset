@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3122344276494975122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  children:
+  - {fileID: 3502005800738345749}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 5ddb9e91d6bd9704e86245e93a5a7f35
+  graphPosition: {x: 394, y: 565}
+  runtimeIndex: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
+  m_Name: TestSubTree 1
+  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
+  nodesList:
+  - {fileID: -3122344276494975122}
+  - {fileID: 8223169705248104269}
+  - {fileID: 1667896190506859616}
+  - {fileID: 3502005800738345749}
+  - {fileID: 7241484286243421755}
+  rootCopy: {fileID: -3122344276494975122}
+  blackboardDefinition: {fileID: 3339676023789509158}
+--- !u!114 &1667896190506859616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: BB_LogInt
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 3d7d6c8298fc4194fab84e6d69cd85b1
+  graphPosition: {x: 146, y: 905}
+  runtimeIndex: 0
+  leafType: 4
+  methodID: 39
+  fieldEntries:
+  - fieldName: Value
+    isVariable: 1
+    isToggleVariable: 0
+    variableName: HEALTHTHRESHHOLD
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+--- !u!114 &3339676023789509158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
+  m_Name: TestSubTree_BB_Definition
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
+  sharedVariables:
+  - name: WOW
+    typeName: System.Int32
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+  - name: WOW2
+    typeName: System.Int32
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+--- !u!114 &3502005800738345749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: 1667896190506859616}
+  - {fileID: 8223169705248104269}
+  - {fileID: 7241484286243421755}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 8e54b1fe629bf9640bb56b03e93b2734
+  graphPosition: {x: 395, y: 710}
+  runtimeIndex: 0
+  compositeType: 2
+--- !u!114 &7241484286243421755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
+  m_Name: SUBTREE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: d572016599dd4ed4b93338e177672a05
+  graphPosition: {x: 644.30005, y: 913.0001}
+  runtimeIndex: 0
+  subTreeAsset: {fileID: 11400000, guid: 6944386662916bd4196eceada7c330d3, type: 2}
+  bindings:
+  - subtreeVariableName: 1wq
+    parentVariableName: 
+--- !u!114 &8223169705248104269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: BB_LogInt
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: eff68be8f53acbd47a7b399d9872eba0
+  graphPosition: {x: 402, y: 906}
+  runtimeIndex: 0
+  leafType: 4
+  methodID: 39
+  fieldEntries:
+  - fieldName: Value
+    isVariable: 1
+    isToggleVariable: 0
+    variableName: WOW
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0

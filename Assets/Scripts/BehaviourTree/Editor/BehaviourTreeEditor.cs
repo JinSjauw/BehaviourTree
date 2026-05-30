@@ -15,7 +15,6 @@ public class BehaviourTreeEditor : EditorWindow
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
     private ToolbarMenu assetBarMenu;
-    private bool isPollingDebug;
 
     public static BlackboardDefinition currentBlackboardDef { get; private set; }
     public static BehaviourTreeAsset currentTree { get; private set; }
@@ -106,10 +105,22 @@ public class BehaviourTreeEditor : EditorWindow
 
         OnSelectionChange();
 
-        if (!isPollingDebug)
+        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    }
+
+    private void OnPlayModeStateChanged(PlayModeStateChange change)
+    {
+        switch (change)
         {
-            EditorApplication.update += PollDebugState;
-            isPollingDebug = true;
+            case PlayModeStateChange.EnteredPlayMode:
+                EditorApplication.update += PollDebugState;
+                break;
+            case PlayModeStateChange.ExitingPlayMode:
+                EditorApplication.update -= PollDebugState;
+                treeGraphView?.ClearRuntimeDebugProxies();
+                break;
+            case PlayModeStateChange.EnteredEditMode:
+                break;
         }
     }
 
@@ -174,12 +185,8 @@ public class BehaviourTreeEditor : EditorWindow
     private void OnDisable()
     {
         EditorApplication.projectChanged -= OnProjectChanged;
-
-        if (isPollingDebug)
-        {
-            EditorApplication.update -= PollDebugState;
-            isPollingDebug = false;
-        }
+        EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+        EditorApplication.update -= PollDebugState;
     }
 
     private void BakeTree(DropdownMenuAction dropdownMenuAction)
@@ -190,13 +197,20 @@ public class BehaviourTreeEditor : EditorWindow
 
         RuntimeBehaviourTreeAsset runtimeAsset = CreateInstance<RuntimeBehaviourTreeAsset>();
         runtimeAsset.name = currentTree.name + "_Runtime";
-        runtimeAsset.blackboardDefinition = currentBlackboardDef;
         runtimeAsset.sourceTree = currentTree;
 
-        TreeBaker.BakeTree(currentTree.rootCopy, currentBlackboardDef, ref runtimeAsset.runtimeNodeData, ref runtimeAsset.runtimeFieldData);
+        runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.rootCopy, currentBlackboardDef, 
+        ref runtimeAsset.runtimeNodeData, 
+        ref runtimeAsset.runtimeFieldData, 
+        ref runtimeAsset.runtimeNodeGuids);
 
         string path = $"Assets/{runtimeAsset.name}.asset";
         AssetDatabase.CreateAsset(runtimeAsset, path);
+        if (runtimeAsset.blackboardDefinition != null)
+        {
+            runtimeAsset.blackboardDefinition.name = runtimeAsset.name + "_BB_Definition";
+            AssetDatabase.AddObjectToAsset(runtimeAsset.blackboardDefinition, runtimeAsset);
+        }
         AssetDatabase.SaveAssets();
     }
 
@@ -234,6 +248,7 @@ public class BehaviourTreeEditor : EditorWindow
         {
             try
             {
+                inspectorView?.ClearView();
                 treeGraphView.OnNodeSelected = OnNodeSelectionChanged;
                 treeGraphView.PopulateView(currentTree);
                 blackBoardView.BuildBlackboardView(currentTree.blackboardDefinition);

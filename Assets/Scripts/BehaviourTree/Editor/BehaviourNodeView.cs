@@ -65,6 +65,7 @@ namespace BehaviourTree.Editor
                 BehaviourNodeType.ACTION => Color.red,
                 BehaviourNodeType.CONDITION => Color.yellow,
                 BehaviourNodeType.DECORATOR => Color.chocolate,
+                BehaviourNodeType.SUBTREE => Color.yellowGreen,
                 _ => Color.gray
             };
         }
@@ -149,7 +150,7 @@ namespace BehaviourTree.Editor
 
         private void CreateOutputPorts()
         {
-            if (NodeSO.NodeType == BehaviourNodeType.ACTION || NodeSO.NodeType == BehaviourNodeType.CONDITION)
+            if (NodeSO.NodeType == BehaviourNodeType.ACTION || NodeSO.NodeType == BehaviourNodeType.CONDITION || NodeSO.NodeType == BehaviourNodeType.SUBTREE)
             {
                 return;
             }

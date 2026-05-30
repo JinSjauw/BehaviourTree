@@ -11,6 +11,8 @@ public partial class BlackBoardView : VisualElement
 
     Editor editor;
 
+    private Vector2 scrollPos;
+
     public BlackBoardView()
     {
         style.flexGrow = 1;
@@ -39,14 +41,18 @@ public partial class BlackBoardView : VisualElement
     public void BuildBlackboardView(BlackboardDefinition blackboardDefinition)
     {
         blackBoardViewContainer.Clear();
-        // Use an IMGUIContainer to draw the serialized property
+
         IMGUIContainer imgui = new IMGUIContainer(() =>
         {
             if (blackboardDefinition == null) return;
             SerializedObject so = new SerializedObject(blackboardDefinition);
             so.Update();
             SerializedProperty varsProp = so.FindProperty("sharedVariables");
+
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
             EditorGUILayout.PropertyField(varsProp, includeChildren: true);
+            EditorGUILayout.EndScrollView();
+
             so.ApplyModifiedProperties();
         });
 

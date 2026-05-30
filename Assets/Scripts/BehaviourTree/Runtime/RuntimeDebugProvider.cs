@@ -9,6 +9,7 @@ namespace BehaviourTree.Runtime
     public class RuntimeDebugProvider : MonoBehaviour
     {
         public NodeState[] currentNodeStates;
+        public string[] currentNodeGuids;
         public int activeNodeIndex = -1;
     }
 }

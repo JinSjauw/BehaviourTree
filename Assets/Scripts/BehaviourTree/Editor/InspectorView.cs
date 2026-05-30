@@ -35,6 +35,29 @@ public partial class InspectorView : VisualElement
         inspectorViewContainer.Add(placeholder);
     }
 
+    public void ClearView()
+    {
+        if (editor != null)
+        {
+            UnityEngine.Object.DestroyImmediate(editor);
+            editor = null;
+        }
+
+        inspectorViewContainer.Clear();
+
+        var placeholder = new Label("Select a node in the GraphView")
+        {
+            style =
+            {
+                color = Color.grey,
+                unityTextAlign = TextAnchor.MiddleCenter,
+                marginTop = 40,
+                fontSize = 13
+            }
+        };
+        inspectorViewContainer.Add(placeholder);
+    }
+
     public void UpdateSelection(BehaviourNodeView nodeView)
     {
         if(editor != null)
@@ -43,7 +66,7 @@ public partial class InspectorView : VisualElement
             editor = null;
         }
         
-        Clear();
+        inspectorViewContainer.Clear();
 
         editor = Editor.CreateEditor(nodeView.NodeSO);
 
@@ -55,7 +78,7 @@ public partial class InspectorView : VisualElement
             }
         });
 
-        Add(container);
+        inspectorViewContainer.Add(container);
     }
 }
 

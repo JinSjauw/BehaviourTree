@@ -3,6 +3,7 @@ using BehaviourTree.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace BehaviourTree.Runtime 
 {
@@ -10,172 +11,350 @@ namespace BehaviourTree.Runtime
     {
         public static void BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas)
         {
-            Dictionary<BehaviourNode, int> nodeToIndex = new Dictionary<BehaviourNode, int>();
+            string[] nodeGuids = null;
+            BakeTree(root, bbDef, ref nodeDatas, ref fieldDatas, ref nodeGuids);
+        }
 
-            if(root.NodeType == BehaviourNodeType.ROOT && root.children.Count > 0)
+        public static BlackboardDefinition BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref string[] nodeGuids)
+        {
+            if (root == null)
             {
-                root = root.children.First();
+                nodeDatas = Array.Empty<NodeData>();
+                fieldDatas = Array.Empty<FieldData>();
+                nodeGuids = Array.Empty<string>();
+                return bbDef;
             }
 
-            int index = 0;
-            AssignIndices(root, nodeToIndex, ref index);
+            BehaviourNode effectiveRoot = GetEffectiveRoot(root);
 
-            nodeDatas = new NodeData[nodeToIndex.Count];
-
-            // Count total FieldData entries first
-            int totalFieldDataCount = 0;
-            foreach (BehaviourNode node in nodeToIndex.Keys)
+            BlackboardDefinition runtimeBbDef = ScriptableObject.CreateInstance<BlackboardDefinition>();
+            runtimeBbDef.name = (bbDef != null ? bbDef.name : "Blackboard") + "_Runtime";
+            if (bbDef != null && bbDef.sharedVariables != null)
             {
+                runtimeBbDef.sharedVariables.AddRange(bbDef.sharedVariables);
+            }
+
+            Dictionary<string, int> rootVarIndexByName = new Dictionary<string, int>();
+            for (int i = 0; i < runtimeBbDef.sharedVariables.Count; i++)
+            {
+                string name = runtimeBbDef.sharedVariables[i].name;
+                if (!string.IsNullOrEmpty(name) && !rootVarIndexByName.ContainsKey(name))
+                    rootVarIndexByName[name] = i;
+            }
+
+            Dictionary<string, Dictionary<string, int>> scopeVarIndexByName = new Dictionary<string, Dictionary<string, int>>();
+
+            List<BakedNodeInstance> instances = new List<BakedNodeInstance>();
+            List<int> firstChild = new List<int>();
+            List<int> lastChild = new List<int>();
+            Dictionary<string, int> runtimeGuidToIndex = new Dictionary<string, int>();
+
+            int rootIndex = EnsureInstance(effectiveRoot, string.Empty, instances, firstChild, lastChild, runtimeGuidToIndex);
+            HashSet<IBehaviourTreeAuthoringAsset> expandingSubtrees = new HashSet<IBehaviourTreeAuthoringAsset>();
+            HashSet<int> processedIndices = new HashSet<int>();
+            ProcessChildren(rootIndex, instances, firstChild, lastChild, runtimeGuidToIndex, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName, expandingSubtrees, processedIndices);
+
+            nodeDatas = new NodeData[instances.Count];
+            nodeGuids = new string[instances.Count];
+
+            int totalFieldDataCount = 0;
+            for (int i = 0; i < instances.Count; i++)
+            {
+                BehaviourNode node = instances[i].node;
                 if (node is LeafNode action)
                 {
                     totalFieldDataCount += action.fieldEntries?.Count ?? 0;
                 }
                 else if (node is DecoratorNode decorator)
                 {
-                    totalFieldDataCount += decorator.fieldEntries?.Count ?? 0; 
+                    totalFieldDataCount += decorator.fieldEntries?.Count ?? 0;
                 }
             }
 
             fieldDatas = new FieldData[totalFieldDataCount];
-
-            FillNodeData(nodeDatas, fieldDatas, nodeToIndex, bbDef);
+            FillNodeData(nodeDatas, fieldDatas, nodeGuids, instances, firstChild, lastChild, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName);
+            return runtimeBbDef;
         }
 
-        private static void AssignIndices(BehaviourNode node, Dictionary<BehaviourNode, int> nodeDict, ref int totalIndex)
+        private readonly struct BakedNodeInstance
         {
-            if (nodeDict.ContainsValue(totalIndex)) return;
-            if (totalIndex == 0)
+            public readonly BehaviourNode node;
+            public readonly string scopePrefix;
+            public readonly string runtimeGuid;
+
+            public BakedNodeInstance(BehaviourNode node, string scopePrefix, string runtimeGuid)
             {
-                nodeDict[node] = totalIndex;
-                node.runtimeIndex = totalIndex;
-                totalIndex++;
-            }
-
-            for (int i = 0; i < node.children.Count; i++)
-            {
-                BehaviourNode child = node.children[i];
-                nodeDict[child] = totalIndex;
-                child.runtimeIndex = totalIndex;
-
-                if (i == 0) node.firstChildIndex = totalIndex;
-                if (i == node.children.Count - 1) node.lastChildIndex = totalIndex;
-
-                totalIndex++;
-            }
-
-            for (int i = 0; i < node.children.Count; i++)
-            {
-                BehaviourNode child = node.children[i];
-                AssignIndices(child, nodeDict, ref totalIndex);
+                this.node = node;
+                this.scopePrefix = scopePrefix;
+                this.runtimeGuid = runtimeGuid;
             }
         }
 
-        private static void FillNodeData(NodeData[] nodeDataArray, FieldData[] fieldDataArray, Dictionary<BehaviourNode, int> nodeIndices, BlackboardDefinition bbDef)
+        private static BehaviourNode GetEffectiveRoot(BehaviourNode root)
+        {
+            if (root != null && root.NodeType == BehaviourNodeType.ROOT && root.children.Count > 0)
+                return root.children.First();
+            return root;
+        }
+
+        private static BehaviourNode GetEffectiveRoot(IBehaviourTreeAuthoringAsset authoring)
+        {
+            if (authoring == null) return null;
+            return GetEffectiveRoot(authoring.Root);
+        }
+
+        private static int EnsureInstance(BehaviourNode node, string scopePrefix, List<BakedNodeInstance> instances, List<int> firstChild, List<int> lastChild, Dictionary<string, int> runtimeGuidToIndex)
+        {
+            string runtimeGuid = string.IsNullOrEmpty(scopePrefix) ? node.guid : scopePrefix + "/" + node.guid;
+            if (runtimeGuidToIndex.TryGetValue(runtimeGuid, out int idx))
+                return idx;
+
+            idx = instances.Count;
+            instances.Add(new BakedNodeInstance(node, scopePrefix, runtimeGuid));
+            firstChild.Add(-1);
+            lastChild.Add(-1);
+            runtimeGuidToIndex[runtimeGuid] = idx;
+            return idx;
+        }
+
+        private static void ProcessChildren(
+            int index,
+            List<BakedNodeInstance> instances,
+            List<int> firstChild,
+            List<int> lastChild,
+            Dictionary<string, int> runtimeGuidToIndex,
+            Dictionary<string, Dictionary<string, int>> scopeVarIndexByName,
+            BlackboardDefinition runtimeBbDef,
+            Dictionary<string, int> rootVarIndexByName,
+            HashSet<IBehaviourTreeAuthoringAsset> expandingSubtrees,
+            HashSet<int> processedIndices,
+            int depth = 0)
+        {
+            const int maxDepth = 500;
+            if (depth > maxDepth)
+            {
+                BehaviourNode overflowNode = instances[index].node;
+                Debug.LogError($"[TreeBaker] Max recursion depth ({maxDepth}) exceeded at node '{overflowNode?.name}' (guid: {overflowNode?.guid}). The tree likely contains a cycle.");
+                return;
+            }
+
+            BehaviourNode node = instances[index].node;
+            string scopePrefix = instances[index].scopePrefix;
+            string runtimeGuid = instances[index].runtimeGuid;
+
+            if (!processedIndices.Add(index))
+                return;
+
+            List<(BehaviourNode child, string childScope)> logicalChildren = new List<(BehaviourNode, string)>();
+
+            if (node.NodeType == BehaviourNodeType.SUBTREE)
+            {
+                SubtreeNode subtreeNode = node as SubtreeNode;
+                IBehaviourTreeAuthoringAsset subtreeAsset = subtreeNode != null ? subtreeNode.SubTreeAsset : null;
+                if (subtreeAsset != null && !expandingSubtrees.Add(subtreeAsset))
+                {
+                    Debug.LogWarning($"[TreeBaker] Circular subtree reference detected: '{subtreeAsset.DisplayName}'. Skipping expansion.");
+                }
+                else if (subtreeAsset != null)
+                {
+                    BehaviourNode subRoot = GetEffectiveRoot(subtreeAsset);
+                    if (subRoot != null)
+                    {
+                        string childScope = runtimeGuid;
+                        EnsureScopeMapping(childScope, subtreeNode, runtimeBbDef, rootVarIndexByName, scopeVarIndexByName);
+                        logicalChildren.Add((subRoot, childScope));
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < node.children.Count; i++)
+                {
+                    BehaviourNode child = node.children[i];
+                    if (child == null) continue;
+                    logicalChildren.Add((child, scopePrefix));
+                }
+            }
+
+            List<int> childIndices = new List<int>(logicalChildren.Count);
+            for (int i = 0; i < logicalChildren.Count; i++)
+            {
+                int childIndex = EnsureInstance(logicalChildren[i].child, logicalChildren[i].childScope, instances, firstChild, lastChild, runtimeGuidToIndex);
+                childIndices.Add(childIndex);
+                if (i == 0) firstChild[index] = childIndex;
+                if (i == logicalChildren.Count - 1) lastChild[index] = childIndex;
+            }
+
+            for (int i = 0; i < childIndices.Count; i++)
+            {
+                ProcessChildren(childIndices[i], instances, firstChild, lastChild, runtimeGuidToIndex, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName, expandingSubtrees, processedIndices, depth + 1);
+            }
+
+            if (node.NodeType == BehaviourNodeType.SUBTREE)
+            {
+                SubtreeNode subtreeNode = node as SubtreeNode;
+                if (subtreeNode != null && subtreeNode.SubTreeAsset != null)
+                    expandingSubtrees.Remove(subtreeNode.SubTreeAsset);
+            }
+        }
+
+        private static void EnsureScopeMapping(
+            string childScopePrefix,
+            SubtreeNode subtreeNode,
+            BlackboardDefinition runtimeBbDef,
+            Dictionary<string, int> rootVarIndexByName,
+            Dictionary<string, Dictionary<string, int>> scopeVarIndexByName)
+        {
+            if (string.IsNullOrEmpty(childScopePrefix)) return;
+            if (scopeVarIndexByName.ContainsKey(childScopePrefix)) return;
+
+            Dictionary<string, int> map = new Dictionary<string, int>();
+            IBehaviourTreeAuthoringAsset subtreeAsset = subtreeNode != null ? subtreeNode.SubTreeAsset : null;
+            BlackboardDefinition subtreeDef = subtreeAsset != null ? subtreeAsset.BlackboardDefinition : null;
+
+            if (subtreeDef != null && subtreeDef.sharedVariables != null)
+            {
+                for (int i = 0; i < subtreeDef.sharedVariables.Count; i++)
+                {
+                    BlackboardVariable subVar = subtreeDef.sharedVariables[i];
+                    int mappedIndex = ResolveSubtreeVarIndex(subtreeNode, subVar, childScopePrefix, runtimeBbDef, rootVarIndexByName);
+                    map[subVar.name] = mappedIndex;
+                }
+            }
+
+            scopeVarIndexByName[childScopePrefix] = map;
+        }
+
+        private static int ResolveSubtreeVarIndex(
+            SubtreeNode subtreeNode,
+            BlackboardVariable subtreeVar,
+            string childScopePrefix,
+            BlackboardDefinition runtimeBbDef,
+            Dictionary<string, int> rootVarIndexByName)
+        {
+            if (subtreeNode != null && subtreeNode.bindings != null)
+            {
+                for (int i = 0; i < subtreeNode.bindings.Count; i++)
+                {
+                    SubtreeBinding b = subtreeNode.bindings[i];
+                    if (b.subtreeVariableName == subtreeVar.name && !string.IsNullOrEmpty(b.parentVariableName))
+                    {
+                        if (rootVarIndexByName.TryGetValue(b.parentVariableName, out int idx))
+                            return idx;
+                        return -1;
+                    }
+                }
+            }
+
+            BlackboardVariable runtimeVar = subtreeVar;
+            runtimeVar.name = childScopePrefix + "/" + subtreeVar.name;
+            int newIndex = runtimeBbDef.sharedVariables.Count;
+            runtimeBbDef.sharedVariables.Add(runtimeVar);
+            return newIndex;
+        }
+
+        private static void FillNodeData(
+            NodeData[] nodeDataArray,
+            FieldData[] fieldDataArray,
+            string[] nodeGuids,
+            List<BakedNodeInstance> instances,
+            List<int> firstChild,
+            List<int> lastChild,
+            Dictionary<string, Dictionary<string, int>> scopeVarIndexByName,
+            BlackboardDefinition runtimeBbDef,
+            Dictionary<string, int> rootVarIndexByName)
         {
             int currentFieldDataOffset = 0;
-            foreach (BehaviourNode node in nodeIndices.Keys)
+            for (int i = 0; i < instances.Count; i++)
             {
-                NodeData nodeData = new NodeData();
+                BehaviourNode node = instances[i].node;
+                string scopePrefix = instances[i].scopePrefix;
 
-                nodeData.nodeType = node.NodeType;
-                nodeData.firstChildIndex = -1;
-                nodeData.lastChildIndex = -1;
-                nodeData.methodID = MethodID.NONE;
-                nodeData.blackBoardTypeID = BlackBoardType.SELF;
-                nodeData.fieldDataStartIndex = -1;
-                nodeData.fieldDataCount = 0;
+                nodeGuids[i] = instances[i].runtimeGuid;
+                if (string.IsNullOrEmpty(scopePrefix))
+                    node.runtimeIndex = i;
 
-                switch (node.NodeType)
+                NodeData nodeData = new NodeData
                 {
-                    case BehaviourNodeType.ROOT:
-                    case BehaviourNodeType.SEQUENCE:
-                    case BehaviourNodeType.SELECTOR:
-                    case BehaviourNodeType.PARALLEL:
-                    case BehaviourNodeType.PRIORITY:
-                        nodeData.firstChildIndex = node.firstChildIndex;
-                        nodeData.lastChildIndex = node.lastChildIndex;
-                        break;
+                    nodeType = node.NodeType,
+                    firstChildIndex = firstChild[i],
+                    lastChildIndex = lastChild[i],
+                    methodID = MethodID.NONE,
+                    blackBoardTypeID = BlackBoardType.SELF,
+                    fieldDataStartIndex = -1,
+                    fieldDataCount = 0,
+                };
 
-                    case BehaviourNodeType.CONDITION:
-                    case BehaviourNodeType.ACTION:
+                if (node.NodeType == BehaviourNodeType.ACTION || node.NodeType == BehaviourNodeType.CONDITION)
+                {
+                    LeafNode action = (LeafNode)node;
+                    nodeData.methodID = action.methodID;
+                    nodeData.blackBoardTypeID = action.BlackBoardTypeID;
+                    nodeData.fieldDataStartIndex = currentFieldDataOffset;
+                    nodeData.fieldDataCount = action.fieldEntries?.Count ?? 0;
+
+                    if (action.fieldEntries != null)
+                    {
+                        Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
+                        for (int f = 0; f < action.fieldEntries.Count; f++)
                         {
-                            LeafNode action = (LeafNode)node;
-                            nodeData.methodID = action.methodID;
-                            nodeData.blackBoardTypeID = action.BlackBoardTypeID;
-                            nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                            nodeData.fieldDataCount = action.fieldEntries?.Count ?? 0;
-
-                            if (action.fieldEntries != null)
-                            {
-                                foreach (var entry in action.fieldEntries)
-                                {
-                                    FieldData fd = PackFieldEntry(entry, bbDef);
-                                    fieldDataArray[currentFieldDataOffset++] = fd;
-                                }
-                            }
+                            fieldDataArray[currentFieldDataOffset++] = PackFieldEntry(action.fieldEntries[f], map, runtimeBbDef);
                         }
-                        break;
-                    case BehaviourNodeType.DECORATOR:
+                    }
+                }
+                else if (node.NodeType == BehaviourNodeType.DECORATOR)
+                {
+                    DecoratorNode decorator = (DecoratorNode)node;
+                    nodeData.methodID = decorator.methodID;
+                    nodeData.blackBoardTypeID = decorator.BlackBoardTypeID;
+                    nodeData.firstChildIndex = firstChild[i];
+                    nodeData.lastChildIndex = firstChild[i];
+                    nodeData.fieldDataStartIndex = currentFieldDataOffset;
+                    nodeData.fieldDataCount = decorator.fieldEntries?.Count ?? 0;
+
+                    if (decorator.fieldEntries != null)
+                    {
+                        Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
+                        for (int f = 0; f < decorator.fieldEntries.Count; f++)
                         {
-                            DecoratorNode decorator = (DecoratorNode)node;
-                            nodeData.methodID = decorator.methodID;
-                            nodeData.blackBoardTypeID = decorator.BlackBoardTypeID;
-                            nodeData.firstChildIndex = node.firstChildIndex;   // single child
-                            nodeData.lastChildIndex  = node.firstChildIndex;   // same as first
-                            nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                            nodeData.fieldDataCount = decorator.fieldEntries?.Count ?? 0;
-
-                            if (decorator.fieldEntries != null)
-                            {
-                                foreach (var entry in decorator.fieldEntries)
-                                {
-                                    fieldDataArray[currentFieldDataOffset++] = PackFieldEntry(entry, bbDef);
-                                }
-                            }
+                            fieldDataArray[currentFieldDataOffset++] = PackFieldEntry(decorator.fieldEntries[f], map, runtimeBbDef);
                         }
-                    break;
+                    }
+                }
+                else if (node.NodeType == BehaviourNodeType.SUBTREE)
+                {
+                    nodeData.firstChildIndex = firstChild[i];
+                    nodeData.lastChildIndex = firstChild[i];
                 }
 
-                nodeDataArray[nodeIndices[node]] = nodeData;
+                nodeDataArray[i] = nodeData;
             }
         }
 
-        private static FieldData PackFieldEntry(NodeFieldEntry entry, BlackboardDefinition bbDef)
+        private static Dictionary<string, int> GetScopeMap(string scopePrefix, Dictionary<string, Dictionary<string, int>> scopeVarIndexByName, Dictionary<string, int> rootVarIndexByName)
+        {
+            if (string.IsNullOrEmpty(scopePrefix))
+                return rootVarIndexByName;
+            if (scopeVarIndexByName.TryGetValue(scopePrefix, out var map))
+                return map;
+            return rootVarIndexByName;
+        }
+
+        private static FieldData PackFieldEntry(NodeFieldEntry entry, Dictionary<string, int> varIndexByName, BlackboardDefinition runtimeBbDef)
         {
             if (entry.isVariable)
             {
                 int varIndex = -1;
-                if (bbDef != null && bbDef.sharedVariables != null)
+                if (varIndexByName != null && !string.IsNullOrEmpty(entry.variableName) && varIndexByName.TryGetValue(entry.variableName, out int mapped))
                 {
-                    varIndex = bbDef.sharedVariables.FindIndex(v => v.name == entry.variableName);
-                    if (varIndex < 0)
-                    {
-                        UnityEngine.Debug.LogWarning(
-                            $"[TreeBaker] Blackboard variable '{entry.variableName}' not found in definition. " +
-                            $"Field '{entry.fieldName}' will use invalid index -1.");
-                    }
-                    else
-                    {
-                        if (!FieldTypeHelper.TryGetSystemTypeFromName(bbDef.sharedVariables[varIndex].typeName, out Type bbType) || bbType == null)
-                        {
-                            UnityEngine.Debug.LogWarning(
-                                $"[TreeBaker] Blackboard variable '{entry.variableName}' has an unresolved typeName '{bbDef.sharedVariables[varIndex].typeName}'. " +
-                                $"Field '{entry.fieldName}' will use invalid index -1.");
-                            varIndex = -1;
-                        }
-                        else
-                        {
-                            FieldType bbFieldType = FieldTypeHelper.GetFieldType(bbType);
-                            if (bbFieldType != entry.fieldType)
-                            {
-                                UnityEngine.Debug.LogWarning(
-                                    $"[TreeBaker] Blackboard variable '{entry.variableName}' type mismatch. " +
-                                    $"Field '{entry.fieldName}' expects {entry.fieldType} but blackboard has {bbFieldType}. " +
-                                    $"Using invalid index -1.");
-                                varIndex = -1;
-                            }
-                        }
-                    }
+                    varIndex = mapped;
+                }
+                if (varIndex >= 0 && runtimeBbDef != null && runtimeBbDef.sharedVariables != null && varIndex < runtimeBbDef.sharedVariables.Count)
+                {
+                    if (!FieldTypeHelper.TryGetSystemTypeFromName(runtimeBbDef.sharedVariables[varIndex].typeName, out Type bbType) || bbType == null)
+                        varIndex = -1;
+                    else if (FieldTypeHelper.GetFieldType(bbType) != entry.fieldType)
+                        varIndex = -1;
                 }
                 return FieldData.FromVariable(varIndex);
             }
@@ -189,7 +368,7 @@ namespace BehaviourTree.Runtime
                 case FieldType.Bool:
                     return FieldData.FromConstant(entry.boolValue);
                 default:
-                    UnityEngine.Debug.LogWarning($"[TreeBaker] Unsupported field type for '{entry.fieldType}' for STATIC field '{entry.fieldName}'");
+                    Debug.LogWarning($"[TreeBaker] Unsupported field type for '{entry.fieldType}' for STATIC field '{entry.fieldName}'");
                     return FieldData.FromConstant(0);
             }
         }

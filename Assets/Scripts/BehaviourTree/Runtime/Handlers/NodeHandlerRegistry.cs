@@ -20,6 +20,7 @@ namespace BehaviourTree.Runtime
             Register(BehaviourNodeType.DECORATOR, new DecoratorHandler());
             Register(BehaviourNodeType.PARALLEL, new ParallelHandler());
             Register(BehaviourNodeType.PRIORITY, new PriorityHandler());
+            Register(BehaviourNodeType.SUBTREE, new SubtreeHandler());
             //_initialized = true;
         }
 

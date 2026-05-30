@@ -7,6 +7,8 @@ public class RuntimeBehaviourTreeAsset : ScriptableObject
     /// <summary>flattened behaviour tree</summary>
     public NodeData[] runtimeNodeData;
 
+    public string[] runtimeNodeGuids;
+
     /// <summary>Packed field data for all leaf nodes.</summary>
     public FieldData[] runtimeFieldData;
 

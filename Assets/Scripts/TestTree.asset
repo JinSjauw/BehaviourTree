@@ -18,64 +18,9 @@ MonoBehaviour:
   firstChildIndex: 3
   lastChildIndex: 4
   guid: 6c39133f5f67fff438859bddc6c48bd8
-  graphPosition: {x: 52, y: 570}
+  graphPosition: {x: -12.999863, y: 591.00006}
   runtimeIndex: 1
   compositeType: 1
---- !u!114 &-5059039290753998693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: -3486459417008222060}
-  - {fileID: -4357791289798047468}
-  firstChildIndex: 9
-  lastChildIndex: 10
-  guid: 3090e88c73e9c2143aeab7899dd9ec5e
-  graphPosition: {x: 651, y: 567}
-  runtimeIndex: 2
-  compositeType: 2
---- !u!114 &-4357791289798047468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
-  m_Name: BB_LogInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 4cf1d17639c352643a8f3df5385caa14
-  graphPosition: {x: 769, y: 739}
-  runtimeIndex: 10
-  leafType: 4
-  methodID: 39
-  fieldEntries:
-  - fieldName: Value
-    isVariable: 1
-    isToggleVariable: 0
-    variableName: HEALTHTHRESHHOLD
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  BlackBoardTypeID: 0
 --- !u!114 &-4003088083825054018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,47 +35,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
   - {fileID: -6847340617088800026}
-  - {fileID: -5059039290753998693}
+  - {fileID: -523336701466232569}
+  - {fileID: 4408189366273561535}
   firstChildIndex: 1
   lastChildIndex: 2
   guid: 4f003f02ddfdeae4f97d31dc8578b6bb
   graphPosition: {x: 337, y: 410}
   runtimeIndex: 0
   compositeType: 2
---- !u!114 &-3486459417008222060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
-  m_Name: BB_LogInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 00847be6d4910d34994ea4ffca9077d5
-  graphPosition: {x: 570, y: 739}
-  runtimeIndex: 9
-  leafType: 4
-  methodID: 39
-  fieldEntries:
-  - fieldName: Value
-    isVariable: 1
-    isToggleVariable: 0
-    variableName: HEALTH
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  BlackBoardTypeID: 0
 --- !u!114 &-2066152438107150607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,6 +104,14 @@ MonoBehaviour:
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
+  - name: dwdd
+    typeName: System.Boolean
+    showInitialValue: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
 --- !u!114 &-1738120031703607826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,8 +147,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 4e3b27840b6f3434e9b98e07f7d1f1b1
-  graphPosition: {x: -90, y: 866}
-  runtimeIndex: 6
+  graphPosition: {x: -88.00001, y: 873.00006}
+  runtimeIndex: 7
   leafType: 4
   methodID: 25
   fieldEntries:
@@ -257,6 +177,96 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
+--- !u!114 &-523336701466232569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
+  m_Name: Subtree
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 6ba00660f335da2448bc529df7eeb60e
+  graphPosition: {x: 668, y: 619}
+  runtimeIndex: 2
+  subTreeAsset: {fileID: 11400000, guid: 4ec5d44ac21afef45b24713512328ceb, type: 2}
+  bindings:
+  - subtreeVariableName: WOW
+    parentVariableName: HEALTH
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHHOLD
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,16 +282,15 @@ MonoBehaviour:
   nodesList:
   - {fileID: -1738120031703607826}
   - {fileID: -4003088083825054018}
-  - {fileID: -5059039290753998693}
   - {fileID: -6847340617088800026}
   - {fileID: 7399971472411141622}
   - {fileID: -1562488515504767656}
   - {fileID: 7328667337934238659}
   - {fileID: 4796380451558442255}
-  - {fileID: -4357791289798047468}
-  - {fileID: -3486459417008222060}
   - {fileID: 8573896546414159086}
   - {fileID: 4163046956757552579}
+  - {fileID: -523336701466232569}
+  - {fileID: 4408189366273561535}
   rootCopy: {fileID: -1738120031703607826}
   blackboardDefinition: {fileID: -2066152438107150607}
 --- !u!114 &4163046956757552579
@@ -301,8 +310,8 @@ MonoBehaviour:
   firstChildIndex: 5
   lastChildIndex: 5
   guid: 3e2549c79ffdeaf46a414656d54596be
-  graphPosition: {x: -332, y: 723}
-  runtimeIndex: 3
+  graphPosition: {x: -134, y: 729}
+  runtimeIndex: 4
   methodID: 1
   fieldEntries:
   - fieldName: alwaysFailure
@@ -330,6 +339,28 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
+--- !u!114 &4408189366273561535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
+  m_Name: Subtree
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 7bcd9bed435101a43870edf8d69bf156
+  graphPosition: {x: 898.9364, y: 623}
+  runtimeIndex: 3
+  subTreeAsset: {fileID: 11400000, guid: 6944386662916bd4196eceada7c330d3, type: 2}
+  bindings:
+  - subtreeVariableName: 1wq
+    parentVariableName: dwdd
 --- !u!114 &4796380451558442255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,7 +378,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 862a009237fa4224a86563131dc99a61
   graphPosition: {x: 277.99988, y: 874}
-  runtimeIndex: 8
+  runtimeIndex: 9
   leafType: 4
   methodID: 10
   fieldEntries:
@@ -393,7 +424,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: a075c86c74beb1d40a0fb89e24a7ff79
   graphPosition: {x: 89, y: 865}
-  runtimeIndex: 7
+  runtimeIndex: 8
   leafType: 3
   methodID: 37
   fieldEntries:
@@ -442,7 +473,7 @@ MonoBehaviour:
   lastChildIndex: 8
   guid: d5d00172589ec6542b6e68d9a241271a
   graphPosition: {x: 54.000076, y: 731}
-  runtimeIndex: 4
+  runtimeIndex: 5
   compositeType: 2
 --- !u!114 &8573896546414159086
 MonoBehaviour:
@@ -460,8 +491,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 9df34a069d157ff42bd4030d8b451ce8
-  graphPosition: {x: -429, y: 908}
-  runtimeIndex: 5
+  graphPosition: {x: -265, y: 863}
+  runtimeIndex: 6
   leafType: 4
   methodID: 39
   fieldEntries:

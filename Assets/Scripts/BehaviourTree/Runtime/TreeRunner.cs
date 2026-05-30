@@ -27,10 +27,9 @@ namespace BehaviourTree.Runtime
                RuntimeBehaviourTreeAsset tempRuntimeAsset = ScriptableObject.CreateInstance<RuntimeBehaviourTreeAsset>();
                tempRuntimeAsset.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
                tempRuntimeAsset.name = authoring.DisplayName + "_Runtime";
-               tempRuntimeAsset.blackboardDefinition = authoring.BlackboardDefinition;
                tempRuntimeAsset.sourceTree = authoringAsset;
 
-               TreeBaker.BakeTree(authoring.Root, authoring.BlackboardDefinition, ref tempRuntimeAsset.runtimeNodeData, ref tempRuntimeAsset.runtimeFieldData);
+               tempRuntimeAsset.blackboardDefinition = TreeBaker.BakeTree(authoring.Root, authoring.BlackboardDefinition, ref tempRuntimeAsset.runtimeNodeData, ref tempRuntimeAsset.runtimeFieldData, ref tempRuntimeAsset.runtimeNodeGuids);
                runtimeAsset = tempRuntimeAsset;
             }
             else
@@ -75,6 +74,7 @@ namespace BehaviourTree.Runtime
          {
             debugProvider.currentNodeStates = evaluator.nodeStates;
             debugProvider.activeNodeIndex = evaluator.currentNodeIndex;
+            debugProvider.currentNodeGuids = runtimeAsset != null ? runtimeAsset.runtimeNodeGuids : null;
          }
       }
 

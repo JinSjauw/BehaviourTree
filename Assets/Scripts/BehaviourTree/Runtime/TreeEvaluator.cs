@@ -62,7 +62,7 @@ namespace BehaviourTree.Runtime
         {
             for (int i = nodeStack.Count - 1; i >= 0; i--)
             {
-                var nodeType = nodeDatas[nodeStack[i].nodeIndex].nodeType;
+                BehaviourNodeType nodeType = nodeDatas[nodeStack[i].nodeIndex].nodeType;
 
                 if (nodeType == BehaviourNodeType.PRIORITY)
                 {

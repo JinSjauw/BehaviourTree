@@ -7,8 +7,6 @@ using UnityEngine.UIElements;
 using UnityEngine;
 using BehaviourTree.Core;
 using BehaviourTree.Runtime;
-using System.Net.NetworkInformation;
-using Codice.Client.Common.GameUI;
 
 namespace BehaviourTree.Editor
 {
@@ -28,6 +26,8 @@ namespace BehaviourTree.Editor
         private bool shouldCenterNodes;
         private bool centerOnNextGeometry;
         private bool geometryCallbackRegistered;
+        private RuntimeDebugManager runtimeDebugManager;
+        private SubtreeExtractor subtreeExtractor;
 
         public bool HasTree => tree != null;
 
@@ -36,7 +36,9 @@ namespace BehaviourTree.Editor
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.EditorUss);
             styleSheets.Add(styleSheet);
 
-            nodeViewDict = new Dictionary<string, BehaviourNodeView>();   
+            nodeViewDict = new Dictionary<string, BehaviourNodeView>();
+            runtimeDebugManager = new RuntimeDebugManager(this);
+            subtreeExtractor = new SubtreeExtractor(this);
 
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
 
@@ -411,6 +413,16 @@ namespace BehaviourTree.Editor
             return CreateNodeView(node);
         }
 
+        public BehaviourNodeView CreateSubtreeNode(Vector2 position)
+        {
+            SubtreeNode node = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
+            node.name = "SUBTREE";
+            node.graphPosition = position;
+            tree.RegisterNode(node);
+
+            return CreateNodeView(node);
+        }
+
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             var compatible = new List<Port>();
@@ -458,7 +470,8 @@ namespace BehaviourTree.Editor
 
             BehaviourNodeType nodeType = startNode.NodeSO.NodeType;
             return nodeType == BehaviourNodeType.ACTION
-                || nodeType == BehaviourNodeType.CONDITION;
+                || nodeType == BehaviourNodeType.CONDITION
+                || nodeType == BehaviourNodeType.SUBTREE;
         }
 
         private static bool IsDuplicateChild(BehaviourNodeView endNode, BehaviourNodeView startNode)
@@ -476,6 +489,11 @@ namespace BehaviourTree.Editor
                 searchWindow.ClearPendingConnection();
                 OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
             }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
+
+            evt.menu.AppendAction("Extract Selection To Subtree", _ =>
+            {
+                subtreeExtractor.Extract(selection, tree, PopulateView);
+            }, _ => subtreeExtractor.CanExtract(selection, tree) ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
         }
 
         public void PopulateView(BehaviourTreeAsset tree)
@@ -491,7 +509,13 @@ namespace BehaviourTree.Editor
             EnsureRootNodeExists();
             CleanupAndCreateViews();
             CleanupAndWireEdges();
-            
+
+            if (EditorApplication.isPlaying)
+            {
+                TreeRunner runner = BehaviourTreeEditor.currentRunner;
+                if (runner != null) runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);
+            }
+
             if (shouldCenterNodes)
             {
                 shouldCenterNodes = false;
@@ -526,6 +550,7 @@ namespace BehaviourTree.Editor
             {
                 DeleteElements(graphElements);
                 nodeViewDict.Clear();
+                runtimeDebugManager.ClearCaches();
             }
             finally { graphViewChanged += OnGraphViewChanged; }
         }
@@ -596,30 +621,17 @@ namespace BehaviourTree.Editor
     
         public void RefreshDebugVisuals(TreeRunner runner)
         {
-            // Only meaningful in Play Mode
-            if (!EditorApplication.isPlaying) return;
+            runtimeDebugManager.RefreshDebugVisuals(runner, nodeViewDict);
+        }
 
-            if (runner == null) return;
+        public void ClearRuntimeDebugProxies()
+        {
+            runtimeDebugManager.RemoveAllProxies();
+        }
 
-            RuntimeDebugProvider provider = runner.GetComponent<RuntimeDebugProvider>();
-            if (provider == null || provider.currentNodeStates == null) return;
-
-            NodeState[] states = provider.currentNodeStates;
-            int activeIndex = provider.activeNodeIndex;
-
-            foreach (BehaviourNodeView nodeViewEntry in nodeViewDict.Values)
-            {
-                BehaviourNodeView nodeView = nodeViewEntry;
-                if (nodeView?.NodeSO == null) continue;
-
-                int runtimeIdx = nodeView.NodeSO.runtimeIndex;
-                if (runtimeIdx < 0 || runtimeIdx >= states.Length) continue;
-
-                NodeState state = states[runtimeIdx];
-                bool isActive = runtimeIdx == activeIndex;
-
-                nodeView.SetDebugState(state, isActive);
-            }
+        public void SetupRuntimeDebugProxies(TreeRunner runner)
+        {
+            runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);    
         }
 
         private void CenterViewOnNodes()
