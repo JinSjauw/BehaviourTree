@@ -79,10 +79,6 @@ public class BehaviourTreeEditor : EditorWindow
         {
             Debug.LogError("Could not find BehaviourTreeEditorGraphView in UXML");
         }
-        else
-        {
-            treeGraphView.CenterOnNextPopulate();
-        }
 
         if (inspectorView == null)
         {
@@ -124,6 +120,7 @@ public class BehaviourTreeEditor : EditorWindow
                 treeGraphView?.ClearRuntimeDebugProxies();
                 break;
             case PlayModeStateChange.EnteredEditMode:
+                OnSelectionChange();
                 break;
         }
     }
@@ -223,6 +220,8 @@ public class BehaviourTreeEditor : EditorWindow
         BehaviourTreeAsset selectedAsset = OnSelectTree();
 
         if(selectedAsset == null) return;
+
+        if (selectedAsset == currentTree) return;
 
         currentTree = selectedAsset;
         

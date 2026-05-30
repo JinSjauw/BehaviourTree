@@ -449,7 +449,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &837731431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -462,7 +462,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences: []
+  serializedReferences:
+  - {fileID: 0}
 --- !u!114 &837731432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,7 +478,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
   blackBoard: {fileID: 837731431}
   runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 0}
+  authoringAsset: {fileID: 11400000, guid: 6944386662916bd4196eceada7c330d3, type: 2}
 --- !u!4 &837731433
 Transform:
   m_ObjectHideFlags: 0

@@ -37,7 +37,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 421856d4c9373b248bca93a49b45f592
-  graphPosition: {x: 253.85004, y: 221.99995}
+  graphPosition: {x: 60.763794, y: 486.74976}
   runtimeIndex: 0
   subTreeAsset: {fileID: 11400000, guid: b070d7c75973f544786603686e8f352c, type: 2}
   bindings: []
@@ -53,11 +53,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children: []
+  children:
+  - {fileID: -6361265237816791927}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: bc7620c3614174a4d9640455684356fa
-  graphPosition: {x: -248.50026, y: 213.55005}
+  graphPosition: {x: 8.000046, y: 208.12163}
   runtimeIndex: 0
   compositeType: 1
 --- !u!114 &-255603135825437248
@@ -73,7 +74,7 @@ MonoBehaviour:
   m_Name: ROOT
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children:
-  - {fileID: -6361265237816791927}
+  - {fileID: -2732876539927403102}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 56ec86d1e0d58bb4289d9d6c5fce3156

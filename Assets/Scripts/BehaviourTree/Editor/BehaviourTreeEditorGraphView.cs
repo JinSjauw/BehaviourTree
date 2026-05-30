@@ -23,9 +23,6 @@ namespace BehaviourTree.Editor
         private TextField graphTitleLabel;
         private CopyPasteHandler copyPasteHandler;
         private BtEdgeConnectorListener edgeConnectorListener;
-        private bool shouldCenterNodes;
-        private bool centerOnNextGeometry;
-        private bool geometryCallbackRegistered;
         private RuntimeDebugManager runtimeDebugManager;
         private SubtreeExtractor subtreeExtractor;
 
@@ -304,6 +301,8 @@ namespace BehaviourTree.Editor
 
         private void HandleElementRemoval(List<GraphElement> elementsToRemove)
         {
+            if (EditorApplication.isPlaying) return;
+
             for (int i = 0; i < elementsToRemove.Count; i++)
             {
                 if (elementsToRemove[i] is BehaviourNodeView nodeView)
@@ -515,12 +514,6 @@ namespace BehaviourTree.Editor
                 TreeRunner runner = BehaviourTreeEditor.currentRunner;
                 if (runner != null) runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);
             }
-
-            if (shouldCenterNodes)
-            {
-                shouldCenterNodes = false;
-                RequestCenterNodes();
-            }
         }
 
         private void InitTree(BehaviourTreeAsset tree)
@@ -536,11 +529,6 @@ namespace BehaviourTree.Editor
         {
             if (graphTitleLabel == null) return;
             graphTitleLabel.SetValueWithoutNotify(tree != null ? tree.name : "Behaviour Tree");
-        }
-
-        public void CenterOnNextPopulate()
-        {
-            shouldCenterNodes = true;
         }
 
         private void ClearAndRebuildViews()
@@ -634,41 +622,6 @@ namespace BehaviourTree.Editor
             runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);    
         }
 
-        private void CenterViewOnNodes()
-        {
-            this.ClearSelection();
-            foreach (BehaviourNodeView nodeView in nodeViewDict.Values)
-            {
-                this.AddToSelection(nodeView);
-            }
-            this.FrameSelection();
-        }
-
-        private void RequestCenterNodes()
-        {
-            centerOnNextGeometry = true;
-
-            if (!geometryCallbackRegistered)
-            {
-                geometryCallbackRegistered = true;
-                RegisterCallback<GeometryChangedEvent>(OnGraphGeometryChanged);
-            }
-        }
-
-        private void OnGraphGeometryChanged(GeometryChangedEvent evt)
-        {
-            if (!centerOnNextGeometry) return;
-
-            centerOnNextGeometry = false;
-
-            if (geometryCallbackRegistered)
-            {
-                geometryCallbackRegistered = false;
-                UnregisterCallback<GeometryChangedEvent>(OnGraphGeometryChanged);
-            }
-
-            CenterViewOnNodes();
-        }
 
         private sealed class BtEdgeConnectorListener : IEdgeConnectorListener
         {
