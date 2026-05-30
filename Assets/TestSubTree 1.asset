@@ -16,7 +16,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 9e1f1e164e87c7d44ae1401f54cafb30
-  graphPosition: {x: 632.99994, y: 920.9998}
+  graphPosition: {x: 639.4791, y: 929}
   runtimeIndex: 0
   subTreeAsset: {fileID: 11400000, guid: b070d7c75973f544786603686e8f352c, type: 2}
   bindings: []

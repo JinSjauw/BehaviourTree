@@ -39,8 +39,10 @@ namespace BehaviourTree.Editor
 
             EditorGUILayout.BeginVertical("box");
 
+            Rect totalRect = EditorGUILayout.GetControlRect();
+            Rect fieldRect = EditorGUI.PrefixLabel(totalRect, new GUIContent("Subtree Asset"));
             UnityEngine.Object current = subTreeAssetProp.objectReferenceValue;
-            UnityEngine.Object next = EditorGUILayout.ObjectField("Subtree Asset", current, typeof(BehaviourTreeAsset), false);
+            UnityEngine.Object next = EditorGUI.ObjectField(fieldRect, current, typeof(BehaviourTreeAsset), false);
             if (next != current)
             {
                 subTreeAssetProp.objectReferenceValue = next;
@@ -48,6 +50,16 @@ namespace BehaviourTree.Editor
             }
 
             BehaviourTreeAsset subtreeAsset = subTreeAssetProp.objectReferenceValue as BehaviourTreeAsset;
+
+            if (subtreeAsset != null)
+            {
+                Rect buttonRect = EditorGUILayout.GetControlRect(false, 20);
+                buttonRect.x = fieldRect.x;
+                buttonRect.width = fieldRect.width;
+                if (GUI.Button(buttonRect, "Open Subtree"))
+                    Selection.activeObject = subtreeAsset;
+            }
+
             if (subtreeAsset == null)
             {
                 if (GUILayout.Button("Create New Subtree Asset"))
