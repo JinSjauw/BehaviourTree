@@ -66,7 +66,7 @@ namespace BehaviourTree.Editor
             RootNode subtreeRoot = (RootNode)subtreeAsset.CreateNode(typeof(RootNode));
             subtreeRoot.name = "ROOT";
             subtreeRoot.graphPosition = Vector2.zero;
-            subtreeAsset.rootCopy = subtreeRoot;
+            subtreeAsset.root = subtreeRoot;
             subtreeAsset.RegisterNode(subtreeRoot);
 
             Dictionary<BehaviourNode, BehaviourNode> cloneMap = new Dictionary<BehaviourNode, BehaviourNode>();

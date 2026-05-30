@@ -6,26 +6,20 @@ using UnityEngine;
 
 namespace BehaviourTree.Editor 
 {
-    public class BehaviourTreeAsset : ScriptableObject, IBehaviourTreeAuthoringAsset
+    public class BehaviourTreeAsset : BehaviourTreeAssetBase
     {
         [HideInInspector] public List<BehaviourNode> nodesList;
-        [HideInInspector] public BehaviourNode rootCopy;
-        [HideInInspector] public BlackboardDefinition blackboardDefinition;
-
-        public BehaviourNode Root => rootCopy;
-        public BlackboardDefinition BlackboardDefinition => blackboardDefinition;
-        public string DisplayName => name;
 
         //Create unique runtime instances of the SO's
         public void Initialize() 
         {
-            nodesList = new List<BehaviourNode>{ rootCopy };
+            nodesList = new List<BehaviourNode>{ root };
 
-            for(int i = 0; i < rootCopy.children.Count; i++) 
+            for(int i = 0; i < root.children.Count; i++) 
             {
-                BehaviourNode nodeCopy = Instantiate(rootCopy.children[i]);
+                BehaviourNode nodeCopy = Instantiate(root.children[i]);
             
-                rootCopy.children[i] = nodeCopy;
+                root.children[i] = nodeCopy;
                 nodesList.Add(nodeCopy);
 
                 for(int j = 0; j < nodeCopy.children.Count; j++)
@@ -87,7 +81,7 @@ namespace BehaviourTree.Editor
                 if (!guidSet.Add(key)) return true;
             }
 
-            if (rootCopy != null && !nodeSet.Contains(rootCopy)) return true;
+            if (root != null && !nodeSet.Contains(root)) return true;
 
             for (int i = 0; i < nodesList.Count; i++)
             {
@@ -129,19 +123,19 @@ namespace BehaviourTree.Editor
                 found.Add(node);
             }
 
-            if (rootCopy != null)
+            if (root != null)
             {
                 for (int i = found.Count - 1; i >= 0; i--)
                 {
-                    if (found[i] == rootCopy)
+                    if (found[i] == root)
                         found.RemoveAt(i);
                 }
-                found.Insert(0, rootCopy);
+                found.Insert(0, root);
             }
 
             if (found.Count > 1)
             {
-                int startIdx = rootCopy != null ? 1 : 0;
+                int startIdx = root != null ? 1 : 0;
                 List<BehaviourNode> rest = new List<BehaviourNode>();
                 for (int i = startIdx; i < found.Count; i++)
                     rest.Add(found[i]);
@@ -238,9 +232,9 @@ namespace BehaviourTree.Editor
                 Destroy(nodesList[i]);
             }
 
-            Destroy(rootCopy);
+            Destroy(root);
 
-            rootCopy = null;
+            root = null;
             nodesList.Clear();
         }
     }

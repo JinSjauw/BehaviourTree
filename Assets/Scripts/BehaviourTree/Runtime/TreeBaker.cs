@@ -50,7 +50,7 @@ namespace BehaviourTree.Runtime
             Dictionary<string, int> runtimeGuidToIndex = new Dictionary<string, int>();
 
             int rootIndex = EnsureInstance(effectiveRoot, string.Empty, instances, firstChild, lastChild, runtimeGuidToIndex);
-            HashSet<IBehaviourTreeAuthoringAsset> expandingSubtrees = new HashSet<IBehaviourTreeAuthoringAsset>();
+            HashSet<BehaviourTreeAssetBase> expandingSubtrees = new HashSet<BehaviourTreeAssetBase>();
             HashSet<int> processedIndices = new HashSet<int>();
             ProcessChildren(rootIndex, instances, firstChild, lastChild, runtimeGuidToIndex, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName, expandingSubtrees, processedIndices);
 
@@ -97,7 +97,7 @@ namespace BehaviourTree.Runtime
             return root;
         }
 
-        private static BehaviourNode GetEffectiveRoot(IBehaviourTreeAuthoringAsset authoring)
+        private static BehaviourNode GetEffectiveRoot(BehaviourTreeAssetBase authoring)
         {
             if (authoring == null) return null;
             return GetEffectiveRoot(authoring.Root);
@@ -126,7 +126,7 @@ namespace BehaviourTree.Runtime
             Dictionary<string, Dictionary<string, int>> scopeVarIndexByName,
             BlackboardDefinition runtimeBbDef,
             Dictionary<string, int> rootVarIndexByName,
-            HashSet<IBehaviourTreeAuthoringAsset> expandingSubtrees,
+            HashSet<BehaviourTreeAssetBase> expandingSubtrees,
             HashSet<int> processedIndices,
             int depth = 0)
         {
@@ -150,7 +150,7 @@ namespace BehaviourTree.Runtime
             if (node.NodeType == BehaviourNodeType.SUBTREE)
             {
                 SubtreeNode subtreeNode = node as SubtreeNode;
-                IBehaviourTreeAuthoringAsset subtreeAsset = subtreeNode != null ? subtreeNode.SubTreeAsset : null;
+                BehaviourTreeAssetBase subtreeAsset = subtreeNode != null ? subtreeNode.SubTreeAsset : null;
                 if (subtreeAsset != null && !expandingSubtrees.Add(subtreeAsset))
                 {
                     Debug.LogWarning($"[TreeBaker] Circular subtree reference detected: '{subtreeAsset.DisplayName}'. Skipping expansion.");
@@ -160,9 +160,16 @@ namespace BehaviourTree.Runtime
                     BehaviourNode subRoot = GetEffectiveRoot(subtreeAsset);
                     if (subRoot != null)
                     {
-                        string childScope = runtimeGuid;
-                        EnsureScopeMapping(childScope, subtreeNode, runtimeBbDef, rootVarIndexByName, scopeVarIndexByName);
-                        logicalChildren.Add((subRoot, childScope));
+                        if (subRoot.NodeType == BehaviourNodeType.ROOT && subRoot.children.Count == 0)
+                        {
+                            Debug.LogWarning($"[TreeBaker] Subtree '{subtreeAsset.DisplayName}' contains only a ROOT node with no children. Skipping expansion.");
+                        }
+                        else
+                        {
+                            string childScope = runtimeGuid;
+                            EnsureScopeMapping(childScope, subtreeNode, runtimeBbDef, rootVarIndexByName, scopeVarIndexByName);
+                            logicalChildren.Add((subRoot, childScope));
+                        }
                     }
                 }
             }
@@ -209,7 +216,7 @@ namespace BehaviourTree.Runtime
             if (scopeVarIndexByName.ContainsKey(childScopePrefix)) return;
 
             Dictionary<string, int> map = new Dictionary<string, int>();
-            IBehaviourTreeAuthoringAsset subtreeAsset = subtreeNode != null ? subtreeNode.SubTreeAsset : null;
+            BehaviourTreeAssetBase subtreeAsset = subtreeNode != null ? subtreeNode.SubTreeAsset : null;
             BlackboardDefinition subtreeDef = subtreeAsset != null ? subtreeAsset.BlackboardDefinition : null;
 
             if (subtreeDef != null && subtreeDef.sharedVariables != null)

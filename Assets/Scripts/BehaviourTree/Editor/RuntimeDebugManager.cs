@@ -262,7 +262,7 @@ namespace BehaviourTree.Editor
             targetNode = null;
             relativePos = Vector2.zero;
 
-            IBehaviourTreeAuthoringAsset currentAuthoring = rootSubtreeNode.SubTreeAsset;
+            BehaviourTreeAssetBase currentAuthoring = rootSubtreeNode.SubTreeAsset;
             Vector2 origin = GetAuthoringRootOrigin(currentAuthoring);
             Vector2 acc = -origin;
 
@@ -291,7 +291,7 @@ namespace BehaviourTree.Editor
             return false;
         }
 
-        private Vector2 GetAuthoringRootOrigin(IBehaviourTreeAuthoringAsset authoring)
+        private Vector2 GetAuthoringRootOrigin(BehaviourTreeAssetBase authoring)
         {
             if (authoring == null || authoring.Root == null) return Vector2.zero;
             BehaviourNode root = authoring.Root;
@@ -300,7 +300,7 @@ namespace BehaviourTree.Editor
             return root != null ? root.graphPosition : Vector2.zero;
         }
 
-        private BehaviourNode GetAuthoringEffectiveRoot(IBehaviourTreeAuthoringAsset authoring)
+        private BehaviourNode GetAuthoringEffectiveRoot(BehaviourTreeAssetBase authoring)
         {
             if (authoring == null || authoring.Root == null) return null;
             BehaviourNode root = authoring.Root;
@@ -309,7 +309,7 @@ namespace BehaviourTree.Editor
             return root;
         }
 
-        private bool TryGetAuthoringNodeByGuid(IBehaviourTreeAuthoringAsset authoring, string guid, out BehaviourNode node)
+        private bool TryGetAuthoringNodeByGuid(BehaviourTreeAssetBase authoring, string guid, out BehaviourNode node)
         {
             node = null;
             if (authoring is not BehaviourTreeAsset treeAsset) return false;

@@ -12,7 +12,7 @@ namespace BehaviourTree.Runtime
 
             if (childIndex < 0)
             {
-                context.PopAndNotifyParent(NodeState.SUCCESS);
+                context.PopAndNotifyParent(NodeState.FAILURE);
                 return false;
             }
 

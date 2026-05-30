@@ -15,9 +15,9 @@ namespace BehaviourTree.Core
     public class SubtreeNode : BehaviourNode
     {
         public override BehaviourNodeType NodeType => BehaviourNodeType.SUBTREE;
-        public UnityEngine.Object subTreeAsset;
+        public BehaviourTreeAssetBase subTreeAsset;
         public List<SubtreeBinding> bindings = new List<SubtreeBinding>();
 
-        public IBehaviourTreeAuthoringAsset SubTreeAsset => subTreeAsset as IBehaviourTreeAuthoringAsset;
+        public BehaviourTreeAssetBase SubTreeAsset => subTreeAsset;
     }
 }

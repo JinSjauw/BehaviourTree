@@ -200,7 +200,7 @@ namespace BehaviourTree.Editor
 
             RootNode root = (RootNode)subtreeAsset.CreateNode(typeof(RootNode));
             root.name = "ROOT";
-            subtreeAsset.rootCopy = root;
+            subtreeAsset.root = root;
             subtreeAsset.RegisterNode(root);
 
             EditorUtility.SetDirty(subtreeAsset);

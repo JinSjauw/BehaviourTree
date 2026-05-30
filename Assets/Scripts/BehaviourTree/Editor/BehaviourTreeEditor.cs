@@ -199,7 +199,7 @@ public class BehaviourTreeEditor : EditorWindow
         runtimeAsset.name = currentTree.name + "_Runtime";
         runtimeAsset.sourceTree = currentTree;
 
-        runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.rootCopy, currentBlackboardDef, 
+        runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.root, currentBlackboardDef, 
         ref runtimeAsset.runtimeNodeData, 
         ref runtimeAsset.runtimeFieldData, 
         ref runtimeAsset.runtimeNodeGuids);

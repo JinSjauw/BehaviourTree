@@ -9,7 +9,7 @@ namespace BehaviourTree.Runtime
       [SerializeField] private BlackBoard blackBoard;
       [SerializeField] private RuntimeBehaviourTreeAsset runtimeAsset;
 #if UNITY_EDITOR
-      [SerializeField] private UnityEngine.Object authoringAsset;
+      [SerializeField] private BehaviourTreeAssetBase authoringAsset;
 #endif
 
       private TreeEvaluator evaluator;
@@ -21,7 +21,7 @@ namespace BehaviourTree.Runtime
          if (runtimeAsset == null)
          {
 #if UNITY_EDITOR
-            BehaviourTree.Core.IBehaviourTreeAuthoringAsset authoring = authoringAsset as BehaviourTree.Core.IBehaviourTreeAuthoringAsset;
+            BehaviourTreeAssetBase authoring = authoringAsset as BehaviourTreeAssetBase;
             if (authoring != null)
             {
                RuntimeBehaviourTreeAsset tempRuntimeAsset = ScriptableObject.CreateInstance<RuntimeBehaviourTreeAsset>();
@@ -41,6 +41,11 @@ namespace BehaviourTree.Runtime
             Debug.LogError("RuntimeBehaviourTreeAsset is null");
             return;
 #endif
+         }
+         else
+         {
+            runtimeAsset = Instantiate(runtimeAsset);
+            runtimeAsset.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
          }
 
          if(blackBoard == null)
@@ -81,6 +86,8 @@ namespace BehaviourTree.Runtime
       private void OnDestroy()
       {
          if (runtimeAsset == null) return;
+         Destroy(runtimeAsset);
+         runtimeAsset = null;
       }
 
 #if UNITY_EDITOR
@@ -92,7 +99,7 @@ namespace BehaviourTree.Runtime
          }
          else
          {
-            IBehaviourTreeAuthoringAsset authoring = authoringAsset as IBehaviourTreeAuthoringAsset;
+            BehaviourTreeAssetBase authoring = authoringAsset as BehaviourTreeAssetBase;
             if (authoring != null)
             {
                blackBoard?.BuildSerializedReferences(authoring.BlackboardDefinition);

@@ -8,6 +8,13 @@ namespace BehaviourTree.Runtime
         {
             EvaluatorFrame frame = context.CurrentFrame;
             ref NodeData node = ref context.CurrentNode;
+
+            if (node.firstChildIndex < 0)
+            {
+                context.PopAndNotifyParent(NodeState.FAILURE);
+                return false;
+            }
+
             int childCount = node.lastChildIndex - node.firstChildIndex + 1;
 
             context.MarkCurrentNodeRunning();

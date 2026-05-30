@@ -557,11 +557,11 @@ namespace BehaviourTree.Editor
 
         private void EnsureRootNodeExists()
         {
-            if (tree.rootCopy != null) return;
+            if (tree.root != null) return;
 
-            tree.rootCopy = tree.CreateNode(typeof(RootNode));
-            tree.rootCopy.name = "ROOT";
-            tree.RegisterNode(tree.rootCopy);
+            tree.root = tree.CreateNode(typeof(RootNode));
+            tree.root.name = "ROOT";
+            tree.RegisterNode(tree.root);
         }
 
         private void CleanupAndCreateViews()

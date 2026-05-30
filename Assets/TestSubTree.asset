@@ -1,24 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3122344276494975122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
-  m_Name: ROOT
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  children:
-  - {fileID: 3502005800738345749}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 5ddb9e91d6bd9704e86245e93a5a7f35
-  graphPosition: {x: 394, y: 565}
-  runtimeIndex: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
   m_Name: TestSubTree
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
+  root: {fileID: 6238727662993338791}
+  blackboardDefinition: {fileID: 3339676023789509158}
   nodesList:
-  - {fileID: -3122344276494975122}
   - {fileID: 8223169705248104269}
   - {fileID: 1667896190506859616}
   - {fileID: 3502005800738345749}
-  rootCopy: {fileID: -3122344276494975122}
-  blackboardDefinition: {fileID: 3339676023789509158}
+  - {fileID: 6238727662993338791}
 --- !u!114 &1667896190506859616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +103,25 @@ MonoBehaviour:
   graphPosition: {x: 395, y: 710}
   runtimeIndex: 0
   compositeType: 2
+--- !u!114 &6238727662993338791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  children:
+  - {fileID: 3502005800738345749}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 8c631cc40ccbff644b9a6438c20d9d31
+  graphPosition: {x: 403.00006, y: 559.3412}
+  runtimeIndex: 0
 --- !u!114 &8223169705248104269
 MonoBehaviour:
   m_ObjectHideFlags: 0

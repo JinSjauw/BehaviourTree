@@ -12,7 +12,12 @@ namespace BehaviourTree.Runtime
             ref NodeData node = ref context.CurrentNode;
             int childIndex = node.firstChildIndex;
 
-            // First entry — push the single child
+            if (childIndex < 0)
+            {
+                context.PopAndNotifyParent(NodeState.FAILURE);
+                return false;
+            }
+
             if (frame.lastChildStatus == NodeState.NONE)
             {
                 context.MarkCurrentNodeRunning();
