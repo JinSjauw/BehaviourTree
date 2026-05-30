@@ -15,6 +15,8 @@ public class BehaviourTreeEditor : EditorWindow
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
     private ToolbarMenu assetBarMenu;
+    private TabView tabView;
+    private Tab inspectorTab;
 
     public static BlackboardDefinition currentBlackboardDef { get; private set; }
     public static BehaviourTreeAsset currentTree { get; private set; }
@@ -70,6 +72,8 @@ public class BehaviourTreeEditor : EditorWindow
         inspectorView = root.Q<InspectorView>();
         blackBoardView = root.Q<BlackBoardView>();
         assetBarMenu = root.Q<ToolbarMenu>("AssetBarMenu");
+        tabView = root.Q<TabView>("TabView");
+        inspectorTab = tabView?.Q<Tab>("InspectorTab");
 
         if (treeGraphView == null)
         {
@@ -278,6 +282,8 @@ public class BehaviourTreeEditor : EditorWindow
     private void OnNodeSelectionChanged(BehaviourNodeView nodeView)
     {
         inspectorView.UpdateSelection(nodeView);
+        if (tabView != null && inspectorTab != null)
+            tabView.activeTab = inspectorTab;
     }
 
     private void OnDestroy()
