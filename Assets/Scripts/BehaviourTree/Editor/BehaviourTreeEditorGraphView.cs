@@ -435,7 +435,7 @@ namespace BehaviourTree.Editor
                 {
                     if (IsRootAsChild(endNode, port)) continue;
                     if (IsLeafNodeParenting(startNode, port)) continue;
-                    if (IsDuplicateChild(endNode, startNode)) continue;
+                    if (IsChild(endNode, startNode)) continue;
                     if (WouldCreateCycle(startNode, endNode)) continue;
                     if (startNode.NodeSO.NodeType == BehaviourNodeType.PARALLEL 
                     && (endNode.NodeSO.NodeType != BehaviourNodeType.ACTION && endNode.NodeSO.NodeType != BehaviourNodeType.CONDITION)) continue;    
@@ -473,7 +473,7 @@ namespace BehaviourTree.Editor
                 || nodeType == BehaviourNodeType.SUBTREE;
         }
 
-        private static bool IsDuplicateChild(BehaviourNodeView endNode, BehaviourNodeView startNode)
+        private static bool IsChild(BehaviourNodeView endNode, BehaviourNodeView startNode)
         {
             return endNode.NodeSO.children.Contains(startNode.NodeSO);
         }

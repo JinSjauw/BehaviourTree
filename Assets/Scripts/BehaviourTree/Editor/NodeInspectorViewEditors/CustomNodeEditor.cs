@@ -251,8 +251,23 @@ namespace BehaviourTree.Editor
             int selectedIndex = matchingVars.IndexOf(currentVal);
             if (selectedIndex < 0) selectedIndex = 0;
 
-            selectedIndex = EditorGUILayout.Popup("Shared Variable", selectedIndex, matchingVars.ToArray());
-            variableNameProp.stringValue = matchingVars[selectedIndex];
+            if (InspectorView.IsRenderingReadOnly)
+            {
+                string display = currentVal;
+                EditorGUILayout.LabelField("Shared Variable", display);
+
+                if (InspectorView.CurrentProxyMappings != null &&
+                    InspectorView.CurrentProxyMappings.TryGetValue(currentVal, out string parentVar))
+                {
+                    EditorGUILayout.LabelField("Mapped To: ", parentVar);
+                }
+
+            }
+            else
+            {
+                selectedIndex = EditorGUILayout.Popup("Shared Variable", selectedIndex, matchingVars.ToArray());
+                variableNameProp.stringValue = matchingVars[selectedIndex];
+            }
         }
     }
 }

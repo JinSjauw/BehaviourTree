@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -6,6 +7,9 @@ using BehaviourTree.Editor;
 [UxmlElement("InspectorView")]
 public partial class InspectorView : VisualElement
 {
+    public static bool IsRenderingReadOnly { get; private set; }
+    public static Dictionary<string, string> CurrentProxyMappings { get; private set; }
+
     private VisualElement inspectorViewContainer;
 
     Editor editor;
@@ -70,11 +74,19 @@ public partial class InspectorView : VisualElement
 
         editor = Editor.CreateEditor(nodeView.NodeSO);
 
+        bool readOnly = nodeView.IsReadOnlyProxy;
+
         IMGUIContainer container = new IMGUIContainer(() =>
         {
             if (editor.target)
             {
+                if (readOnly) EditorGUI.BeginDisabledGroup(true);
+                IsRenderingReadOnly = readOnly;
+                CurrentProxyMappings = nodeView.VariableMappings;
                 editor.OnInspectorGUI();
+                IsRenderingReadOnly = false;
+                CurrentProxyMappings = null;
+                if (readOnly) EditorGUI.EndDisabledGroup();
             }
         });
 

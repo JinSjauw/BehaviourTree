@@ -127,24 +127,32 @@ namespace BehaviourTree.Editor
                 bool isMissing;
                 BuildParentOptions(parentDef, subVar.typeName, parentNameProp.stringValue, out options, out selectedIndex, out isMissing);
 
-                Color oldColor = GUI.color;
-                if (isMissing)
-                    GUI.color = Color.yellow;
-
-                int nextIndex = EditorGUILayout.Popup("Mapped To", selectedIndex, options);
-                GUI.color = oldColor;
-
-                if (isMissing && nextIndex == selectedIndex)
+                if (InspectorView.IsRenderingReadOnly)
                 {
-                    // user didn't change the dropdown — keep the stored value
-                }
-                else if (nextIndex <= 0)
-                {
-                    parentNameProp.stringValue = string.Empty;
+                    string displayValue = string.IsNullOrEmpty(parentNameProp.stringValue) ? "<Local>" : parentNameProp.stringValue;
+                    EditorGUILayout.LabelField("Mapped To", displayValue);
                 }
                 else
                 {
-                    parentNameProp.stringValue = options[nextIndex];
+                    Color oldColor = GUI.color;
+                    if (isMissing)
+                        GUI.color = Color.yellow;
+
+                    int nextIndex = EditorGUILayout.Popup("Mapped To", selectedIndex, options);
+                    GUI.color = oldColor;
+
+                    if (isMissing && nextIndex == selectedIndex)
+                    {
+                        // user didn't change the dropdown — keep the stored value
+                    }
+                    else if (nextIndex <= 0)
+                    {
+                        parentNameProp.stringValue = string.Empty;
+                    }
+                    else
+                    {
+                        parentNameProp.stringValue = options[nextIndex];
+                    }
                 }
 
                 EditorGUILayout.Space(2);

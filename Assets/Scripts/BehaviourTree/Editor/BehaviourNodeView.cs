@@ -1,6 +1,7 @@
 using BehaviourTree;
 using BehaviourTree.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -15,6 +16,8 @@ namespace BehaviourTree.Editor
         public BehaviourNode NodeSO { get; private set; }
         public MethodID LeafMethodID { get; set; }
         public string Guid { get; private set; }
+        public bool IsReadOnlyProxy { get; set; }
+        public Dictionary<string, string> VariableMappings { get; set; }
 
         public Port input;
         public Port output;
@@ -48,7 +51,11 @@ namespace BehaviourTree.Editor
             CreateInputPorts();
             CreateOutputPorts();
 
+            if (NodeSO.NodeType == BehaviourNodeType.ROOT)
+                capabilities &= ~(Capabilities.Movable | Capabilities.Selectable |Capabilities.Deletable | Capabilities.Copiable);
+
             RegisterCallback<MouseDownEvent>(OnNodeClicked);
+            RegisterCallback<DetachFromPanelEvent>(_ => OnNodeSelected = null);
         }
 
         private void OnNodeClicked(MouseDownEvent evt)

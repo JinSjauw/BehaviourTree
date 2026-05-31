@@ -121,45 +121,6 @@ namespace BehaviourTree.Editor
             }
         }
 
-        private void ClearAll()
-        {
-            for (int i = 0; i < hiddenEdges.Count; i++)
-            {
-                Edge edge = hiddenEdges[i];
-                if (edge != null)
-                    edge.style.display = DisplayStyle.Flex;
-            }
-            hiddenEdges.Clear();
-            hiddenEdgeHashes.Clear();
-
-            foreach (var edge in proxyInternalEdges.Values)
-            {
-                edge?.RemoveFromHierarchy();
-            }
-            proxyInternalEdges.Clear();
-
-            foreach (var edge in proxyReplacementEdges.Values)
-            {
-                edge?.RemoveFromHierarchy();
-            }
-            proxyReplacementEdges.Clear();
-
-            foreach (var node in proxyNodeViews.Values)
-            {
-                node?.RemoveFromHierarchy();
-            }
-            proxyNodeViews.Clear();
-
-            for (int i = 0; i < hiddenSubtreeViews.Count; i++)
-            {
-                BehaviourNodeView view = hiddenSubtreeViews[i];
-                if (view != null)
-                    view.style.display = DisplayStyle.Flex;
-            }
-            hiddenSubtreeViews.Clear();
-            replacedSubtreeGuids.Clear();
-        }
-
         public void RemoveAllProxies()
         {
             foreach (var edge in proxyInternalEdges.Values)
@@ -245,8 +206,22 @@ namespace BehaviourTree.Editor
                 return null;
 
             BehaviourNodeView proxy = new BehaviourNodeView(targetNode);
-            proxy.capabilities &= ~(Capabilities.Movable | Capabilities.Selectable | Capabilities.Deletable | Capabilities.Copiable);
-            proxy.layer = 1;
+            proxy.capabilities &= ~(Capabilities.Movable | Capabilities.Deletable | Capabilities.Copiable);
+            proxy.IsReadOnlyProxy = true;
+            proxy.OnNodeSelected = graphView.OnNodeSelected;
+
+            if (anchorSubtreeNode.bindings != null)
+            {
+                var mappings = new Dictionary<string, string>();
+                for (int i = 0; i < anchorSubtreeNode.bindings.Count; i++)
+                {
+                    if (!string.IsNullOrEmpty(anchorSubtreeNode.bindings[i].parentVariableName))
+                        mappings[anchorSubtreeNode.bindings[i].subtreeVariableName] = anchorSubtreeNode.bindings[i].parentVariableName;
+                }
+                proxy.VariableMappings = mappings;
+            }
+
+            proxy.layer = 0;
 
             Vector2 basePos = anchorSubtreeNode.graphPosition;
             Vector2 finalPos = basePos + relativePos;

@@ -37,8 +37,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: f7d7b9a32bd222b4fb5f8980942cfa9e
-  graphPosition: {x: -594.0001, y: 663.00006}
-  runtimeIndex: 6
+  graphPosition: {x: -588.3002, y: 671.00006}
+  runtimeIndex: 5
   leafType: 4
   methodID: 39
   fieldEntries:
@@ -73,7 +73,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: acaa749b30a7d9246af84982c787e605
   graphPosition: {x: -471, y: 519}
-  runtimeIndex: 4
+  runtimeIndex: 3
   methodID: 1
   fieldEntries:
   - fieldName: alwaysFailure
@@ -122,7 +122,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 16584853b5410a14ab06d87c8613f7df
   graphPosition: {x: -142.00002, y: 520}
-  runtimeIndex: 5
+  runtimeIndex: 4
   compositeType: 2
 --- !u!114 &-142211205377785755
 MonoBehaviour:
@@ -140,14 +140,14 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: b0014ac0508bef44f8dec865c431037d
-  graphPosition: {x: 515.47516, y: 405.99997}
+  graphPosition: {x: 524, y: 399}
   runtimeIndex: 2
   subTreeAsset: {fileID: 11400000, guid: 4ec5d44ac21afef45b24713512328ceb, type: 2}
   bindings:
   - subtreeVariableName: WOW
-    parentVariableName: HEALTH
-  - subtreeVariableName: WOW2
     parentVariableName: HEALTHTHRESHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,7 +211,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cd23a30ebb6405a42a1b283a93a62281
-  graphPosition: {x: 0, y: 200}
+  graphPosition: {x: -19, y: 189}
   runtimeIndex: 0
   compositeType: 2
 --- !u!114 &4972422243910474726
@@ -230,8 +230,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cbb1ab9fcfc0e0543a37e2833402442e
-  graphPosition: {x: 99.00005, y: 663}
-  runtimeIndex: 10
+  graphPosition: {x: 98.999954, y: 661.49994}
+  runtimeIndex: 9
   leafType: 4
   methodID: 10
   fieldEntries:
@@ -276,8 +276,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 769f9211accaa1e499d4c41a028e2fe1
-  graphPosition: {x: -248, y: 655}
-  runtimeIndex: 8
+  graphPosition: {x: -230.00006, y: 671.00006}
+  runtimeIndex: 7
   leafType: 3
   methodID: 37
   fieldEntries:
@@ -367,8 +367,8 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 44c8d602dccb1d44492ff0e57707e642
-  graphPosition: {x: -425, y: 663.00006}
-  runtimeIndex: 7
+  graphPosition: {x: -411.74896, y: 678.99994}
+  runtimeIndex: 6
   leafType: 4
   methodID: 25
   fieldEntries:
@@ -414,7 +414,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: b3f69c2970db5c74d84f778b52fe7821
   graphPosition: {x: -59.000122, y: 664}
-  runtimeIndex: 9
+  runtimeIndex: 8
   leafType: 4
   methodID: 10
   fieldEntries:
