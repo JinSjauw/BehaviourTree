@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BehaviourTree.Core;
-using Codice.CM.Common;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -165,6 +164,17 @@ namespace BehaviourTree.Editor
                     compositeNode.name = data.nodeType.ToString();
                     node = compositeNode;
                     break;
+                case BehaviourNodeType.SUBTREE:
+                    SubtreeNode subtreeNode = ScriptableObject.CreateInstance<SubtreeNode>();
+                    subtreeNode.name = "SUBTREE";
+                    subtreeNode.bindings = data.bindings ?? new List<SubtreeBinding>();
+                    if (!string.IsNullOrEmpty(data.subtreeAssetGUID))
+                    {
+                        string path = AssetDatabase.GUIDToAssetPath(data.subtreeAssetGUID);
+                        subtreeNode.subTreeAsset = AssetDatabase.LoadAssetAtPath<BehaviourTreeAssetBase>(path);
+                    }
+                    node = subtreeNode;
+                    break;
                 default:
                     node = null;
                     break;
@@ -210,6 +220,16 @@ namespace BehaviourTree.Editor
                 serializedNode.methodID = decoratorNode.methodID;
                 serializedNode.fieldEntries = decoratorNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = decoratorNode.BlackBoardTypeID;
+            }
+            else if (node.NodeType == BehaviourNodeType.SUBTREE)
+            {
+                SubtreeNode subtreeNode = (SubtreeNode)node;
+                serializedNode.bindings = subtreeNode.bindings != null ? new List<SubtreeBinding>(subtreeNode.bindings) : new List<SubtreeBinding>();
+                if (subtreeNode.subTreeAsset != null)
+                {
+                    string path = AssetDatabase.GetAssetPath(subtreeNode.subTreeAsset);
+                    serializedNode.subtreeAssetGUID = AssetDatabase.AssetPathToGUID(path);
+                }
             }
             
             return serializedNode;

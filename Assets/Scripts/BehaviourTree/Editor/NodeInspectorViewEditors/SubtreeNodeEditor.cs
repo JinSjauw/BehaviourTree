@@ -29,6 +29,7 @@ namespace BehaviourTree.Editor
 
             subTreeAssetProp = serializedObject.FindProperty("subTreeAsset");
             bindingsProp = serializedObject.FindProperty("bindings");
+            SubtreeCycleValidator.InvalidateCache();
         }
 
         public override void OnInspectorGUI()
@@ -45,8 +46,17 @@ namespace BehaviourTree.Editor
             UnityEngine.Object next = EditorGUI.ObjectField(fieldRect, current, typeof(BehaviourTreeAsset), false);
             if (next != current)
             {
-                subTreeAssetProp.objectReferenceValue = next;
-                bindingsProp.ClearArray();
+                BehaviourTreeAssetBase candidate = next as BehaviourTreeAssetBase;
+                if (candidate != null && SubtreeCycleValidator.WouldCreateCycle(candidate, BehaviourTreeEditor.currentTree))
+                {
+                    Debug.LogWarning($"[SubtreeNode] Cannot assign '{candidate.DisplayName}' — it would create a cyclical reference.");
+                }
+                else
+                {
+                    subTreeAssetProp.objectReferenceValue = next;
+                    bindingsProp.ClearArray();
+                    SubtreeCycleValidator.InvalidateCache();
+                }
             }
 
             BehaviourTreeAsset subtreeAsset = subTreeAssetProp.objectReferenceValue as BehaviourTreeAsset;
@@ -220,6 +230,7 @@ namespace BehaviourTree.Editor
 
             subTreeAssetProp.objectReferenceValue = subtreeAsset;
             bindingsProp.ClearArray();
+            SubtreeCycleValidator.InvalidateCache();
         }
     }
 }

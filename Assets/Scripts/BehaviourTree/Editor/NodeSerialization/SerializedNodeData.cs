@@ -17,6 +17,9 @@ namespace BehaviourTree.Editor
 
         public string guid;
         public Vector2 graphPosition;
+
+        public string subtreeAssetGUID;
+        public List<SubtreeBinding> bindings;
     }
 
     [Serializable]
