@@ -59,7 +59,7 @@ public class BlackboardVariableDrawer : PropertyDrawer
         }
         EditorGUI.BeginChangeCheck();
         int nextIndex = EditorGUI.Popup(typeRect, currentIndex, displayNames);
-        if (EditorGUI.EndChangeCheck() || typeMatched)
+        if (EditorGUI.EndChangeCheck() || !typeMatched)
         {
             typeProp.stringValue = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[nextIndex]).FullName;
             typeResolved = FieldTypeHelper.TryGetSystemTypeFromName(typeProp.stringValue, out resolvedType);

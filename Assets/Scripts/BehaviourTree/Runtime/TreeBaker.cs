@@ -167,7 +167,7 @@ namespace BehaviourTree.Runtime
                         else
                         {
                             string childScope = runtimeGuid;
-                            EnsureScopeMapping(childScope, subtreeNode, runtimeBbDef, rootVarIndexByName, scopeVarIndexByName);
+                            EnsureScopeMapping(childScope, scopePrefix, subtreeNode, runtimeBbDef, rootVarIndexByName, scopeVarIndexByName);
                             logicalChildren.Add((subRoot, childScope));
                         }
                     }
@@ -207,6 +207,7 @@ namespace BehaviourTree.Runtime
 
         private static void EnsureScopeMapping(
             string childScopePrefix,
+            string parentScopePrefix,
             SubtreeNode subtreeNode,
             BlackboardDefinition runtimeBbDef,
             Dictionary<string, int> rootVarIndexByName,
@@ -224,7 +225,7 @@ namespace BehaviourTree.Runtime
                 for (int i = 0; i < subtreeDef.sharedVariables.Count; i++)
                 {
                     BlackboardVariable subVar = subtreeDef.sharedVariables[i];
-                    int mappedIndex = ResolveSubtreeVarIndex(subtreeNode, subVar, childScopePrefix, runtimeBbDef, rootVarIndexByName);
+                    int mappedIndex = ResolveSubtreeVarIndex(subtreeNode, subVar, childScopePrefix, runtimeBbDef, rootVarIndexByName, parentScopePrefix, scopeVarIndexByName);
                     map[subVar.name] = mappedIndex;
                 }
             }
@@ -237,7 +238,9 @@ namespace BehaviourTree.Runtime
             BlackboardVariable subtreeVar,
             string childScopePrefix,
             BlackboardDefinition runtimeBbDef,
-            Dictionary<string, int> rootVarIndexByName)
+            Dictionary<string, int> rootVarIndexByName,
+            string parentScopePrefix,
+            Dictionary<string, Dictionary<string, int>> scopeVarIndexByName)
         {
             if (subtreeNode != null && subtreeNode.bindings != null)
             {
@@ -247,7 +250,18 @@ namespace BehaviourTree.Runtime
                     if (b.subtreeVariableName == subtreeVar.name && !string.IsNullOrEmpty(b.parentVariableName))
                     {
                         if (rootVarIndexByName.TryGetValue(b.parentVariableName, out int idx))
+                        {
                             return idx;
+                        }
+                        if (!string.IsNullOrEmpty(parentScopePrefix) &&
+                            scopeVarIndexByName.TryGetValue(parentScopePrefix, out var parentMap) &&
+                            parentMap.TryGetValue(b.parentVariableName, out int parentIdx))
+                        {
+                            return parentIdx;
+                        }
+
+                        Debug.LogWarning($"Subtree binding not found: {b.parentVariableName} returning -1");
+
                         return -1;
                     }
                 }

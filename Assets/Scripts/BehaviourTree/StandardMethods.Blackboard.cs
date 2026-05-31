@@ -10,7 +10,7 @@ namespace BehaviourTree
     {
         private static bool GuardFail(string caller, int index, string expected, ReadOnlySpan<FieldData> fields)
         {
-            if (Debug.isDebugBuild) Debug.LogWarning($"[BT] Guard failed in {caller}: field[{index}] expected {expected} (len={fields.Length})");
+            if (Debug.isDebugBuild) Debug.LogWarning($"[BT] Guard failed in {caller}: field[{index}] expected {expected} (length={fields.Length})");
             return false;
         }
 

@@ -35,7 +35,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 7f46114c10d8f734a9d718d10cf5dbee
-  graphPosition: {x: 270.00015, y: 609}
+  graphPosition: {x: 620.0001, y: 621}
   runtimeIndex: 2
   subTreeAsset: {fileID: 11400000, guid: 6944386662916bd4196eceada7c330d3, type: 2}
   bindings:
@@ -134,9 +134,9 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: dfc7bb3b7ef1ff54da29142e804adf91
-  graphPosition: {x: -2.1364136, y: 617.00006}
+  graphPosition: {x: 194.99994, y: 628.99994}
   runtimeIndex: 1
-  subTreeAsset: {fileID: 11400000, guid: 456011ab6a9e8d34c94272e339be6244, type: 2}
+  subTreeAsset: {fileID: 11400000, guid: 4ec5d44ac21afef45b24713512328ceb, type: 2}
   bindings:
   - subtreeVariableName: WOW
     parentVariableName: ddd

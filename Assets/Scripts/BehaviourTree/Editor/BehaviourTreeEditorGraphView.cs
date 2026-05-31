@@ -287,6 +287,16 @@ namespace BehaviourTree.Editor
 
         private GraphViewChange OnGraphViewChanged(GraphViewChange change)
         {
+            if (EditorApplication.isPlaying && change.edgesToCreate != null)
+            {
+                change.edgesToCreate.RemoveAll(edge =>
+                {
+                    BehaviourNodeView pv = edge.output?.node as BehaviourNodeView;
+                    BehaviourNodeView cv = edge.input?.node as BehaviourNodeView;
+                    return (pv != null && pv.IsReadOnlyProxy) || (cv != null && cv.IsReadOnlyProxy);
+                });
+            }
+
             if (change.elementsToRemove != null)
                 HandleElementRemoval(change.elementsToRemove);
 
@@ -617,10 +627,10 @@ namespace BehaviourTree.Editor
             runtimeDebugManager.RemoveAllProxies();
         }
 
-        public void SetupRuntimeDebugProxies(TreeRunner runner)
-        {
-            runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);    
-        }
+        // public void SetupRuntimeDebugProxies(TreeRunner runner)
+        // {
+        //     runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);    
+        // }
 
 
         private sealed class BtEdgeConnectorListener : IEdgeConnectorListener

@@ -1,5 +1,33 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5681906075458114495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
+  m_Name: SUBTREE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 07366028ef96943499f70323228d7b24
+  graphPosition: {x: 363.47913, y: 382}
+  runtimeIndex: 2
+  subTreeAsset: {fileID: 11400000, guid: 4ec5d44ac21afef45b24713512328ceb, type: 2}
+  bindings:
+  - subtreeVariableName: WOW
+    parentVariableName: HEALTH
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTHTHRESHOLD
+  - subtreeVariableName: dwd
+    parentVariableName: TIMER
+  - subtreeVariableName: dddddww
+    parentVariableName: TREERUNNER
 --- !u!114 &-3663825298157457826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,30 +152,6 @@ MonoBehaviour:
   graphPosition: {x: -142.00002, y: 520}
   runtimeIndex: 4
   compositeType: 2
---- !u!114 &-142211205377785755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
-  m_Name: Subtree
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: b0014ac0508bef44f8dec865c431037d
-  graphPosition: {x: 524, y: 399}
-  runtimeIndex: 2
-  subTreeAsset: {fileID: 11400000, guid: 4ec5d44ac21afef45b24713512328ceb, type: 2}
-  bindings:
-  - subtreeVariableName: WOW
-    parentVariableName: HEALTHTHRESHOLD
-  - subtreeVariableName: WOW2
-    parentVariableName: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,7 +170,6 @@ MonoBehaviour:
   - {fileID: 509387065310161641}
   - {fileID: 597151230392870825}
   - {fileID: -3663825298157457826}
-  - {fileID: -142211205377785755}
   - {fileID: -2725063620440401021}
   - {fileID: -1408970361011554129}
   - {fileID: 6286546746454187114}
@@ -174,6 +177,7 @@ MonoBehaviour:
   - {fileID: 7082307169518220744}
   - {fileID: 7486522873846486295}
   - {fileID: 4972422243910474726}
+  - {fileID: -5681906075458114495}
 --- !u!114 &509387065310161641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,11 +211,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
   - {fileID: -3663825298157457826}
-  - {fileID: -142211205377785755}
+  - {fileID: -5681906075458114495}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cd23a30ebb6405a42a1b283a93a62281
-  graphPosition: {x: -19, y: 189}
+  graphPosition: {x: 8.000108, y: 184.485}
   runtimeIndex: 0
   compositeType: 2
 --- !u!114 &4972422243910474726

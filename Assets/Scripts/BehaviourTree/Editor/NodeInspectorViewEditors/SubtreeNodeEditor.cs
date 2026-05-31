@@ -74,7 +74,12 @@ namespace BehaviourTree.Editor
             {
                 if (GUILayout.Button("Create New Subtree Asset"))
                 {
-                    CreateAndAssignNewSubtreeAsset();
+                    EditorApplication.delayCall += () =>
+                    {
+                        CreateAndAssignNewSubtreeAsset();
+                        serializedObject.ApplyModifiedProperties();
+                        Repaint();
+                    };
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndScrollView();

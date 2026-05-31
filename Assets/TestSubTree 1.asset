@@ -50,10 +50,14 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 9e1f1e164e87c7d44ae1401f54cafb30
-  graphPosition: {x: -87.250984, y: 442.00003}
+  graphPosition: {x: -72, y: 458}
   runtimeIndex: 0
-  subTreeAsset: {fileID: 11400000, guid: b070d7c75973f544786603686e8f352c, type: 2}
-  bindings: []
+  subTreeAsset: {fileID: 11400000, guid: 4a9bba0db28b21d428c197ab5ef02d4b, type: 2}
+  bindings:
+  - subtreeVariableName: TestGO
+    parentVariableName: dddddww
+  - subtreeVariableName: TIMER WOW
+    parentVariableName: dwd
 --- !u!114 &-1491593367628431468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,6 +112,7 @@ MonoBehaviour:
   - {fileID: -3310054902380564789}
   - {fileID: -3640986070576022227}
   - {fileID: -1491593367628431468}
+  - {fileID: 4901535657612606218}
 --- !u!114 &981091468243943013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,6 +161,22 @@ MonoBehaviour:
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
+  - name: dwd
+    typeName: System.Single
+    showInitialValue: 0
+    intValue: 44
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+  - name: dddddww
+    typeName: UnityEngine.GameObject
+    showInitialValue: 1
+    intValue: 44
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
 --- !u!114 &3502005800738345749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,9 +193,36 @@ MonoBehaviour:
   - {fileID: -3640986070576022227}
   - {fileID: -1491593367628431468}
   - {fileID: -3310054902380564789}
+  - {fileID: 4901535657612606218}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 8e54b1fe629bf9640bb56b03e93b2734
   graphPosition: {x: -377.96857, y: 214.94366}
   runtimeIndex: 0
   compositeType: 2
+--- !u!114 &4901535657612606218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
+  m_Name: SUBTREE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: d1af7a7b5167a184a910d068eb7f4f6f
+  graphPosition: {x: 320.95828, y: 465.99997}
+  runtimeIndex: 0
+  subTreeAsset: {fileID: 11400000, guid: 456011ab6a9e8d34c94272e339be6244, type: 2}
+  bindings:
+  - subtreeVariableName: WOW
+    parentVariableName: WOW
+  - subtreeVariableName: WOW2
+    parentVariableName: dwd
+  - subtreeVariableName: sas
+    parentVariableName: dddddww

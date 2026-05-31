@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7123505537795040570
+--- !u!114 &-5777444119921653383
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15,10 +15,10 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 1dc015bed938e794a95ad1a80ca9708d
+  guid: d4c2cc4570c5e4b41b5e52a4dbfc8cee
   graphPosition: {x: 0, y: 0}
   runtimeIndex: 0
---- !u!114 &-4182731093279390885
+--- !u!114 &-5267684509110464986
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -28,7 +28,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
-  m_Name: NewSubtree_BB_Definition
+  m_Name: NewSubtreeC_BB_Definition
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables: []
 --- !u!114 &11400000
@@ -41,28 +41,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
-  m_Name: NewSubtree
+  m_Name: NewSubtreeC
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
-  root: {fileID: -7123505537795040570}
-  blackboardDefinition: {fileID: -4182731093279390885}
+  root: {fileID: -5777444119921653383}
+  blackboardDefinition: {fileID: -5267684509110464986}
   nodesList:
-  - {fileID: 8271561590798654691}
-  - {fileID: -7123505537795040570}
---- !u!114 &8271561590798654691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
-  m_Name: ROOT
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 95b7943f7addbe4448f283211990f0bb
-  graphPosition: {x: 0, y: 0}
-  runtimeIndex: 0
+  - {fileID: -5777444119921653383}

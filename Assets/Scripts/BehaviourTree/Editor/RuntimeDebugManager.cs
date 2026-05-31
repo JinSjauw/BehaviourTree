@@ -21,12 +21,12 @@ namespace BehaviourTree.Editor
         private readonly HashSet<string> replacedSubtreeGuids = new HashSet<string>();
         private readonly List<BehaviourNodeView> hiddenSubtreeViews = new List<BehaviourNodeView>();
 
-        private readonly Dictionary<UnityEngine.Object, Dictionary<string, BehaviourNode>> authoringNodeLookupCache
-            = new Dictionary<UnityEngine.Object, Dictionary<string, BehaviourNode>>();
+        private readonly Dictionary<BehaviourTreeAsset, Dictionary<string, BehaviourNode>> authoringNodeLookupCache;
 
         public RuntimeDebugManager(BehaviourTreeEditorGraphView graphView)
         {
             this.graphView = graphView;
+            authoringNodeLookupCache = new Dictionary<BehaviourTreeAsset, Dictionary<string, BehaviourNode>>();
         }
 
         public void ClearCaches()
@@ -38,6 +38,7 @@ namespace BehaviourTree.Editor
             proxyInternalEdges.Clear();
             proxyReplacementEdges.Clear();
             proxyNodeViews.Clear();
+            authoringNodeLookupCache.Clear();
         }
 
         public void SetupDebugProxies(TreeRunner runner, Dictionary<string, BehaviourNodeView> nodeViewDict)
@@ -103,7 +104,7 @@ namespace BehaviourTree.Editor
                 }
             }
 
-            foreach (var kvp in proxyNodeViews)
+            foreach (KeyValuePair<string, BehaviourNodeView> kvp in proxyNodeViews)
             {
                 BehaviourNodeView proxy = kvp.Value;
                 if (proxy == null) continue;
@@ -123,15 +124,15 @@ namespace BehaviourTree.Editor
 
         public void RemoveAllProxies()
         {
-            foreach (var edge in proxyInternalEdges.Values)
+            foreach (Edge edge in proxyInternalEdges.Values)
                 edge?.RemoveFromHierarchy();
             proxyInternalEdges.Clear();
 
-            foreach (var edge in proxyReplacementEdges.Values)
+            foreach (Edge edge in proxyReplacementEdges.Values)
                 edge?.RemoveFromHierarchy();
             proxyReplacementEdges.Clear();
 
-            foreach (var node in proxyNodeViews.Values)
+            foreach (BehaviourNodeView node in proxyNodeViews.Values)
                 node?.RemoveFromHierarchy();
             proxyNodeViews.Clear();
 
@@ -172,20 +173,18 @@ namespace BehaviourTree.Editor
                 }
             }
 
-            List<string> toRemove = null;
-            foreach (var kvp in proxyNodeViews)
+            List<string> toRemove = new List<string>();
+            foreach (BehaviourNodeView proxy in proxyNodeViews.Values)
             {
-                if (needed.Contains(kvp.Key)) continue;
-                toRemove ??= new List<string>();
-                toRemove.Add(kvp.Key);
+                if (needed.Contains(proxy.Guid)) continue;
+                toRemove.Add(proxy.Guid);
             }
-            if (toRemove != null)
+            if (toRemove.Count > 0)
             {
                 for (int i = 0; i < toRemove.Count; i++)
                 {
                     string guid = toRemove[i];
-                    if (proxyNodeViews.TryGetValue(guid, out var view))
-                        view.RemoveFromHierarchy();
+                    if (proxyNodeViews.TryGetValue(guid, out BehaviourNodeView view)) view.RemoveFromHierarchy();
                     proxyNodeViews.Remove(guid);
                 }
             }
@@ -202,7 +201,7 @@ namespace BehaviourTree.Editor
             if (anchorView.NodeSO is not SubtreeNode anchorSubtreeNode) return null;
             if (anchorSubtreeNode.SubTreeAsset == null) return null;
 
-            if (!TryResolveRuntimePath(anchorSubtreeNode, segments, out BehaviourNode targetNode, out Vector2 relativePos))
+            if (!TryResolveRuntimePath(anchorSubtreeNode, segments, out BehaviourNode targetNode, out Vector2 relativePos, out List<SubtreeBinding> intermediateBindings))
                 return null;
 
             BehaviourNodeView proxy = new BehaviourNodeView(targetNode);
@@ -210,15 +209,42 @@ namespace BehaviourTree.Editor
             proxy.IsReadOnlyProxy = true;
             proxy.OnNodeSelected = graphView.OnNodeSelected;
 
-            if (anchorSubtreeNode.bindings != null)
+            bool hasAnchorBindings = anchorSubtreeNode.bindings != null && anchorSubtreeNode.bindings.Count > 0;
+            bool hasIntermediateBindings = intermediateBindings != null && intermediateBindings.Count > 0;
+
+            if (hasAnchorBindings || hasIntermediateBindings)
             {
-                var mappings = new Dictionary<string, string>();
-                for (int i = 0; i < anchorSubtreeNode.bindings.Count; i++)
+                var merged = new Dictionary<string, string>();
+
+                if (hasIntermediateBindings)
                 {
-                    if (!string.IsNullOrEmpty(anchorSubtreeNode.bindings[i].parentVariableName))
-                        mappings[anchorSubtreeNode.bindings[i].subtreeVariableName] = anchorSubtreeNode.bindings[i].parentVariableName;
+                    for (int i = 0; i < intermediateBindings.Count; i++)
+                    {
+                        if (!string.IsNullOrEmpty(intermediateBindings[i].parentVariableName))
+                            merged[intermediateBindings[i].subtreeVariableName] = intermediateBindings[i].parentVariableName;
+                    }
                 }
-                proxy.VariableMappings = mappings;
+
+                if (hasAnchorBindings)
+                {
+                    for (int i = 0; i < anchorSubtreeNode.bindings.Count; i++)
+                    {
+                        if (!string.IsNullOrEmpty(anchorSubtreeNode.bindings[i].parentVariableName) && !merged.ContainsKey(anchorSubtreeNode.bindings[i].subtreeVariableName))
+                            merged[anchorSubtreeNode.bindings[i].subtreeVariableName] = anchorSubtreeNode.bindings[i].parentVariableName;
+                    }
+                }
+
+                foreach (string key in new List<string>(merged.Keys))
+                {
+                    HashSet<string> seen = new HashSet<string> { key };
+                    string current = key;
+                    while (merged.TryGetValue(current, out string next) && seen.Add(next))
+                    {
+                        current = next;
+                    }
+                    merged[key] = current;
+                }
+                proxy.VariableMappings = merged;
             }
 
             proxy.layer = 0;
@@ -232,10 +258,11 @@ namespace BehaviourTree.Editor
             return proxy;
         }
 
-        private bool TryResolveRuntimePath(SubtreeNode rootSubtreeNode, string[] segments, out BehaviourNode targetNode, out Vector2 relativePos)
+        private bool TryResolveRuntimePath(SubtreeNode rootSubtreeNode, string[] segments, out BehaviourNode targetNode, out Vector2 relativePos, out List<SubtreeBinding> intermediateBindings)
         {
             targetNode = null;
             relativePos = Vector2.zero;
+            intermediateBindings = new List<SubtreeBinding>();
 
             BehaviourTreeAssetBase currentAuthoring = rootSubtreeNode.SubTreeAsset;
             Vector2 origin = GetAuthoringRootOrigin(currentAuthoring);
@@ -257,6 +284,9 @@ namespace BehaviourTree.Editor
                 acc += node.graphPosition;
                 if (node is not SubtreeNode nestedSubtree || nestedSubtree.SubTreeAsset == null)
                     return false;
+
+                if (nestedSubtree.bindings != null && nestedSubtree.bindings.Count > 0)
+                    intermediateBindings.AddRange(nestedSubtree.bindings);
 
                 currentAuthoring = nestedSubtree.SubTreeAsset;
                 origin = GetAuthoringRootOrigin(currentAuthoring);
@@ -290,7 +320,7 @@ namespace BehaviourTree.Editor
             if (authoring is not BehaviourTreeAsset treeAsset) return false;
             if (treeAsset.nodesList == null) return false;
 
-            if (!authoringNodeLookupCache.TryGetValue(treeAsset, out var map) || map == null)
+            if (!authoringNodeLookupCache.TryGetValue(treeAsset, out Dictionary<string, BehaviourNode> map) || map == null)
             {
                 map = new Dictionary<string, BehaviourNode>();
                 for (int i = 0; i < treeAsset.nodesList.Count; i++)
@@ -308,97 +338,144 @@ namespace BehaviourTree.Editor
 
         private void EnsureProxyEdges()
         {
-            foreach (var edge in proxyInternalEdges.Values)
+            foreach (Edge edge in proxyInternalEdges.Values)
             {
                 edge?.RemoveFromHierarchy();
             }
             proxyInternalEdges.Clear();
 
-            foreach (var kvp in proxyNodeViews)
+            List<string> unexpandable = new List<string>();
+            foreach (KeyValuePair<string, BehaviourNodeView> kvp in proxyNodeViews)
+            {
+                if (kvp.Value?.NodeSO is SubtreeNode st && (st.SubTreeAsset == null || st.SubTreeAsset.Root == null))
+                {
+                    kvp.Value.RemoveFromHierarchy();
+                    unexpandable.Add(kvp.Key);
+                }
+            }
+            if (unexpandable != null)
+            {
+                for (int i = 0; i < unexpandable.Count; i++)
+                    proxyNodeViews.Remove(unexpandable[i]);
+            }
+
+            foreach (KeyValuePair<string, BehaviourNodeView> kvp in proxyNodeViews)
             {
                 string runtimeGuid = kvp.Key;
-                BehaviourNodeView parentView = kvp.Value;
-                if (parentView == null || parentView.NodeSO == null || parentView.output == null) continue;
+                BehaviourNodeView proxy = kvp.Value;
+                if (proxy.NodeSO == null || proxy.output == null) continue;
 
                 string scopePrefix = runtimeGuid.Substring(0, runtimeGuid.LastIndexOf("/", StringComparison.Ordinal));
-                BehaviourNode node = parentView.NodeSO;
-
-                if (node is SubtreeNode subtreeNode)
-                {
-                    BehaviourNode subRoot = subtreeNode.SubTreeAsset != null ? subtreeNode.SubTreeAsset.Root : null;
-                    if (subRoot != null && subRoot.NodeType == BehaviourNodeType.ROOT && subRoot.children.Count > 0)
-                        subRoot = subRoot.children[0];
-                    if (subRoot != null)
-                    {
-                        string childGuid = runtimeGuid + "/" + subRoot.guid;
-                        TryAddProxyEdge(runtimeGuid, childGuid);
-                    }
-                    continue;
-                }
+                BehaviourNode node = proxy.NodeSO;
 
                 for (int c = 0; c < node.children.Count; c++)
                 {
                     BehaviourNode child = node.children[c];
                     if (child == null) continue;
-                    string childGuid = scopePrefix + "/" + child.guid;
-                    TryAddProxyEdge(runtimeGuid, childGuid);
+
+                    string directChildGuid = scopePrefix + "/" + child.guid;
+
+                    if (child is SubtreeNode subtreeChild && proxyNodeViews.ContainsKey(directChildGuid))
+                    {
+                        BehaviourNode subRoot = subtreeChild.SubTreeAsset?.Root;
+                        if (subRoot != null && subRoot.NodeType == BehaviourNodeType.ROOT && subRoot.children.Count > 0)
+                            subRoot = subRoot.children[0];
+                        if (subRoot != null)
+                        {
+                            string rootChildGuid = directChildGuid + "/" + subRoot.guid;
+                            Debug.Log($"[EnsureProxyEdges] parent={runtimeGuid} node={node.name} child={child.name} → bypassed SubtreeNode proxy, rootChildGuid={rootChildGuid}");
+                            TryAddProxyEdge(runtimeGuid, rootChildGuid);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log($"[EnsureProxyEdges] parent={runtimeGuid} node={node.name} child={child.name} childGuid={directChildGuid}");
+                        TryAddProxyEdge(runtimeGuid, directChildGuid);
+                    }
                 }
             }
         }
 
         private void TryAddProxyEdge(string parentGuid, string childGuid)
         {
-            if (!proxyNodeViews.TryGetValue(parentGuid, out BehaviourNodeView parentView)) return;
-            if (!proxyNodeViews.TryGetValue(childGuid, out BehaviourNodeView childView)) return;
-            if (parentView.output == null || childView.input == null) return;
+            if (!proxyNodeViews.TryGetValue(parentGuid, out BehaviourNodeView parentView))
+            {
+                Debug.LogWarning($"[TryAddProxyEdge] FAIL: parentGuid={parentGuid} NOT FOUND in proxyNodeViews");
+                return;
+            }
+            if (!proxyNodeViews.TryGetValue(childGuid, out BehaviourNodeView childView))
+            {
+                Debug.LogWarning($"[TryAddProxyEdge] FAIL: childGuid={childGuid} NOT FOUND in proxyNodeViews");
+                return;
+            }
+            if (parentView.output == null || childView.input == null)
+            {
+                Debug.LogWarning($"[TryAddProxyEdge] FAIL: parent={parentView.NodeSO?.name} output={parentView.output != null} child={childView.NodeSO?.name} input={childView.input != null}");
+                return;
+            }
 
             string key = parentGuid + "->" + childGuid;
-            if (proxyInternalEdges.ContainsKey(key)) return;
+            if (proxyInternalEdges.ContainsKey(key))
+            {
+                Debug.Log($"[TryAddProxyEdge] SKIP duplicate: {key}");
+                return;
+            }
 
             Edge edge = parentView.output.ConnectTo(childView.input);
             proxyInternalEdges[key] = edge;
             graphView.AddElement(edge);
+            Debug.Log($"[TryAddProxyEdge] OK: {key}");
         }
 
         private void ReplaceSubtreeNodesWithRootProxies(Dictionary<string, BehaviourNodeView> nodeViewDict)
         {
             foreach (BehaviourNodeView subtreeView in nodeViewDict.Values)
             {
-                if (subtreeView?.NodeSO is not SubtreeNode subtreeNode) continue;
-                if (subtreeNode.SubTreeAsset == null) continue;
-                if (replacedSubtreeGuids.Contains(subtreeNode.guid)) continue;
-
-                BehaviourNode subRoot = GetAuthoringEffectiveRoot(subtreeNode.SubTreeAsset);
-                if (subRoot == null || string.IsNullOrEmpty(subRoot.guid)) continue;
-
-                string rootRuntimeGuid = subtreeNode.guid + "/" + subRoot.guid;
-                if (!proxyNodeViews.TryGetValue(rootRuntimeGuid, out BehaviourNodeView rootProxy)) continue;
-                if (rootProxy == null) continue;
-
-                subtreeView.style.display = DisplayStyle.None;
-                hiddenSubtreeViews.Add(subtreeView);
-
-                if (subtreeView.input == null || rootProxy.input == null) continue;
-
-                foreach (Edge edge in subtreeView.input.connections.ToList())
-                {
-                    if (edge == null || edge.output == null) continue;
-
-                    edge.style.display = DisplayStyle.None;
-                    int edgeKey = edge.GetHashCode();
-                    if (hiddenEdgeHashes.Add(edgeKey))
-                        hiddenEdges.Add(edge);
-
-                    string key = "replace:" + edgeKey;
-                    if (proxyReplacementEdges.ContainsKey(key)) continue;
-
-                    Edge replacement = edge.output.ConnectTo(rootProxy.input);
-                    proxyReplacementEdges[key] = replacement;
-                    graphView.AddElement(replacement);
-                }
-
-                replacedSubtreeGuids.Add(subtreeNode.guid);
+                ReplaceSubtreeViewWithRootProxy(subtreeView);
             }
+
+            foreach (BehaviourNodeView subtreeView in proxyNodeViews.Values)
+            {
+                ReplaceSubtreeViewWithRootProxy(subtreeView);
+            }
+        }
+
+        private void ReplaceSubtreeViewWithRootProxy(BehaviourNodeView subtreeView)
+        {
+            if (subtreeView?.NodeSO is not SubtreeNode subtreeNode) return;
+            if (subtreeNode.SubTreeAsset == null) return;
+            if (replacedSubtreeGuids.Contains(subtreeNode.guid)) return;
+
+            BehaviourNode subRoot = GetAuthoringEffectiveRoot(subtreeNode.SubTreeAsset);
+            if (subRoot == null || string.IsNullOrEmpty(subRoot.guid)) return;
+
+            string rootRuntimeGuid = subtreeNode.guid + "/" + subRoot.guid;
+            if (!proxyNodeViews.TryGetValue(rootRuntimeGuid, out BehaviourNodeView rootProxy)) return;
+            if (rootProxy == null) return;
+
+            subtreeView.style.display = DisplayStyle.None;
+            hiddenSubtreeViews.Add(subtreeView);
+
+            if (subtreeView.input == null || rootProxy.input == null) return;
+
+            foreach (Edge edge in subtreeView.input.connections.ToList())
+            {
+                if (edge == null || edge.output == null) continue;
+
+                edge.style.display = DisplayStyle.None;
+                int edgeKey = edge.GetHashCode();
+                if (hiddenEdgeHashes.Add(edgeKey))
+                    hiddenEdges.Add(edge);
+
+                string key = "replace:" + edgeKey;
+                if (proxyReplacementEdges.ContainsKey(key)) continue;
+
+                Edge replacement = edge.output.ConnectTo(rootProxy.input);
+                proxyReplacementEdges[key] = replacement;
+                graphView.AddElement(replacement);
+            }
+
+            replacedSubtreeGuids.Add(subtreeNode.guid);
         }
     }
 }
