@@ -16,22 +16,21 @@ namespace BehaviourTree
         /// <summary> 4 bytes – either constant bits or blackboard variable index.</summary>
         [FieldOffset(1)] public int value;
 
-        // Helpers to pack / unpack floats and bigger types
+        [StructLayout(LayoutKind.Explicit)]
+        private struct FloatIntUnion
+        {
+            [FieldOffset(0)] public float f;
+            [FieldOffset(0)] public int i;
+        }
 
         public static FieldData FromConstant(int v) => new FieldData { mode = 0, value = v };
-        public static unsafe FieldData FromConstant(float v)
+        public static FieldData FromConstant(float v)
         {
-            FieldData fd = default;
-            fd.mode = 0;
-            *(float*)&fd.value = v;
-            return fd;
+            return new FieldData { mode = 0, value = new FloatIntUnion { f = v }.i };
         }
         public static FieldData FromConstant(bool v)
         {
-            FieldData fd = default;
-            fd.mode = 0;
-            fd.value = v ? 1 : 0;
-            return fd;
+            return new FieldData { mode = 0, value = v ? 1 : 0 };
         }
 
         public static FieldData FromVariable(int blackboardIndex) => new FieldData { mode = 1, value = blackboardIndex };
@@ -39,7 +38,7 @@ namespace BehaviourTree
         public bool IsVariable => mode == 1;
         public bool IsConstant => mode == 0;
         public int GetInt() => value;
-        public unsafe float GetFloat() { int tmp = value; return *(float*)&tmp; }
+        public float GetFloat() => new FloatIntUnion { i = value }.f;
         public bool GetBool() => value != 0;
     }
 }

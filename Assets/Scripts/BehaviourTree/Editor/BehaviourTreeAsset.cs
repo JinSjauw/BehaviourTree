@@ -13,6 +13,12 @@ namespace BehaviourTree.Editor
         //Create unique runtime instances of the SO's
         public void Initialize() 
         {
+            if(root == null) 
+            {
+                Debug.LogError("Root node is null!");
+                return;
+            }
+            
             nodesList = new List<BehaviourNode>{ root };
 
             for(int i = 0; i < root.children.Count; i++) 

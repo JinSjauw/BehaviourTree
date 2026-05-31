@@ -625,6 +625,10 @@ namespace BehaviourTree.Editor
         public void ClearRuntimeDebugProxies()
         {
             runtimeDebugManager.RemoveAllProxies();
+            foreach (BehaviourNodeView nodeView in nodeViewDict.Values)
+            {
+                nodeView?.SetDebugState(NodeState.NONE, false);
+            }
         }
 
         // public void SetupRuntimeDebugProxies(TreeRunner runner)

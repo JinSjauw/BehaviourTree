@@ -29,7 +29,7 @@ namespace BehaviourTree.Runtime
                tempRuntimeAsset.name = authoring.DisplayName + "_Runtime";
                tempRuntimeAsset.sourceTree = authoringAsset;
 
-               tempRuntimeAsset.blackboardDefinition = TreeBaker.BakeTree(authoring.Root, authoring.BlackboardDefinition, ref tempRuntimeAsset.runtimeNodeData, ref tempRuntimeAsset.runtimeFieldData, ref tempRuntimeAsset.runtimeNodeGuids);
+               tempRuntimeAsset.blackboardDefinition = TreeBaker.BakeTree(authoring.Root, authoring.BlackboardDefinition, ref tempRuntimeAsset.runtimeNodeData, ref tempRuntimeAsset.runtimeFieldData, ref tempRuntimeAsset.runtimeNodeGuids, out tempRuntimeAsset.maxTreeDepth);
                runtimeAsset = tempRuntimeAsset;
             }
             else
@@ -55,7 +55,7 @@ namespace BehaviourTree.Runtime
          };
 
          blackBoard.Initialize(runtimeAsset.blackboardDefinition);
-         evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData);
+         evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.maxTreeDepth);
 
          if(evaluator == null)
          {

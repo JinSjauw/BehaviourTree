@@ -12,16 +12,18 @@ namespace BehaviourTree.Runtime
         public static void BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas)
         {
             string[] nodeGuids = null;
-            BakeTree(root, bbDef, ref nodeDatas, ref fieldDatas, ref nodeGuids);
+            int maxTreeDepth = 0;
+            bbDef = BakeTree(root, bbDef, ref nodeDatas, ref fieldDatas, ref nodeGuids, out maxTreeDepth);
         }
 
-        public static BlackboardDefinition BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref string[] nodeGuids)
+        public static BlackboardDefinition BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref string[] nodeGuids, out int maxTreeDepth)
         {
             if (root == null)
             {
                 nodeDatas = Array.Empty<NodeData>();
                 fieldDatas = Array.Empty<FieldData>();
                 nodeGuids = Array.Empty<string>();
+                maxTreeDepth = 0;
                 return bbDef;
             }
 
@@ -52,7 +54,8 @@ namespace BehaviourTree.Runtime
             int rootIndex = EnsureInstance(effectiveRoot, string.Empty, instances, firstChild, lastChild, runtimeGuidToIndex);
             HashSet<BehaviourTreeAssetBase> expandingSubtrees = new HashSet<BehaviourTreeAssetBase>();
             HashSet<int> processedIndices = new HashSet<int>();
-            ProcessChildren(rootIndex, instances, firstChild, lastChild, runtimeGuidToIndex, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName, expandingSubtrees, processedIndices);
+            maxTreeDepth = 0;
+            ProcessChildren(rootIndex, instances, firstChild, lastChild, runtimeGuidToIndex, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName, expandingSubtrees, processedIndices, ref maxTreeDepth);
 
             nodeDatas = new NodeData[instances.Count];
             nodeGuids = new string[instances.Count];
@@ -128,15 +131,19 @@ namespace BehaviourTree.Runtime
             Dictionary<string, int> rootVarIndexByName,
             HashSet<BehaviourTreeAssetBase> expandingSubtrees,
             HashSet<int> processedIndices,
-            int depth = 0)
+            ref int maxTreeDepth,
+            int iterationDepth = 0)
         {
-            const int maxDepth = 500;
-            if (depth > maxDepth)
+            const int maxIteration = 500;
+            if (iterationDepth > maxIteration)
             {
                 BehaviourNode overflowNode = instances[index].node;
-                Debug.LogError($"[TreeBaker] Max recursion depth ({maxDepth}) exceeded at node '{overflowNode?.name}' (guid: {overflowNode?.guid}). The tree likely contains a cycle.");
+                Debug.LogError($"[TreeBaker] Max recursion depth ({maxIteration}) exceeded at node '{overflowNode?.name}' (guid: {overflowNode?.guid}). The tree likely contains a cycle.");
                 return;
             }
+
+            if (iterationDepth > maxTreeDepth)
+                maxTreeDepth = iterationDepth;
 
             BehaviourNode node = instances[index].node;
             string scopePrefix = instances[index].scopePrefix;
@@ -194,7 +201,14 @@ namespace BehaviourTree.Runtime
 
             for (int i = 0; i < childIndices.Count; i++)
             {
-                ProcessChildren(childIndices[i], instances, firstChild, lastChild, runtimeGuidToIndex, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName, expandingSubtrees, processedIndices, depth + 1);
+                ProcessChildren(childIndices[i], instances, firstChild, lastChild, 
+                runtimeGuidToIndex, 
+                scopeVarIndexByName, 
+                runtimeBbDef, 
+                rootVarIndexByName, 
+                expandingSubtrees, 
+                processedIndices, 
+                ref maxTreeDepth, iterationDepth + 1);
             }
 
             if (node.NodeType == BehaviourNodeType.SUBTREE)

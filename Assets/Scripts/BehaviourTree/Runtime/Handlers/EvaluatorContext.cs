@@ -6,50 +6,62 @@ namespace BehaviourTree.Runtime
 {
     public class EvaluatorContext
     {
-        private readonly List<EvaluatorFrame> stack;
+        private readonly EvaluatorFrame[] stack;
         private readonly NodeData[] nodeDatas;
         private readonly FieldData[] fieldDatas;
         private readonly NodeState[] nodeStates;
+        private readonly Dictionary<int, ParallelChildState[]> parallelStates;
 
-        public BlackBoard BlackBoard { get; }
+        public BlackBoard BlackBoard { get; private set; }
         public int CurrentNodeIndex { get; set; }
         public bool ShouldBreak { get; set; }
+        public int FrameCount { get; set; }
 
-        public EvaluatorContext(List<EvaluatorFrame> stack, NodeData[] nodeDatas, FieldData[] fieldDatas, NodeState[] nodeStates, BlackBoard blackBoard)
+        public EvaluatorContext(
+            EvaluatorFrame[] stack,
+            NodeData[] nodeDatas,
+            FieldData[] fieldDatas,
+            NodeState[] nodeStates,
+            Dictionary<int, ParallelChildState[]> parallelStates)
         {
             this.stack = stack;
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
             this.nodeStates = nodeStates;
+            this.parallelStates = parallelStates;
+        }
+
+        public void Reset(int frameCount, BlackBoard blackBoard)
+        {
+            FrameCount = frameCount;
             BlackBoard = blackBoard;
             CurrentNodeIndex = -1;
             ShouldBreak = false;
         }
 
-        public EvaluatorFrame CurrentFrame => stack[stack.Count - 1];
-        public ref NodeData CurrentNode => ref nodeDatas[stack[stack.Count - 1].nodeIndex];
+        public ref EvaluatorFrame CurrentFrame => ref stack[FrameCount - 1];
+        public ref NodeData CurrentNode => ref nodeDatas[stack[FrameCount - 1].nodeIndex];
         public NodeState[] NodeStates => nodeStates;
+        public Dictionary<int, ParallelChildState[]> ParallelStates => parallelStates;
 
         public void PushChild(int childNodeIndex)
         {
-            stack.Add(new EvaluatorFrame
+            stack[FrameCount++] = new EvaluatorFrame
             {
                 nodeIndex = childNodeIndex,
                 childIndex = 0,
                 lastChildStatus = NodeState.NONE
-            });
+            };
         }
 
         public void PopAndNotifyParent(NodeState result)
         {
-            nodeStates[stack[stack.Count - 1].nodeIndex] = result;
-            stack.RemoveAt(stack.Count - 1);
+            nodeStates[stack[FrameCount - 1].nodeIndex] = result;
+            FrameCount--;
 
-            if (stack.Count > 0)
+            if (FrameCount > 0)
             {
-                var parentFrame = stack[stack.Count - 1];
-                parentFrame.lastChildStatus = result;
-                stack[stack.Count - 1] = parentFrame;
+                stack[FrameCount - 1].lastChildStatus = result;
             }
         }
 
@@ -60,7 +72,7 @@ namespace BehaviourTree.Runtime
 
         public void MarkCurrentNodeRunning()
         {
-            nodeStates[stack[stack.Count - 1].nodeIndex] = NodeState.RUNNING;
+            nodeStates[stack[FrameCount - 1].nodeIndex] = NodeState.RUNNING;
         }
 
         public NodeState EvaluateLeaf(ref NodeData nodeData)
@@ -101,7 +113,7 @@ namespace BehaviourTree.Runtime
 
         public void SetStackRunning()
         {
-            for (int i = 0; i < stack.Count; i++)
+            for (int i = 0; i < FrameCount; i++)
             {
                 if (nodeStates[stack[i].nodeIndex] == NodeState.NONE)
                 {

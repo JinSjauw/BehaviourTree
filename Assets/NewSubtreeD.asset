@@ -27,7 +27,7 @@ MonoBehaviour:
     variableName: 
     fieldType: 1
     intValue: 0
-    floatValue: 3
+    floatValue: 1
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
@@ -94,6 +94,7 @@ MonoBehaviour:
   - {fileID: 289777187097303546}
   - {fileID: -5188988610306242276}
   - {fileID: 5416016383145104058}
+  - {fileID: 2130372643711997476}
 --- !u!114 &289777187097303546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,12 +111,46 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 0ee30bdf9e1737941a77c00367ada6e5
-  graphPosition: {x: -115.74927, y: 513.99994}
+  graphPosition: {x: -106.25092, y: 522}
   runtimeIndex: 0
   leafType: 4
   methodID: 44
   fieldEntries:
   - fieldName: Value
+    isVariable: 1
+    isToggleVariable: 0
+    variableName: ada
+    fieldType: 5
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+--- !u!114 &2130372643711997476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdb25ab4c6a131b4fb902a59f87d5d5c, type: 3}
+  m_Name: BB_ClearGameObject
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: d7f8b02ae148db44090c4a56523ea67d
+  graphPosition: {x: 422.5259, y: 513.9999}
+  runtimeIndex: 0
+  leafType: 4
+  methodID: 22
+  fieldEntries:
+  - fieldName: Target
     isVariable: 1
     isToggleVariable: 0
     variableName: ada
@@ -143,6 +178,7 @@ MonoBehaviour:
   children:
   - {fileID: 289777187097303546}
   - {fileID: -5188988610306242276}
+  - {fileID: 2130372643711997476}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: c45cd8412e9cfe64190d809f1a52cca6

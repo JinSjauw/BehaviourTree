@@ -43,9 +43,9 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
-    transition-timing-function: ease-in-circ;
+    transition-timing-function: ease-in-cubic;
     transition-delay: 0s;
-    transition-duration: 0.75s;
+    transition-duration: 0.3s;
 }
 
 .node-success {
@@ -79,14 +79,15 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
-    transition-timing-function: ease;
+    transition-timing-function: ease-in;
     transition-delay: 0s;
     transition-duration: 0s;
 }
 
 .node-none {
-    transition-duration: 1.25s;
-    transition-timing-function: ease-in-circ;
+    transition-duration: 2.25s;
+    transition-timing-function: ease-out;
+    transition-delay: 0.5s;
 }
 
 #input {
@@ -218,5 +219,3 @@
     min-width: 8px;
     min-height: 8px;
 }
-
-

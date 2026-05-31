@@ -28,11 +28,7 @@ namespace BehaviourTree.Editor
 
         public BehaviourNodeView(BehaviourNode nodeObject) : base(BehaviourTreeEditorPaths.GraphNodeViewUxml)
         {
-            if (nodeObject == null)
-            {
-                Debug.LogError("Cannot create BehaviourNodeView for null node object");
-                return;
-            }
+            if (nodeObject == null) throw new ArgumentNullException(nameof(nodeObject));
 
             NodeSO = nodeObject;
             Guid = NodeSO.guid;

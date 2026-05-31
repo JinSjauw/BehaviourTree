@@ -38,7 +38,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.BB_CompareInt)]
         public static NodeState BB_CompareInt(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
+            if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
             int a = blackBoard.Get<int>(fields[0].value);
             int b = blackBoard.Get<int>(fields[1].value);
@@ -61,7 +61,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.BB_CompareFloat)]
         public static NodeState BB_CompareFloat(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2) || !RequireConstant(fields, 3)) return NodeState.FAILURE;
+            if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
             float a = blackBoard.Get<float>(fields[0].value);
             float b = blackBoard.Get<float>(fields[1].value);
@@ -84,7 +84,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.BB_CompareBool)]
         public static NodeState BB_CompareBool(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
+            if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
             bool a = blackBoard.Get<bool>(fields[0].value);
             bool b = blackBoard.Get<bool>(fields[1].value);
@@ -103,7 +103,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.BB_CompareVector2)]
         public static NodeState BB_CompareVector2(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2) || !RequireConstant(fields, 3)) return NodeState.FAILURE;
+            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
             Vector2 a = blackBoard.Get<Vector2>(fields[0].value);
             Vector2 b = blackBoard.Get<Vector2>(fields[1].value);
@@ -129,7 +129,7 @@ namespace BehaviourTree
         [BTreeMethod(MethodID.BB_CompareVector3)]
         public static NodeState BB_CompareVector3(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
-            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2) || !RequireConstant(fields, 3)) return NodeState.FAILURE;
+            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
             Vector3 a = blackBoard.Get<Vector3>(fields[0].value);
             Vector3 b = blackBoard.Get<Vector3>(fields[1].value);
@@ -276,8 +276,6 @@ namespace BehaviourTree
                 VectorCheckOp.IsNotZero => value.sqrMagnitude >= 0.0001f,
                 _ => false
             };
-
-            Debug.Log("result: " + result + " : " + value);
 
             return result ? NodeState.SUCCESS : NodeState.FAILURE;
         }

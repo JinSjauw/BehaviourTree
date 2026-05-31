@@ -125,7 +125,11 @@ namespace BehaviourTree.Core
         private bool CanWrite<T>(int index, T value)
         {
             Type expectedType = slotTypes != null && index >= 0 && index < slotTypes.Length ? slotTypes[index] : null;
-            if (expectedType == null) return true;
+            if (expectedType == null)
+            {
+                Debug.LogError($"[Blackboard] Invalid index or slotTypes[] is NULL");
+                return false;
+            }
 
             if (value == null)
             {
@@ -163,7 +167,11 @@ namespace BehaviourTree.Core
         private bool CanWriteBoxed(int index, object value)
         {
             Type expectedType = slotTypes != null && index >= 0 && index < slotTypes.Length ? slotTypes[index] : null;
-            if (expectedType == null) return true;
+            if (expectedType == null) 
+            {
+                Debug.LogError($"[Blackboard] Invalid index or slotTypes[] is NULL");
+                return false; 
+            }
 
             if (value == null)
             {

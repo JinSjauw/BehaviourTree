@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5681906075458114495
+--- !u!114 &-8838053277069333852
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15,15 +15,15 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 07366028ef96943499f70323228d7b24
-  graphPosition: {x: 363.47913, y: 382}
+  guid: 9a3eef608c8d9604bb251680f90e25b9
+  graphPosition: {x: 390.69885, y: 381.99997}
   runtimeIndex: 2
   subTreeAsset: {fileID: 11400000, guid: 4ec5d44ac21afef45b24713512328ceb, type: 2}
   bindings:
   - subtreeVariableName: WOW
-    parentVariableName: HEALTH
-  - subtreeVariableName: WOW2
     parentVariableName: HEALTHTHRESHOLD
+  - subtreeVariableName: WOW2
+    parentVariableName: HEALTH
   - subtreeVariableName: dwd
     parentVariableName: TIMER
   - subtreeVariableName: dddddww
@@ -177,7 +177,7 @@ MonoBehaviour:
   - {fileID: 7082307169518220744}
   - {fileID: 7486522873846486295}
   - {fileID: 4972422243910474726}
-  - {fileID: -5681906075458114495}
+  - {fileID: -8838053277069333852}
 --- !u!114 &509387065310161641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
   - {fileID: -3663825298157457826}
-  - {fileID: -5681906075458114495}
+  - {fileID: -8838053277069333852}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cd23a30ebb6405a42a1b283a93a62281
@@ -234,7 +234,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cbb1ab9fcfc0e0543a37e2833402442e
-  graphPosition: {x: 98.999954, y: 661.49994}
+  graphPosition: {x: 90.99996, y: 672}
   runtimeIndex: 9
   leafType: 4
   methodID: 10
@@ -382,7 +382,7 @@ MonoBehaviour:
     variableName: 
     fieldType: 1
     intValue: 0
-    floatValue: 3
+    floatValue: 1
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}

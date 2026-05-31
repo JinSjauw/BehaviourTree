@@ -77,6 +77,8 @@ MonoBehaviour:
   bindings:
   - subtreeVariableName: ada
     parentVariableName: sas
+  - subtreeVariableName: zx
+    parentVariableName: WOW2
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

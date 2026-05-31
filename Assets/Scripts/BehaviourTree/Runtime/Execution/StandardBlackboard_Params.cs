@@ -8,7 +8,7 @@ namespace BehaviourTree.Runtime
     public partial struct BB_CompareInt_NodeFields
     {
         [SharedVar] public int A;
-        [SharedVar] public int B;
+        [SharedVar(true)] public int B;
         public NumericCompareOp Operation;
     }
 
@@ -16,7 +16,7 @@ namespace BehaviourTree.Runtime
     public partial struct BB_CompareFloat_NodeFields
     {
         [SharedVar] public float A;
-        [SharedVar] public float B;
+        [SharedVar(true)] public float B;
         public NumericCompareOp Operation;
     }
 
@@ -24,7 +24,7 @@ namespace BehaviourTree.Runtime
     public partial struct BB_CompareBool_NodeFields
     {
         [SharedVar] public bool A;
-        [SharedVar] public bool B;
+        [SharedVar(true)] public bool B;
         public BoolCompareOp Operation;
     }
 

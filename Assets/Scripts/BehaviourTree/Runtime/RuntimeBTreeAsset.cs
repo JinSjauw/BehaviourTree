@@ -14,6 +14,8 @@ public class RuntimeBehaviourTreeAsset : ScriptableObject
 
     public BlackboardDefinition blackboardDefinition;
 
+    public int maxTreeDepth;
+
 #if UNITY_EDITOR
     [HideInInspector] public UnityEngine.Object sourceTree;
 #endif

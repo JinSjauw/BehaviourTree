@@ -3,7 +3,7 @@ using BehaviourTree.Core;
 
 namespace BehaviourTree.Runtime
 {
-    struct ParallelChildState
+    public struct ParallelChildState
     {
         public int nodeIndex;
         public NodeState result;
@@ -11,13 +11,13 @@ namespace BehaviourTree.Runtime
 
     public class ParallelHandler : INodeHandler
     {
-        private static readonly Dictionary<int, ParallelChildState[]> states = new();
-
         public bool Process(EvaluatorContext context)
         {
             EvaluatorFrame frame = context.CurrentFrame;
             ref NodeData node = ref context.CurrentNode;
             int childCount = node.lastChildIndex - node.firstChildIndex + 1;
+
+            Dictionary<int, ParallelChildState[]> states = context.ParallelStates;
 
             if (!states.TryGetValue(frame.nodeIndex, out var children))
             {

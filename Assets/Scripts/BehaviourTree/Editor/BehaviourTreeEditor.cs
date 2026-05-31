@@ -203,7 +203,8 @@ public class BehaviourTreeEditor : EditorWindow
         runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.root, currentBlackboardDef, 
         ref runtimeAsset.runtimeNodeData, 
         ref runtimeAsset.runtimeFieldData, 
-        ref runtimeAsset.runtimeNodeGuids);
+        ref runtimeAsset.runtimeNodeGuids,
+        out runtimeAsset.maxTreeDepth);
 
         string path = $"Assets/{runtimeAsset.name}.asset";
         AssetDatabase.CreateAsset(runtimeAsset, path);

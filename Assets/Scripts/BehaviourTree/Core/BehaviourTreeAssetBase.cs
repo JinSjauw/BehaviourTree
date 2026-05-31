@@ -9,6 +9,6 @@ namespace BehaviourTree.Core
 
         public BehaviourNode Root => root;
         public BlackboardDefinition BlackboardDefinition => blackboardDefinition;
-        public string DisplayName => name;
+        public string DisplayName => name ?? "NO NAME GIVEN";
     }
 }

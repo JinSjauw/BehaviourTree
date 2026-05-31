@@ -16,7 +16,7 @@ namespace BehaviourTree.Runtime
 
         public virtual bool Process(EvaluatorContext context)
         {
-            EvaluatorFrame frame = context.CurrentFrame;
+            ref EvaluatorFrame frame = ref context.CurrentFrame;
             ref NodeData node = ref context.CurrentNode;
 
             if (node.firstChildIndex < 0)

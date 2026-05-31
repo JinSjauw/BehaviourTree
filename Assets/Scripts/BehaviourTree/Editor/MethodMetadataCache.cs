@@ -56,8 +56,21 @@ namespace BehaviourTree.Editor
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var asm in assemblies)
             {
-                foreach (var type in asm.GetTypes())
+                Type[] types;
+                
+                try
                 {
+                    types = asm.GetTypes();
+                }
+                catch (ReflectionTypeLoadException e)
+                {
+                    types = e.Types;
+                }
+
+                foreach (var type in types)
+                {
+                    if (type == null) continue;
+
                     // Look for partial struct types named *_NodeFields
                     if (!type.IsValueType || !type.Name.EndsWith("_NodeFields")) continue;
 
