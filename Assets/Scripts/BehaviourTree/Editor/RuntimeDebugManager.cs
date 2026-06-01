@@ -365,7 +365,9 @@ namespace BehaviourTree.Editor
                 BehaviourNodeView proxy = kvp.Value;
                 if (proxy.NodeSO == null || proxy.output == null) continue;
 
-                string scopePrefix = runtimeGuid.Substring(0, runtimeGuid.LastIndexOf("/", StringComparison.Ordinal));
+                int lastSlash = runtimeGuid.LastIndexOf("/", StringComparison.Ordinal);
+                if (lastSlash < 0) continue;
+                string scopePrefix = runtimeGuid.Substring(0, lastSlash);
                 BehaviourNode node = proxy.NodeSO;
 
                 for (int c = 0; c < node.children.Count; c++)

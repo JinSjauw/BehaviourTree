@@ -13,6 +13,17 @@ namespace BehaviourTree.Editor
         private BlackboardDefinition definition;
         private List<int> refIndices = new();
         private List<string> refNames = new();
+        private GUIStyle richStyle;
+
+        private GUIStyle RichStyle
+        {
+            get
+            {
+                if (richStyle == null)
+                    richStyle = new GUIStyle(EditorStyles.label) { richText = true };
+                return richStyle;
+            }
+        }
 
         public override void OnInspectorGUI()
         {
@@ -68,12 +79,6 @@ namespace BehaviourTree.Editor
                 return;
             }
 
-            //Draw only the relevant slots
-            GUIStyle richStyle = new GUIStyle(EditorStyles.label)
-            {
-                richText = true
-            };
-
             EditorGUILayout.Space(4);
             EditorGUILayout.LabelField("Reference Slots", EditorStyles.boldLabel);
 
@@ -102,7 +107,7 @@ namespace BehaviourTree.Editor
                 // Draw fields
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"<b> {fieldName} </b> : <color=#19E3B1>{expectedType.Name}</color>", richStyle, GUILayout.ExpandWidth(false));
+                EditorGUILayout.LabelField($"<b> {fieldName} </b> : <color=#19E3B1>{expectedType.Name}</color>", RichStyle, GUILayout.ExpandWidth(false));
                 EditorGUI.BeginChangeCheck();
                 UnityEngine.Object newValue = EditorGUILayout.ObjectField(
                     GUIContent.none,

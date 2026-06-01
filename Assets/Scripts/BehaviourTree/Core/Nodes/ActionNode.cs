@@ -19,6 +19,11 @@ namespace BehaviourTree.Core
 
         public void SetLeafType(BehaviourNodeType type)
         {
+            if (type != BehaviourNodeType.ACTION && type != BehaviourNodeType.CONDITION)
+            {
+                Debug.LogError($"Invalid leaf type '{type}' assigned to LeafNode. Ignoring.");
+                return;
+            }
             leafType = type;
         }
     }

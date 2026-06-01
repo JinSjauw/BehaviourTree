@@ -20,6 +20,15 @@ namespace BehaviourTree.Editor
 
         private Texture2D identationIcon;
 
+        private void OnDestroy()
+        {
+            if (identationIcon != null)
+            {
+                DestroyImmediate(identationIcon);
+                identationIcon = null;
+            }
+        }
+
         public void Initialize(BehaviourTreeEditorGraphView sourceGraphView)
         {
             graphView = sourceGraphView;

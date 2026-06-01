@@ -41,7 +41,7 @@ namespace BehaviourTree.Editor
             {
                 BehaviourNode node = nodeView.NodeSO;
 
-                if(node == null) return;
+                if(node == null) continue;
                 if(node.NodeType == BehaviourNodeType.ROOT || node is RootNode) continue;
 
                 SerializedNodeData serializedNode = SerializeNode(node);
@@ -84,6 +84,12 @@ namespace BehaviourTree.Editor
                 guidMap[serializedNode.guid] = newGuid;
 
                 BehaviourNode newNode = CreateNodeDataFromSerialized(serializedNode, treeAsset);
+                if(newNode == null) 
+                {
+                    Debug.LogWarning($"Failed to create node from serialized data for GUID {serializedNode.guid}");
+                    continue; 
+                }
+
                 newNode.guid = newGuid;
                 newNode.graphPosition = serializedNode.graphPosition + new Vector2(30, 30); // offset
 
@@ -176,8 +182,7 @@ namespace BehaviourTree.Editor
                     node = subtreeNode;
                     break;
                 default:
-                    node = null;
-                    break;
+                    return null;
             }
             
             treeAsset.RegisterNode(node);

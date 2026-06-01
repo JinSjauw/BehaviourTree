@@ -7,6 +7,34 @@ using UnityEngine;
 [CustomPropertyDrawer(typeof(BlackboardVariable))]
 public class BlackboardVariableDrawer : PropertyDrawer
 {
+    private static GUIStyle cachedPlaceholderStyle;
+    private static string[] cachedDisplayNames;
+
+    private static GUIStyle PlaceholderStyle
+    {
+        get
+        {
+            if (cachedPlaceholderStyle == null)
+            {
+                cachedPlaceholderStyle = new GUIStyle(EditorStyles.label)
+                {
+                    fontStyle = FontStyle.Italic,
+                    normal = { textColor = Color.gray }
+                };
+            }
+            return cachedPlaceholderStyle;
+        }
+    }
+
+    private static string[] DisplayNames
+    {
+        get
+        {
+            if (cachedDisplayNames == null)
+                cachedDisplayNames = FieldTypeHelper.AllFieldTypes.Select(ft => FieldTypeHelper.GetDisplayName(ft)).ToArray();
+            return cachedDisplayNames;
+        }
+    }
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         SerializedProperty nameProp = property.FindPropertyRelative("name");
@@ -34,17 +62,10 @@ public class BlackboardVariableDrawer : PropertyDrawer
         // Placeholder text when name is empty
         if (string.IsNullOrEmpty(nameProp.stringValue))
         {
-            GUIStyle placeholderStyle = new GUIStyle(EditorStyles.label)
-            {
-                fontStyle = FontStyle.Italic,
-                normal = { textColor = Color.gray }
-            };
-            EditorGUI.LabelField(nameRect, " Variable Name", placeholderStyle);
+            EditorGUI.LabelField(nameRect, " Variable Name", PlaceholderStyle);
         }
 
         // ── Type dropdown ──
-        string[] displayNames = FieldTypeHelper.AllFieldTypes.Select(ft => FieldTypeHelper.GetDisplayName(ft)).ToArray();
-
         int currentIndex = 0;
         bool typeMatched = false;
         for (int i = 0; i < FieldTypeHelper.AllFieldTypes.Count; i++)
@@ -58,7 +79,7 @@ public class BlackboardVariableDrawer : PropertyDrawer
             }
         }
         EditorGUI.BeginChangeCheck();
-        int nextIndex = EditorGUI.Popup(typeRect, currentIndex, displayNames);
+        int nextIndex = EditorGUI.Popup(typeRect, currentIndex, DisplayNames);
         if (EditorGUI.EndChangeCheck() || !typeMatched)
         {
             typeProp.stringValue = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[nextIndex]).FullName;

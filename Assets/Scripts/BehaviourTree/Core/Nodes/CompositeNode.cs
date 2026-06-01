@@ -10,6 +10,12 @@ namespace BehaviourTree.Core
 
         public void SetCompositeType(BehaviourNodeType type)
         {
+            if (type != BehaviourNodeType.SEQUENCE && type != BehaviourNodeType.SELECTOR && 
+                type != BehaviourNodeType.PARALLEL && type != BehaviourNodeType.PRIORITY)
+            {
+                Debug.LogError($"Invalid composite type '{type}' assigned to CompositeNode. Ignoring.");
+                return;
+            }
             compositeType = type;
         }
     }

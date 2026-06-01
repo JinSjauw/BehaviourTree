@@ -15,6 +15,7 @@ namespace BehaviourTree.Editor
         private SerializedProperty blackBoardTypeIDProp;
         private SerializedProperty childrenProp;
         private GUIStyle style;
+        private List<string> matchingVars;
         private GUIStyle RichTextLabelStyle
         {
             get
@@ -30,7 +31,8 @@ namespace BehaviourTree.Editor
         private void OnEnable()
         {
             if (target == null) return;
-
+            
+            matchingVars = new List<string>();
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
@@ -229,7 +231,7 @@ namespace BehaviourTree.Editor
             }
 
             // Filter variables whose type matches the expected type using unified helper
-            var matchingVars = new List<string>();
+            matchingVars.Clear();
             for (int v = 0; v < blackBoardDef.sharedVariables.Count; v++)
             {
                 if (!FieldTypeHelper.TryGetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName, out Type bbType) || bbType == null)

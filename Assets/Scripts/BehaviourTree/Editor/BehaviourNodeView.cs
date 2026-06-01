@@ -225,7 +225,7 @@ namespace BehaviourTree.Editor
 
         private int SortByHorizontalPosition(BehaviourNode left, BehaviourNode right)
         {
-            return left.graphPosition.x < right.graphPosition.x ? -1 : 1;
+            return left.graphPosition.x < right.graphPosition.x ? -1 : left.graphPosition.x > right.graphPosition.x ? 1 : 0;
         }
 
         public void SetDebugState(NodeState state, bool isActive)

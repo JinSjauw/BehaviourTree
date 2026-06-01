@@ -23,8 +23,14 @@ public static class FieldTypeHelper
             FieldType.Vector3 => typeof(Vector3),
             FieldType.GameObject => typeof(GameObject),
             FieldType.Transform => typeof(Transform),
-            _ => typeof(int),
+            _ => LogUnknownAndFallback(ft),
         };
+
+        private static Type LogUnknownAndFallback(FieldType ft)
+        {
+            Debug.LogWarning($"[FieldTypeHelper] Unknown FieldType '{ft}' — falling back to Int.");
+            return typeof(int);
+        }
 
 
         public static string GetTypeName(FieldType ft) => GetSystemType(ft).AssemblyQualifiedName;

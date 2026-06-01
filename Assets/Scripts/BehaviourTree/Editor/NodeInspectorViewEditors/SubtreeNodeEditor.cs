@@ -13,6 +13,8 @@ namespace BehaviourTree.Editor
         private SerializedProperty bindingsProp;
         private GUIStyle richLabelStyle;
         private Vector2 scrollPos;
+        private bool isCreatingSubtree;
+        private List<string> matchingOptions;
 
         private GUIStyle RichTextLabelStyle
         {
@@ -26,6 +28,8 @@ namespace BehaviourTree.Editor
         private void OnEnable()
         {
             if (target == null) return;
+            
+            matchingOptions = new List<string>();
 
             subTreeAssetProp = serializedObject.FindProperty("subTreeAsset");
             bindingsProp = serializedObject.FindProperty("bindings");
@@ -74,10 +78,13 @@ namespace BehaviourTree.Editor
             {
                 if (GUILayout.Button("Create New Subtree Asset"))
                 {
+                    if (isCreatingSubtree) return;
+                    isCreatingSubtree = true;
                     EditorApplication.delayCall += () =>
                     {
                         CreateAndAssignNewSubtreeAsset();
                         serializedObject.ApplyModifiedProperties();
+                        isCreatingSubtree = false;
                         Repaint();
                     };
                 }
@@ -180,7 +187,7 @@ namespace BehaviourTree.Editor
         private void BuildParentOptions(BlackboardDefinition parentDef, string subtreeTypeName, string currentParentName, out string[] options, out int selectedIndex, out bool isMissing)
         {
             isMissing = false;
-            List<string> matching = new List<string>();
+            matchingOptions.Clear();
 
             if (FieldTypeHelper.TryGetSystemTypeFromName(subtreeTypeName, out Type subtreeType) && subtreeType != null)
             {
@@ -189,28 +196,28 @@ namespace BehaviourTree.Editor
                     BlackboardVariable pv = parentDef.sharedVariables[i];
                     if (!FieldTypeHelper.TryGetSystemTypeFromName(pv.typeName, out Type pt) || pt == null) continue;
                     if (pt == subtreeType)
-                        matching.Add(pv.name);
+                        matchingOptions.Add(pv.name);
                 }
             }
 
-            matching.Sort(StringComparer.Ordinal);
-            matching.Insert(0, "<Local>");
+            matchingOptions.Sort(StringComparer.Ordinal);
+            matchingOptions.Insert(0, "<Local>");
 
-            if (!string.IsNullOrEmpty(currentParentName) && !matching.Contains(currentParentName))
+            if (!string.IsNullOrEmpty(currentParentName) && !matchingOptions.Contains(currentParentName))
             {
                 isMissing = true;
-                matching.Add($"<Missing: {currentParentName}>");
+                matchingOptions.Add($"<Missing: {currentParentName}>");
             }
 
-            options = matching.ToArray();
+            options = matchingOptions.ToArray();
 
             selectedIndex = 0;
             if (!string.IsNullOrEmpty(currentParentName))
             {
-                int idx = matching.IndexOf(currentParentName);
+                int idx = matchingOptions.IndexOf(currentParentName);
                 if (idx >= 0) selectedIndex = idx;
                 else if (isMissing)
-                    selectedIndex = matching.Count - 1;
+                    selectedIndex = matchingOptions.Count - 1;
             }
         }
 

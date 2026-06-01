@@ -25,6 +25,7 @@ namespace BehaviourTree.Editor
         private BtEdgeConnectorListener edgeConnectorListener;
         private RuntimeDebugManager runtimeDebugManager;
         private SubtreeExtractor subtreeExtractor;
+        private List<Port> compatiblePortsCache = new List<Port>();
 
         public bool HasTree => tree != null;
 
@@ -231,13 +232,13 @@ namespace BehaviourTree.Editor
 
             if (input.capacity == Port.Capacity.Single)
             {
-                foreach (Edge e in input.connections.ToList())
+                foreach (Edge e in input.connections)
                     edgesToRemove.Add(e);
             }
 
             if (output.capacity == Port.Capacity.Single)
             {
-                foreach (Edge e in output.connections.ToList())
+                foreach (Edge e in output.connections)
                     edgesToRemove.Add(e);
             }
 
@@ -277,7 +278,7 @@ namespace BehaviourTree.Editor
             {
                 if (current == source) return true;
                 // Walk up via input port (parent)
-                var parentPort = current.inputContainer.Children().OfType<Port>().FirstOrDefault();
+                Port parentPort = current.input;
                 if (parentPort?.connections.FirstOrDefault()?.output?.node is not BehaviourNodeView parent)
                     break;
                 current = parent;
@@ -434,9 +435,9 @@ namespace BehaviourTree.Editor
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
-            var compatible = new List<Port>();
+            compatiblePortsCache.Clear();
 
-            foreach (var port in ports)
+            foreach (Port port in ports)
             {
                 if (IsSelfOrSameNode(port, startPort)) continue;
                 if (IsWrongDirection(port, startPort)) continue;
@@ -451,10 +452,10 @@ namespace BehaviourTree.Editor
                     && (endNode.NodeSO.NodeType != BehaviourNodeType.ACTION && endNode.NodeSO.NodeType != BehaviourNodeType.CONDITION)) continue;    
                 }
 
-                compatible.Add(port);
+                compatiblePortsCache.Add(port);
             }
 
-            return compatible;
+            return compatiblePortsCache;
         }
 
         private static bool IsSelfOrSameNode(Port port, Port startPort)
@@ -666,7 +667,7 @@ namespace BehaviourTree.Editor
 
                 if (edge.input.capacity == Port.Capacity.Single)
                 {
-                    foreach (Edge connection in edge.input.connections.ToList())
+                    foreach (Edge connection in edge.input.connections)
                     {
                         if (connection != edge)
                             elementsToRemove.Add(connection);
@@ -675,7 +676,7 @@ namespace BehaviourTree.Editor
 
                 if (edge.output.capacity == Port.Capacity.Single)
                 {
-                    foreach (Edge connection in edge.output.connections.ToList())
+                    foreach (Edge connection in edge.output.connections)
                     {
                         if (connection != edge)
                             elementsToRemove.Add(connection);

@@ -34,7 +34,12 @@ namespace BehaviourTree.Core
         public object GetInitialValue()
         {
             Type type = FieldTypeHelper.GetSystemTypeFromName(typeName);
-            if (type == null) return null;
+            if (type == null)
+            {
+                if (!string.IsNullOrEmpty(typeName))
+                    Debug.LogWarning($"[BlackboardVariable] Unresolved typeName '{typeName}' for variable '{name}'. Returning null.");
+                return null;
+            }
 
             if (type == typeof(int))      return intValue;
             if (type == typeof(float))    return floatValue;

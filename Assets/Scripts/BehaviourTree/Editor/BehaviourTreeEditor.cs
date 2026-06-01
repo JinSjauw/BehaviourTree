@@ -113,6 +113,7 @@ public class BehaviourTreeEditor : EditorWindow
         switch (change)
         {
             case PlayModeStateChange.EnteredPlayMode:
+                EditorApplication.update -= PollDebugState;
                 EditorApplication.update += PollDebugState;
                 break;
             case PlayModeStateChange.ExitingPlayMode:

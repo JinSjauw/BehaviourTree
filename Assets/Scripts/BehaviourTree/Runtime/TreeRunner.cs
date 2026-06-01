@@ -57,16 +57,9 @@ namespace BehaviourTree.Runtime
          blackBoard.Initialize(runtimeAsset.blackboardDefinition);
          evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.maxTreeDepth);
 
-         if(evaluator == null)
-         {
-            Debug.LogError("TreeEvaluator is null");
-            return;
-         };
-
          // Ensure debug provider exists
          debugProvider = GetComponent<RuntimeDebugProvider>();
-         if (debugProvider == null)
-            debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();
+         if (debugProvider == null) debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();
       }
 
       private void Update()

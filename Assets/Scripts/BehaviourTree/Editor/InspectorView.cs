@@ -11,8 +11,11 @@ public partial class InspectorView : VisualElement
     public static Dictionary<string, string> CurrentProxyMappings { get; private set; }
 
     private VisualElement inspectorViewContainer;
+    private IMGUIContainer cachedInspectorContainer;
 
     Editor editor;
+    private bool isReadOnly;
+    private BehaviourNodeView currentNodeView;
 
     public InspectorView()
     {
@@ -25,6 +28,20 @@ public partial class InspectorView : VisualElement
 
         inspectorViewContainer = new VisualElement { style = { flexGrow = 1 } };
         Add(inspectorViewContainer);
+
+        cachedInspectorContainer = new IMGUIContainer(() =>
+        {
+            if (editor != null && editor.target)
+            {
+                if (isReadOnly) EditorGUI.BeginDisabledGroup(true);
+                IsRenderingReadOnly = isReadOnly;
+                CurrentProxyMappings = currentNodeView?.VariableMappings;
+                editor.OnInspectorGUI();
+                IsRenderingReadOnly = false;
+                CurrentProxyMappings = null;
+                if (isReadOnly) EditorGUI.EndDisabledGroup();
+            }
+        });
 
         var placeholder = new Label("Select a node in the GraphView")
         {
@@ -46,6 +63,7 @@ public partial class InspectorView : VisualElement
             UnityEngine.Object.DestroyImmediate(editor);
             editor = null;
         }
+        currentNodeView = null;
 
         inspectorViewContainer.Clear();
 
@@ -69,28 +87,14 @@ public partial class InspectorView : VisualElement
             UnityEngine.Object.DestroyImmediate(editor);
             editor = null;
         }
-        
+
+        currentNodeView = nodeView;
+        isReadOnly = nodeView.IsReadOnlyProxy;
+
         inspectorViewContainer.Clear();
 
         editor = Editor.CreateEditor(nodeView.NodeSO);
 
-        bool readOnly = nodeView.IsReadOnlyProxy;
-
-        IMGUIContainer container = new IMGUIContainer(() =>
-        {
-            if (editor.target)
-            {
-                if (readOnly) EditorGUI.BeginDisabledGroup(true);
-                IsRenderingReadOnly = readOnly;
-                CurrentProxyMappings = nodeView.VariableMappings;
-                editor.OnInspectorGUI();
-                IsRenderingReadOnly = false;
-                CurrentProxyMappings = null;
-                if (readOnly) EditorGUI.EndDisabledGroup();
-            }
-        });
-
-        inspectorViewContainer.Add(container);
+        inspectorViewContainer.Add(cachedInspectorContainer);
     }
 }
-

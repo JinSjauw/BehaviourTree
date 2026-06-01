@@ -70,7 +70,10 @@ namespace BehaviourTree.Editor
             subtreeAsset.RegisterNode(subtreeRoot);
 
             Dictionary<BehaviourNode, BehaviourNode> cloneMap = new Dictionary<BehaviourNode, BehaviourNode>();
-            Vector2 origin = selectedNodes.First().graphPosition;
+            Vector2 origin = Vector2.zero;
+
+            if (selectedNodes.Count > 0) origin = selectedNodes.First().graphPosition;
+
             if (rootCandidates.Count > 0)
             {
                 origin = rootCandidates[0].graphPosition;
@@ -122,7 +125,26 @@ namespace BehaviourTree.Editor
                     externalParent.children[childIdx] = subtreeRefNode;
                     EditorUtility.SetDirty(externalParent);
                 }
+            }
+            else
+            {
+                SubtreeNode subtreeRefNode = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
 
+                if(rootCandidates.Count > 0)
+                {
+                    subtreeRefNode.graphPosition = rootCandidates[0].graphPosition;
+                }
+                else
+                {
+                    subtreeRefNode.graphPosition = Vector2.zero;
+                }
+
+                subtreeRefNode.name = "Subtree";
+                subtreeRefNode.subTreeAsset = subtreeAsset;
+                tree.RegisterNode(subtreeRefNode);
+            }
+
+            {
                 List<BehaviourNode> toDelete = selectedNodes.ToList();
                 for (int i = 0; i < toDelete.Count; i++)
                 {
