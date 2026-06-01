@@ -15,6 +15,8 @@ namespace BehaviourTree.Core
         /// <summary>Dynamic list of field entries – generated from *_Params metadata.</summary>
         public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();
 
+        [SerializeField] public string comment;
+
         [HideInInspector] public BlackBoardType BlackBoardTypeID;
 
         public void SetLeafType(BehaviourNodeType type)

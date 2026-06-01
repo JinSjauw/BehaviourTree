@@ -14,6 +14,7 @@ namespace BehaviourTree.Editor
         private SerializedProperty fieldEntriesProp;
         private SerializedProperty blackBoardTypeIDProp;
         private SerializedProperty childrenProp;
+        private SerializedProperty commentProp;
         private GUIStyle style;
         private List<string> matchingVars;
         private GUIStyle RichTextLabelStyle
@@ -37,6 +38,7 @@ namespace BehaviourTree.Editor
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
             childrenProp = serializedObject.FindProperty("children");
+            if (target is LeafNode) commentProp = serializedObject.FindProperty("comment");
         }
 
         public override void OnInspectorGUI()
@@ -57,6 +59,13 @@ namespace BehaviourTree.Editor
             lastMethodID = selectedMethod;
 
             EditorGUI.BeginChangeCheck();
+
+            if (target is LeafNode && commentProp != null)
+            {
+                EditorGUILayout.LabelField("Comment", EditorStyles.boldLabel);
+                commentProp.stringValue = EditorGUILayout.TextArea(commentProp.stringValue, GUILayout.Height(60));
+                EditorGUILayout.Space();
+            }
 
             BuildFieldEntries(selectedMethod, methodChanged);
 
