@@ -15,7 +15,7 @@
             </ui:TabView>
         </ui:VisualElement>
         <ui:VisualElement name="GraphPane" style="flex-grow: 1;">
-            <BehaviourTree.Editor.BTGraphView style="flex-grow: 1;"/>
+            <BehaviourTree.Editor.BTGraphView style="flex-grow: 1; flex-direction: row; white-space: nowrap;"/>
         </ui:VisualElement>
     </SplitView>
 </ui:UXML>

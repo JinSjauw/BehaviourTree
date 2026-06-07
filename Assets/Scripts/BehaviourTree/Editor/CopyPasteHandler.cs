@@ -20,6 +20,7 @@ namespace BehaviourTree.Editor
     {
         private ClipBoardData clipBoard;
         private BehaviourTreeEditorGraphView graphView;
+        private string lastPastedDataHash;
 
         public CopyPasteHandler(BehaviourTreeEditorGraphView graphView)
         {
@@ -37,6 +38,9 @@ namespace BehaviourTree.Editor
             List<BehaviourNodeView> selectedNodes = graphView.selection.OfType<BehaviourNodeView>().ToList();
             if(selectedNodes.Count == 0) return;
 
+            clipBoard.nodeDatas.Clear();
+            clipBoard.edgeDatas.Clear();
+
             foreach(BehaviourNodeView nodeView in selectedNodes)
             {
                 BehaviourNode node = nodeView.NodeSO;
@@ -46,7 +50,7 @@ namespace BehaviourTree.Editor
 
                 SerializedNodeData serializedNode = SerializeNode(node);
 
-                if(serializedNode != null && !clipBoard.nodeDatas.Contains(serializedNode))
+                if(serializedNode != null)
                 {
                     clipBoard.nodeDatas.Add(serializedNode);
                 }
@@ -73,6 +77,16 @@ namespace BehaviourTree.Editor
         public void PasteNodes(BehaviourTreeAsset treeAsset)
         {
             if (clipBoard.nodeDatas.Count == 0) return;
+
+            // Track last pasted hash to prevent duplicate pastes from system clipboard
+            string currentHash = HashClipboardData();
+            if (currentHash == lastPastedDataHash)
+            {
+                clipBoard.nodeDatas.Clear();
+                clipBoard.edgeDatas.Clear();
+                return;
+            }
+            lastPastedDataHash = currentHash;
 
             // Map old GUIDs to new GUIDs
             Dictionary<string, string> guidMap = new Dictionary<string, string>();
@@ -136,6 +150,13 @@ namespace BehaviourTree.Editor
 
 
         #region Helpers
+
+        private string HashClipboardData()
+        {
+            if (clipBoard.nodeDatas.Count == 0) return string.Empty;
+            // Use JSON as a simple content hash — sufficient for detecting identical pastes
+            return JsonUtility.ToJson(clipBoard, prettyPrint: false);
+        }
 
         private BehaviourNode CreateNodeDataFromSerialized(SerializedNodeData data, BehaviourTreeAsset treeAsset)
         {

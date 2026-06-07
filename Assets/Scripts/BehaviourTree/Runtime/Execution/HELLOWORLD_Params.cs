@@ -12,15 +12,15 @@ namespace BehaviourTree.Runtime
     [StructLayout(LayoutKind.Sequential)]
     public partial struct HELLOWORLD_NodeFields
     {
-        public Vector2 Speed;
+        public Vector2 speed;
 
         [SharedVar]
-        public Vector2 Velocity;
+        public Vector2 velocity;
 
         [SharedVar]
-        public int Health;
+        public int health;
 
         [SharedVar]
-        public float TestTime;
+        public float testTime;
     }
 }

@@ -13,7 +13,7 @@ namespace BehaviourTree.Editor
     {
         private const string FilePath = "Assets/Scripts/BehaviourTree/Runtime/Execution/Generated/NodeFieldBindings.cs";
 
-        [MenuItem("BehaviourTree/Generate Node Field Bindings", priority = 30)]
+        [MenuItem("BehaviourTree/Generate/Generate Node Field Bindings", priority = 30)]
         public static void Generate()
         {
             var sb = new StringBuilder();

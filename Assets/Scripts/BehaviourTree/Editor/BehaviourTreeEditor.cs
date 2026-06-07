@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using BehaviourTree.Runtime;
 using System;
+using System.Linq;
+using System.IO;
 
 public class BehaviourTreeEditor : EditorWindow
 {
@@ -17,14 +20,17 @@ public class BehaviourTreeEditor : EditorWindow
     private ToolbarMenu assetBarMenu;
     private TabView tabView;
     private Tab inspectorTab;
+    private TreeSearchProvider treeSearchProvider;
 
     public static BlackboardDefinition currentBlackboardDef { get; private set; }
     public static BehaviourTreeAsset currentTree { get; private set; }
     public static TreeRunner currentRunner { get; private set; }
 
-    [MenuItem("BehaviourTree/BTNodeGraph")]
+    [MenuItem("BehaviourTree/Open Behaviour Tree Graph", priority = 29)]
     public static void OpenWindow()
     {
+        currentTree = null;
+        currentBlackboardDef = null;
         BehaviourTreeEditor wnd = GetWindow<BehaviourTreeEditor>();
         wnd.titleContent = new GUIContent("Behaviour Tree Editor");
     }
@@ -54,7 +60,7 @@ public class BehaviourTreeEditor : EditorWindow
         VisualElement root = visualTree.CloneTree();
         root.style.flexGrow = 1; // Fix the thin strip
 
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.EditorUss);
+        StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.EditorUss);
 
         // Null check for USS stylesheet
         if (styleSheet != null)
@@ -96,11 +102,7 @@ public class BehaviourTreeEditor : EditorWindow
         }
         else
         {
-            assetBarMenu.menu.AppendAction("Create New Tree", CreateNewTree);
-            assetBarMenu.menu.AppendSeparator();
-            assetBarMenu.menu.AppendAction("Bake Tree", BakeTree);    
-            assetBarMenu.menu.AppendAction("Save Tree", SaveTree);
-            assetBarMenu.menu.AppendAction("Sync Tree", SyncTree);
+            BuildAssetBarMenu();
         }
 
         OnSelectionChange();
@@ -137,6 +139,64 @@ public class BehaviourTreeEditor : EditorWindow
         EditorApplication.projectChanged += OnProjectChanged;
     }
 
+    private void BuildAssetBarMenu()
+    {
+        if (assetBarMenu == null) return;
+
+        var menu = assetBarMenu.menu;
+        menu.ClearItems();
+
+        menu.AppendAction("Create New Tree", CreateNewTree);
+        menu.AppendSeparator();
+
+        // Populate Open Tree submenu with recent BehaviourTreeAsset files (last modified, limited to 15)
+        const int maxRecentEntries = 5;
+        string[] guids = AssetDatabase.FindAssets("t:BehaviourTreeAsset");
+
+        var recentTrees = guids
+            .Select(guid => new
+            {
+                Path = AssetDatabase.GUIDToAssetPath(guid),
+                Asset = AssetDatabase.LoadAssetAtPath<BehaviourTreeAsset>(AssetDatabase.GUIDToAssetPath(guid))
+            })
+            .Where(t => t.Asset != null)
+            .Select(t => new
+            {
+                t.Asset,
+                LastWrite = File.GetLastWriteTime(t.Path)
+            })
+            .OrderByDescending(t => t.LastWrite)
+            .Take(maxRecentEntries);
+
+        foreach (var entry in recentTrees)
+        {
+            BehaviourTreeAsset capturedAsset = entry.Asset;
+            menu.AppendAction("Open Tree/" + capturedAsset.name, a =>
+            {
+                Selection.activeObject = capturedAsset;
+                AssetDatabase.OpenAsset(capturedAsset);
+            });
+        }
+
+        menu.AppendSeparator("Open Tree/");
+        menu.AppendAction("Open Tree/Browse...", BrowseOpenTree);
+
+        menu.AppendSeparator();
+        menu.AppendAction("Bake Tree", BakeTree);
+        menu.AppendAction("Save Tree", SaveTree);
+        menu.AppendAction("Sync Tree", SyncTree);
+    }
+
+    private void BrowseOpenTree(DropdownMenuAction action)
+    {
+        if (treeSearchProvider == null)
+            treeSearchProvider = ScriptableObject.CreateInstance<TreeSearchProvider>();
+
+        Rect bounds = assetBarMenu.worldBound;
+        Vector2 screenPos = new Vector2(position.x + bounds.x + bounds.width, position.y + bounds.y + bounds.height);
+        SearchWindow.Open(new SearchWindowContext(screenPos), treeSearchProvider);
+    }
+
     private void CreateNewTree(DropdownMenuAction action)
     {
         string path = EditorUtility.SaveFilePanelInProject("Create Behaviour Tree", "NewTree", "asset", "Create a new BehaviourTreeAsset");
@@ -152,7 +212,7 @@ public class BehaviourTreeEditor : EditorWindow
         AssetDatabase.SaveAssets();
 
         Selection.activeObject = treeAsset;
-        currentTree = treeAsset;
+        BuildAssetBarMenu();
         OnSelectionChange();
     }
 
@@ -189,6 +249,8 @@ public class BehaviourTreeEditor : EditorWindow
         EditorApplication.projectChanged -= OnProjectChanged;
         EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
         EditorApplication.update -= PollDebugState;
+
+        ClearGraph();
     }
 
     private void BakeTree(DropdownMenuAction dropdownMenuAction)
@@ -267,6 +329,8 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnProjectChanged()
     {
+        BuildAssetBarMenu();
+
         if (currentTree == null) return;
 
         if (!AssetDatabase.Contains(currentTree))
@@ -287,7 +351,7 @@ public class BehaviourTreeEditor : EditorWindow
             tabView.activeTab = inspectorTab;
     }
 
-    private void OnDestroy()
+    private void ClearGraph()
     {
         currentTree = null;
         currentBlackboardDef = null;
@@ -295,6 +359,13 @@ public class BehaviourTreeEditor : EditorWindow
         if (treeGraphView != null)
         {
             treeGraphView.OnNodeSelected = null;
+            treeGraphView.ClearView();
+        }
+
+        if (treeSearchProvider != null)
+        {
+            DestroyImmediate(treeSearchProvider);
+            treeSearchProvider = null;
         }
     }
 }

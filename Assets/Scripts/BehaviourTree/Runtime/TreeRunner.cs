@@ -14,10 +14,66 @@ namespace BehaviourTree.Runtime
 
       private TreeEvaluator evaluator;
       private RuntimeDebugProvider debugProvider;
-
+      private bool Initialized = false;
 
       private void Start()
       {
+         Initialize();
+      }
+
+      private void Update()
+      {
+         if(evaluator == null || blackBoard == null) return;
+         evaluator.Evaluate(blackBoard);  
+
+         // Expose to editor
+         if (debugProvider != null)
+         {
+            debugProvider.currentNodeStates = evaluator.nodeStates;
+            debugProvider.activeNodeIndex = evaluator.currentNodeIndex;
+            debugProvider.currentNodeGuids = runtimeAsset != null ? runtimeAsset.runtimeNodeGuids : null;
+         }
+
+         Initialized = true;
+      }
+
+      private void OnDestroy()
+      {
+         if (runtimeAsset == null) return;
+         Destroy(runtimeAsset);
+         runtimeAsset = null;
+      }
+
+      private void OnDisable()
+      {
+         Initialized = false;
+      }
+
+#if UNITY_EDITOR
+      private void OnValidate()
+      {
+         if(runtimeAsset != null)
+         {
+            blackBoard?.BuildSerializedReferences(runtimeAsset.blackboardDefinition);
+         }
+         else
+         {
+            BehaviourTreeAssetBase authoring = authoringAsset as BehaviourTreeAssetBase;
+            if (authoring != null)
+            {
+               blackBoard?.BuildSerializedReferences(authoring.BlackboardDefinition);
+            }
+         }
+
+         if(runtimeAsset == null && authoringAsset == null)
+         {
+            blackBoard?.ClearSerializedReferences();
+         }
+      }
+
+      public void Initialize()
+      {
+         if (Initialized) return;
          if (runtimeAsset == null)
          {
 #if UNITY_EDITOR
@@ -60,49 +116,6 @@ namespace BehaviourTree.Runtime
          // Ensure debug provider exists
          debugProvider = GetComponent<RuntimeDebugProvider>();
          if (debugProvider == null) debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();
-      }
-
-      private void Update()
-      {
-         if(evaluator == null || blackBoard == null) return;
-         evaluator.Evaluate(blackBoard);  
-
-         // Expose to editor
-         if (debugProvider != null)
-         {
-            debugProvider.currentNodeStates = evaluator.nodeStates;
-            debugProvider.activeNodeIndex = evaluator.currentNodeIndex;
-            debugProvider.currentNodeGuids = runtimeAsset != null ? runtimeAsset.runtimeNodeGuids : null;
-         }
-      }
-
-      private void OnDestroy()
-      {
-         if (runtimeAsset == null) return;
-         Destroy(runtimeAsset);
-         runtimeAsset = null;
-      }
-
-#if UNITY_EDITOR
-      private void OnValidate()
-      {
-         if(runtimeAsset != null)
-         {
-            blackBoard?.BuildSerializedReferences(runtimeAsset.blackboardDefinition);
-         }
-         else
-         {
-            BehaviourTreeAssetBase authoring = authoringAsset as BehaviourTreeAssetBase;
-            if (authoring != null)
-            {
-               blackBoard?.BuildSerializedReferences(authoring.BlackboardDefinition);
-            }
-         }
-
-         if(runtimeAsset == null && authoringAsset == null)
-         {
-            blackBoard?.ClearSerializedReferences();
-         }
       }
 
       public UnityEngine.Object GetSourceTree()

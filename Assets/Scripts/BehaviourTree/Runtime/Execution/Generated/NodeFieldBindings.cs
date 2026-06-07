@@ -12,6 +12,155 @@ namespace BehaviourTree.Runtime
 {
     public static partial class NodeFieldBindings
     {
+        public static Enemy_MoveTo_NodeFields DeserializeEnemy_MoveTo(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_MoveTo_NodeFields
+            {
+                // index 0: targetMovePosition (blackboard variable)
+                targetMovePosition = reader.GetVector3(0),
+            };
+        }
+
+        public static void SerializeEnemy_MoveTo(Enemy_MoveTo_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetVector3(0, p.targetMovePosition);
+        }
+
+        public static Enemy_SelectPatrolPoint_NodeFields DeserializeEnemy_SelectPatrolPoint(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_SelectPatrolPoint_NodeFields
+            {
+                // index 0: targetMovePosition (blackboard variable)
+                targetMovePosition = reader.GetVector3(0),
+                // index 1: patrolPointsParent (blackboard variable)
+                patrolPointsParent = reader.GetTransform(1),
+                // index 2: selectionMode (constant)
+                selectionMode = reader.GetEnum<global::BehaviourTree.Runtime.PatrolPointSelection>(2),
+            };
+        }
+
+        public static void SerializeEnemy_SelectPatrolPoint(Enemy_SelectPatrolPoint_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetVector3(0, p.targetMovePosition);
+            writer.SetTransform(1, p.patrolPointsParent);
+        }
+
+        public static Enemy_SelectEngagePosition_NodeFields DeserializeEnemy_SelectEngagePosition(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_SelectEngagePosition_NodeFields
+            {
+                // index 0: targetMovePosition (blackboard variable)
+                targetMovePosition = reader.GetVector3(0),
+            };
+        }
+
+        public static void SerializeEnemy_SelectEngagePosition(Enemy_SelectEngagePosition_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetVector3(0, p.targetMovePosition);
+        }
+
+        public static Enemy_SelectDetectedTarget_NodeFields DeserializeEnemy_SelectDetectedTarget(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_SelectDetectedTarget_NodeFields
+            {
+                // index 0: strategy (constant)
+                strategy = reader.GetEnum<global::BehaviourTree.Runtime.SelectionStrategy>(0),
+                // index 1: selectedTarget (blackboard variable)
+                selectedTarget = reader.GetTransform(1),
+            };
+        }
+
+        public static void SerializeEnemy_SelectDetectedTarget(Enemy_SelectDetectedTarget_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetTransform(1, p.selectedTarget);
+        }
+
+        public static Enemy_IsInFiringRange_NodeFields DeserializeEnemy_IsInFiringRange(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_IsInFiringRange_NodeFields
+            {
+                // index 0: selectedTarget (blackboard variable)
+                selectedTarget = reader.GetTransform(0),
+            };
+        }
+
+        public static void SerializeEnemy_IsInFiringRange(Enemy_IsInFiringRange_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetTransform(0, p.selectedTarget);
+        }
+
+        public static Enemy_HasLineOfSight_NodeFields DeserializeEnemy_HasLineOfSight(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_HasLineOfSight_NodeFields
+            {
+                // index 0: selectedTarget (blackboard variable)
+                selectedTarget = reader.GetTransform(0),
+            };
+        }
+
+        public static void SerializeEnemy_HasLineOfSight(Enemy_HasLineOfSight_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetTransform(0, p.selectedTarget);
+        }
+
+        public static Enemy_SetAiming_NodeFields DeserializeEnemy_SetAiming(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_SetAiming_NodeFields
+            {
+                // index 0: aiming (constant)
+                aiming = reader.GetBool(0),
+            };
+        }
+
+        public static Enemy_FireSequence_NodeFields DeserializeEnemy_FireSequence(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_FireSequence_NodeFields
+            {
+                // index 0: reloadDuration (constant)
+                reloadDuration = reader.GetFloat(0),
+                // index 1: firingDelay (constant)
+                firingDelay = reader.GetFloat(1),
+                // index 2: selectedTarget (blackboard variable)
+                selectedTarget = reader.GetTransform(2),
+            };
+        }
+
+        public static void SerializeEnemy_FireSequence(Enemy_FireSequence_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetTransform(2, p.selectedTarget);
+        }
+
+        public static Enemy_MoveTo_Transform_NodeFields DeserializeEnemy_MoveTo_Transform(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader reader = new FieldReader(fields, blackboard);
+            return new Enemy_MoveTo_Transform_NodeFields
+            {
+                // index 0: target (blackboard variable)
+                target = reader.GetTransform(0),
+            };
+        }
+
+        public static void SerializeEnemy_MoveTo_Transform(Enemy_MoveTo_Transform_NodeFields p, ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+        {
+            FieldReader writer = new FieldReader(fields, blackboard);
+            writer.SetTransform(0, p.target);
+        }
+
         public static INVERTER_NodeFields DeserializeINVERTER(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
         {
             FieldReader reader = new FieldReader(fields, blackboard);

@@ -50,5 +50,8 @@ namespace BehaviourTree.Core
         [MethodCategory(BehaviourNodeType.ACTION)]BB_LogTransform = 45,
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckVector2 = 46,
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckVector3 = 47,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_SetVector2FromTransform = 48,
+        [MethodCategory(BehaviourNodeType.ACTION)]BB_SetVector3FromTransform = 49,
+        [MethodCategory(BehaviourNodeType.ACTION)]Enemy_MoveTo_Transform = 50,
     }
 }

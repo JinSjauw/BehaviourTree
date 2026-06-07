@@ -32,10 +32,12 @@ namespace BehaviourTree.Runtime
         NotEqual = 1,
     }
 
-    public enum NullCheckOp : int
+    public enum ObjectCheckOp : int
     {
         IsNull = 0,
         IsNotNull = 1,
+        IsActive = 2,
+        IsInactive = 3,
     }
 
     public enum BoolCheckOp : int

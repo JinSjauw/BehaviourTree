@@ -49,12 +49,13 @@ GridBackground {
 #GraphTitle {
     background-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
-    max-width: 10%;
     margin-top: 12px;
     margin-right: 12px;
     margin-bottom: 12px;
     margin-left: 12px;
-    min-width: 10%;
+    flex-direction: row;
+    white-space: nowrap;
+    overflow: visible;
 }
 
 #GraphTitleInput {
@@ -62,4 +63,6 @@ GridBackground {
     color: rgb(188, 188, 188);
     font-size: 24px;
     white-space: nowrap;
+    flex-direction: row;
+    flex-shrink: 0;
 }

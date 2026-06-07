@@ -31,11 +31,10 @@ namespace BehaviourTree
 
             REPEATER_NodeFields p = NodeFieldBindings.DeserializeREPEATER(fields, blackBoard);
 
-            if (childResult == NodeState.SUCCESS && p.currentCount < p.targetCount)
+            if (childResult == NodeState.SUCCESS && p.currentCount < p.targetCount - 1)
             {
                 p.currentCount++;
                 NodeFieldBindings.SerializeREPEATER(p, fields, blackBoard);
-                Debug.Log($"Repeating! {p.currentCount}");
                 return NodeState.RUNNING;   // signals handler to re-push child
             }
 

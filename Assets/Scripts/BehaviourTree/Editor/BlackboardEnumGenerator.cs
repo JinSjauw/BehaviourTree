@@ -18,7 +18,7 @@ namespace BehaviourTree.Editor
     {
         private const string FilePath = "Assets/Scripts/BehaviourTree/Runtime/Execution/Generated/BlackboardEnums.cs";
 
-        [MenuItem("BehaviourTree/Generate Blackboard Enums", priority = 31)]
+        [MenuItem("BehaviourTree/Generate/Generate Blackboard Key Enums", priority = 31)]
         public static void Generate()
         {
             var sb = new StringBuilder();

@@ -57,7 +57,7 @@ namespace BehaviourTree.Core
             if (values == null || index < 0 || index >= values.Length)
             {
 #if UNITY_EDITOR
-                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL, returning default");
+                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL, returning default {values} : {index} : {typeof(T).Name}");
 #endif
                 return default;
             }

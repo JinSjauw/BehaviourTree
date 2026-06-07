@@ -214,12 +214,14 @@ namespace BehaviourTree
             if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
 
             GameObject value = blackBoard.Get<GameObject>(fields[0].value);
-            NullCheckOp op = (NullCheckOp)fields[1].GetInt();
+            ObjectCheckOp op = (ObjectCheckOp)fields[1].GetInt();
 
             bool result = op switch
             {
-                NullCheckOp.IsNull => value == null,
-                NullCheckOp.IsNotNull => value != null,
+                ObjectCheckOp.IsNull => value == null,
+                ObjectCheckOp.IsNotNull => value != null,
+                ObjectCheckOp.IsActive => value != null && value.activeInHierarchy,
+                ObjectCheckOp.IsInactive => value == null || !value.activeInHierarchy,
                 _ => false
             };
 
@@ -232,12 +234,14 @@ namespace BehaviourTree
             if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
 
             Transform value = blackBoard.Get<Transform>(fields[0].value);
-            NullCheckOp op = (NullCheckOp)fields[1].GetInt();
+            ObjectCheckOp op = (ObjectCheckOp)fields[1].GetInt();
 
             bool result = op switch
             {
-                NullCheckOp.IsNull => value == null,
-                NullCheckOp.IsNotNull => value != null,
+                ObjectCheckOp.IsNull => value == null,
+                ObjectCheckOp.IsNotNull => value != null,
+                ObjectCheckOp.IsActive => value != null && value.gameObject.activeInHierarchy,
+                ObjectCheckOp.IsInactive => value == null || !value.gameObject.activeInHierarchy,
                 _ => false
             };
 
@@ -339,6 +343,26 @@ namespace BehaviourTree
             return NodeState.SUCCESS;
         }
 
+        [BTreeMethod(MethodID.BB_SetVector2FromTransform)]
+        public static NodeState BB_SetVector2FromTransform(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1)) return NodeState.FAILURE;
+            Transform source = blackBoard.Get<Transform>(fields[1].value);
+            if (source == null) return NodeState.FAILURE;
+            blackBoard.Set(fields[0].value, (Vector2)source.position);
+            return NodeState.SUCCESS;
+        }
+
+        [BTreeMethod(MethodID.BB_SetVector3FromTransform)]
+        public static NodeState BB_SetVector3FromTransform(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireVariable(fields, 1)) return NodeState.FAILURE;
+            Transform source = blackBoard.Get<Transform>(fields[1].value);
+            if (source == null) return NodeState.FAILURE;
+            blackBoard.Set(fields[0].value, source.position);
+            return NodeState.SUCCESS;
+        }
+
         [BTreeMethod(MethodID.BB_ClearInt)]
         public static NodeState BB_ClearInt(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
         {
@@ -430,11 +454,15 @@ namespace BehaviourTree
 
             float duration = fields[0].GetFloat();
             int remainingIndex = fields[1].value;
+            bool useCustomTick = fields[2].GetBool();
+            float customTick = fields[3].GetFloat();
             float remaining = blackBoard.Get<float>(remainingIndex);
+
+            float tickAmount = useCustomTick ? customTick : Time.deltaTime;
 
             if (remaining > 0f)
             {
-                remaining = Mathf.Max(0f, remaining - Time.deltaTime);
+                remaining = Mathf.Max(0f, remaining - tickAmount);
                 blackBoard.Set(remainingIndex, remaining);
                 return NodeState.FAILURE;
             }

@@ -35,7 +35,7 @@ namespace BehaviourTree.Core
             if (definition == null) return;
 
             int count = definition.sharedVariables.Count;
-            storage ??= new ManagedBlackboardStorage();
+            if (storage == null) storage = new ManagedBlackboardStorage();
             storage.Initialize(definition);
 
             while (serializedReferences.Count < count)
@@ -75,6 +75,46 @@ namespace BehaviourTree.Core
             definition = null;
             storage = null;
             serializedReferences.Clear();
+        }
+
+        public int FindVariableIndex(string keyName)
+        {
+            if (definition == null) 
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning($"[Blackboard] Definition is NULL");
+#endif
+                return -1; 
+            }
+
+            for (int i = 0; i < definition.sharedVariables.Count; i++)
+            {
+                if (definition.sharedVariables[i].name == keyName)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public void Set<T>(string keyName, T value)
+        {
+            int index = FindVariableIndex(keyName);
+            Debug.Log($"[Blackboard] Setting {keyName} to {value} at {index}");
+            if (index >= 0)
+            {   
+                Set(index, value);
+            }
+        }
+
+        public T Get<T>(string keyName)
+        {
+            int index = FindVariableIndex(keyName);
+            if (index >= 0)
+            {
+                return Get<T>(index);
+            }
+            return default;
         }
 
         /// <summary>Get a value by index in the blackboard array.</summary>

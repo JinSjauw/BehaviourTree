@@ -14,67 +14,695 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.TooltipRegistry
   rootTooltip:
     nodeName: ROOT
-    description: Start of the tree
-    returnValues: NONE
+    description: The root node of the behaviour tree. Every tree starts here and
+      can only have one child.
+    returnValues: Passes through child result.
     fieldDescriptions: []
   selectorTooltip:
     nodeName: SELECTOR
-    description: 
-    returnValues: 
+    description: Executes children in order until one returns SUCCESS. Returns FAILURE
+      only if all children fail.
+    returnValues: 'SUCCESS from the succeeding child;
+
+      FAILURE if none succeed.'
     fieldDescriptions: []
   sequenceTooltip:
     nodeName: SEQUENCE
-    description: 
-    returnValues: 
+    description: Executes children in order until one returns FAILURE. Returns SUCCESS
+      only if all children succeed.
+    returnValues: 'FAILURE from the failing child;
+
+      SUCCESS if all succeed.'
+    fieldDescriptions: []
+  parallelTooltip:
+    nodeName: PARALLEL
+    description: Executes all incomplete children each tick in parallel. Returns
+      FAILURE immediately if any child fails. Stays RUNNING while any child is still
+      running. Returns SUCCESS only when all children have succeeded.
+    returnValues: 'SUCCESS if all children succeed;
+
+      RUNNING while any child
+      is running;
+
+      FAILURE if any child fails.'
+    fieldDescriptions: []
+  priorityTooltip:
+    nodeName: PRIORITY
+    description: Like a Selector but children get run every evaluation cycle regardless
+      of last node state.
+    returnValues: 'SUCCESS from the first succeeding child;
+
+      FAILURE if none
+      succeed.'
     fieldDescriptions: []
   methodIdTooltips:
   - nodeName: NONE
-    description: No description available.
-    returnValues: 
+    description: Unused placeholder entry. Not valid as a node.
+    returnValues: N/A
     fieldDescriptions: []
-  - nodeName: HELLOWORLD
-    description: No description available.
-    returnValues: 
-    fieldDescriptions:
-    - fieldName: Speed
-      description: 
-    - fieldName: Velocity
-      description: 
-    - fieldName: Health
-      description: 
-    - fieldName: TestTime
-      description: 
-  - nodeName: BYEWORLD
-    description: No description available.
-    returnValues: 
-    fieldDescriptions:
-    - fieldName: waitingTime
-      description: 
-    - fieldName: testTimedThreshhold
-      description: 
-    - fieldName: timer
-      description: 
-  - nodeName: WAITWORLD
-    description: No description available.
-    returnValues: 
-    fieldDescriptions:
-    - fieldName: testTimedThreshhold
-      description: 
-    - fieldName: timer
-      description: 
   - nodeName: INVERTER
-    description: No description available.
-    returnValues: 
+    description: Inverts the result of its child node. SUCCESS becomes FAILURE and
+      vice versa. RUNNING passes through unchanged. Can optionally force always success
+      or always failure.
+    returnValues: 'Inverted child result;
+
+      RUNNING if child is running.'
     fieldDescriptions:
     - fieldName: alwaysFailure
-      description: 
+      description: If true, node always returns FAILURE regardless of child.
     - fieldName: alwaysSuccess
-      description: 
+      description: If true, node always returns SUCCESS regardless of child.
   - nodeName: REPEATER
-    description: No description available.
-    returnValues: 
+    description: Repeats its child node a specified number of times. Returns RUNNING
+      until the target count is reached.
+    returnValues: 'SUCCESS when target count reached;
+
+      RUNNING while repeating;
+
+      FAILURE
+      if child fails.'
     fieldDescriptions:
     - fieldName: targetCount
-      description: 
+      description: Number of times to repeat the child.
     - fieldName: currentCount
+      description: Internal counter tracking repetitions executed (auto-managed shared
+        variable).
+  - nodeName: BB_CompareInt
+    description: Compares two integer blackboard variables using the selected comparison
+      operator.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First integer value to compare (shared variable).
+    - fieldName: b
+      description: Second integer value to compare.
+    - fieldName: operation
       description: 
+  - nodeName: BB_CompareFloat
+    description: Compares two float blackboard variables using the selected comparison
+      operator.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First float value to compare (shared variable).
+    - fieldName: b
+      description: Second float value to compare.
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CompareBool
+    description: Compares two boolean blackboard variables for equality or inequality.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First boolean value to compare (shared variable).
+    - fieldName: b
+      description: Second boolean value to compare.
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CompareVector2
+    description: Compares two Vector2 blackboard variables for equality or magnitude
+      comparison.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First Vector2 value to compare (shared variable).
+    - fieldName: b
+      description: Second Vector2 value to compare.
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CompareVector3
+    description: Compares two Vector3 blackboard variables for equality or magnitude
+      comparison.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First Vector3 value to compare (shared variable).
+    - fieldName: b
+      description: Second Vector3 value to compare.
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CompareGameObject
+    description: Compares two GameObject blackboard variables for equality.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First GameObject to compare (shared variable).
+    - fieldName: b
+      description: Second GameObject to compare.
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CompareTransform
+    description: Compares two Transform blackboard variables for equality.
+    returnValues: 'SUCCESS if comparison is true;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: a
+      description: First Transform to compare (shared variable).
+    - fieldName: b
+      description: Second Transform to compare.
+    - fieldName: operation
+      description: 
+  - nodeName: BB_SetInt
+    description: Assigns an integer value to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The integer value to assign.
+  - nodeName: BB_SetFloat
+    description: Assigns a float value to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The float value to assign.
+  - nodeName: BB_SetBool
+    description: Assigns a boolean value to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The boolean value to assign.
+  - nodeName: BB_SetVector2
+    description: Assigns a Vector2 value to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The Vector2 value to assign.
+  - nodeName: BB_SetVector3
+    description: Assigns a Vector3 value to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The Vector3 value to assign.
+  - nodeName: BB_SetGameObject
+    description: Assigns a GameObject reference to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The GameObject to assign.
+  - nodeName: BB_SetTransform
+    description: Assigns a Transform reference to a blackboard variable.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The blackboard variable to write to (shared variable).
+    - fieldName: value
+      description: The Transform to assign.
+  - nodeName: BB_ClearInt
+    description: Resets an integer blackboard variable to its default value (0).
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The integer variable to clear (shared variable).
+  - nodeName: BB_ClearFloat
+    description: Resets a float blackboard variable to its default value (0).
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The float variable to clear (shared variable).
+  - nodeName: BB_ClearBool
+    description: Resets a boolean blackboard variable to its default value (false).
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The boolean variable to clear (shared variable).
+  - nodeName: BB_ClearVector2
+    description: Resets a Vector2 blackboard variable to its default value (0,0).
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The Vector2 variable to clear (shared variable).
+  - nodeName: BB_ClearVector3
+    description: Resets a Vector3 blackboard variable to its default value (0,0,0).
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The Vector3 variable to clear (shared variable).
+  - nodeName: BB_ClearGameObject
+    description: Resets a GameObject blackboard variable to null.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The GameObject variable to clear (shared variable).
+  - nodeName: BB_ClearTransform
+    description: Resets a Transform blackboard variable to null.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The Transform variable to clear (shared variable).
+  - nodeName: BB_ToggleBool
+    description: Toggles a boolean blackboard variable (true to false, false to true).
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: target
+      description: The boolean variable to toggle (shared variable).
+  - nodeName: WaitSeconds
+    description: Waits for a specified duration in seconds before returning SUCCESS.
+      Returns RUNNING while waiting.
+    returnValues: 'SUCCESS after duration elapses;
+
+      RUNNING while waiting.'
+    fieldDescriptions:
+    - fieldName: duration
+      description: Time in seconds to wait.
+    - fieldName: elapsed
+      description: Internal elapsed time counter (auto-managed shared variable).
+  - nodeName: Cooldown
+    description: Returns SUCCESS once per cooldown period. After triggering, returns
+      FAILURE until the cooldown expires. Subtracts tickAmount each frame (Time.deltaTime
+      by default, or a custom value).
+    returnValues: 'SUCCESS when cooldown is ready;
+
+      FAILURE while on cooldown.'
+    fieldDescriptions:
+    - fieldName: duration
+      description: Cooldown duration in seconds.
+    - fieldName: remaining
+      description: Time remaining on current cooldown (auto-managed shared variable).
+    - fieldName: useCustomTick
+      description: When true, uses customTickValue instead of Time.deltaTime for
+        the countdown tick.
+    - fieldName: customTickValue
+      description: Custom amount to subtract per frame. Only used when useCustomTick
+        is true.
+  - nodeName: BB_HasChangedInt
+    description: Detects if an integer blackboard variable has changed since the
+      last evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_HasChangedFloat
+    description: Detects if a float blackboard variable has changed since the last
+      evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_HasChangedBool
+    description: Detects if a boolean blackboard variable has changed since the last
+      evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_HasChangedVector2
+    description: Detects if a Vector2 blackboard variable has changed since the last
+      evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_HasChangedVector3
+    description: Detects if a Vector3 blackboard variable has changed since the last
+      evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_HasChangedGameObject
+    description: Detects if a GameObject blackboard variable has changed since the
+      last evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_HasChangedTransform
+    description: Detects if a Transform blackboard variable has changed since the
+      last evaluation.
+    returnValues: 'SUCCESS if value changed;
+
+      FAILURE if unchanged.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current value to check (shared variable).
+    - fieldName: previous
+      description: Stores the previous value for comparison (auto-managed shared
+        variable).
+  - nodeName: BB_EdgeRisingBool
+    description: Detects a rising edge on a boolean. Returns SUCCESS when value changes
+      from false to true. Does not trigger again until value returns to false.
+    returnValues: 'SUCCESS on rising edge (false to true);
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current boolean value to monitor (shared variable).
+    - fieldName: previous
+      description: Stores previous frame value (auto-managed shared variable).
+  - nodeName: BB_EdgeFallingBool
+    description: Detects a falling edge on a boolean. Returns SUCCESS when value
+      changes from true to false. Does not trigger again until value returns to true.
+    returnValues: 'SUCCESS on falling edge (true to false);
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: current
+      description: The current boolean value to monitor (shared variable).
+    - fieldName: previous
+      description: Stores previous frame value (auto-managed shared variable).
+  - nodeName: BB_CheckBool
+    description: Checks a boolean blackboard variable (IsTrue or IsFalse).
+    returnValues: 'SUCCESS if condition met;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: value
+      description: The boolean to check (shared variable).
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CheckGameObject
+    description: 
+    returnValues: 'SUCCESS if condition met;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: value
+      description: The GameObject to check (shared variable).
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CheckTransform
+    description: 
+    returnValues: 'SUCCESS if condition met;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: value
+      description: The Transform to check (shared variable).
+    - fieldName: operation
+      description: 
+  - nodeName: BB_LogInt
+    description: Logs an integer blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The integer value to log (shared variable).
+  - nodeName: BB_LogFloat
+    description: Logs a float blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The float value to log (shared variable).
+  - nodeName: BB_LogBool
+    description: Logs a boolean blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The boolean value to log (shared variable).
+  - nodeName: BB_LogVector2
+    description: Logs a Vector2 blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The Vector2 value to log (shared variable).
+  - nodeName: BB_LogVector3
+    description: Logs a Vector3 blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The Vector3 value to log (shared variable).
+  - nodeName: BB_LogGameObject
+    description: Logs a GameObject blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The GameObject to log (shared variable).
+  - nodeName: BB_LogTransform
+    description: Logs a Transform blackboard value to the Unity console.
+    returnValues: SUCCESS.
+    fieldDescriptions:
+    - fieldName: value
+      description: The Transform to log (shared variable).
+  - nodeName: BB_CheckVector2
+    description: Checks a Vector2 blackboard variable (IsZero or IsNotZero).
+    returnValues: 'SUCCESS if condition met;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: value
+      description: The Vector2 to check (shared variable).
+    - fieldName: operation
+      description: 
+  - nodeName: BB_CheckVector3
+    description: Checks a Vector3 blackboard variable (IsZero or IsNotZero).
+    returnValues: 'SUCCESS if condition met;
+
+      FAILURE otherwise.'
+    fieldDescriptions:
+    - fieldName: value
+      description: The Vector3 to check (shared variable).
+    - fieldName: operation
+      description: 
+  - nodeName: Enemy_MoveTo
+    description: Sets the NavMeshAgent destination to TargetMovePosition and waits
+      until arrival.
+    returnValues: 'SUCCESS when arrived;
+
+      RUNNING while moving;
+
+      FAILURE
+      if EnemyController missing.'
+    fieldDescriptions:
+    - fieldName: targetMovePosition
+      description: The world position the agent navigates to.
+  - nodeName: Enemy_SelectPatrolPoint
+    description: Selects the next patrol point from children of PatrolPointsParent
+      and writes it to TargetMovePosition.
+    returnValues: 'SUCCESS on point selected;
+
+      FAILURE if EnemyController missing.'
+    fieldDescriptions:
+    - fieldName: targetMovePosition
+      description: Blackboard variable that saves the result of the patrol point
+        selection
+    - fieldName: patrolPointsParent
+      description: Parent transform whose children act as patrol waypoints.
+    - fieldName: selectionMode
+      description: SEQUENTIAL or RANDOM patrol point selection
+  - nodeName: Enemy_SelectEngagePosition
+    description: Calculates a new path position to approach the current target and
+      writes it to TargetMovePosition.
+    returnValues: 'SUCCESS on calculated position;
+
+      FAILURE if EnemyController
+      missing.'
+    fieldDescriptions:
+    - fieldName: targetMovePosition
+      description: 
+  - nodeName: Enemy_HasArrived
+    description: Checks whether the NavMeshAgent has reached its current destination.
+    returnValues: 'SUCCESS if arrived;
+
+      FAILURE if not arrived or EnemyController
+      missing.'
+    fieldDescriptions: []
+  - nodeName: Enemy_StopMovement
+    description: Immediately stops the NavMeshAgent's movement.
+    returnValues: 'SUCCESS after stopping;
+
+      FAILURE if EnemyController missing.'
+    fieldDescriptions: []
+  - nodeName: Enemy_SelectAimTarget
+    description: Selects a target for the gun to aim at based on current detection
+      data.
+    returnValues: 'SUCCESS if target selected;
+
+      FAILURE if none found or EnemyController
+      missing.'
+    fieldDescriptions: []
+  - nodeName: Enemy_StartTrajectorySearch
+    description: Initiates a trajectory search for a valid firing solution. Returns
+      RUNNING while searching.
+    returnValues: 'SUCCESS when trajectory found;
+
+      RUNNING while searching;
+
+      FAILURE
+      if search fails.'
+    fieldDescriptions: []
+  - nodeName: Enemy_IsTrajectoryReady
+    description: Checks whether the gun has a valid firing trajectory computed.
+    returnValues: 'SUCCESS if trajectory ready;
+
+      FAILURE if not ready.'
+    fieldDescriptions: []
+  - nodeName: Enemy_SetAiming
+    description: Enables or disables the gun's aiming state.
+    returnValues: 'SUCCESS after setting;
+
+      FAILURE if EnemyController missing.'
+    fieldDescriptions:
+    - fieldName: aiming
+      description: True to start aiming, false to stop.
+  - nodeName: Enemy_WaitForReload
+    description: Waits while the gun is reloading. Returns RUNNING until reload completes.
+    returnValues: 'SUCCESS when reload complete;
+
+      RUNNING while reloading;
+
+      FAILURE
+      if EnemyController missing.'
+    fieldDescriptions: []
+  - nodeName: Enemy_Fire
+    description: Fires the gun once.
+    returnValues: 'SUCCESS after firing;
+
+      FAILURE if EnemyController missing.'
+    fieldDescriptions: []
+  - nodeName: Enemy_IsAimed
+    description: Checks whether the gun is currently aimed on target.
+    returnValues: 'SUCCESS if on target;
+
+      FAILURE if not on target.'
+    fieldDescriptions: []
+  - nodeName: Enemy_DetectTarget
+    description: Runs the target detection system and checks if any targets were
+      found. Current detections get saved
+    returnValues: 'SUCCESS if target detected;
+
+      FAILURE if none detected.'
+    fieldDescriptions: []
+  - nodeName: Enemy_SelectDetectedTarget
+    description: Selects a target from currently detected targets collection using
+      the specified strategy. Writes result to selectedTarget.
+    returnValues: 'SUCCESS if target selected;
+
+      FAILURE if none available.'
+    fieldDescriptions:
+    - fieldName: strategy
+      description: Select for a target. NEAREST, FARTHEST, RANDOM
+    - fieldName: selectedTarget
+      description: The blackboard variable to save the target transform into
+  - nodeName: Enemy_IsInFiringRange
+    description: Checks whether the selected target is within the weapon's firing
+      range.
+    returnValues: 'SUCCESS if in range;
+
+      FAILURE if out of range.'
+    fieldDescriptions:
+    - fieldName: selectedTarget
+      description: The target Transform to check range against.
+  - nodeName: Enemy_HasLineOfSight
+    description: Checks whether there is a clear line of sight (no obstacles) to
+      the selected target.
+    returnValues: 'SUCCESS if line of sight clear;
+
+      FAILURE if blocked.'
+    fieldDescriptions:
+    - fieldName: selectedTarget
+      description: The target Transform to check line of sight to.
+  - nodeName: Enemy_FireSequence
+    description: 'Handles the full fire cycle:
+
+      1. Select aim point on target
+
+      2.
+      Search for valid firing trajectory
+
+      3. Wait for turret to aim
+
+      4.
+      Fire'
+    returnValues: 'RUNNING while reloading, searching, or aiming;
+
+      FAILURE
+      if no target or trajectory search fails;
+
+      SUCCESS on fire.'
+    fieldDescriptions:
+    - fieldName: reloadDuration
+      description: Cooldown between shots in seconds.
+    - fieldName: firingDelay
+      description: 
+    - fieldName: selectedTarget
+      description: The target Transform to fire at (set upstream).
+  - nodeName: BB_SetVector2FromTransform
+    description: Extracts the X and Y position from a Transform and assigns it to
+      a Vector2 blackboard variable.
+    returnValues: 'SUCCESS;
+    
+      FAILURE if the source Transform is null.'
+    fieldDescriptions:
+    - fieldName: target
+      description: The Vector2 blackboard variable to write to (shared variable).
+    - fieldName: source
+      description: The Transform whose position (X,Y) is written to target (shared
+        variable).
+  - nodeName: BB_SetVector3FromTransform
+    description: Extracts the world position from a Transform and assigns it to a
+      Vector3 blackboard variable.
+    returnValues: 'SUCCESS;
+    
+      FAILURE if the source Transform is null.'
+    fieldDescriptions:
+    - fieldName: target
+      description: The Vector3 blackboard variable to write to (shared variable).
+    - fieldName: source
+      description: The Transform whose world position is written to target (shared
+        variable).
+  - nodeName: Enemy_MoveTo_Transform
+    description: Sets the NavMeshAgent destination to the world position of a Transform
+      and waits until arrival.
+    returnValues: 'SUCCESS when arrived;
+
+      RUNNING while moving;
+
+      FAILURE if EnemyController
+      missing or target is null.'
+    fieldDescriptions:
+    - fieldName: target
+      description: The Transform whose world position the agent navigates to (shared
+        variable).
