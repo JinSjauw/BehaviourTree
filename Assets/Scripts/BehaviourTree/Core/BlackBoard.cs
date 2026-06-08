@@ -34,7 +34,7 @@ namespace BehaviourTree.Core
 
             if (definition == null) return;
 
-            int count = definition.sharedVariables.Count;
+            int count = GetTotalSlotCount(definition);
             if (storage == null) storage = new ManagedBlackboardStorage();
             storage.Initialize(definition);
 
@@ -58,8 +58,8 @@ namespace BehaviourTree.Core
 
             if (definition == null) return;            
 
-            // Ensure serializedReferences list matches definition length
-            int count = definition.sharedVariables.Count;
+            // Match total slot count (accounting for stride)
+            int count = GetTotalSlotCount(definition);
             while (serializedReferences.Count < count)
             {
                 serializedReferences.Add(null);
@@ -75,6 +75,20 @@ namespace BehaviourTree.Core
             definition = null;
             storage = null;
             serializedReferences.Clear();
+        }
+
+        private static int GetTotalSlotCount(BlackboardDefinition definition)
+        {
+            if (definition == null || definition.sharedVariables == null)
+                return 0;
+
+            int total = 0;
+            for (int i = 0; i < definition.sharedVariables.Count; i++)
+            {
+                int stride = definition.sharedVariables[i].stride;
+                total += (stride > 1) ? stride : 1;
+            }
+            return total;
         }
 
         public int FindVariableIndex(string keyName)
@@ -144,7 +158,38 @@ namespace BehaviourTree.Core
             storage.Set(index, value);
 
             // Keep serialized reference in sync for reference types
-            if (definition != null && index >= 0 && index < definition.sharedVariables.Count && index < serializedReferences.Count)
+            if (definition != null && index >= 0 && index < serializedReferences.Count)
+            {
+                if (storage.GetSlotKind(index) == BlackboardSlotKind.Reference)
+                {
+                    if (value == null)
+                    {
+                        serializedReferences[index] = null;
+                    }
+                    else if (value is UnityEngine.Object unityObject)
+                    {
+                        serializedReferences[index] = unityObject;
+                    }
+                }
+            }
+        }
+
+        /// <summary>Get a boxed value by slot index. Used by the bridge for type-agnostic copying.</summary>
+        public object GetBoxed(int index)
+        {
+            if (storage == null)
+                return null;
+            return storage.GetBoxed(index);
+        }
+
+        /// <summary>Set a boxed value by slot index. Used by the bridge for type-agnostic copying.</summary>
+        public void SetBoxed(int index, object value)
+        {
+            if (storage == null)
+                return;
+            storage.SetBoxed(index, value);
+
+            if (definition != null && index >= 0 && index < serializedReferences.Count)
             {
                 if (storage.GetSlotKind(index) == BlackboardSlotKind.Reference)
                 {

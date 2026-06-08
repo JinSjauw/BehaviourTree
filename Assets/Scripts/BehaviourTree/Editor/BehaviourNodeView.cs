@@ -208,6 +208,18 @@ namespace BehaviourTree.Editor
 
         public override void SetPosition(Rect newPos)
         {
+            // Magnetic snap to grid — only snaps when within tolerance of a grid line
+            const float gridSpacing = 35f;
+            const float snapThreshold = 10f;
+
+            float snappedX = Mathf.Round(newPos.x / gridSpacing) * gridSpacing;
+            float snappedY = Mathf.Round(newPos.y / gridSpacing) * gridSpacing;
+
+            if (Mathf.Abs(newPos.x - snappedX) <= snapThreshold)
+                newPos.x = snappedX;
+            if (Mathf.Abs(newPos.y - snappedY) <= snapThreshold)
+                newPos.y = snappedY;
+
             base.SetPosition(newPos);
             Undo.RecordObject(NodeSO, "(BTree) Set Position");
             NodeSO.graphPosition.x = newPos.xMin;

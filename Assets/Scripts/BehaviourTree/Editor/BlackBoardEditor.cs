@@ -48,14 +48,15 @@ namespace BehaviourTree.Editor
                 so.Update();
             }
 
-            // Build filtered list
+            // Build filtered list with stride expansion for array variables
             refIndices.Clear();
             refNames.Clear();
             List<BlackboardVariable> variables = definition.sharedVariables;
             int unresolvedTypeCount = 0;
             for (int i = 0; i < variables.Count; i++)
             {
-                if (!FieldTypeHelper.TryGetSystemTypeFromName(variables[i].typeName, out Type type) || type == null)
+                BlackboardVariable bv = variables[i];
+                if (!FieldTypeHelper.TryGetSystemTypeFromName(bv.typeName, out Type type) || type == null)
                 {
                     unresolvedTypeCount++;
                     continue;
@@ -63,7 +64,7 @@ namespace BehaviourTree.Editor
                 if (type != null && !type.IsValueType)
                 {
                     refIndices.Add(i);
-                    refNames.Add(variables[i].name);
+                    refNames.Add(bv.name);
                 }
             }
 
@@ -84,44 +85,93 @@ namespace BehaviourTree.Editor
 
             SerializedProperty serializedRefs = so.FindProperty("serializedReferences");
 
-            // Ensure array size matches definition
-            while (serializedRefs.arraySize < variables.Count)
+            // Ensure array size matches total slot count (stride > 1 expands)
+            int totalSlotCount = 0;
+            for (int i = 0; i < variables.Count; i++)
+            {
+                int stride = variables[i].stride;
+                totalSlotCount += (stride > 1) ? stride : 1;
+            }
+
+            while (serializedRefs.arraySize < totalSlotCount)
             {
                 serializedRefs.InsertArrayElementAtIndex(serializedRefs.arraySize);
             }
-            while (serializedRefs.arraySize > variables.Count)
+            while (serializedRefs.arraySize > totalSlotCount)
             {
                 serializedRefs.DeleteArrayElementAtIndex(serializedRefs.arraySize - 1);
             }
+
+            // Compute per-variable slot offsets
+            int[] slotOffsets = new int[variables.Count];
+            int runningSlot = 0;
+            for (int i = 0; i < variables.Count; i++)
+            {
+                slotOffsets[i] = runningSlot;
+                int stride = variables[i].stride;
+                runningSlot += (stride > 1) ? stride : 1;
+            }
+
             for (int i = 0; i < refIndices.Count; i++)
             {
-                int    fieldIndex = refIndices[i];
-                if (!FieldTypeHelper.TryGetSystemTypeFromName(variables[fieldIndex].typeName, out Type expectedType) || expectedType == null)
+                int varIndex = refIndices[i];
+                BlackboardVariable bv = variables[varIndex];
+                if (!FieldTypeHelper.TryGetSystemTypeFromName(bv.typeName, out Type expectedType) || expectedType == null)
                     continue;
-                
+
                 string fieldName = refNames[i];
+                int baseSlot = slotOffsets[varIndex];
+                int stride = bv.stride;
+                int effectiveStride = (stride > 1) ? stride : 1;
 
-                SerializedProperty element = serializedRefs.GetArrayElementAtIndex(fieldIndex);
-                UnityEngine.Object currentValue = element.objectReferenceValue;
-
-                // Draw fields
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"<b> {fieldName} </b> : <color=#19E3B1>{expectedType.Name}</color>", RichStyle, GUILayout.ExpandWidth(false));
-                EditorGUI.BeginChangeCheck();
-                UnityEngine.Object newValue = EditorGUILayout.ObjectField(
-                    GUIContent.none,
-                    currentValue,
-                    expectedType,
-                    allowSceneObjects: true,
-                    GUILayout.ExpandWidth(true));
-
-                if (EditorGUI.EndChangeCheck())
+                if (effectiveStride == 1)
                 {
-                    element.objectReferenceValue = newValue;
-                    EditorUtility.SetDirty(blackboard);
+                    // Single reference slot
+                    SerializedProperty element = serializedRefs.GetArrayElementAtIndex(baseSlot);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"<b> {fieldName} </b> : <color=#19E3B1>{expectedType.Name}</color>", RichStyle, GUILayout.ExpandWidth(false));
+                    EditorGUI.BeginChangeCheck();
+                    UnityEngine.Object newValue = EditorGUILayout.ObjectField(
+                        GUIContent.none,
+                        element.objectReferenceValue,
+                        expectedType,
+                        allowSceneObjects: true,
+                        GUILayout.ExpandWidth(true));
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        element.objectReferenceValue = newValue;
+                        EditorUtility.SetDirty(blackboard);
+                    }
+                    EditorGUILayout.EndHorizontal();
                 }
-                EditorGUILayout.EndHorizontal();
+                else
+                {
+                    // Strided reference — draw one ObjectField per element
+                    EditorGUILayout.LabelField($"<b> {fieldName} </b> : <color=#19E3B1>{expectedType.Name}[{effectiveStride}]</color>", RichStyle);
+                    EditorGUI.indentLevel++;
+                    for (int s = 0; s < effectiveStride; s++)
+                    {
+                        int slotIndex = baseSlot + s;
+                        SerializedProperty element = serializedRefs.GetArrayElementAtIndex(slotIndex);
+
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"[{s}]", GUILayout.Width(24));
+                        EditorGUI.BeginChangeCheck();
+                        UnityEngine.Object newValue = EditorGUILayout.ObjectField(
+                            GUIContent.none,
+                            element.objectReferenceValue,
+                            expectedType,
+                            allowSceneObjects: true,
+                            GUILayout.ExpandWidth(true));
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            element.objectReferenceValue = newValue;
+                            EditorUtility.SetDirty(blackboard);
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    EditorGUI.indentLevel--;
+                }
             }
 
             so.ApplyModifiedProperties();

@@ -334,4 +334,14 @@ namespace BehaviourTree.Runtime
     {
         [SharedVar] public Transform value;
     }
+
+    /// <summary>
+    /// Logs every element of a strided integer variable.
+    /// Field 0 = baseSlot (packed by baker), Field 1 = stride (constant, packed by baker).
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public partial struct BB_LogArrayInt_NodeFields
+    {
+        [SharedArray] public int array;
+    }
 }

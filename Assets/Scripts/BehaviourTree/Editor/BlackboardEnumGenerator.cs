@@ -57,16 +57,26 @@ namespace BehaviourTree.Editor
                 sb.AppendLine($"    public enum {uniqueName} : int");
                 sb.AppendLine("    {");
 
+                int[] slotOffsets = ComputeSlotOffsets(def);
+
                 for (int i = 0; i < def.sharedVariables.Count; i++)
                 {
-                    string varName = SanitizeIdentifier(def.sharedVariables[i].name);
-                    // Edge case: name sanitizes to empty or starts with digit
+                    BlackboardVariable variable = def.sharedVariables[i];
+                    string varName = SanitizeIdentifier(variable.name);
                     if (string.IsNullOrEmpty(varName))
                         varName = $"Var_{i}";
                     if (char.IsDigit(varName[0]))
                         varName = "_" + varName;
 
-                    sb.AppendLine($"        {varName} = {i}{(i < def.sharedVariables.Count - 1 ? "," : "")}");
+                    int stride = variable.stride;
+                    int effectiveStride = (stride > 1) ? stride : 1;
+
+                    if (effectiveStride > 1)
+                    {
+                        sb.AppendLine($"        // Slots {slotOffsets[i]}..{slotOffsets[i] + effectiveStride - 1} (stride={effectiveStride})");
+                    }
+
+                    sb.AppendLine($"        {varName} = {slotOffsets[i]}{(i < def.sharedVariables.Count - 1 ? "," : "")}");
                 }
 
                 sb.AppendLine("    }");
@@ -95,16 +105,38 @@ namespace BehaviourTree.Editor
 
         private static List<BlackboardDefinition> FindAllDefinitions()
         {
-            var results = new List<BlackboardDefinition>();
+            List<BlackboardDefinition> results = new List<BlackboardDefinition>();
             string[] guids = AssetDatabase.FindAssets("t:BlackboardDefinition");
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                var asset = AssetDatabase.LoadAssetAtPath<BlackboardDefinition>(path);
+                BlackboardDefinition asset = AssetDatabase.LoadAssetAtPath<BlackboardDefinition>(path);
                 if (asset != null)
                     results.Add(asset);
             }
             return results;
+        }
+
+        /// <summary>
+        /// Computes the slot offset for each variable in a definition,
+        /// accounting for stride. Returns an array where index[v] = slot offset.
+        /// </summary>
+        private static int[] ComputeSlotOffsets(BlackboardDefinition def)
+        {
+            if (def == null || def.sharedVariables == null)
+                return System.Array.Empty<int>();
+
+            int[] offsets = new int[def.sharedVariables.Count];
+            int currentSlot = 0;
+
+            for (int i = 0; i < def.sharedVariables.Count; i++)
+            {
+                offsets[i] = currentSlot;
+                int stride = def.sharedVariables[i].stride;
+                currentSlot += (stride > 1) ? stride : 1;
+            }
+
+            return offsets;
         }
 
         /// <summary>

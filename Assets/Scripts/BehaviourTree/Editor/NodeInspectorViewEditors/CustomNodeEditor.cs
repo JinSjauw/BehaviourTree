@@ -17,6 +17,7 @@ namespace BehaviourTree.Editor
         private SerializedProperty commentProp;
         private GUIStyle style;
         private List<string> matchingVars;
+        private List<string> matchingVarNames;
         private GUIStyle RichTextLabelStyle
         {
             get
@@ -34,6 +35,7 @@ namespace BehaviourTree.Editor
             if (target == null) return;
             
             matchingVars = new List<string>();
+            matchingVarNames = new List<string>();
             methodIDProp = serializedObject.FindProperty("methodID");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
@@ -54,10 +56,9 @@ namespace BehaviourTree.Editor
             }
 
             // Check if method changed and rebuild field entries
-            MethodID selectedMethod = (MethodID)methodIDProp.enumValueIndex;
+            MethodID selectedMethod = (MethodID)methodIDProp.intValue;
             bool methodChanged = selectedMethod != lastMethodID;
             lastMethodID = selectedMethod;
-
             EditorGUI.BeginChangeCheck();
 
             if (target is LeafNode && commentProp != null)
@@ -103,6 +104,7 @@ namespace BehaviourTree.Editor
                     SerializedProperty entryProp = fieldEntriesProp.GetArrayElementAtIndex(i);
                     SerializedProperty fieldNameProp = entryProp.FindPropertyRelative("fieldName");
                     SerializedProperty isVariableProp = entryProp.FindPropertyRelative("isVariable");
+                    SerializedProperty isArrayProp = entryProp.FindPropertyRelative("isArray");
                     SerializedProperty isToggleVariableProp = entryProp.FindPropertyRelative("isToggleVariable");
                     SerializedProperty variableNameProp = entryProp.FindPropertyRelative("variableName");
                     SerializedProperty fieldTypeProp = entryProp.FindPropertyRelative("fieldType");
@@ -112,6 +114,7 @@ namespace BehaviourTree.Editor
                     // Set static metadata
                     fieldNameProp.stringValue = info.fieldName;
                     fieldTypeProp.enumValueIndex = (int)fieldType;
+                    isArrayProp.boolValue = info.isArray;
 
                     EditorGUILayout.BeginVertical("box");
 
@@ -123,12 +126,13 @@ namespace BehaviourTree.Editor
                     else
                     {
                         typeLabel = fieldType.ToString();
+                        if (info.isArray) typeLabel += "[]";
                     }
                     
                     string displayName = char.ToUpper(info.fieldName[0]) + info.fieldName.Substring(1);
                     EditorGUILayout.LabelField($"<b>{displayName}</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
 
-                    isVariableProp.boolValue = info.isVariable;
+                    isVariableProp.boolValue = info.isVariable || info.isArray;
 
                     if(info.isToggleVariable)
                     {
@@ -150,7 +154,7 @@ namespace BehaviourTree.Editor
 
                     if (isVariableProp.boolValue)
                     {
-                        DrawVariableDropdown(variableNameProp, info.fieldType);
+                        DrawVariableDropdown(variableNameProp, info.fieldType, info.isArray);
                     }
                     else
                     {
@@ -207,7 +211,7 @@ namespace BehaviourTree.Editor
             }
         }
 
-        private void DrawVariableDropdown(SerializedProperty variableNameProp, Type expectedType)
+        private void DrawVariableDropdown(SerializedProperty variableNameProp, Type expectedType, bool isArray = false)
         {
             if (expectedType == null)
             {
@@ -251,15 +255,30 @@ namespace BehaviourTree.Editor
                 return;
             }
 
-            // Filter variables whose type matches the expected type using unified helper
+            // Filter variables whose type matches and stride matches the param kind
             matchingVars.Clear();
+            matchingVarNames.Clear();
             for (int v = 0; v < blackBoardDef.sharedVariables.Count; v++)
             {
-                if (!FieldTypeHelper.TryGetSystemTypeFromName(blackBoardDef.sharedVariables[v].typeName, out Type bbType) || bbType == null)
+                BlackboardVariable bv = blackBoardDef.sharedVariables[v];
+                if (!FieldTypeHelper.TryGetSystemTypeFromName(bv.typeName, out Type bbType) || bbType == null)
                     continue;
-                if (bbType == expectedType)
+                if (bbType != expectedType)
+                    continue;
+
+                if (isArray)
                 {
-                    matchingVars.Add(blackBoardDef.sharedVariables[v].name);
+                    if (bv.stride <= 1)
+                        continue;
+                    matchingVarNames.Add(bv.name);
+                    matchingVars.Add($"{bv.name} [{bv.stride}]");
+                }
+                else
+                {
+                    if (bv.stride > 1)
+                        continue;
+                    matchingVarNames.Add(bv.name);
+                    matchingVars.Add(bv.name);
                 }
             }
 
@@ -271,7 +290,7 @@ namespace BehaviourTree.Editor
             }
 
             string currentVal = variableNameProp.stringValue;
-            int selectedIndex = matchingVars.IndexOf(currentVal);
+            int selectedIndex = matchingVarNames.IndexOf(currentVal);
             if (selectedIndex < 0) selectedIndex = 0;
 
             if (InspectorView.IsRenderingReadOnly)
@@ -289,7 +308,7 @@ namespace BehaviourTree.Editor
             else
             {
                 selectedIndex = EditorGUILayout.Popup("Shared Variable", selectedIndex, matchingVars.ToArray());
-                variableNameProp.stringValue = matchingVars[selectedIndex];
+                variableNameProp.stringValue = matchingVarNames[selectedIndex];
             }
         }
     }

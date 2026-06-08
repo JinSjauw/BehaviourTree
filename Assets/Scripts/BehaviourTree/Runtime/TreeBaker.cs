@@ -9,14 +9,7 @@ namespace BehaviourTree.Runtime
 {
     public static class TreeBaker
     {
-        public static void BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas)
-        {
-            string[] nodeGuids = null;
-            int maxTreeDepth = 0;
-            bbDef = BakeTree(root, bbDef, ref nodeDatas, ref fieldDatas, ref nodeGuids, out maxTreeDepth);
-        }
-
-        public static BlackboardDefinition BakeTree(BehaviourNode root, BlackboardDefinition bbDef, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref string[] nodeGuids, out int maxTreeDepth)
+        public static BlackboardDefinition BakeTree(BehaviourNode root, BehaviourTreeAssetBase asset, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref string[] nodeGuids, out int maxTreeDepth)
         {
             if (root == null)
             {
@@ -24,16 +17,33 @@ namespace BehaviourTree.Runtime
                 fieldDatas = Array.Empty<FieldData>();
                 nodeGuids = Array.Empty<string>();
                 maxTreeDepth = 0;
-                return bbDef;
+                return null;
             }
 
             BehaviourNode effectiveRoot = GetEffectiveRoot(root);
 
             BlackboardDefinition runtimeBbDef = ScriptableObject.CreateInstance<BlackboardDefinition>();
-            runtimeBbDef.name = (bbDef != null ? bbDef.name : "Blackboard") + "_Runtime";
-            if (bbDef != null && bbDef.sharedVariables != null)
+            runtimeBbDef.name = "RuntimeMerged_BB";
+
+            BlackboardDefinition selfDef = asset != null ? asset.BlackboardDefinition : null;
+
+            // 1. Copy self BB variables
+            if (selfDef != null && selfDef.sharedVariables != null)
             {
-                runtimeBbDef.sharedVariables.AddRange(bbDef.sharedVariables);
+                runtimeBbDef.sharedVariables.AddRange(selfDef.sharedVariables);
+            }
+
+            // 2. Append commander BB variables (preserving stride for per-agent arrays)
+            CommanderBlackboardDefinition commanderDef = asset != null ? asset.CommanderBlackboardDefinition : null;
+
+            if (commanderDef != null && commanderDef.sharedVariables != null)
+            {
+                for (int i = 0; i < commanderDef.sharedVariables.Count; i++)
+                {
+                    BlackboardVariable v = commanderDef.sharedVariables[i];
+                    v.stride = 1; // Per-agent indexing handled by bridge — agent side only needs one slot
+                    runtimeBbDef.sharedVariables.Add(v);
+                }
             }
 
             Dictionary<string, int> rootVarIndexByName = new Dictionary<string, int>();
@@ -66,11 +76,11 @@ namespace BehaviourTree.Runtime
                 BehaviourNode node = instances[i].node;
                 if (node is LeafNode action)
                 {
-                    totalFieldDataCount += action.fieldEntries?.Count ?? 0;
+                    totalFieldDataCount += CountFieldDataForNode(action, runtimeBbDef);
                 }
                 else if (node is DecoratorNode decorator)
                 {
-                    totalFieldDataCount += decorator.fieldEntries?.Count ?? 0;
+                    totalFieldDataCount += CountFieldDataForNode(decorator, runtimeBbDef);
                 }
             }
 
@@ -326,14 +336,14 @@ namespace BehaviourTree.Runtime
                     nodeData.methodID = action.methodID;
                     nodeData.blackBoardTypeID = action.BlackBoardTypeID;
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                    nodeData.fieldDataCount = action.fieldEntries?.Count ?? 0;
+                    nodeData.fieldDataCount = CountFieldDataForNode(action, runtimeBbDef);
 
                     if (action.fieldEntries != null)
                     {
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
                         for (int f = 0; f < action.fieldEntries.Count; f++)
                         {
-                            fieldDataArray[currentFieldDataOffset++] = PackFieldEntry(action.fieldEntries[f], map, runtimeBbDef);
+                            PackFieldEntryWithArray(action.fieldEntries[f], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
                         }
                     }
                 }
@@ -345,14 +355,14 @@ namespace BehaviourTree.Runtime
                     nodeData.firstChildIndex = firstChild[i];
                     nodeData.lastChildIndex = firstChild[i];
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                    nodeData.fieldDataCount = decorator.fieldEntries?.Count ?? 0;
+                    nodeData.fieldDataCount = CountFieldDataForNode(decorator, runtimeBbDef);
 
                     if (decorator.fieldEntries != null)
                     {
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
                         for (int f = 0; f < decorator.fieldEntries.Count; f++)
                         {
-                            fieldDataArray[currentFieldDataOffset++] = PackFieldEntry(decorator.fieldEntries[f], map, runtimeBbDef);
+                            PackFieldEntryWithArray(decorator.fieldEntries[f], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
                         }
                     }
                 }
@@ -375,6 +385,120 @@ namespace BehaviourTree.Runtime
             return rootVarIndexByName;
         }
 
+        /// <summary>
+        /// Computes the base slot offset for a variable index in the definition,
+        /// accounting for strides of preceding variables.
+        /// </summary>
+        private static int ResolveSlotOffset(int variableIndex, BlackboardDefinition definition)
+        {
+            if (variableIndex < 0 || definition == null || definition.sharedVariables == null || variableIndex >= definition.sharedVariables.Count)
+                return -1;
+
+            int slotOffset = 0;
+            for (int i = 0; i < variableIndex; i++)
+            {
+                int stride = definition.sharedVariables[i].stride;
+                slotOffset += (stride > 1) ? stride : 1;
+            }
+            return slotOffset;
+        }
+
+        /// <summary>
+        /// Returns the number of FieldData entries needed for this node's field entries,
+        /// accounting for array parameters that expand to 2 entries (baseSlot + stride).
+        /// </summary>
+        private static int CountFieldDataForNode(LeafNode node, BlackboardDefinition runtimeBbDef)
+        {
+            if (node.fieldEntries == null) return 0;
+            int count = 0;
+            for (int i = 0; i < node.fieldEntries.Count; i++)
+            {
+                count += IsArrayFieldEntry(node.fieldEntries[i], runtimeBbDef) ? 2 : 1;
+            }
+            return count;
+        }
+
+        private static int CountFieldDataForNode(DecoratorNode node, BlackboardDefinition runtimeBbDef)
+        {
+            if (node.fieldEntries == null) return 0;
+            int count = 0;
+            for (int i = 0; i < node.fieldEntries.Count; i++)
+            {
+                count += IsArrayFieldEntry(node.fieldEntries[i], runtimeBbDef) ? 2 : 1;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Returns true if the field entry references an array variable.
+        /// Trusts the serialized flag first; falls back to stride check for backwards compat.
+        /// </summary>
+        private static bool IsArrayFieldEntry(NodeFieldEntry entry, BlackboardDefinition runtimeBbDef)
+        {
+            if (!entry.isVariable || string.IsNullOrEmpty(entry.variableName)) return false;
+
+            // Trust the serialized flag — survives BB definition changes
+            if (entry.isArray) return true;
+
+            // Fallback: old nodes without the flag use dynamic stride check
+            if (runtimeBbDef == null || runtimeBbDef.sharedVariables == null) return false;
+
+            for (int i = 0; i < runtimeBbDef.sharedVariables.Count; i++)
+            {
+                if (runtimeBbDef.sharedVariables[i].name == entry.variableName)
+                    return runtimeBbDef.sharedVariables[i].stride > 1;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Packs one or two FieldData entries for the given field entry.
+        /// For array variables (stride > 1): packs baseSlot + stride (constant).
+        /// For scalar variables: packs single baseSlot.
+        /// For constants: packs single constant value.
+        /// </summary>
+        private static void PackFieldEntryWithArray(
+            NodeFieldEntry entry,
+            Dictionary<string, int> varIndexByName,
+            BlackboardDefinition runtimeBbDef,
+            FieldData[] fieldDataArray,
+            ref int offset)
+        {
+            if (!entry.isVariable)
+            {
+                // Constant: pack as usual
+                fieldDataArray[offset++] = PackFieldEntry(entry, varIndexByName, runtimeBbDef);
+                return;
+            }
+
+            // Resolve variable index and slot offset
+            int varIndex = -1;
+            if (varIndexByName != null && !string.IsNullOrEmpty(entry.variableName) && varIndexByName.TryGetValue(entry.variableName, out int mapped))
+                varIndex = mapped;
+
+            if (varIndex < 0 || runtimeBbDef == null || runtimeBbDef.sharedVariables == null || varIndex >= runtimeBbDef.sharedVariables.Count)
+            {
+                // Unresolved variable — pack as single entry with invalid slot
+                fieldDataArray[offset++] = FieldData.FromVariable(-1);
+                return;
+            }
+
+            int baseSlot = ResolveSlotOffset(varIndex, runtimeBbDef);
+            int stride = runtimeBbDef.sharedVariables[varIndex].stride;
+
+            if (stride > 1)
+            {
+                // Array parameter: pack baseSlot + stride
+                fieldDataArray[offset++] = FieldData.FromVariable(baseSlot);
+                fieldDataArray[offset++] = FieldData.FromConstant(stride);
+            }
+            else
+            {
+                // Scalar parameter: pack as single entry (with type validation)
+                fieldDataArray[offset++] = PackFieldEntry(entry, varIndexByName, runtimeBbDef);
+            }
+        }
+
         private static FieldData PackFieldEntry(NodeFieldEntry entry, Dictionary<string, int> varIndexByName, BlackboardDefinition runtimeBbDef)
         {
             if (entry.isVariable)
@@ -391,7 +515,9 @@ namespace BehaviourTree.Runtime
                     else if (FieldTypeHelper.GetFieldType(bbType) != entry.fieldType)
                         varIndex = -1;
                 }
-                return FieldData.FromVariable(varIndex);
+                // Convert variable index to slot offset (accounts for stride in preceding variables)
+                int slotOffset = ResolveSlotOffset(varIndex, runtimeBbDef);
+                return FieldData.FromVariable(slotOffset);
             }
 
             switch (entry.fieldType)

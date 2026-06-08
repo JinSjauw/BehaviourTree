@@ -48,6 +48,16 @@ public static class FieldTypeHelper
             _ => "Unknown",
         };
 
+        /// <summary>Human-readable name including stride for array types.</summary>
+        public static string GetDisplayName(BlackboardVariable variable)
+        {
+            if (string.IsNullOrEmpty(variable.typeName)) return "Unknown";
+            TryGetSystemTypeFromName(variable.typeName, out Type type);
+            FieldType ft = type != null ? GetFieldType(type) : FieldType.Int;
+            string baseName = GetDisplayName(ft);
+            return variable.IsArray ? $"{baseName}[{variable.stride}]" : baseName;
+        }
+
         /// <summary>Reverse-lookup: System.Type → FieldType</summary>
         public static FieldType GetFieldType(Type type)
         {

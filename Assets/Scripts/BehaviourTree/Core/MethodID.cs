@@ -52,6 +52,15 @@ namespace BehaviourTree.Core
         [MethodCategory(BehaviourNodeType.CONDITION)]BB_CheckVector3 = 47,
         [MethodCategory(BehaviourNodeType.ACTION)]BB_SetVector2FromTransform = 48,
         [MethodCategory(BehaviourNodeType.ACTION)]BB_SetVector3FromTransform = 49,
-        [MethodCategory(BehaviourNodeType.ACTION)]Enemy_MoveTo_Transform = 50,
+
+        // ── Commander test methods ──
+        [MethodCategory(BehaviourNodeType.ACTION)]    TEST_CommanderAssign = 60,
+        [MethodCategory(BehaviourNodeType.CONDITION)] TEST_CheckRole = 61,
+        [MethodCategory(BehaviourNodeType.ACTION)]    TEST_AgentExecute = 62,
+        [MethodCategory(BehaviourNodeType.ACTION)]    TEST_AgentReportHealth = 63,
+        [MethodCategory(BehaviourNodeType.ACTION)]    TEST_AgentExecuteOrder = 64,
+
+        // ── Array methods ──
+        [MethodCategory(BehaviourNodeType.ACTION)]    BB_LogArrayInt = 65,
     }
 }

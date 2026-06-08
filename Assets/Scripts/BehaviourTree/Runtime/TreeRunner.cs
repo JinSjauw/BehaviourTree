@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BehaviourTree.Core;
 using UnityEngine;
 
@@ -8,23 +9,47 @@ namespace BehaviourTree.Runtime
    {
       [SerializeField] private BlackBoard blackBoard;
       [SerializeField] private RuntimeBehaviourTreeAsset runtimeAsset;
+      private bool runIndependently = true;
+      public bool RunIndependently
+      {
+          get => runIndependently;
+          set => runIndependently = value;
+      }
 #if UNITY_EDITOR
       [SerializeField] private BehaviourTreeAssetBase authoringAsset;
 #endif
 
       private TreeEvaluator evaluator;
       private RuntimeDebugProvider debugProvider;
+      private List<IBlackboardDataProvider> dataProviders;
       private bool Initialized = false;
 
       private void Start()
       {
+         if(!runIndependently) return; 
+         
          Initialize();
       }
 
       private void Update()
       {
-         if(evaluator == null || blackBoard == null) return;
-         evaluator.Evaluate(blackBoard);  
+         if (!runIndependently) return;
+
+         PushDataProviders();
+         Evaluate();
+      }
+
+      /// <summary>
+      /// Evaluates the tree once. In standalone mode, called from Update()
+      /// after PushDataProviders(). In commander mode, called externally
+      /// by the CommanderBindingBridge after it has pushed providers
+      /// and copied commander data into self BB.
+      /// </summary>
+      public void Evaluate()
+      {
+         if (evaluator == null || blackBoard == null) return;
+
+         evaluator.Evaluate(blackBoard);
 
          // Expose to editor
          if (debugProvider != null)
@@ -35,6 +60,16 @@ namespace BehaviourTree.Runtime
          }
 
          Initialized = true;
+      }
+
+      private void PushDataProviders()
+      {
+         if (dataProviders == null) return;
+
+         for (int i = 0; i < dataProviders.Count; i++)
+         {
+            dataProviders[i].ProvideData(blackBoard);
+         }
       }
 
       private void OnDestroy()
@@ -70,39 +105,20 @@ namespace BehaviourTree.Runtime
             blackBoard?.ClearSerializedReferences();
          }
       }
+#endif
 
       public void Initialize()
       {
          if (Initialized) return;
-         if (runtimeAsset == null)
-         {
-#if UNITY_EDITOR
-            BehaviourTreeAssetBase authoring = authoringAsset as BehaviourTreeAssetBase;
-            if (authoring != null)
-            {
-               RuntimeBehaviourTreeAsset tempRuntimeAsset = ScriptableObject.CreateInstance<RuntimeBehaviourTreeAsset>();
-               tempRuntimeAsset.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
-               tempRuntimeAsset.name = authoring.DisplayName + "_Runtime";
-               tempRuntimeAsset.sourceTree = authoringAsset;
 
-               tempRuntimeAsset.blackboardDefinition = TreeBaker.BakeTree(authoring.Root, authoring.BlackboardDefinition, ref tempRuntimeAsset.runtimeNodeData, ref tempRuntimeAsset.runtimeFieldData, ref tempRuntimeAsset.runtimeNodeGuids, out tempRuntimeAsset.maxTreeDepth);
-               runtimeAsset = tempRuntimeAsset;
-            }
-            else
-            {
-               Debug.LogError("RuntimeBehaviourTreeAsset is null");
-               return;
-            }
+         runtimeAsset = RuntimeAssetHelper.GetOrBake(runtimeAsset,
+#if UNITY_EDITOR
+             authoringAsset
 #else
-            Debug.LogError("RuntimeBehaviourTreeAsset is null");
-            return;
+             null
 #endif
-         }
-         else
-         {
-            runtimeAsset = Instantiate(runtimeAsset);
-            runtimeAsset.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
-         }
+         );
+         if (runtimeAsset == null) return;
 
          if(blackBoard == null)
          {
@@ -116,14 +132,21 @@ namespace BehaviourTree.Runtime
          // Ensure debug provider exists
          debugProvider = GetComponent<RuntimeDebugProvider>();
          if (debugProvider == null) debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();
+
+         // Collect all data providers on this GameObject
+         IBlackboardDataProvider[] providers = GetComponentsInChildren<IBlackboardDataProvider>();
+         dataProviders = new List<IBlackboardDataProvider>(providers);
       }
 
-      public UnityEngine.Object GetSourceTree()
+      public Object GetSourceTree()
       {
          if (runtimeAsset != null && runtimeAsset.sourceTree != null) return runtimeAsset.sourceTree;
+#if UNITY_EDITOR
          return authoringAsset;
-      }
+#else
+         return null;
 #endif
+      }
    }
 }
 

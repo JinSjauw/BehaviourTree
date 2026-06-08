@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Text;
 using BehaviourTree.Core;
 using BehaviourTree.Runtime;
 using UnityEngine;
@@ -40,8 +41,8 @@ namespace BehaviourTree
         {
             if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
-            int a = blackBoard.Get<int>(fields[0].value);
-            int b = blackBoard.Get<int>(fields[1].value);
+            int a = fields[0].IsVariable ? blackBoard.Get<int>(fields[0].value) : fields[0].GetInt();
+            int b = fields[1].IsVariable ? blackBoard.Get<int>(fields[1].value) : fields[1].GetInt();
             NumericCompareOp op = (NumericCompareOp)fields[2].GetInt();
 
             bool result = op switch
@@ -63,8 +64,8 @@ namespace BehaviourTree
         {
             if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
-            float a = blackBoard.Get<float>(fields[0].value);
-            float b = blackBoard.Get<float>(fields[1].value);
+            float a = fields[0].IsVariable ? blackBoard.Get<float>(fields[0].value) : fields[0].GetFloat();
+            float b = fields[1].IsVariable ? blackBoard.Get<float>(fields[1].value) : fields[1].GetFloat();
             NumericCompareOp op = (NumericCompareOp)fields[2].GetInt();
 
             bool result = op switch
@@ -86,8 +87,8 @@ namespace BehaviourTree
         {
             if (!RequireVariable(fields, 0) || !RequireVariableOrConstant(fields, 1) || !RequireConstant(fields, 2)) return NodeState.FAILURE;
 
-            bool a = blackBoard.Get<bool>(fields[0].value);
-            bool b = blackBoard.Get<bool>(fields[1].value);
+            bool a = fields[0].IsVariable ? blackBoard.Get<bool>(fields[0].value) : fields[0].GetBool();
+            bool b = fields[1].IsVariable ? blackBoard.Get<bool>(fields[1].value) : fields[1].GetBool();
             BoolCompareOp op = (BoolCompareOp)fields[2].GetInt();
 
             bool result = op switch
@@ -625,6 +626,36 @@ namespace BehaviourTree
             if (!RequireVariable(fields, 0)) return NodeState.FAILURE;
             Transform tr = blackBoard.Get<Transform>(fields[0].value);
             Debug.Log(tr != null ? tr.name : "null");
+            return NodeState.SUCCESS;
+        }
+
+        /// <summary>
+        /// Logs all elements of a strided integer array variable.
+        /// fields[0] = baseSlot (variable), fields[1] = stride (constant).
+        /// </summary>
+        [BTreeMethod(MethodID.BB_LogArrayInt)]
+        public static NodeState BB_LogArrayInt(BlackBoard blackBoard, ReadOnlySpan<FieldData> fields)
+        {
+            if (!RequireVariable(fields, 0) || !RequireConstant(fields, 1)) return NodeState.FAILURE;
+
+            int baseSlot = fields[0].value;
+            int stride = fields[1].GetInt();
+
+            if (baseSlot < 0 || stride <= 0)
+            {
+                Debug.LogWarning($"[BB_LogArrayInt] Invalid array range: baseSlot={baseSlot}, stride={stride}");
+                return NodeState.FAILURE;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"[BB_LogArrayInt] [{baseSlot}..{baseSlot + stride - 1}] (stride={stride}): ");
+            for (int i = 0; i < stride; i++)
+            {
+                int val = blackBoard.Get<int>(baseSlot + i);
+                sb.Append(val);
+                if (i < stride - 1) sb.Append(", ");
+            }
+            Debug.Log(sb.ToString());
             return NodeState.SUCCESS;
         }
     }

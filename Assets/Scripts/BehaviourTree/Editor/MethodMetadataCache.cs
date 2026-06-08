@@ -13,7 +13,8 @@ namespace BehaviourTree.Editor
     {
         public string fieldName;
         public Type fieldType;
-        public bool isVariable; // true if [BTreeVar] is present
+        public bool isVariable; // true if [SharedVar] is present
+        public bool isArray;    // true if [SharedArray] is present
         public bool isToggleVariable;
         public int index;
     }
@@ -89,7 +90,9 @@ namespace BehaviourTree.Editor
                     foreach (var field in fields)
                     {
                         SharedVarAttribute varAttribute = field.GetCustomAttribute<SharedVarAttribute>();
+                        SharedArrayAttribute arrayAttribute = field.GetCustomAttribute<SharedArrayAttribute>();
                         bool isVar = varAttribute != null;
+                        bool isArray = arrayAttribute != null;
                         bool isToggle = varAttribute?.IsToggleVariable ?? false;
 
                         paramList.Add(new ParamInfo
@@ -97,6 +100,7 @@ namespace BehaviourTree.Editor
                             fieldName = field.Name,
                             fieldType = field.FieldType,
                             isVariable = isVar,
+                            isArray = isArray,
                             isToggleVariable = isToggle,
                             index = idx++
                         });

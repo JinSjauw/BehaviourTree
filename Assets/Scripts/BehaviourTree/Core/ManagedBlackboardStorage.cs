@@ -24,26 +24,74 @@ namespace BehaviourTree.Core
                 return;
             }
 
-            int count = definition.sharedVariables.Count;
-            values = new object[count];
-            slotTypes = new Type[count];
-            slotKinds = new BlackboardSlotKind[count];
+            int varCount = definition.sharedVariables.Count;
 
-            for (int i = 0; i < count; i++)
+            // First pass: compute total slot count accounting for stride
+            int totalSlotCount = 0;
+            for (int i = 0; i < varCount; i++)
             {
-                BlackboardVariable variable = definition.sharedVariables[i];
+                int stride = definition.sharedVariables[i].stride;
+                totalSlotCount += (stride > 1) ? stride : 1;
+            }
+
+            values = new object[totalSlotCount];
+            slotTypes = new Type[totalSlotCount];
+            slotKinds = new BlackboardSlotKind[totalSlotCount];
+
+            // Second pass: fill slots, expanding strided variables
+            int slotIndex = 0;
+            for (int v = 0; v < varCount; v++)
+            {
+                BlackboardVariable variable = definition.sharedVariables[v];
                 Type t = null;
                 if (!FieldTypeHelper.TryGetSystemTypeFromName(variable.typeName, out t))
                 {
                     if (Debug.isDebugBuild)
                     {
-                        Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.typeName}' for variable '{variable.name}' (index {i}).");
+                        Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.typeName}' for variable '{variable.name}' (variableIndex {v}).");
                     }
                 }
-                slotTypes[i] = t;
-                slotKinds[i] = (t != null && !t.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
-                values[i] = variable.GetInitialValue();
+
+                int stride = variable.stride;
+                int actualStride = (stride > 1) ? stride : 1;
+
+                for (int s = 0; s < actualStride; s++)
+                {
+                    slotTypes[slotIndex + s] = t;
+                    slotKinds[slotIndex + s] = (t != null && !t.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
+                    values[slotIndex + s] = variable.GetInitialValue(s);
+                }
+
+                slotIndex += actualStride;
             }
+        }
+
+        /// <summary>
+        /// Given a variable index into definition.sharedVariables,
+        /// returns the base slot index and stride in the flat values array.
+        /// For stride=1 variables, the slot is at the exact index.
+        /// For stride>1 variables (per-agent arrays), baseSlot is the start.
+        /// </summary>
+        public void GetVariableSlotRange(int variableIndex, out int baseSlot, out int stride)
+        {
+            baseSlot = 0;
+            stride = 1;
+
+            if (definition == null || definition.sharedVariables == null
+                || variableIndex < 0 || variableIndex >= definition.sharedVariables.Count)
+            {
+                Debug.LogError($"[ManagedBlackboardStorage] GetVariableSlotRange: variableIndex {variableIndex} is out of bounds (definition has {definition?.sharedVariables?.Count ?? 0} variables).");
+                return;
+            }
+
+            for (int v = 0; v < variableIndex; v++)
+            {
+                int s = definition.sharedVariables[v].stride;
+                baseSlot += (s > 1) ? s : 1;
+            }
+
+            stride = definition.sharedVariables[variableIndex].stride;
+            if (stride <= 1) stride = 1;
         }
 
         public BlackboardSlotKind GetSlotKind(int index)
