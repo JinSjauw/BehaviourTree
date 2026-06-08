@@ -16,7 +16,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 1e40f97115fed17448258c8327882dee
-  graphPosition: {x: -325.70023, y: 350}
+  graphPosition: {x: -140, y: 420}
   runtimeIndex: 1
   leafType: 4
   methodID: 39
@@ -52,7 +52,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 56907fb5200f4134eb4e850e85a023e1
-  graphPosition: {x: 245, y: 805}
+  graphPosition: {x: 245, y: 858.6263}
   runtimeIndex: 11
   leafType: 3
   methodID: 3
@@ -135,7 +135,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 0f631bbd4c7dccc4f92e74e4fa57a4e5
-  graphPosition: {x: -455, y: 595}
+  graphPosition: {x: -455, y: 648.6262}
   runtimeIndex: 3
   compositeType: 2
 --- !u!114 &-4463450769608271822
@@ -154,7 +154,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: e0dc411c0d3a4bb4395ed0c21ecbd5be
-  graphPosition: {x: 630, y: 805}
+  graphPosition: {x: 630, y: 858.6263}
   runtimeIndex: 13
   leafType: 3
   methodID: 3
@@ -216,7 +216,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 4c197ebacdf5bdf42bda7e05808c8f9f
-  graphPosition: {x: -560, y: 805}
+  graphPosition: {x: -560, y: 858.6263}
   runtimeIndex: 7
   leafType: 3
   methodID: 3
@@ -280,7 +280,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 1a639304d97de3449b7fff4adc94e36a
-  graphPosition: {x: -35, y: 595}
+  graphPosition: {x: -35, y: 648.6262}
   runtimeIndex: 4
   compositeType: 2
 --- !u!114 &-2464908940590042709
@@ -299,7 +299,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: cba53012a246dd0438a493c555fe8bc0
-  graphPosition: {x: 50.989838, y: 805}
+  graphPosition: {x: 46.87479, y: 858.6263}
   runtimeIndex: 10
   leafType: 4
   methodID: 10
@@ -350,7 +350,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: f8ca99956ebbdbb4885eade6fbb86df5
-  graphPosition: {x: -0, y: 175}
+  graphPosition: {x: 0, y: 175}
   runtimeIndex: 0
   compositeType: 2
 --- !u!114 &-1685872922816676778
@@ -482,7 +482,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 36849edc1c0757643a37ce1e3a425981
-  graphPosition: {x: 747.9898, y: 595}
+  graphPosition: {x: 746.87476, y: 648.6262}
   runtimeIndex: 6
   compositeType: 2
 --- !u!114 &11400000
@@ -537,7 +537,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 7df5ac743e32a7443a8dfdd19e01768a
-  graphPosition: {x: 158, y: 403}
+  graphPosition: {x: 158, y: 420}
   runtimeIndex: 2
   compositeType: 1
 --- !u!114 &3280531264399642331
@@ -556,7 +556,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 68d2a936a420f5a41bb38d17c1a4068f
-  graphPosition: {x: 455, y: 805}
+  graphPosition: {x: 455, y: 858.6263}
   runtimeIndex: 12
   leafType: 4
   methodID: 10
@@ -605,7 +605,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: f96d6b5acef59a741b25d10866e977a7
-  graphPosition: {x: -350, y: 805}
+  graphPosition: {x: -350, y: 858.6263}
   runtimeIndex: 8
   leafType: 4
   methodID: 10
@@ -656,7 +656,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: a7b5c0cda8f092a40b6e6e6f88416439
-  graphPosition: {x: 365.98993, y: 595}
+  graphPosition: {x: 364.87485, y: 648.6262}
   runtimeIndex: 5
   compositeType: 2
 --- !u!114 &5585989894069705763
@@ -675,7 +675,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 3ad620c96dd3b7a4f99af75efc708ad6
-  graphPosition: {x: -140, y: 805}
+  graphPosition: {x: -140, y: 858.6263}
   runtimeIndex: 9
   leafType: 3
   methodID: 3
@@ -737,7 +737,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: f1b31099dc4c7d0419082279d45b21b1
-  graphPosition: {x: 840, y: 805}
+  graphPosition: {x: 840, y: 858.6263}
   runtimeIndex: 14
   leafType: 4
   methodID: 10
@@ -759,7 +759,7 @@ MonoBehaviour:
     isVariable: 0
     isToggleVariable: 0
     isArray: 0
-    variableName: 
+    variableName: MyRole
     fieldType: 0
     intValue: 222
     floatValue: 0

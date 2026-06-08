@@ -19,18 +19,18 @@ namespace BehaviourTree
         [StructLayout(LayoutKind.Explicit)]
         private struct FloatIntUnion
         {
-            [FieldOffset(0)] public float f;
-            [FieldOffset(0)] public int i;
+            [FieldOffset(0)] public float floatValue;
+            [FieldOffset(0)] public int intValue;
         }
 
-        public static FieldData FromConstant(int v) => new FieldData { mode = 0, value = v };
-        public static FieldData FromConstant(float v)
+        public static FieldData FromConstant(int value) => new FieldData { mode = 0, value = value };
+        public static FieldData FromConstant(float value)
         {
-            return new FieldData { mode = 0, value = new FloatIntUnion { f = v }.i };
+            return new FieldData { mode = 0, value = new FloatIntUnion { floatValue = value }.intValue };
         }
-        public static FieldData FromConstant(bool v)
+        public static FieldData FromConstant(bool value)
         {
-            return new FieldData { mode = 0, value = v ? 1 : 0 };
+            return new FieldData { mode = 0, value = value ? 1 : 0 };
         }
 
         public static FieldData FromVariable(int blackboardIndex) => new FieldData { mode = 1, value = blackboardIndex };
@@ -38,7 +38,7 @@ namespace BehaviourTree
         public bool IsVariable => mode == 1;
         public bool IsConstant => mode == 0;
         public int GetInt() => value;
-        public float GetFloat() => new FloatIntUnion { i = value }.f;
+        public float GetFloat() => new FloatIntUnion { intValue = value }.floatValue;
         public bool GetBool() => value != 0;
     }
 }

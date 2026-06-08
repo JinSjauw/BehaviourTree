@@ -214,8 +214,8 @@ namespace BehaviourTree.Editor
             selectedIndex = 0;
             if (!string.IsNullOrEmpty(currentParentName))
             {
-                int idx = matchingOptions.IndexOf(currentParentName);
-                if (idx >= 0) selectedIndex = idx;
+                int foundIndex = matchingOptions.IndexOf(currentParentName);
+                if (foundIndex >= 0) selectedIndex = foundIndex;
                 else if (isMissing)
                     selectedIndex = matchingOptions.Count - 1;
             }

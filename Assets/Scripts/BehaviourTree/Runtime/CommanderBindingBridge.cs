@@ -85,9 +85,9 @@ namespace BehaviourTree.Runtime
             List<int> cToS = new List<int>();
             List<int> sToC = new List<int>();
 
-            for (int b = 0; b < bindings.Count; b++)
+            for (int bindingIndex = 0; bindingIndex < bindings.Count; bindingIndex++)
             {
-                CommanderBinding binding = bindings[b];
+                CommanderBinding binding = bindings[bindingIndex];
 
                 // Find commander variable index
                 int commanderVarIndex = -1;

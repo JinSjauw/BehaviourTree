@@ -29,17 +29,17 @@ namespace BehaviourTree
             if (childResult == NodeState.RUNNING)
                 return NodeState.RUNNING;
 
-            REPEATER_NodeFields p = NodeFieldBindings.DeserializeREPEATER(fields, blackBoard);
+            REPEATER_NodeFields repeaterParams = NodeFieldBindings.DeserializeREPEATER(fields, blackBoard);
 
-            if (childResult == NodeState.SUCCESS && p.currentCount < p.targetCount - 1)
+            if (childResult == NodeState.SUCCESS && repeaterParams.currentCount < repeaterParams.targetCount - 1)
             {
-                p.currentCount++;
-                NodeFieldBindings.SerializeREPEATER(p, fields, blackBoard);
+                repeaterParams.currentCount++;
+                NodeFieldBindings.SerializeREPEATER(repeaterParams, fields, blackBoard);
                 return NodeState.RUNNING;   // signals handler to re-push child
             }
 
-            p.currentCount = 0;
-            NodeFieldBindings.SerializeREPEATER(p, fields, blackBoard);
+            repeaterParams.currentCount = 0;
+            NodeFieldBindings.SerializeREPEATER(repeaterParams, fields, blackBoard);
             return childResult;
         }
     }

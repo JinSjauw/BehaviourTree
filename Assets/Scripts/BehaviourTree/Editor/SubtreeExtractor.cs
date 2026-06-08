@@ -91,9 +91,9 @@ namespace BehaviourTree.Editor
             {
                 BehaviourNode src = kvp.Key;
                 BehaviourNode dst = kvp.Value;
-                for (int c = 0; c < src.children.Count; c++)
+                for (int childIndex = 0; childIndex < src.children.Count; childIndex++)
                 {
-                    BehaviourNode child = src.children[c];
+                    BehaviourNode child = src.children[childIndex];
                     if (child == null) continue;
                     if (!selectedNodes.Contains(child)) continue;
                     subtreeAsset.AddChild(dst, cloneMap[child]);
@@ -179,15 +179,15 @@ namespace BehaviourTree.Editor
             return candidates;
         }
 
-        private BehaviourNode FindFirstParentOutsideSelection(BehaviourNode node, HashSet<BehaviourNode> selectedNodes, BehaviourTreeAsset tree)
+        private BehaviourNode FindFirstParentOutsideSelection(BehaviourNode childNode, HashSet<BehaviourNode> selectedNodes, BehaviourTreeAsset tree)
         {
             for (int i = 0; i < tree.nodesList.Count; i++)
             {
-                BehaviourNode p = tree.nodesList[i];
-                if (p == null) continue;
-                if (selectedNodes.Contains(p)) continue;
-                if (p.children.Contains(node))
-                    return p;
+                BehaviourNode potentialParent = tree.nodesList[i];
+                if (potentialParent == null) continue;
+                if (selectedNodes.Contains(potentialParent)) continue;
+                if (potentialParent.children.Contains(childNode))
+                    return potentialParent;
             }
             return null;
         }

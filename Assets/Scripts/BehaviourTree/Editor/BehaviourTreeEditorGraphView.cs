@@ -494,7 +494,7 @@ namespace BehaviourTree.Editor
         {
             base.BuildContextualMenu(evt);
 
-            evt.menu.AppendAction($"Create Node", (a) =>
+            evt.menu.AppendAction($"Create Node", _ =>
             {
                 searchWindow.ClearPendingConnection();
                 OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));

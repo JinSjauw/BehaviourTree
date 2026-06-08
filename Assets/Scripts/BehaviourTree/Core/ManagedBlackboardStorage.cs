@@ -40,26 +40,26 @@ namespace BehaviourTree.Core
 
             // Second pass: fill slots, expanding strided variables
             int slotIndex = 0;
-            for (int v = 0; v < varCount; v++)
+            for (int varIndex = 0; varIndex < varCount; varIndex++)
             {
-                BlackboardVariable variable = definition.sharedVariables[v];
-                Type t = null;
-                if (!FieldTypeHelper.TryGetSystemTypeFromName(variable.typeName, out t))
+                BlackboardVariable variable = definition.sharedVariables[varIndex];
+                Type slotType = null;
+                if (!FieldTypeHelper.TryGetSystemTypeFromName(variable.typeName, out slotType))
                 {
                     if (Debug.isDebugBuild)
                     {
-                        Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.typeName}' for variable '{variable.name}' (variableIndex {v}).");
+                        Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.typeName}' for variable '{variable.name}' (variableIndex {varIndex}).");
                     }
                 }
 
-                int stride = variable.stride;
-                int actualStride = (stride > 1) ? stride : 1;
+                int variableStride = variable.stride;
+                int actualStride = (variableStride > 1) ? variableStride : 1;
 
-                for (int s = 0; s < actualStride; s++)
+                for (int slotOffset = 0; slotOffset < actualStride; slotOffset++)
                 {
-                    slotTypes[slotIndex + s] = t;
-                    slotKinds[slotIndex + s] = (t != null && !t.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
-                    values[slotIndex + s] = variable.GetInitialValue(s);
+                    slotTypes[slotIndex + slotOffset] = slotType;
+                    slotKinds[slotIndex + slotOffset] = (slotType != null && !slotType.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
+                    values[slotIndex + slotOffset] = variable.GetInitialValue(slotOffset);
                 }
 
                 slotIndex += actualStride;
@@ -84,10 +84,10 @@ namespace BehaviourTree.Core
                 return;
             }
 
-            for (int v = 0; v < variableIndex; v++)
+            for (int prevIndex = 0; prevIndex < variableIndex; prevIndex++)
             {
-                int s = definition.sharedVariables[v].stride;
-                baseSlot += (s > 1) ? s : 1;
+                int prevStride = definition.sharedVariables[prevIndex].stride;
+                baseSlot += (prevStride > 1) ? prevStride : 1;
             }
 
             stride = definition.sharedVariables[variableIndex].stride;

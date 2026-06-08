@@ -86,7 +86,7 @@ namespace BehaviourTree.Editor
 
                     var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
                     var paramList = new List<ParamInfo>();
-                    int idx = 0;
+                    int fieldIndex = 0;
                     foreach (var field in fields)
                     {
                         SharedVarAttribute varAttribute = field.GetCustomAttribute<SharedVarAttribute>();
@@ -102,7 +102,7 @@ namespace BehaviourTree.Editor
                             isVariable = isVar,
                             isArray = isArray,
                             isToggleVariable = isToggle,
-                            index = idx++
+                            index = fieldIndex++
                         });
                     }
                     _cache[methodId] = paramList;

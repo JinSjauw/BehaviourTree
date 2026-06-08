@@ -258,9 +258,9 @@ namespace BehaviourTree.Editor
             // Filter variables whose type matches and stride matches the param kind
             matchingVars.Clear();
             matchingVarNames.Clear();
-            for (int v = 0; v < blackBoardDef.sharedVariables.Count; v++)
+            for (int variableIndex = 0; variableIndex < blackBoardDef.sharedVariables.Count; variableIndex++)
             {
-                BlackboardVariable bv = blackBoardDef.sharedVariables[v];
+                BlackboardVariable bv = blackBoardDef.sharedVariables[variableIndex];
                 if (!FieldTypeHelper.TryGetSystemTypeFromName(bv.typeName, out Type bbType) || bbType == null)
                     continue;
                 if (bbType != expectedType)

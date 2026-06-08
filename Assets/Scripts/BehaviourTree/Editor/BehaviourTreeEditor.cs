@@ -171,7 +171,7 @@ public class BehaviourTreeEditor : EditorWindow
         foreach (var entry in recentTrees)
         {
             BehaviourTreeAsset capturedAsset = entry.Asset;
-            menu.AppendAction("Open Tree/" + capturedAsset.name, a =>
+            menu.AppendAction("Open Tree/" + capturedAsset.name, _ =>
             {
                 Selection.activeObject = capturedAsset;
                 AssetDatabase.OpenAsset(capturedAsset);

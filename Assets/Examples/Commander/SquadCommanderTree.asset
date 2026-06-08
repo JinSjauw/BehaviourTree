@@ -40,7 +40,7 @@ MonoBehaviour:
   lastChildIndex: 0
   guid: 60e030c66db6a554f95a387e16e16c66
   graphPosition: {x: 228, y: 385}
-  runtimeIndex: -1
+  runtimeIndex: 4
   leafType: 4
   methodID: 65
   fieldEntries:
@@ -48,7 +48,7 @@ MonoBehaviour:
     isVariable: 1
     isToggleVariable: 0
     isArray: 1
-    variableName: AgentRole
+    variableName: Agents
     fieldType: 0
     intValue: 0
     floatValue: 0
@@ -234,16 +234,16 @@ MonoBehaviour:
   m_Name: SquadCommanderTree_BB_Definition
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
-  - name: AgentRole
+  - name: Agents
     typeName: System.Int32
-    stride: 8
-    showInitialValue: 1
+    stride: 4
+    showInitialValue: 0
     intValue: 1
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
-    initialIntValues: 0000000001000000020000000300000004000000050000000600000007000000
+    initialIntValues: 00000000010000000200000003000000
     initialFloatValues: []
     initialBoolValues: 
     initialVector2Values: []
@@ -269,7 +269,7 @@ MonoBehaviour:
   - name: AgentHealth
     typeName: System.Int32
     stride: 4
-    showInitialValue: 1
+    showInitialValue: 0
     intValue: 0
     floatValue: 0
     boolValue: 0
@@ -293,7 +293,11 @@ MonoBehaviour:
     initialFloatValues: []
     initialBoolValues: 
     initialVector2Values: []
-    initialVector3Values: []
+    initialVector3Values:
+    - {x: 0, y: 0, z: 0}
+    - {x: 0, y: 0, z: 0}
+    - {x: 0, y: 0, z: 0}
+    - {x: 0, y: 0, z: 0}
   - name: ThreatLevel
     typeName: System.Single
     stride: 1
@@ -323,7 +327,7 @@ MonoBehaviour:
     initialVector2Values: []
     initialVector3Values: []
   - name: TACTIC OBJECT
-    typeName: UnityEngine.GameObject
+    typeName: UnityEngine.Transform
     stride: 5
     showInitialValue: 0
     intValue: 0

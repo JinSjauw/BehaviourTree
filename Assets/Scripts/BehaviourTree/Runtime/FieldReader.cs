@@ -99,17 +99,17 @@ namespace BehaviourTree
 
         public T GetEnum<T>(int index) where T : struct
         {
-            Type t = typeof(T);
-            if (!t.IsEnum)
+            Type enumType = typeof(T);
+            if (!enumType.IsEnum)
             {
-                Debug.LogWarning($"[FieldReader.GetEnum] {t.Name} is not an enum. Returning default.");
+                Debug.LogWarning($"[FieldReader.GetEnum] {enumType.Name} is not an enum. Returning default.");
                 return default;
             }
 
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsConstant)
             {
-                return (T)Enum.ToObject(t, fd.value);
+                return (T)Enum.ToObject(enumType, fd.value);
             }
 
             object raw = blackboard.Get<object>(fd.value);
@@ -119,7 +119,7 @@ namespace BehaviourTree
             }
             if (raw is int rawInt)
             {
-                return (T)Enum.ToObject(t, rawInt);
+                return (T)Enum.ToObject(enumType, rawInt);
             }
 
             return default;

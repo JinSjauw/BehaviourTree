@@ -149,13 +149,13 @@ namespace BehaviourTree.Editor
                     // Strided reference — draw one ObjectField per element
                     EditorGUILayout.LabelField($"<b> {fieldName} </b> : <color=#19E3B1>{expectedType.Name}[{effectiveStride}]</color>", RichStyle);
                     EditorGUI.indentLevel++;
-                    for (int s = 0; s < effectiveStride; s++)
-                    {
-                        int slotIndex = baseSlot + s;
-                        SerializedProperty element = serializedRefs.GetArrayElementAtIndex(slotIndex);
+                    for (int elementIndex = 0; elementIndex < effectiveStride; elementIndex++)
+                      {
+                          int slotOffsetIndex = baseSlot + elementIndex;
+                         SerializedProperty element = serializedRefs.GetArrayElementAtIndex(slotOffsetIndex);
 
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField($"[{s}]", GUILayout.Width(24));
+                        EditorGUILayout.LabelField($"[{elementIndex}]", GUILayout.Width(24));
                         EditorGUI.BeginChangeCheck();
                         UnityEngine.Object newValue = EditorGUILayout.ObjectField(
                             GUIContent.none,

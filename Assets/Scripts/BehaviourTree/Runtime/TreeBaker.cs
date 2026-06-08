@@ -40,9 +40,9 @@ namespace BehaviourTree.Runtime
             {
                 for (int i = 0; i < commanderDef.sharedVariables.Count; i++)
                 {
-                    BlackboardVariable v = commanderDef.sharedVariables[i];
-                    v.stride = 1; // Per-agent indexing handled by bridge — agent side only needs one slot
-                    runtimeBbDef.sharedVariables.Add(v);
+                    BlackboardVariable variable = commanderDef.sharedVariables[i];
+                    variable.stride = 1; // Per-agent indexing handled by bridge — agent side only needs one slot
+                    runtimeBbDef.sharedVariables.Add(variable);
                 }
             }
 
@@ -119,15 +119,15 @@ namespace BehaviourTree.Runtime
         private static int EnsureInstance(BehaviourNode node, string scopePrefix, List<BakedNodeInstance> instances, List<int> firstChild, List<int> lastChild, Dictionary<string, int> runtimeGuidToIndex)
         {
             string runtimeGuid = string.IsNullOrEmpty(scopePrefix) ? node.guid : scopePrefix + "/" + node.guid;
-            if (runtimeGuidToIndex.TryGetValue(runtimeGuid, out int idx))
-                return idx;
+            if (runtimeGuidToIndex.TryGetValue(runtimeGuid, out int nodeIndex))
+                return nodeIndex;
 
-            idx = instances.Count;
+            nodeIndex = instances.Count;
             instances.Add(new BakedNodeInstance(node, scopePrefix, runtimeGuid));
             firstChild.Add(-1);
             lastChild.Add(-1);
-            runtimeGuidToIndex[runtimeGuid] = idx;
-            return idx;
+            runtimeGuidToIndex[runtimeGuid] = nodeIndex;
+            return nodeIndex;
         }
 
         private static void ProcessChildren(
@@ -273,9 +273,9 @@ namespace BehaviourTree.Runtime
                     SubtreeBinding b = subtreeNode.bindings[i];
                     if (b.subtreeVariableName == subtreeVar.name && !string.IsNullOrEmpty(b.parentVariableName))
                     {
-                        if (rootVarIndexByName.TryGetValue(b.parentVariableName, out int idx))
+                        if (rootVarIndexByName.TryGetValue(b.parentVariableName, out int mappedIndex))
                         {
-                            return idx;
+                            return mappedIndex;
                         }
                         if (!string.IsNullOrEmpty(parentScopePrefix) &&
                             scopeVarIndexByName.TryGetValue(parentScopePrefix, out var parentMap) &&
@@ -341,9 +341,9 @@ namespace BehaviourTree.Runtime
                     if (action.fieldEntries != null)
                     {
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
-                        for (int f = 0; f < action.fieldEntries.Count; f++)
+                        for (int fieldIndex = 0; fieldIndex < action.fieldEntries.Count; fieldIndex++)
                         {
-                            PackFieldEntryWithArray(action.fieldEntries[f], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
+                            PackFieldEntryWithArray(action.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
                         }
                     }
                 }
@@ -360,9 +360,9 @@ namespace BehaviourTree.Runtime
                     if (decorator.fieldEntries != null)
                     {
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
-                        for (int f = 0; f < decorator.fieldEntries.Count; f++)
+                        for (int fieldIndex = 0; fieldIndex < decorator.fieldEntries.Count; fieldIndex++)
                         {
-                            PackFieldEntryWithArray(decorator.fieldEntries[f], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
+                            PackFieldEntryWithArray(decorator.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
                         }
                     }
                 }

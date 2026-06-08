@@ -314,9 +314,9 @@ namespace BehaviourTree.Editor
             return root;
         }
 
-        private bool TryGetAuthoringNodeByGuid(BehaviourTreeAssetBase authoring, string guid, out BehaviourNode node)
+        private bool TryGetAuthoringNodeByGuid(BehaviourTreeAssetBase authoring, string guid, out BehaviourNode resultNode)
         {
-            node = null;
+            resultNode = null;
             if (authoring is not BehaviourTreeAsset treeAsset) return false;
             if (treeAsset.nodesList == null) return false;
 
@@ -325,15 +325,15 @@ namespace BehaviourTree.Editor
                 map = new Dictionary<string, BehaviourNode>();
                 for (int i = 0; i < treeAsset.nodesList.Count; i++)
                 {
-                    BehaviourNode n = treeAsset.nodesList[i];
-                    if (n == null || string.IsNullOrEmpty(n.guid)) continue;
-                    if (!map.ContainsKey(n.guid))
-                        map[n.guid] = n;
+                    BehaviourNode node = treeAsset.nodesList[i];
+                    if (node == null || string.IsNullOrEmpty(node.guid)) continue;
+                    if (!map.ContainsKey(node.guid))
+                        map[node.guid] = node;
                 }
                 authoringNodeLookupCache[treeAsset] = map;
             }
 
-            return map.TryGetValue(guid, out node);
+            return map.TryGetValue(guid, out resultNode);
         }
 
         private void EnsureProxyEdges()
@@ -370,9 +370,9 @@ namespace BehaviourTree.Editor
                 string scopePrefix = runtimeGuid.Substring(0, lastSlash);
                 BehaviourNode node = proxy.NodeSO;
 
-                for (int c = 0; c < node.children.Count; c++)
+                for (int childIndex = 0; childIndex < node.children.Count; childIndex++)
                 {
-                    BehaviourNode child = node.children[c];
+                    BehaviourNode child = node.children[childIndex];
                     if (child == null) continue;
 
                     string directChildGuid = scopePrefix + "/" + child.guid;

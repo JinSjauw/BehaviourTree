@@ -79,10 +79,10 @@ public static class FieldTypeHelper
             type = null;
             if (string.IsNullOrEmpty(typeName)) return false;
 
-            Type t = Type.GetType(typeName);
-            if (t != null)
+            Type resolvedType = Type.GetType(typeName);
+            if (resolvedType != null)
             {
-                type = t;
+                type = resolvedType;
                 return true;
             }
 
