@@ -200,7 +200,7 @@ namespace BehaviourTree.Editor
                 LeafNode created = (LeafNode)destination.CreateNode(typeof(LeafNode));
                 created.SetLeafType(leaf.NodeType);
                 created.name = leaf.name;
-                created.methodID = leaf.methodID;
+                created.methodName = leaf.methodName;
                 created.fieldEntries = leaf.fieldEntries;
                 created.BlackBoardTypeID = leaf.BlackBoardTypeID;
                 dst = created;
@@ -209,7 +209,7 @@ namespace BehaviourTree.Editor
             {
                 DecoratorNode created = (DecoratorNode)destination.CreateNode(typeof(DecoratorNode));
                 created.name = decorator.name;
-                created.methodID = decorator.methodID;
+                created.methodName = decorator.methodName;
                 created.fieldEntries = decorator.fieldEntries;
                 created.BlackBoardTypeID = decorator.BlackBoardTypeID;
                 dst = created;

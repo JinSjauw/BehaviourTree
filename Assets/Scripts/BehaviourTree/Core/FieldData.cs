@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace BehaviourTree
+namespace BehaviourTree.Core
 {
     /// <summary>
     /// Packed field data for a single parameter.

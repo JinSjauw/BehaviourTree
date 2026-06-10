@@ -7,7 +7,8 @@ namespace BehaviourTree.Runtime
         public bool Process(EvaluatorContext context)
         {
             ref NodeData node = ref context.CurrentNode;
-            NodeState result = context.EvaluateLeaf(ref node);
+            int nodeIndex = context.CurrentFrame.nodeIndex;
+            NodeState result = context.EvaluateLeaf(nodeIndex, ref node);
 
             // Conditions never return RUNNING; they succeed or fail immediately.
             context.PopAndNotifyParent(result);

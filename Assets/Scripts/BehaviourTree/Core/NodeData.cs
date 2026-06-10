@@ -7,7 +7,8 @@ namespace BehaviourTree.Core
         public int firstChildIndex;
         public int lastChildIndex;
 
-        public MethodID methodID;
+        /// <summary>Class-based method name.</summary>
+        public string methodName;
         public BlackBoardType blackBoardTypeID;
 
         /// <summary>Index into the parallel FieldData[] array where this node's fields begin.</summary>

@@ -19,21 +19,8 @@ MonoBehaviour:
   graphPosition: {x: -140, y: 420}
   runtimeIndex: 1
   leafType: 4
-  methodID: 39
-  fieldEntries:
-  - fieldName: value
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: MyRole
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
+  methodName: 
+  fieldEntries: []
   comment: 
   BlackBoardTypeID: 0
 --- !u!114 &-5914480343403826214
@@ -55,7 +42,7 @@ MonoBehaviour:
   graphPosition: {x: 245, y: 858.6263}
   runtimeIndex: 11
   leafType: 3
-  methodID: 3
+  methodName: 
   fieldEntries:
   - fieldName: a
     isVariable: 1
@@ -154,50 +141,11 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: e0dc411c0d3a4bb4395ed0c21ecbd5be
-  graphPosition: {x: 630, y: 858.6263}
+  graphPosition: {x: 641.9675, y: 875}
   runtimeIndex: 13
   leafType: 3
-  methodID: 3
-  fieldEntries:
-  - fieldName: a
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: MyRole
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: b
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldType: 0
-    intValue: 3
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: operation
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
+  methodName: 
+  fieldEntries: []
   comment: 
   BlackBoardTypeID: 0
 --- !u!114 &-4024697463822988644
@@ -219,7 +167,7 @@ MonoBehaviour:
   graphPosition: {x: -560, y: 858.6263}
   runtimeIndex: 7
   leafType: 3
-  methodID: 3
+  methodName: 
   fieldEntries:
   - fieldName: a
     isVariable: 1
@@ -302,7 +250,7 @@ MonoBehaviour:
   graphPosition: {x: 46.87479, y: 858.6263}
   runtimeIndex: 10
   leafType: 4
-  methodID: 10
+  methodName: 
   fieldEntries:
   - fieldName: target
     isVariable: 1
@@ -559,7 +507,7 @@ MonoBehaviour:
   graphPosition: {x: 455, y: 858.6263}
   runtimeIndex: 12
   leafType: 4
-  methodID: 10
+  methodName: 
   fieldEntries:
   - fieldName: target
     isVariable: 1
@@ -608,7 +556,7 @@ MonoBehaviour:
   graphPosition: {x: -350, y: 858.6263}
   runtimeIndex: 8
   leafType: 4
-  methodID: 10
+  methodName: 
   fieldEntries:
   - fieldName: target
     isVariable: 1
@@ -678,7 +626,7 @@ MonoBehaviour:
   graphPosition: {x: -140, y: 858.6263}
   runtimeIndex: 9
   leafType: 3
-  methodID: 3
+  methodName: 
   fieldEntries:
   - fieldName: a
     isVariable: 1
@@ -737,36 +685,10 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: f1b31099dc4c7d0419082279d45b21b1
-  graphPosition: {x: 840, y: 858.6263}
+  graphPosition: {x: 840, y: 875}
   runtimeIndex: 14
   leafType: 4
-  methodID: 10
-  fieldEntries:
-  - fieldName: target
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: Health
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: value
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: MyRole
-    fieldType: 0
-    intValue: 222
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
+  methodName: 
+  fieldEntries: []
   comment: 
   BlackBoardTypeID: 0

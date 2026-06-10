@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using BehaviourTree.Core;
 using UnityEditor;
@@ -35,11 +36,18 @@ namespace BehaviourTree.Editor
         [SerializeField] private NodeTooltipData parallelTooltip;
         [SerializeField] private NodeTooltipData priorityTooltip;
 
-        [Header("Method IDs (Actions, Conditions & Decorators)")]
-        [Tooltip("Auto-sized to match the MethodID enum. Fill in each entry manually.")]
-        [SerializeField] private NodeTooltipData[] methodIdTooltips;
+        [Header("Method ID Tooltips (keyed by method name)")]
+        [SerializeField] private List<MethodTooltipEntry> methodTooltips = new();
+
+        [Serializable]
+        public class MethodTooltipEntry
+        {
+            public string methodName;
+            public NodeTooltipData data;
+        }
 
         private static TooltipRegistry loadedAsset;
+        private Dictionary<string, NodeTooltipData> tooltipLookup;
 
         public static TooltipRegistry Load()
         {
@@ -66,18 +74,18 @@ namespace BehaviourTree.Editor
             return registry != null ? registry.GetTooltipInternal(nodeType) : GetDefaultTooltip(nodeType.ToString());
         }
 
-        public static NodeTooltipData GetTooltip(MethodID methodId)
+        public static NodeTooltipData GetTooltip(string methodName)
         {
             var registry = Load();
-            return registry != null ? registry.GetTooltipInternal(methodId) : GetDefaultTooltip(methodId.ToString());
+            return registry != null ? registry.GetTooltipInternal(methodName) : GetDefaultTooltip(methodName);
         }
 
         public static NodeTooltipData GetTooltip(BehaviourNode node)
         {
             if (node is LeafNode actionNode)
-                return GetTooltip(actionNode.methodID);
+                return GetTooltip(actionNode.methodName);
             if (node is DecoratorNode decoratorNode)
-                return GetTooltip(decoratorNode.methodID);
+                return GetTooltip(decoratorNode.methodName);
 
             return GetTooltip(node.NodeType);
         }
@@ -95,14 +103,40 @@ namespace BehaviourTree.Editor
             };
         }
 
-        private NodeTooltipData GetTooltipInternal(MethodID methodId)
+        private NodeTooltipData GetTooltipInternal(string methodName)
         {
-            int index = (int)methodId;
-            if (methodIdTooltips != null && index >= 0 && index < methodIdTooltips.Length)
+            EnsureLookup();
+            if (tooltipLookup != null && tooltipLookup.TryGetValue(methodName, out var data))
+                return data;
+
+            // Auto-create entry for new methods
+            var entry = new MethodTooltipEntry
             {
-                return methodIdTooltips[index] ?? GetDefaultTooltip(methodId.ToString());
+                methodName = methodName,
+                data = new NodeTooltipData
+                {
+                    nodeName = methodName,
+                    description = "No description available.",
+                    returnValues = ""
+                }
+            };
+            methodTooltips.Add(entry);
+            if (tooltipLookup != null)
+                tooltipLookup[methodName] = entry.data;
+            return entry.data;
+        }
+
+        private void EnsureLookup()
+        {
+            if (tooltipLookup == null)
+            {
+                tooltipLookup = new Dictionary<string, NodeTooltipData>();
+                for (int i = 0; i < methodTooltips.Count; i++)
+                {
+                    if (methodTooltips[i] != null && !string.IsNullOrEmpty(methodTooltips[i].methodName))
+                        tooltipLookup[methodTooltips[i].methodName] = methodTooltips[i].data;
+                }
             }
-            return GetDefaultTooltip(methodId.ToString());
         }
 
         private static NodeTooltipData GetDefaultTooltip(string name)
@@ -117,13 +151,11 @@ namespace BehaviourTree.Editor
 
         private void OnEnable()
         {
-            AutoResizeMethodIdArray();
             AutoDeriveFieldDescriptions();
         }
 
         private void OnValidate()
         {
-            AutoResizeMethodIdArray();
             AutoDeriveFieldDescriptions();
             InvalidateCache();
         }
@@ -146,49 +178,21 @@ namespace BehaviourTree.Editor
             }
         }
 
-        private void AutoResizeMethodIdArray()
-        {
-            int enumLength = Enum.GetValues(typeof(MethodID)).Length;
-            if (methodIdTooltips == null || methodIdTooltips.Length != enumLength)
-            {
-                NodeTooltipData[] resized = new NodeTooltipData[enumLength];
-                if (methodIdTooltips != null)
-                {
-                    int copyCount = Mathf.Min(methodIdTooltips.Length, enumLength);
-                    Array.Copy(methodIdTooltips, resized, copyCount);
-                }
-                for (int i = 0; i < resized.Length; i++)
-                {
-                    if (resized[i] == null)
-                    {
-                        MethodID methodId = (MethodID)i;
-                        resized[i] = new NodeTooltipData
-                        {
-                            nodeName = methodId.ToString(),
-                            description = "No description available.",
-                            returnValues = ""
-                        };
-                    }
-                }
-                methodIdTooltips = resized;
-            }
-        }
-
 #if UNITY_EDITOR
 
         private void AutoDeriveFieldDescriptions()
         {
-            if (methodIdTooltips == null) return;
+            if (methodTooltips == null) return;
 
-            for (int i = 0; i < methodIdTooltips.Length; i++)
+            for (int i = 0; i < methodTooltips.Count; i++)
             {
-                if (methodIdTooltips[i] == null) continue;
+                var entry = methodTooltips[i];
+                if (entry == null || entry.data == null || string.IsNullOrEmpty(entry.methodName)) continue;
 
-                MethodID methodId = (MethodID)i;
-                var paramInfos = MethodMetadataCache.GetParamsForMethod(methodId);
+                var paramInfos = MethodMetadataCache.GetParamsForMethod(entry.methodName);
                 if (paramInfos == null || paramInfos.Count == 0) continue;
 
-                var existingDescriptions = methodIdTooltips[i].fieldDescriptions;
+                var existingDescriptions = entry.data.fieldDescriptions;
                 var newDescriptions = new NodeFieldDescription[paramInfos.Count];
 
                 for (int f = 0; f < paramInfos.Count; f++)
@@ -203,7 +207,7 @@ namespace BehaviourTree.Editor
                     };
                 }
 
-                methodIdTooltips[i].fieldDescriptions = newDescriptions;
+                entry.data.fieldDescriptions = newDescriptions;
             }
         }
 
@@ -218,45 +222,5 @@ namespace BehaviourTree.Editor
             return null;
         }
 #endif
-
-        public void SetNodeTypeTooltip(BehaviourNodeType nodeType, NodeTooltipData data)
-        {
-            switch (nodeType)
-            {
-                case BehaviourNodeType.ROOT:
-                    rootTooltip = data;
-                    break;
-                case BehaviourNodeType.SELECTOR:
-                    selectorTooltip = data;
-                    break;
-                case BehaviourNodeType.SEQUENCE:
-                    sequenceTooltip = data;
-                    break;
-                case BehaviourNodeType.PARALLEL:
-                    parallelTooltip = data;
-                    break;
-                case BehaviourNodeType.PRIORITY:
-                    priorityTooltip = data;
-                    break;
-            }
-        }
-
-        public void SetMethodIdTooltip(int index, NodeTooltipData data)
-        {
-            if (methodIdTooltips == null)
-            {
-                methodIdTooltips = new NodeTooltipData[Enum.GetValues(typeof(MethodID)).Length];
-            }
-
-            if (index >= 0 && index < methodIdTooltips.Length)
-            {
-                methodIdTooltips[index] = data;
-            }
-        }
-
-        public void SetMethodIdTooltip(MethodID methodId, NodeTooltipData data)
-        {
-            SetMethodIdTooltip((int)methodId, data);
-        }
     }
 }

@@ -7,14 +7,14 @@ using BehaviourTree.Core;
 namespace BehaviourTree.Editor
 {
     /// <summary>
-    /// Editor-only cache that scans all *_Params struct types and stores their field metadata.
+    /// Editor-only cache that scans all NodeMethod subclasses and stores their field metadata.
     /// </summary>
     public class ParamInfo
     {
         public string fieldName;
         public Type fieldType;
-        public bool isVariable; // true if [SharedVar] is present
-        public bool isArray;    // true if [SharedArray] is present
+        public bool isVariable;
+        public bool isArray;
         public bool isToggleVariable;
         public int index;
     }
@@ -23,91 +23,75 @@ namespace BehaviourTree.Editor
 
     public static class MethodMetadataCache
     {
-        private static Dictionary<MethodID, List<ParamInfo>> _cache;
-        private static HashSet<MethodID> _generateDeserializer;
+        private static Dictionary<string, List<ParamInfo>> cache;
 
-        public static IReadOnlyDictionary<MethodID, List<ParamInfo>> Cache
-        {
-            get
-            {
-                BuildIfNeeded();
-                return _cache;
-            }
-        }
-
-        public static List<ParamInfo> GetParamsForMethod(MethodID id)
+        /// <summary>Lookup by method name string.</summary>
+        public static List<ParamInfo> GetParamsForMethod(string methodName)
         {
             BuildIfNeeded();
-            _cache.TryGetValue(id, out var list);
+            if (string.IsNullOrEmpty(methodName)) return null;
+            cache.TryGetValue(methodName, out var list);
             return list;
-        }
-
-        public static bool ShouldGenerateBindings(MethodID id)
-        {
-            BuildIfNeeded();
-            return _generateDeserializer != null && _generateDeserializer.Contains(id);
         }
 
         private static void BuildIfNeeded()
         {
-            if (_cache != null) return;
-            _cache = new Dictionary<MethodID, List<ParamInfo>>();
-            _generateDeserializer = new HashSet<MethodID>();
+            if (cache != null) return;
+            cache = new Dictionary<string, List<ParamInfo>>();
 
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var asm in assemblies)
             {
                 Type[] types;
-                
-                try
-                {
-                    types = asm.GetTypes();
-                }
-                catch (ReflectionTypeLoadException e)
-                {
-                    types = e.Types;
-                }
+                try { types = asm.GetTypes(); }
+                catch (ReflectionTypeLoadException e) { types = e.Types; }
 
                 foreach (var type in types)
                 {
-                    if (type == null) continue;
+                    if (type == null || type.IsAbstract) continue;
+                    if (!typeof(NodeMethod).IsAssignableFrom(type)) continue;
 
-                    // Look for partial struct types named *_NodeFields
-                    if (!type.IsValueType || !type.Name.EndsWith("_NodeFields")) continue;
-
-                    // Infer MethodID from the name (e.g. HELLOWORLD_NodeFields -> HELLOWORLD)
-                    string methodName = type.Name.Replace("_NodeFields", "");
-                    if (!Enum.TryParse<MethodID>(methodName, out var methodId)) continue;
-
-                    if (type.GetCustomAttribute<GenerateNodeFieldBindingsAttribute>() != null)
+                    NodeMethod temp = null;
+                    string name = null;
+                    try
                     {
-                        _generateDeserializer.Add(methodId);
+                        temp = (NodeMethod)Activator.CreateInstance(type);
+                        name = temp.MethodName;
                     }
+                    catch { continue; }
 
-                    var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
-                    var paramList = new List<ParamInfo>();
-                    int fieldIndex = 0;
-                    foreach (var field in fields)
-                    {
-                        SharedVarAttribute varAttribute = field.GetCustomAttribute<SharedVarAttribute>();
-                        SharedArrayAttribute arrayAttribute = field.GetCustomAttribute<SharedArrayAttribute>();
-                        bool isVar = varAttribute != null;
-                        bool isArray = arrayAttribute != null;
-                        bool isToggle = varAttribute?.IsToggleVariable ?? false;
+                    if (string.IsNullOrEmpty(name) || cache.ContainsKey(name))
+                        continue;
 
-                        paramList.Add(new ParamInfo
-                        {
-                            fieldName = field.Name,
-                            fieldType = field.FieldType,
-                            isVariable = isVar,
-                            isArray = isArray,
-                            isToggleVariable = isToggle,
-                            index = fieldIndex++
-                        });
-                    }
-                    _cache[methodId] = paramList;
+                    cache[name] = BuildParamListFromFields(type);
                 }
             }
+        }
+
+        private static List<ParamInfo> BuildParamListFromFields(Type type)
+        {
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var paramList = new List<ParamInfo>();
+            int fieldIndex = 0;
+            foreach (var field in fields)
+            {
+                SharedVarAttribute varAttribute = field.GetCustomAttribute<SharedVarAttribute>();
+                SharedArrayAttribute arrayAttribute = field.GetCustomAttribute<SharedArrayAttribute>();
+                bool isVar = varAttribute != null;
+                bool isArray = arrayAttribute != null;
+                bool isToggle = varAttribute?.IsToggleVariable ?? false;
+
+                paramList.Add(new ParamInfo
+                {
+                    fieldName = field.Name,
+                    fieldType = field.FieldType,
+                    isVariable = isVar,
+                    isArray = isArray,
+                    isToggleVariable = isToggle,
+                    index = fieldIndex++
+                });
+            }
+            return paramList;
         }
     }
 #endif

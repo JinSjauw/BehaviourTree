@@ -320,12 +320,12 @@ namespace BehaviourTree.Runtime
                     node.runtimeIndex = i;
 
                 NodeData nodeData = new NodeData
-                {
-                    nodeType = node.NodeType,
-                    firstChildIndex = firstChild[i],
-                    lastChildIndex = lastChild[i],
-                    methodID = MethodID.NONE,
-                    blackBoardTypeID = BlackBoardType.SELF,
+                    {
+                        nodeType = node.NodeType,
+                        firstChildIndex = firstChild[i],
+                        lastChildIndex = lastChild[i],
+                        methodName = null,
+                        blackBoardTypeID = BlackBoardType.SELF,
                     fieldDataStartIndex = -1,
                     fieldDataCount = 0,
                 };
@@ -333,7 +333,7 @@ namespace BehaviourTree.Runtime
                 if (node.NodeType == BehaviourNodeType.ACTION || node.NodeType == BehaviourNodeType.CONDITION)
                 {
                     LeafNode action = (LeafNode)node;
-                    nodeData.methodID = action.methodID;
+                    nodeData.methodName = action.methodName;
                     nodeData.blackBoardTypeID = action.BlackBoardTypeID;
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
                     nodeData.fieldDataCount = CountFieldDataForNode(action, runtimeBbDef);
@@ -350,7 +350,7 @@ namespace BehaviourTree.Runtime
                 else if (node.NodeType == BehaviourNodeType.DECORATOR)
                 {
                     DecoratorNode decorator = (DecoratorNode)node;
-                    nodeData.methodID = decorator.methodID;
+                    nodeData.methodName = decorator.methodName;
                     nodeData.blackBoardTypeID = decorator.BlackBoardTypeID;
                     nodeData.firstChildIndex = firstChild[i];
                     nodeData.lastChildIndex = firstChild[i];

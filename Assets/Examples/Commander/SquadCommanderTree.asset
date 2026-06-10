@@ -12,53 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
   m_Name: SEQUENCE
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 7085761742024369406}
-  - {fileID: 3507478667560965321}
-  - {fileID: 1673163919723622397}
-  - {fileID: -3639085484888207537}
+  children: []
   firstChildIndex: 0
   lastChildIndex: 0
   guid: c34eee2ce1a3a8045906848d26300ee5
   graphPosition: {x: 7.999969, y: 191.27037}
   runtimeIndex: 0
   compositeType: 2
---- !u!114 &-3639085484888207537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogArrayInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 60e030c66db6a554f95a387e16e16c66
-  graphPosition: {x: 228, y: 385}
-  runtimeIndex: 4
-  leafType: 4
-  methodID: 65
-  fieldEntries:
-  - fieldName: array
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 1
-    variableName: Agents
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,46 +37,6 @@ MonoBehaviour:
   nodesList:
   - {fileID: 1752067629699456556}
   - {fileID: -8489432877764374766}
-  - {fileID: 3507478667560965321}
-  - {fileID: 7085761742024369406}
-  - {fileID: 1673163919723622397}
-  - {fileID: -3639085484888207537}
---- !u!114 &1673163919723622397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogArrayInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 109b79bd332afc44a93c6df2ec5e300e
-  graphPosition: {x: 385, y: 385}
-  runtimeIndex: 3
-  leafType: 4
-  methodID: 65
-  fieldEntries:
-  - fieldName: array
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 1
-    variableName: AgentHealth
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
 --- !u!114 &1752067629699456556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,91 +56,6 @@ MonoBehaviour:
   guid: 7542506924e268c4bbf3c470edeb4af4
   graphPosition: {x: 0, y: 0}
   runtimeIndex: -1
---- !u!114 &3507478667560965321
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: a34354aef273db7458c2e91400c03f50
-  graphPosition: {x: 70, y: 385}
-  runtimeIndex: 2
-  leafType: 4
-  methodID: 39
-  fieldEntries:
-  - fieldName: value
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: TacticPhase
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &7085761742024369406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_SetInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 5113e16876b1c4f488aab510c2fac0c9
-  graphPosition: {x: -140, y: 385}
-  runtimeIndex: 1
-  leafType: 4
-  methodID: 10
-  fieldEntries:
-  - fieldName: target
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: TacticPhase
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: value
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: TacticPhase
-    fieldType: 0
-    intValue: 3
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
 --- !u!114 &7136467266262413586
 MonoBehaviour:
   m_ObjectHideFlags: 0

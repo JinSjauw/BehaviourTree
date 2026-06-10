@@ -9,6 +9,7 @@ namespace BehaviourTree.Runtime
         private readonly EvaluatorFrame[] stack;
         private readonly NodeData[] nodeDatas;
         private readonly FieldData[] fieldDatas;
+        private readonly NodeMethod[] methodInstances;
         private readonly NodeState[] nodeStates;
         private readonly Dictionary<int, ParallelChildState[]> parallelStates;
 
@@ -21,12 +22,14 @@ namespace BehaviourTree.Runtime
             EvaluatorFrame[] stack,
             NodeData[] nodeDatas,
             FieldData[] fieldDatas,
+            NodeMethod[] methodInstances,
             NodeState[] nodeStates,
             Dictionary<int, ParallelChildState[]> parallelStates)
         {
             this.stack = stack;
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
+            this.methodInstances = methodInstances;
             this.nodeStates = nodeStates;
             this.parallelStates = parallelStates;
         }
@@ -75,26 +78,27 @@ namespace BehaviourTree.Runtime
             nodeStates[stack[FrameCount - 1].nodeIndex] = NodeState.RUNNING;
         }
 
-        public NodeState EvaluateLeaf(ref NodeData nodeData)
+        public NodeState EvaluateLeaf(int nodeIndex, ref NodeData nodeData)
         {
-            BehaviorMethod method = MethodRegistry.GetMethod(nodeData.methodID);
+            NodeMethod method = methodInstances[nodeIndex];
             if (method == null)
             {
-                UnityEngine.Debug.LogError($"Method not found! Returning FAILURE state {nodeData.methodID}");
+                UnityEngine.Debug.LogError($"Method instance not found for node index {nodeIndex}. Returning FAILURE.");
                 return NodeState.FAILURE;
             }
 
-            ReadOnlySpan<FieldData> fieldsSlice = default;
-            if (nodeData.fieldDataCount > 0 && fieldDatas != null && nodeData.fieldDataStartIndex >= 0)
-            {
-                fieldsSlice = new ReadOnlySpan<FieldData>(
-                    fieldDatas,
-                    nodeData.fieldDataStartIndex,
-                    nodeData.fieldDataCount
-                );
-            }
+            method.ResolveInputs(BlackBoard);
 
-            return method.Invoke(BlackBoard, fieldsSlice);
+            NodeState result;
+            if (method is ActionMethod action)
+                result = action.Execute();
+            else if (method is ConditionMethod condition)
+                result = condition.Execute();
+            else
+                return NodeState.FAILURE;
+
+            method.WriteOutputs(BlackBoard);
+            return result;
         }
 
         public ReadOnlySpan<FieldData> GetNodeFields(NodeData node)
@@ -120,6 +124,14 @@ namespace BehaviourTree.Runtime
                     nodeStates[stack[i].nodeIndex] = NodeState.RUNNING;
                 }
             }
+        }
+
+        /// <summary>Returns the class-based method instance for a given node index, or null.</summary>
+        public NodeMethod GetMethodInstance(int nodeIndex)
+        {
+            if (methodInstances == null || nodeIndex < 0 || nodeIndex >= methodInstances.Length)
+                return null;
+            return methodInstances[nodeIndex];
         }
     }
 }

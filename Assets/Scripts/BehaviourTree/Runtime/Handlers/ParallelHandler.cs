@@ -43,7 +43,7 @@ namespace BehaviourTree.Runtime
 
                 if (childData.nodeType == BehaviourNodeType.ACTION || childData.nodeType == BehaviourNodeType.CONDITION)
                 {
-                    child.result = context.EvaluateLeaf(ref childData);
+                    child.result = context.EvaluateLeaf(child.nodeIndex, ref childData);
                 }
             }
 

@@ -14,7 +14,7 @@ namespace BehaviourTree.Editor
     public class BehaviourNodeView : Node
     {
         public BehaviourNode NodeSO { get; private set; }
-        public MethodID LeafMethodID { get; set; }
+        public string LeafMethodName { get; set; }
         public string Guid { get; private set; }
         public bool IsReadOnlyProxy { get; set; }
         public Dictionary<string, string> VariableMappings { get; set; }

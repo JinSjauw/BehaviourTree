@@ -27,26 +27,26 @@ namespace BehaviourTree.Runtime
             }
 
             // Child has returned a result — run the decorator method
-            var method = MethodRegistry.GetDecoratorMethod(node.methodID);
-            if (method == null)
+            NodeMethod instance = context.GetMethodInstance(frame.nodeIndex);
+            if (instance is BehaviourTree.Core.DecoratorMethod decoratorInstance)
             {
-                // No method registered — pass-through
-                context.PopAndNotifyParent(frame.lastChildStatus);
+                decoratorInstance.ResolveInputs(context.BlackBoard);
+                NodeState transformed = decoratorInstance.Execute(frame.lastChildStatus);
+                decoratorInstance.WriteOutputs(context.BlackBoard);
+
+                if (transformed == NodeState.RUNNING)
+                {
+                    frame.lastChildStatus = NodeState.NONE;
+                    context.PushChild(childIndex);
+                    return true;
+                }
+
+                context.PopAndNotifyParent(transformed);
                 return false;
             }
 
-            ReadOnlySpan<FieldData> fields = context.GetNodeFields(node);
-            NodeState transformed = method.Invoke(frame.lastChildStatus, context.BlackBoard, fields);
-
-            if (transformed == NodeState.RUNNING)
-            {
-                // Repeater / Loop pattern: re-push child
-                frame.lastChildStatus = NodeState.NONE;
-                context.PushChild(childIndex);
-                return true;
-            }
-
-            context.PopAndNotifyParent(transformed);
+            // No method registered — pass-through
+            context.PopAndNotifyParent(frame.lastChildStatus);
             return false;
         }
     }

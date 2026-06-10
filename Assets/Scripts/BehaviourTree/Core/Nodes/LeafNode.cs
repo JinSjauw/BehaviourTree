@@ -10,7 +10,8 @@ namespace BehaviourTree.Core
 
         public override BehaviourNodeType NodeType => leafType;
 
-        public MethodID methodID;
+        /// <summary>Class-based method name. Populated by editor when user selects a method.</summary>
+        public string methodName;
         
         /// <summary>Dynamic list of field entries – generated from *_Params metadata.</summary>
         public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();

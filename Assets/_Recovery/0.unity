@@ -521,7 +521,7 @@ MonoBehaviour:
   serializedReferences:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 2128948936}
+  - {fileID: 0}
 --- !u!114 &570381598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -733,7 +733,7 @@ MonoBehaviour:
   serializedReferences:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 923873414}
+  - {fileID: 0}
 --- !u!114 &923873418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -812,7 +812,7 @@ MonoBehaviour:
   serializedReferences:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 1406593630}
+  - {fileID: 0}
 --- !u!114 &1406593633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,7 +899,7 @@ MonoBehaviour:
   serializedReferences:
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 2128948936}
+  - {fileID: 0}
 --- !u!114 &2128948939
 MonoBehaviour:
   m_ObjectHideFlags: 0

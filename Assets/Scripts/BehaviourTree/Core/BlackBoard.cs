@@ -10,7 +10,7 @@ namespace BehaviourTree.Core
         SQUAD = 1,
     }
 
-    public class BlackBoard : MonoBehaviour
+    public class BlackBoard : MonoBehaviour, IBlackBoardAccess
     {        
         /// <summary>Serialized reference-values exclusivly for GameObject / Transform slots.
         /// These are kept in sync with the runtime values[] array.
@@ -204,5 +204,28 @@ namespace BehaviourTree.Core
                 }
             }
         }
+
+        // ── IBlackBoardAccess explicit methods ──────────────────────────
+
+        int IBlackBoardAccess.GetInt(int slot) => Get<int>(slot);
+        void IBlackBoardAccess.SetInt(int slot, int value) => Set(slot, value);
+
+        float IBlackBoardAccess.GetFloat(int slot) => Get<float>(slot);
+        void IBlackBoardAccess.SetFloat(int slot, float value) => Set(slot, value);
+
+        bool IBlackBoardAccess.GetBool(int slot) => Get<bool>(slot);
+        void IBlackBoardAccess.SetBool(int slot, bool value) => Set(slot, value);
+
+        Vector2 IBlackBoardAccess.GetVector2(int slot) => Get<Vector2>(slot);
+        void IBlackBoardAccess.SetVector2(int slot, Vector2 value) => Set(slot, value);
+
+        Vector3 IBlackBoardAccess.GetVector3(int slot) => Get<Vector3>(slot);
+        void IBlackBoardAccess.SetVector3(int slot, Vector3 value) => Set(slot, value);
+
+        GameObject IBlackBoardAccess.GetGameObject(int slot) => Get<GameObject>(slot);
+        void IBlackBoardAccess.SetGameObject(int slot, GameObject value) => Set(slot, value);
+
+        Transform IBlackBoardAccess.GetTransform(int slot) => Get<Transform>(slot);
+        void IBlackBoardAccess.SetTransform(int slot, Transform value) => Set(slot, value);
     }
 }

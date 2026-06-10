@@ -1,23 +1,22 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BehaviourTree.Core;
+using BehaviourTree.Runtime;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-
 
 namespace BehaviourTree.Editor
 {
     public class NodeSearchProvider : ScriptableObject, ISearchWindowProvider
     {
-        private List<MethodID> actionMethods;
-        private List<MethodID> conditionMethods;
-        private List<MethodID> decoratorMethods;
+        private List<string> actionMethods;
+        private List<string> conditionMethods;
+        private List<string> decoratorMethods;
         private List<SearchTreeEntry> cachedSearchTree;
         private BehaviourTreeEditorGraphView graphView;
         private Vector2 creationPosition;
         private Port pendingConnectionPort;
-
         private Texture2D identationIcon;
 
         private void OnDestroy()
@@ -38,106 +37,91 @@ namespace BehaviourTree.Editor
             identationIcon.SetPixel(0, 0, Color.clear);
             identationIcon.Apply();
 
-            actionMethods = new List<MethodID>();
-            conditionMethods = new List<MethodID>();
-            decoratorMethods = new List<MethodID>();
+            BuildMethodLists();
+            MethodRegistry.OnRegistryRebuilt -= OnRegistryRebuilt;
+            MethodRegistry.OnRegistryRebuilt += OnRegistryRebuilt;
+        }
 
-            foreach (var field in typeof(MethodID).GetFields(BindingFlags.Public | BindingFlags.Static))
+        private void OnRegistryRebuilt()
+        {
+            cachedSearchTree = null;
+            BuildMethodLists();
+        }
+
+        private void BuildMethodLists()
+        {
+            actionMethods = new List<string>();
+            conditionMethods = new List<string>();
+            decoratorMethods = new List<string>();
+
+            foreach (string methodName in MethodRegistry.GetMethodNames())
             {
-                MethodCategoryAttribute attribute = field.GetCustomAttribute<MethodCategoryAttribute>();
-                if (attribute == null) continue;
-
-                if(attribute.nodeCategory == BehaviourNodeType.ACTION)
+                BehaviourNodeType category = MethodRegistry.GetCategory(methodName);
+                switch (category)
                 {
-                    actionMethods.Add((MethodID)field.GetValue(null));
-                }
-                else if(attribute.nodeCategory == BehaviourNodeType.CONDITION)
-                {
-                    conditionMethods.Add((MethodID)field.GetValue(null));    
-                }
-                else
-                {
-                    decoratorMethods.Add((MethodID)field.GetValue(null));
+                    case BehaviourNodeType.ACTION:
+                        actionMethods.Add(methodName);
+                        break;
+                    case BehaviourNodeType.CONDITION:
+                        conditionMethods.Add(methodName);
+                        break;
+                    case BehaviourNodeType.DECORATOR:
+                        decoratorMethods.Add(methodName);
+                        break;
                 }
             }
         }
 
-        public void SetCreationPosition(Vector2 position)
-        {
-            creationPosition = position;
-        }
-
-        public void SetPendingConnection(Port port)
-        {
-            pendingConnectionPort = port;
-        }
-
-        public void ClearPendingConnection()
-        {
-            pendingConnectionPort = null;
-        }
+        public void SetCreationPosition(Vector2 position) => creationPosition = position;
+        public void SetPendingConnection(Port port) => pendingConnectionPort = port;
+        public void ClearPendingConnection() => pendingConnectionPort = null;
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
         {
             if (cachedSearchTree != null)
-            {
                 return cachedSearchTree;
-            }
 
             List<SearchTreeEntry> searchList = new List<SearchTreeEntry>();
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Behaviour Nodes"), 0));
 
+            // Composites
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Composites"), 1));
             searchList.Add(new SearchTreeEntry(new GUIContent("Selector", identationIcon))
-            {
-                level = 2,
-                userData = BehaviourNodeType.SELECTOR
-            });
+                { level = 2, userData = BehaviourNodeType.SELECTOR });
             searchList.Add(new SearchTreeEntry(new GUIContent("Sequence", identationIcon))
-            {
-                level = 2,
-                userData = BehaviourNodeType.SEQUENCE,
-            });
+                { level = 2, userData = BehaviourNodeType.SEQUENCE });
             searchList.Add(new SearchTreeEntry(new GUIContent("Parallel", identationIcon))
-            {
-                level = 2,
-                userData = BehaviourNodeType.PARALLEL,
-            });
+                { level = 2, userData = BehaviourNodeType.PARALLEL });
             searchList.Add(new SearchTreeEntry(new GUIContent("Priority", identationIcon))
-            {
-                level = 2,
-                userData = BehaviourNodeType.PRIORITY,
-            });
+                { level = 2, userData = BehaviourNodeType.PRIORITY });
             searchList.Add(new SearchTreeEntry(new GUIContent("Subtree", identationIcon))
-            {
-                level = 1,
-                userData = BehaviourNodeType.SUBTREE,
-            });
+                { level = 1, userData = BehaviourNodeType.SUBTREE });
 
+            // Actions
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Actions"), 1));
-            AddUnprefixedEntries(searchList, 2, actionMethods);
+            AddMethodEntries(searchList, 2, actionMethods, "BB_", "WaitSeconds");
 
+            // Conditionals
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Conditionals"), 1));
-            AddUnprefixedEntries(searchList, 2, conditionMethods);
+            AddMethodEntries(searchList, 2, conditionMethods, "BB_", "Cooldown");
 
+            // Decorators
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Decorators"), 1));
-            foreach (MethodID methodID in decoratorMethods)
+            foreach (string methodName in decoratorMethods)
             {
-                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString(), identationIcon))
-                {
-                    level = 2,
-                    userData = methodID,
-                });
+                searchList.Add(new SearchTreeEntry(new GUIContent(methodName, identationIcon))
+                    { level = 2, userData = methodName });
             }
 
+            // Blackboard subgroup
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Blackboard"), 1));
             AddPrefixedSubGroup(searchList, "Compare", 2, "BB_Compare", actionMethods, conditionMethods);
             AddPrefixedSubGroup(searchList, "Check", 2, "BB_Check", actionMethods, conditionMethods);
             AddMultiplePrefixedSubGroup(searchList, "Write", 2, new[] { "BB_Set", "BB_Clear", "BB_Toggle" }, actionMethods, conditionMethods);
             AddPrefixedSubGroup(searchList, "State", 2, "BB_HasChanged", actionMethods, conditionMethods);
-            //AddPrefixedSubGroup(searchList, "State", 2, "BB_Edge", actionMethods, conditionMethods);
             AddPrefixedSubGroup(searchList, "Debug", 2, "BB_Log", actionMethods, conditionMethods);
 
+            // Time subgroup
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Time"), 1));
             AddExactEntries(searchList, 2, actionMethods, "WaitSeconds");
             AddExactEntries(searchList, 2, conditionMethods, "Cooldown");
@@ -146,9 +130,37 @@ namespace BehaviourTree.Editor
             return cachedSearchTree;
         }
 
-        private void AddMultiplePrefixedSubGroup(List<SearchTreeEntry> searchList, string groupName, int groupLevel, string[] prefixes, List<MethodID> actions, List<MethodID> conditions)
+        private void AddMethodEntries(List<SearchTreeEntry> searchList, int level, List<string> methods, params string[] excludePrefixes)
         {
-            List<MethodID> matches = new List<MethodID>();
+            for (int i = 0; i < methods.Count; i++)
+            {
+                string name = methods[i];
+                bool exclude = false;
+                for (int j = 0; j < excludePrefixes.Length; j++)
+                {
+                    if (name.StartsWith(excludePrefixes[j])) { exclude = true; break; }
+                }
+                if (exclude) continue;
+
+                searchList.Add(new SearchTreeEntry(new GUIContent(name, identationIcon))
+                    { level = level, userData = name });
+            }
+        }
+
+        private void AddPrefixedSubGroup(List<SearchTreeEntry> searchList, string groupName, int groupLevel, string prefix, List<string> actions, List<string> conditions)
+        {
+            List<string> matches = new List<string>();
+            CollectPrefixed(matches, actions, prefix);
+            CollectPrefixed(matches, conditions, prefix);
+            if (matches.Count == 0) return;
+
+            searchList.Add(new SearchTreeGroupEntry(new GUIContent(groupName), groupLevel));
+            AddEntries(searchList, groupLevel + 1, matches);
+        }
+
+        private void AddMultiplePrefixedSubGroup(List<SearchTreeEntry> searchList, string groupName, int groupLevel, string[] prefixes, List<string> actions, List<string> conditions)
+        {
+            List<string> matches = new List<string>();
             for (int i = 0; i < prefixes.Length; i++)
             {
                 CollectPrefixed(matches, actions, prefixes[i]);
@@ -160,73 +172,35 @@ namespace BehaviourTree.Editor
             AddEntries(searchList, groupLevel + 1, matches);
         }
 
-        private void AddPrefixedSubGroup(List<SearchTreeEntry> searchList, string groupName, int groupLevel, string prefix, List<MethodID> actions, List<MethodID> conditions)
+        private void AddEntries(List<SearchTreeEntry> searchList, int level, List<string> entries)
         {
-            List<MethodID> matches = new List<MethodID>();
-            CollectPrefixed(matches, actions, prefix);
-            CollectPrefixed(matches, conditions, prefix);
-            if (matches.Count == 0) return;
-
-            searchList.Add(new SearchTreeGroupEntry(new GUIContent(groupName), groupLevel));
-            AddEntries(searchList, groupLevel + 1, matches);
-        }
-
-        private void AddEntries(List<SearchTreeEntry> searchList, int level, List<MethodID> entries)
-        {
-            entries.Sort((a, b) => string.CompareOrdinal(a.ToString(), b.ToString()));
+            entries.Sort((a, b) => string.CompareOrdinal(a, b));
             for (int i = 0; i < entries.Count; i++)
             {
-                MethodID methodID = entries[i];
-                searchList.Add(new SearchTreeEntry(new GUIContent(methodID.ToString(), identationIcon))
-                {
-                    level = level,
-                    userData = methodID,
-                });
+                string methodName = entries[i];
+                searchList.Add(new SearchTreeEntry(new GUIContent(methodName, identationIcon))
+                    { level = level, userData = methodName });
             }
         }
 
-        private static void CollectPrefixed(List<MethodID> dst, List<MethodID> src, string prefix)
+        private static void CollectPrefixed(List<string> dst, List<string> src, string prefix)
         {
             for (int i = 0; i < src.Count; i++)
             {
-                MethodID id = src[i];
-                if (id.ToString().StartsWith(prefix))
-                {
-                    dst.Add(id);
-                }
+                if (src[i].StartsWith(prefix))
+                    dst.Add(src[i]);
             }
         }
 
-        private void AddExactEntries(List<SearchTreeEntry> searchList, int level, List<MethodID> list, string name)
+        private void AddExactEntries(List<SearchTreeEntry> searchList, int level, List<string> list, string name)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                MethodID id = list[i];
-                if (id.ToString() == name)
+                if (list[i] == name)
                 {
-                    searchList.Add(new SearchTreeEntry(new GUIContent(id.ToString(), identationIcon))
-                    {
-                        level = level,
-                        userData = id,
-                    });
+                    searchList.Add(new SearchTreeEntry(new GUIContent(name, identationIcon))
+                        { level = level, userData = name });
                 }
-            }
-        }
-
-        private void AddUnprefixedEntries(List<SearchTreeEntry> searchList, int level, List<MethodID> list)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                MethodID id = list[i];
-                string name = id.ToString();
-                if (name.StartsWith("BB_")) continue;
-                if (name == "WaitSeconds") continue;
-                if (name == "Cooldown") continue;
-                searchList.Add(new SearchTreeEntry(new GUIContent(name, identationIcon))
-                {
-                    level = level,
-                    userData = id,
-                });
             }
         }
 
@@ -257,25 +231,18 @@ namespace BehaviourTree.Editor
                         createdNodeView = graphView.CreateSubtreeNode(creationPosition);
                         break;
                     }
-                    case MethodID methodID when decoratorMethods.Contains(methodID):
+                    case string methodName:
                     {
-                        createdNodeView = graphView.CreateDecoratorNode(methodID, creationPosition);
+                        if (decoratorMethods.Contains(methodName))
+                            createdNodeView = graphView.CreateDecoratorNode(methodName, creationPosition);
+                        else if (conditionMethods.Contains(methodName))
+                            createdNodeView = graphView.CreateLeafNode(methodName, creationPosition, BehaviourNodeType.CONDITION);
+                        else if (actionMethods.Contains(methodName))
+                            createdNodeView = graphView.CreateLeafNode(methodName, creationPosition, BehaviourNodeType.ACTION);
                         break;
                     }
-                    case MethodID methodID when conditionMethods.Contains(methodID):
-                    {
-                        createdNodeView = graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.CONDITION);
-                        break;
-                    }
-                    case MethodID methodID when actionMethods.Contains(methodID):
-                    {
-                        createdNodeView = graphView.CreateLeafNode(methodID, creationPosition, BehaviourNodeType.ACTION);
-                        break;
-                    }
-
                     case Group _:
-
-                    break;
+                        break;
                 }
 
                 if (pendingConnectionPort != null && createdNodeView != null)

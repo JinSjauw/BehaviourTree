@@ -398,25 +398,25 @@ namespace BehaviourTree.Editor
             return CreateNodeView(node);
         }
         
-        public BehaviourNodeView CreateLeafNode(MethodID methodID, Vector2 position, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
+        public BehaviourNodeView CreateLeafNode(string methodName, Vector2 position, BehaviourNodeType leafType = BehaviourNodeType.ACTION)
         {
             LeafNode node = (LeafNode)tree.CreateNode(typeof(LeafNode));
             //Undo.RecordObject(node, "(BTree) Configure Node");
             node.SetLeafType(leafType);
-            node.methodID = methodID;
-            node.name = methodID.ToString();
+            node.methodName = methodName;
+            node.name = !string.IsNullOrEmpty(methodName) ? methodName : "Untitled";
             node.graphPosition = position;
             tree.RegisterNode(node);
 
             return CreateNodeView(node);
         }
 
-        public BehaviourNodeView CreateDecoratorNode(MethodID methodID, Vector2 position)
+        public BehaviourNodeView CreateDecoratorNode(string methodName, Vector2 position)
         {
             DecoratorNode node = (DecoratorNode)tree.CreateNode(typeof(DecoratorNode));
             //Undo.RecordObject(node, "(BTree) Configure Node");
-            node.methodID = methodID;
-            node.name = methodID.ToString();
+            node.methodName = methodName;
+            node.name = !string.IsNullOrEmpty(methodName) ? methodName : "Untitled";
             node.graphPosition = position;
             tree.RegisterNode(node);
             

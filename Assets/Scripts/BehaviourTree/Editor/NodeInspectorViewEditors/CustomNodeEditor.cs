@@ -9,8 +9,8 @@ namespace BehaviourTree.Editor
     [CustomEditor(typeof(BehaviourNode), true)]
     public class CustomNodeEditor : UnityEditor.Editor
     {
-        private MethodID lastMethodID;
-        private SerializedProperty methodIDProp;
+        private string lastMethodName;
+        private SerializedProperty methodNameProp;
         private SerializedProperty fieldEntriesProp;
         private SerializedProperty blackBoardTypeIDProp;
         private SerializedProperty childrenProp;
@@ -36,7 +36,7 @@ namespace BehaviourTree.Editor
             
             matchingVars = new List<string>();
             matchingVarNames = new List<string>();
-            methodIDProp = serializedObject.FindProperty("methodID");
+            methodNameProp = serializedObject.FindProperty("methodName");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
             childrenProp = serializedObject.FindProperty("children");
@@ -56,9 +56,9 @@ namespace BehaviourTree.Editor
             }
 
             // Check if method changed and rebuild field entries
-            MethodID selectedMethod = (MethodID)methodIDProp.intValue;
-            bool methodChanged = selectedMethod != lastMethodID;
-            lastMethodID = selectedMethod;
+            string selectedMethodName = methodNameProp != null ? methodNameProp.stringValue : null;
+            bool methodChanged = selectedMethodName != lastMethodName;
+            lastMethodName = selectedMethodName;
             EditorGUI.BeginChangeCheck();
 
             if (target is LeafNode && commentProp != null)
@@ -68,7 +68,7 @@ namespace BehaviourTree.Editor
                 EditorGUILayout.Space();
             }
 
-            BuildFieldEntries(selectedMethod, methodChanged);
+            BuildFieldEntries(selectedMethodName, methodChanged);
 
             EditorGUILayout.Space();
             //EditorGUILayout.PropertyField(blackBoardTypeIDProp);
@@ -86,10 +86,11 @@ namespace BehaviourTree.Editor
             EditorGUI.EndDisabledGroup();
         }
 
-        private void BuildFieldEntries(MethodID selectedMethod, bool methodChanged)
+        private void BuildFieldEntries(string selectedMethodName, bool methodChanged)
         {
-            // Draw dynamic field entries based on metadata
-            List<ParamInfo> paramInfoList = MethodMetadataCache.GetParamsForMethod(selectedMethod);
+            List<ParamInfo> paramInfoList = null;
+            if (!string.IsNullOrEmpty(selectedMethodName))
+                paramInfoList = MethodMetadataCache.GetParamsForMethod(selectedMethodName);
 
             if (paramInfoList != null && paramInfoList.Count > 0)
             {
@@ -118,7 +119,7 @@ namespace BehaviourTree.Editor
 
                     EditorGUILayout.BeginVertical("box");
 
-                    string typeLabel = "";
+                    string typeLabel;
                     if(info.fieldType != null && info.fieldType.IsEnum)
                     {
                         typeLabel = $"Enum( {info.fieldType.Name} )";
@@ -141,8 +142,8 @@ namespace BehaviourTree.Editor
                         entryProp.FindPropertyRelative("isToggleVariable").boolValue = varToggle;
                     }
 
-                    // Hide customTickValue when useCustomTick is false
-                    if (selectedMethod == MethodID.Cooldown && info.fieldName == "customTickValue")
+                    // Hide customTickValue when useCustomTick is false (works for both legacy and new)
+                    if (info.fieldName == "customTickValue" && i > 0)
                     {
                         SerializedProperty useCustomEntry = fieldEntriesProp.GetArrayElementAtIndex(i - 1);
                         if (!useCustomEntry.FindPropertyRelative("boolValue").boolValue)
@@ -168,7 +169,8 @@ namespace BehaviourTree.Editor
             {
                 // No metadata; clear entries
                 fieldEntriesProp.ClearArray();
-                EditorGUILayout.HelpBox($"No *_NodeFields struct for MethodID {selectedMethod}. For fields create struct named {selectedMethod}_NodeFields.", MessageType.Info);
+                string methodDesc = !string.IsNullOrEmpty(selectedMethodName) ? selectedMethodName : "(none)";
+                EditorGUILayout.HelpBox($"No schema found for method '{methodDesc}'.", MessageType.Info);
             }
         }
 

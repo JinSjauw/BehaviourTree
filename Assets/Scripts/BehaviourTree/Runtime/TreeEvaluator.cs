@@ -18,6 +18,7 @@ namespace BehaviourTree.Runtime
 
         private NodeData[] nodeDatas;
         private FieldData[] fieldDatas;
+        private NodeMethod[] methodInstances;
         private EvaluatorFrame[] frameStack;
         private int frameCount;
         private Dictionary<int, ParallelChildState[]> parallelStates;
@@ -35,7 +36,24 @@ namespace BehaviourTree.Runtime
             frameStack = new EvaluatorFrame[maxTreeDepth + 1];
             nodeStates = new NodeState[nodeDatas.Length];
             parallelStates = new Dictionary<int, ParallelChildState[]>();
-            context = new EvaluatorContext(frameStack, nodeDatas, fieldDatas, nodeStates, parallelStates);
+
+            // Create class-based method instances for nodes that have methodName set
+            methodInstances = new NodeMethod[nodeDatas.Length];
+            for (int i = 0; i < nodeDatas.Length; i++)
+            {
+                string name = nodeDatas[i].methodName;
+                if (string.IsNullOrEmpty(name)) continue;
+
+                NodeMethod instance = MethodRegistry.CreateInstance(name);
+                if (instance == null) continue;
+
+                FieldBinding[] bindings = MethodRegistry.GetBindings(name);
+                ReadOnlySpan<FieldData> fields = GetNodeFieldSlice(nodeDatas[i]);
+                instance.DeserializeFields(fields, bindings ?? Array.Empty<FieldBinding>());
+                methodInstances[i] = instance;
+            }
+
+            context = new EvaluatorContext(frameStack, nodeDatas, fieldDatas, methodInstances, nodeStates, parallelStates);
 
             if (nodeDatas == null || fieldDatas == null || nodeDatas.Length == 0)
             {
@@ -44,6 +62,13 @@ namespace BehaviourTree.Runtime
             }
 
             isInitialized = true;
+        }
+
+        private ReadOnlySpan<FieldData> GetNodeFieldSlice(NodeData node)
+        {
+            if (node.fieldDataCount > 0 && fieldDatas != null && node.fieldDataStartIndex >= 0)
+                return new ReadOnlySpan<FieldData>(fieldDatas, node.fieldDataStartIndex, node.fieldDataCount);
+            return default;
         }
 
         public void Evaluate(BlackBoard blackBoard)

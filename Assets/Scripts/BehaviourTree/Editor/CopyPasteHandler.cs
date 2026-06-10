@@ -168,16 +168,16 @@ namespace BehaviourTree.Editor
                 case BehaviourNodeType.CONDITION:
                     LeafNode actionNode = ScriptableObject.CreateInstance<LeafNode>();
                     actionNode.SetLeafType(data.nodeType);
-                    actionNode.name = data.methodID.ToString();
-                    actionNode.methodID = data.methodID;
+                    actionNode.name = data.methodName ?? data.nodeType.ToString();
+                    actionNode.methodName = data.methodName;
                     actionNode.fieldEntries = data.fieldEntries;
                     actionNode.BlackBoardTypeID = data.BlackBoardTypeID;
                     node = actionNode;
                     break;
                 case BehaviourNodeType.DECORATOR:
                     DecoratorNode decoratorNode = ScriptableObject.CreateInstance<DecoratorNode>();
-                    decoratorNode.name = data.methodID.ToString();
-                    decoratorNode.methodID = data.methodID;
+                    decoratorNode.name = data.methodName ?? data.nodeType.ToString();
+                    decoratorNode.methodName = data.methodName;
                     decoratorNode.fieldEntries = data.fieldEntries;
                     decoratorNode.BlackBoardTypeID = data.BlackBoardTypeID;
                     node = decoratorNode;
@@ -236,14 +236,14 @@ namespace BehaviourTree.Editor
             if(node.NodeType == BehaviourNodeType.ACTION || node.NodeType == BehaviourNodeType.CONDITION)
             {
                 LeafNode actionNode = (LeafNode)node;
-                serializedNode.methodID = actionNode.methodID;
+                serializedNode.methodName = actionNode.methodName;
                 serializedNode.fieldEntries = actionNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = actionNode.BlackBoardTypeID;
             }
             else if(node.NodeType == BehaviourNodeType.DECORATOR)
             {
                 DecoratorNode decoratorNode = (DecoratorNode)node;
-                serializedNode.methodID = decoratorNode.methodID;
+                serializedNode.methodName = decoratorNode.methodName;
                 serializedNode.fieldEntries = decoratorNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = decoratorNode.BlackBoardTypeID;
             }

@@ -11,7 +11,7 @@ namespace BehaviourTree.Editor
     {
         public BehaviourNodeType nodeType;
         public List<BehaviourNode> children;
-        public MethodID methodID;
+        public string methodName;
         public List<NodeFieldEntry> fieldEntries;
         public BlackBoardType BlackBoardTypeID;
 
