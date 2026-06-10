@@ -82,6 +82,10 @@ namespace BehaviourTree.Runtime
                 {
                     totalFieldDataCount += CountFieldDataForNode(decorator, runtimeBbDef);
                 }
+                else if (node is CompositeNode composite)
+                {
+                    totalFieldDataCount += CountFieldDataForNode(composite, runtimeBbDef);
+                }
             }
 
             fieldDatas = new FieldData[totalFieldDataCount];
@@ -366,6 +370,22 @@ namespace BehaviourTree.Runtime
                         }
                     }
                 }
+                else if (node.NodeType == BehaviourNodeType.COMPOSITE)
+                {
+                    CompositeNode composite = (CompositeNode)node;
+                    nodeData.methodName = composite.methodName;
+                    nodeData.fieldDataStartIndex = currentFieldDataOffset;
+                    nodeData.fieldDataCount = CountFieldDataForNode(composite, runtimeBbDef);
+
+                    if (composite.fieldEntries != null)
+                    {
+                        Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
+                        for (int fieldIndex = 0; fieldIndex < composite.fieldEntries.Count; fieldIndex++)
+                        {
+                            PackFieldEntryWithArray(composite.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, ref currentFieldDataOffset);
+                        }
+                    }
+                }
                 else if (node.NodeType == BehaviourNodeType.SUBTREE)
                 {
                     nodeData.firstChildIndex = firstChild[i];
@@ -419,6 +439,17 @@ namespace BehaviourTree.Runtime
         }
 
         private static int CountFieldDataForNode(DecoratorNode node, BlackboardDefinition runtimeBbDef)
+        {
+            if (node.fieldEntries == null) return 0;
+            int count = 0;
+            for (int i = 0; i < node.fieldEntries.Count; i++)
+            {
+                count += IsArrayFieldEntry(node.fieldEntries[i], runtimeBbDef) ? 2 : 1;
+            }
+            return count;
+        }
+
+        private static int CountFieldDataForNode(CompositeNode node, BlackboardDefinition runtimeBbDef)
         {
             if (node.fieldEntries == null) return 0;
             int count = 0;

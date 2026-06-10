@@ -25,7 +25,9 @@ namespace BehaviourTree.Runtime
             else if (method is ConditionMethod condition)
                 result = condition.Execute();
             else
+            {
                 result = NodeState.FAILURE;
+            }
 
             method.WriteOutputs(ctx.blackBoard);
             return result;

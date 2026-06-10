@@ -13,6 +13,7 @@ namespace BehaviourTree.Editor
         private List<string> actionMethods;
         private List<string> conditionMethods;
         private List<string> decoratorMethods;
+        private List<string> compositeMethods;
         private List<SearchTreeEntry> cachedSearchTree;
         private BehaviourTreeEditorGraphView graphView;
         private Vector2 creationPosition;
@@ -53,6 +54,7 @@ namespace BehaviourTree.Editor
             actionMethods = new List<string>();
             conditionMethods = new List<string>();
             decoratorMethods = new List<string>();
+            compositeMethods = new List<string>();
 
             foreach (string methodName in MethodRegistry.GetMethodNames())
             {
@@ -67,6 +69,9 @@ namespace BehaviourTree.Editor
                         break;
                     case BehaviourNodeType.DECORATOR:
                         decoratorMethods.Add(methodName);
+                        break;
+                    case BehaviourNodeType.COMPOSITE:
+                        compositeMethods.Add(methodName);
                         break;
                 }
             }
@@ -84,16 +89,18 @@ namespace BehaviourTree.Editor
             List<SearchTreeEntry> searchList = new List<SearchTreeEntry>();
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Behaviour Nodes"), 0));
 
-            // Composites
-            searchList.Add(new SearchTreeGroupEntry(new GUIContent("Composites"), 1));
-            searchList.Add(new SearchTreeEntry(new GUIContent("Selector", identationIcon))
-                { level = 2, userData = BehaviourNodeType.SELECTOR });
-            searchList.Add(new SearchTreeEntry(new GUIContent("Sequence", identationIcon))
-                { level = 2, userData = BehaviourNodeType.SEQUENCE });
-            searchList.Add(new SearchTreeEntry(new GUIContent("Parallel", identationIcon))
-                { level = 2, userData = BehaviourNodeType.PARALLEL });
-            searchList.Add(new SearchTreeEntry(new GUIContent("Priority", identationIcon))
-                { level = 2, userData = BehaviourNodeType.PRIORITY });
+            // Composites (dynamic — built-in and custom)
+            if (compositeMethods.Count > 0)
+            {
+                searchList.Add(new SearchTreeGroupEntry(new GUIContent("Composites"), 1));
+                for (int i = 0; i < compositeMethods.Count; i++)
+                {
+                    string methodName = compositeMethods[i];
+                    string displayName = ToDisplayName(methodName);
+                    searchList.Add(new SearchTreeEntry(new GUIContent(displayName, identationIcon))
+                        { level = 2, userData = methodName });
+                }
+            }
             searchList.Add(new SearchTreeEntry(new GUIContent("Subtree", identationIcon))
                 { level = 1, userData = BehaviourNodeType.SUBTREE });
 
@@ -204,6 +211,20 @@ namespace BehaviourTree.Editor
             }
         }
 
+        private static string ToDisplayName(string methodName)
+        {
+            if (string.IsNullOrEmpty(methodName))
+                return methodName;
+
+            if (methodName == methodName.ToUpperInvariant())
+            {
+                // All-caps → Title Case (e.g., "SELECTOR" → "Selector")
+                return char.ToUpperInvariant(methodName[0]) + methodName.Substring(1).ToLowerInvariant();
+            }
+
+            return methodName;
+        }
+
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
             if (graphView == null || !graphView.HasTree)
@@ -221,11 +242,6 @@ namespace BehaviourTree.Editor
             {
                 switch (SearchTreeEntry.userData)
                 {
-                    case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SELECTOR || compositeType == BehaviourNodeType.SEQUENCE || compositeType == BehaviourNodeType.PARALLEL || compositeType == BehaviourNodeType.PRIORITY:
-                    {
-                        createdNodeView = graphView.CreateCompositeNode(compositeType, creationPosition);
-                        break;
-                    }
                     case BehaviourNodeType compositeType when compositeType == BehaviourNodeType.SUBTREE:
                     {
                         createdNodeView = graphView.CreateSubtreeNode(creationPosition);
@@ -233,7 +249,9 @@ namespace BehaviourTree.Editor
                     }
                     case string methodName:
                     {
-                        if (decoratorMethods.Contains(methodName))
+                        if (compositeMethods.Contains(methodName))
+                            createdNodeView = graphView.CreateCompositeNode(methodName, creationPosition);
+                        else if (decoratorMethods.Contains(methodName))
                             createdNodeView = graphView.CreateDecoratorNode(methodName, creationPosition);
                         else if (conditionMethods.Contains(methodName))
                             createdNodeView = graphView.CreateLeafNode(methodName, creationPosition, BehaviourNodeType.CONDITION);

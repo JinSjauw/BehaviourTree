@@ -14,11 +14,9 @@ namespace BehaviourTree.Runtime
             ref NodeData node = ref ctx.nodeDatas[nodeIndex];
             int childIndex = node.firstChildIndex;
 
-            if (childIndex < 0)
-                return NodeState.FAILURE;
+            if (childIndex < 0) return NodeState.FAILURE;
 
             NodeState childResult = TickDispatcher.TickNode(childIndex, ref ctx);
-            ctx.nodeStates[childIndex] = childResult;
 
             NodeMethod instance = ctx.methodInstances[nodeIndex];
             if (instance is DecoratorMethod decoratorInstance)

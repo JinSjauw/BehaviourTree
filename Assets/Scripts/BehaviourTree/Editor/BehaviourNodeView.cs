@@ -51,7 +51,6 @@ namespace BehaviourTree.Editor
                 capabilities &= ~(Capabilities.Movable | Capabilities.Selectable |Capabilities.Deletable | Capabilities.Copiable);
 
             RegisterCallback<MouseDownEvent>(OnNodeClicked);
-            RegisterCallback<DetachFromPanelEvent>(_ => OnNodeSelected = null);
         }
 
         private void OnNodeClicked(MouseDownEvent evt)
@@ -76,16 +75,29 @@ namespace BehaviourTree.Editor
             NodeSO.NodeType switch
             {
                 BehaviourNodeType.ROOT => Color.green,
-                BehaviourNodeType.SELECTOR => Color.blue,
-                BehaviourNodeType.SEQUENCE => Color.purple,
-                BehaviourNodeType.PARALLEL => Color.magenta,
-                BehaviourNodeType.PRIORITY => Color.cyan,
+                BehaviourNodeType.COMPOSITE => GetCompositeColor(NodeSO),
                 BehaviourNodeType.ACTION => Color.red,
                 BehaviourNodeType.CONDITION => Color.yellow,
                 BehaviourNodeType.DECORATOR => Color.chocolate,
                 BehaviourNodeType.SUBTREE => Color.yellowGreen,
                 _ => Color.gray
             };
+        }
+
+        private static Color GetCompositeColor(BehaviourNode node)
+        {
+            if (node is CompositeNode composite && !string.IsNullOrEmpty(composite.methodName))
+            {
+                return composite.methodName switch
+                {
+                    "SELECTOR" => Color.blue,
+                    "SEQUENCE" => Color.purple,
+                    "PARALLEL" => Color.magenta,
+                    "PRIORITY" => Color.cyan,
+                    _ => Color.gray
+                };
+            }
+            return Color.gray;
         }
 
         private void SetPortStyles()
@@ -229,7 +241,7 @@ namespace BehaviourTree.Editor
 
         public void SortChildren()
         {
-            if (NodeSO.NodeType == BehaviourNodeType.SELECTOR || NodeSO.NodeType == BehaviourNodeType.SEQUENCE || NodeSO.NodeType == BehaviourNodeType.PARALLEL || NodeSO.NodeType == BehaviourNodeType.PRIORITY)
+            if (NodeSO.NodeType == BehaviourNodeType.COMPOSITE)
             {
                 NodeSO.children.Sort(SortByHorizontalPosition);
             }

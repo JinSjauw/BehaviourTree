@@ -31,12 +31,8 @@ namespace BehaviourTree.Editor
 
         [Header("Composite Node Types")]
         [SerializeField] private NodeTooltipData rootTooltip;
-        [SerializeField] private NodeTooltipData selectorTooltip;
-        [SerializeField] private NodeTooltipData sequenceTooltip;
-        [SerializeField] private NodeTooltipData parallelTooltip;
-        [SerializeField] private NodeTooltipData priorityTooltip;
 
-        [Header("Method ID Tooltips (keyed by method name)")]
+        [Header("Method Tooltips (keyed by method name)")]
         [SerializeField] private List<MethodTooltipEntry> methodTooltips = new();
 
         [Serializable]
@@ -86,21 +82,16 @@ namespace BehaviourTree.Editor
                 return GetTooltip(actionNode.methodName);
             if (node is DecoratorNode decoratorNode)
                 return GetTooltip(decoratorNode.methodName);
+            if (node is CompositeNode compositeNode)
+                return GetTooltip(compositeNode.methodName);
 
             return GetTooltip(node.NodeType);
         }
 
         private NodeTooltipData GetTooltipInternal(BehaviourNodeType nodeType)
         {
-            return nodeType switch
-            {
-                BehaviourNodeType.ROOT => rootTooltip,
-                BehaviourNodeType.SELECTOR => selectorTooltip,
-                BehaviourNodeType.SEQUENCE => sequenceTooltip,
-                BehaviourNodeType.PARALLEL => parallelTooltip,
-                BehaviourNodeType.PRIORITY => priorityTooltip,
-                _ => GetDefaultTooltip(nodeType.ToString())
-            };
+            if (nodeType == BehaviourNodeType.ROOT) return rootTooltip;
+            return GetDefaultTooltip(nodeType.ToString());
         }
 
         private NodeTooltipData GetTooltipInternal(string methodName)

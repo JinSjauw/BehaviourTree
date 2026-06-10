@@ -273,17 +273,25 @@ namespace BehaviourTree.Editor
         // Simple cycle detection: can't connect if 'target' is an ancestor of 'source'
         private bool WouldCreateCycle(BehaviourNodeView source, BehaviourNodeView target)
         {
-            var current = target;
+            BehaviourNodeView current = target;
             while (current != null)
             {
-                if (current == source) return true;
-                // Walk up via input port (parent)
-                Port parentPort = current.input;
-                if (parentPort?.connections.FirstOrDefault()?.output?.node is not BehaviourNodeView parent)
-                    break;
-                current = parent;
+                if (current == source && current.input.capacity != Port.Capacity.Single) return true;
+                current = GetParent(current);
             }
             return false;
+        }
+
+        private static BehaviourNodeView GetParent(BehaviourNodeView node)
+        {
+            Port inputPort = node.input;
+            if (inputPort == null) return null;
+            foreach (Edge edge in inputPort.connections)
+            {
+                if (edge.output?.node is BehaviourNodeView parent)
+                    return parent;
+            }
+            return null;
         }
 
         private GraphViewChange OnGraphViewChanged(GraphViewChange change)
@@ -389,12 +397,27 @@ namespace BehaviourTree.Editor
         public BehaviourNodeView CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
         {
             CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
-            //Undo.RecordObject(node, "(BTree) Configure Node");
-            node.SetCompositeType(compositeType);
-            node.name = compositeType.ToString();
+            node.SetCompositeType(BehaviourNodeType.COMPOSITE);
+            node.name = BehaviourNodeType.COMPOSITE.ToString();
+            node.methodName = compositeType.ToString();
             node.graphPosition = position;
             tree.RegisterNode(node);
-            
+            return CreateNodeView(node);
+        }
+
+        public BehaviourNodeView CreateCompositeNode(string methodName, Vector2 position)
+        {
+            CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
+
+            BehaviourNodeType compositeType = MethodRegistry.GetCategory(methodName);
+            if (compositeType != BehaviourNodeType.COMPOSITE)
+                compositeType = BehaviourNodeType.COMPOSITE;
+
+            node.SetCompositeType(compositeType);
+            node.name = methodName;
+            node.methodName = methodName;
+            node.graphPosition = position;
+            tree.RegisterNode(node);
             return CreateNodeView(node);
         }
         
@@ -448,8 +471,6 @@ namespace BehaviourTree.Editor
                     if (IsLeafNodeParenting(startNode, port)) continue;
                     if (IsChild(endNode, startNode)) continue;
                     if (WouldCreateCycle(startNode, endNode)) continue;
-                    if (startNode.NodeSO.NodeType == BehaviourNodeType.PARALLEL 
-                    && (endNode.NodeSO.NodeType != BehaviourNodeType.ACTION && endNode.NodeSO.NodeType != BehaviourNodeType.CONDITION)) continue;    
                 }
 
                 compatiblePortsCache.Add(port);

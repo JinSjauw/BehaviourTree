@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using BehaviourTree.Core;
 using UnityEngine;
 
@@ -17,7 +16,6 @@ namespace BehaviourTree.Runtime
         private FieldData[] fieldDatas;
         private NodeMethod[] methodInstances;
         private int[] activeChildIndex;
-        private Dictionary<int, ParallelChildState[]> parallelStates;
         private TickContext tickContext;
         private bool isInitialized = false;
 
@@ -31,7 +29,6 @@ namespace BehaviourTree.Runtime
             this.fieldDatas = fieldDatas;
             nodeStates = new NodeState[nodeDatas.Length];
             activeChildIndex = new int[nodeDatas.Length];
-            parallelStates = new Dictionary<int, ParallelChildState[]>();
 
             // Create class-based method instances for nodes that have methodName set
             methodInstances = new NodeMethod[nodeDatas.Length];
@@ -82,15 +79,12 @@ namespace BehaviourTree.Runtime
             tickContext.methodInstances = methodInstances;
             tickContext.nodeStates = nodeStates;
             tickContext.activeChildIndex = activeChildIndex;
-            tickContext.parallelStates = parallelStates;
             tickContext.blackBoard = blackBoard;
 
             // Effective root has no children — nothing to evaluate
-            if (nodeDatas[0].firstChildIndex < 0)
-                return;
+            if (nodeDatas[0].firstChildIndex < 0) return;
 
-            NodeState result = TickDispatcher.TickNode(0, ref tickContext);
-            nodeStates[0] = result;
+            TickDispatcher.TickNode(0, ref tickContext);
             currentNodeIndex = 0;
         }
     }

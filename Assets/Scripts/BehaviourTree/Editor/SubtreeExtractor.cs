@@ -219,6 +219,8 @@ namespace BehaviourTree.Editor
                 CompositeNode created = (CompositeNode)destination.CreateNode(typeof(CompositeNode));
                 created.SetCompositeType(composite.NodeType);
                 created.name = composite.name;
+                created.methodName = composite.methodName;
+                created.fieldEntries = composite.fieldEntries;
                 dst = created;
             }
             else if (src is SubtreeNode subtree)

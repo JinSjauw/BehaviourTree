@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8489432877764374766
+--- !u!114 &-469164906971404752
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,16 +9,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: WaitSeconds
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: c34eee2ce1a3a8045906848d26300ee5
-  graphPosition: {x: 7.999969, y: 191.27037}
-  runtimeIndex: 0
-  compositeType: 2
+  guid: 5622917cc91ed2843b7be6f59b742dc2
+  graphPosition: {x: -159, y: 385}
+  runtimeIndex: -1
+  leafType: 3
+  methodName: WaitSeconds
+  fieldEntries:
+  - fieldName: duration
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldType: 1
+    intValue: 0
+    floatValue: 2
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  comment: 
+  BlackBoardTypeID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36,7 +53,9 @@ MonoBehaviour:
   commanderBlackboardDefinition: {fileID: 0}
   nodesList:
   - {fileID: 1752067629699456556}
-  - {fileID: -8489432877764374766}
+  - {fileID: 2347659034086734867}
+  - {fileID: 6343947797441484060}
+  - {fileID: -469164906971404752}
 --- !u!114 &1752067629699456556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50,12 +69,71 @@ MonoBehaviour:
   m_Name: ROOT
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
   children:
-  - {fileID: -8489432877764374766}
+  - {fileID: 2347659034086734867}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 7542506924e268c4bbf3c470edeb4af4
   graphPosition: {x: 0, y: 0}
   runtimeIndex: -1
+--- !u!114 &2347659034086734867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: -469164906971404752}
+  - {fileID: 6343947797441484060}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: f03346634027d944d83151eef14d79f5
+  graphPosition: {x: -17, y: 210}
+  runtimeIndex: 0
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+--- !u!114 &6343947797441484060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: BB_LogInt
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: bf6c8489c0a4c94418fed6c20f6c2f10
+  graphPosition: {x: 140, y: 385}
+  runtimeIndex: 1
+  leafType: 3
+  methodName: BB_LogInt
+  fieldEntries:
+  - fieldName: value
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: TacticPhase
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  comment: 
+  BlackBoardTypeID: 0
 --- !u!114 &7136467266262413586
 MonoBehaviour:
   m_ObjectHideFlags: 0

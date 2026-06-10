@@ -182,13 +182,12 @@ namespace BehaviourTree.Editor
                     decoratorNode.BlackBoardTypeID = data.BlackBoardTypeID;
                     node = decoratorNode;
                     break;
-                case BehaviourNodeType.SELECTOR:
-                case BehaviourNodeType.SEQUENCE:
-                case BehaviourNodeType.PARALLEL:
-                case BehaviourNodeType.PRIORITY:
+                case BehaviourNodeType.COMPOSITE:
                     CompositeNode compositeNode = ScriptableObject.CreateInstance<CompositeNode>();
-                    compositeNode.SetCompositeType(data.nodeType);
-                    compositeNode.name = data.nodeType.ToString();
+                    compositeNode.SetCompositeType(BehaviourNodeType.COMPOSITE);
+                    compositeNode.name = data.methodName ?? data.nodeType.ToString();
+                    compositeNode.methodName = data.methodName ?? data.nodeType.ToString();
+                    compositeNode.fieldEntries = data.fieldEntries;
                     node = compositeNode;
                     break;
                 case BehaviourNodeType.SUBTREE:
@@ -246,6 +245,12 @@ namespace BehaviourTree.Editor
                 serializedNode.methodName = decoratorNode.methodName;
                 serializedNode.fieldEntries = decoratorNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = decoratorNode.BlackBoardTypeID;
+            }
+            else if(node.NodeType == BehaviourNodeType.COMPOSITE)
+            {
+                CompositeNode compositeNode = (CompositeNode)node;
+                serializedNode.methodName = compositeNode.methodName;
+                serializedNode.fieldEntries = compositeNode.fieldEntries;
             }
             else if (node.NodeType == BehaviourNodeType.SUBTREE)
             {

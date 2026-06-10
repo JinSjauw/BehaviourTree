@@ -109,7 +109,8 @@ namespace BehaviourTree.Runtime
         {
             if (typeof(ActionMethod).IsAssignableFrom(methodType))    return BehaviourNodeType.ACTION;
             if (typeof(ConditionMethod).IsAssignableFrom(methodType)) return BehaviourNodeType.CONDITION;
-            if (typeof(BehaviourTree.Core.DecoratorMethod).IsAssignableFrom(methodType)) return BehaviourNodeType.DECORATOR;
+            if (typeof(DecoratorMethod).IsAssignableFrom(methodType)) return BehaviourNodeType.DECORATOR;
+            if (typeof(CompositeMethod).IsAssignableFrom(methodType)) return BehaviourNodeType.COMPOSITE;
             return BehaviourNodeType.ACTION;
         }
 

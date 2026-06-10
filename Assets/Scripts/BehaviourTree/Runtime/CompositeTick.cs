@@ -3,93 +3,25 @@ using BehaviourTree.Core;
 namespace BehaviourTree.Runtime
 {
     /// <summary>
-    /// Tick functions for composite nodes (Sequence, Selector, Priority).
-    /// Uses activeChildIndex for resumption across frames.
+    /// Tick function for composite nodes.
+    /// Dispatches to the CompositeMethod instance stored in methodInstances.
+    /// Handles ResolveInputs/WriteOutputs for BB-bound composite fields.
     /// </summary>
     internal static partial class TickFunctions
     {
-        /// <summary>
-        /// Sequence: ticks children left-to-right. Stops on FAILURE, saves index on RUNNING,
-        /// returns SUCCESS when all children succeed. Resets activeChildIndex on completion.
-        /// </summary>
-        internal static NodeState TickSequence(int nodeIndex, ref TickContext ctx)
+        internal static NodeState TickComposite(int nodeIndex, ref TickContext ctx)
         {
-            ref NodeData node = ref ctx.nodeDatas[nodeIndex];
-            if (node.firstChildIndex < 0)
-                return NodeState.SUCCESS;
-
-            int child = ctx.activeChildIndex[nodeIndex];
-            int childCount = node.lastChildIndex - node.firstChildIndex + 1;
-
-            while (child < childCount)
+            NodeMethod method = ctx.methodInstances[nodeIndex];
+            if (method is CompositeMethod composite)
             {
-                int childIndex = node.firstChildIndex + child;
-                NodeState result = TickDispatcher.TickNode(childIndex, ref ctx);
-                ctx.nodeStates[childIndex] = result;
-
-                if (result == NodeState.RUNNING)
-                {
-                    ctx.activeChildIndex[nodeIndex] = child;
-                    return NodeState.RUNNING;
-                }
-                if (result == NodeState.FAILURE)
-                {
-                    ctx.activeChildIndex[nodeIndex] = 0;
-                    return NodeState.FAILURE;
-                }
-
-                child++;
+                composite.ResolveInputs(ctx.blackBoard);
+                NodeState result = composite.Execute(nodeIndex, ref ctx);
+                composite.WriteOutputs(ctx.blackBoard);
+                return result;
             }
 
-            ctx.activeChildIndex[nodeIndex] = 0;
-            return NodeState.SUCCESS;
-        }
-
-        /// <summary>
-        /// Selector: ticks children left-to-right. Stops on SUCCESS, saves index on RUNNING,
-        /// returns FAILURE when all children fail. Resets activeChildIndex on completion.
-        /// </summary>
-        internal static NodeState TickSelector(int nodeIndex, ref TickContext ctx)
-        {
-            ref NodeData node = ref ctx.nodeDatas[nodeIndex];
-            if (node.firstChildIndex < 0)
-                return NodeState.FAILURE;
-
-            int child = ctx.activeChildIndex[nodeIndex];
-            int childCount = node.lastChildIndex - node.firstChildIndex + 1;
-
-            while (child < childCount)
-            {
-                int childIndex = node.firstChildIndex + child;
-                NodeState result = TickDispatcher.TickNode(childIndex, ref ctx);
-                ctx.nodeStates[childIndex] = result;
-
-                if (result == NodeState.RUNNING)
-                {
-                    ctx.activeChildIndex[nodeIndex] = child;
-                    return NodeState.RUNNING;
-                }
-                if (result == NodeState.SUCCESS)
-                {
-                    ctx.activeChildIndex[nodeIndex] = 0;
-                    return NodeState.SUCCESS;
-                }
-
-                child++;
-            }
-
-            ctx.activeChildIndex[nodeIndex] = 0;
+            UnityEngine.Debug.LogError($"Composite method instance not found for node index {nodeIndex}. Returning FAILURE.");
             return NodeState.FAILURE;
-        }
-
-        /// <summary>
-        /// Priority: same as Selector but always re-evaluates from the first child
-        /// every tick (resets activeChildIndex to 0 before ticking).
-        /// </summary>
-        internal static NodeState TickPriority(int nodeIndex, ref TickContext ctx)
-        {
-            ctx.activeChildIndex[nodeIndex] = 0;
-            return TickSelector(nodeIndex, ref ctx);
         }
     }
 }

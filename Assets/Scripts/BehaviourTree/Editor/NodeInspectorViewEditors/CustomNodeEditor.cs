@@ -47,7 +47,7 @@ namespace BehaviourTree.Editor
         {
             serializedObject.Update();
 
-            if(!(target is LeafNode || target is DecoratorNode)) 
+            if(!(target is LeafNode || target is DecoratorNode || target is CompositeNode)) 
             {
                 DrawDefaultInspector();
                 DrawChildrenDebug();

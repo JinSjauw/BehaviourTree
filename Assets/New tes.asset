@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8771489702729678512
+--- !u!114 &-7377026648717409793
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15,10 +15,10 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 9a60d05554399d24eaebe5c91fb16f16
-  graphPosition: {x: -105, y: 560}
-  runtimeIndex: 12
-  leafType: 4
+  guid: a6ebd5a7f79d91146bd9cc1b940abca1
+  graphPosition: {x: 1028.9022, y: 665}
+  runtimeIndex: 16
+  leafType: 3
   methodName: BB_LogInt
   fieldEntries:
   - fieldName: value
@@ -36,7 +36,30 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   comment: 
   BlackBoardTypeID: 0
---- !u!114 &-7489328759261880363
+--- !u!114 &-7152902248383910041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: 5268496488075305632}
+  - {fileID: 8527717477756768648}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 110b3347de2d639488cde90b97cf7153
+  graphPosition: {x: -472.9768, y: 420}
+  runtimeIndex: 2
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+--- !u!114 &-6280508667424968931
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,233 +69,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogGameObject
+  m_Name: BB_LogInt
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: eb9256c333a2ba24abf5d35e5bf19551
-  graphPosition: {x: 840, y: 700}
-  runtimeIndex: 17
-  leafType: 4
-  methodName: BB_LogGameObject
+  guid: 3a5b6fcf360c4e6489267167bff0056c
+  graphPosition: {x: 573.9022, y: 665}
+  runtimeIndex: 14
+  leafType: 3
+  methodName: BB_LogInt
   fieldEntries:
   - fieldName: value
     isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: CurrentCount
-    fieldType: 5
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &-6327586976401137601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: WaitSeconds
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 7d9916890d576564aa1371abc7f6fef8
-  graphPosition: {x: -840, y: 700}
-  runtimeIndex: 8
-  leafType: 4
-  methodName: WaitSeconds
-  fieldEntries:
-  - fieldName: duration
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldType: 1
-    intValue: 0
-    floatValue: 3
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &-5202599874563485263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 3913339507486758733}
-  - {fileID: 4216597471724020634}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 72a487864741d1241825a428f666058c
-  graphPosition: {x: 175, y: 350}
-  runtimeIndex: 4
-  compositeType: 2
---- !u!114 &-4342812311571721643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 5177822068760439217}
-  - {fileID: 541441171972917964}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: bcaf2d25fd561694f99832dd36991798
-  graphPosition: {x: -665, y: 350}
-  runtimeIndex: 2
-  compositeType: 2
---- !u!114 &-4262676309076440148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7481cfd050e4cc741a9e04f011e99a2f, type: 3}
-  m_Name: Repeater
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
-  children:
-  - {fileID: -7489328759261880363}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 1fb9f7827e10fdc43ae0c33ba686419f
-  graphPosition: {x: 840, y: 560}
-  runtimeIndex: 16
-  methodName: Repeater
-  fieldEntries:
-  - fieldName: targetCount
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
+    variableName: MyRole
     fieldType: 0
-    intValue: 3
+    intValue: 0
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
+  comment: 
   BlackBoardTypeID: 0
---- !u!114 &-4203819901799263554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: PARALLEL
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 8237309692064669514}
-  - {fileID: -6327586976401137601}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 63be35ea6c0f42142aa1730674163bf0
-  graphPosition: {x: -980, y: 560}
-  runtimeIndex: 6
-  compositeType: 6
---- !u!114 &-3233181877197886542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: -1032314917787358797}
-  - {fileID: -8771489702729678512}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 6003420a45a1d5d4ebcc5964a87d5a14
-  graphPosition: {x: -234.59837, y: 350}
-  runtimeIndex: 3
-  compositeType: 2
---- !u!114 &-2573098863615654210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 8636017450658746907}
-  - {fileID: -4262676309076440148}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 3a2c9d3d9b15d6247944247f08523eba
-  graphPosition: {x: 595, y: 350}
-  runtimeIndex: 5
-  compositeType: 2
---- !u!114 &-1974468913133758217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SELECTOR
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  children:
-  - {fileID: 4153860342087835880}
-  - {fileID: -4342812311571721643}
-  - {fileID: -3233181877197886542}
-  - {fileID: -5202599874563485263}
-  - {fileID: -2573098863615654210}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: cbbcd7f3d7f1f764b85faffc8677a12c
-  graphPosition: {x: 0, y: 175}
-  runtimeIndex: 0
-  compositeType: 1
---- !u!114 &-1032314917787358797
+--- !u!114 &-5907614029418886375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -287,10 +110,10 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 6473bea30d521cd48b4437822fe61aa9
-  graphPosition: {x: -350, y: 560}
-  runtimeIndex: 11
-  leafType: 3
+  guid: 351f761789e871c4097262837e6b6de0
+  graphPosition: {x: 747, y: 665}
+  runtimeIndex: 15
+  leafType: 2
   methodName: BB_CompareInt
   fieldEntries:
   - fieldName: a
@@ -312,7 +135,7 @@ MonoBehaviour:
     isArray: 0
     variableName: 
     fieldType: 0
-    intValue: 1
+    intValue: 3
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -334,78 +157,7 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   comment: 
   BlackBoardTypeID: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
-  m_Name: New tes
-  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
-  root: {fileID: 4387414753756541288}
-  blackboardDefinition: {fileID: 5607681554156976829}
-  commanderBlackboardDefinition: {fileID: 0}
-  nodesList:
-  - {fileID: 4387414753756541288}
-  - {fileID: -4342812311571721643}
-  - {fileID: 541441171972917964}
-  - {fileID: 5177822068760439217}
-  - {fileID: -3233181877197886542}
-  - {fileID: -8771489702729678512}
-  - {fileID: -1032314917787358797}
-  - {fileID: -5202599874563485263}
-  - {fileID: 4216597471724020634}
-  - {fileID: 3913339507486758733}
-  - {fileID: -2573098863615654210}
-  - {fileID: 8636017450658746907}
-  - {fileID: -1974468913133758217}
-  - {fileID: -6327586976401137601}
-  - {fileID: 4153860342087835880}
-  - {fileID: -4203819901799263554}
-  - {fileID: 8237309692064669514}
-  - {fileID: -4262676309076440148}
-  - {fileID: -7489328759261880363}
---- !u!114 &541441171972917964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 0006ca023f39013479a7813040708cf8
-  graphPosition: {x: -544.37573, y: 560}
-  runtimeIndex: 10
-  leafType: 4
-  methodName: BB_LogInt
-  fieldEntries:
-  - fieldName: value
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: MyRole
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &3913339507486758733
+--- !u!114 &-4228292697284719776
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -420,10 +172,10 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 03eef08426990384b9d114abe9dab696
-  graphPosition: {x: 70, y: 560}
+  guid: f9ac47c39e04b4e43a7dd5fb5c8d0acc
+  graphPosition: {x: 315, y: 665}
   runtimeIndex: 13
-  leafType: 3
+  leafType: 2
   methodName: BB_CompareInt
   fieldEntries:
   - fieldName: a
@@ -467,7 +219,79 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   comment: 
   BlackBoardTypeID: 0
---- !u!114 &4153860342087835880
+--- !u!114 &-4005904485097708615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SELECTOR
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: -2958461494531909659}
+  - {fileID: -7152902248383910041}
+  - {fileID: 4313189994749750828}
+  - {fileID: -527834056583384109}
+  - {fileID: -3693880911567755592}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 4257dabb0b135c64ab8a563bcfc1bfd5
+  graphPosition: {x: -0, y: 221.3925}
+  runtimeIndex: 0
+  compositeType: 1
+  methodName: SELECTOR
+  fieldEntries: []
+--- !u!114 &-3982759520417388291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: PARALLEL
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: 2518580965032364068}
+  - {fileID: 1480455211697608618}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 27eb4d7757bcb6d4fb9ea6978f84a003
+  graphPosition: {x: -910, y: 665}
+  runtimeIndex: 6
+  compositeType: 1
+  methodName: PARALLEL
+  fieldEntries: []
+--- !u!114 &-3693880911567755592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: -5907614029418886375}
+  - {fileID: -7377026648717409793}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: feec2a0ebef656c45a9d1ef2856c30b6
+  graphPosition: {x: 888.90234, y: 420}
+  runtimeIndex: 5
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+--- !u!114 &-2958461494531909659
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -480,11 +304,11 @@ MonoBehaviour:
   m_Name: Inverter
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
   children:
-  - {fileID: -4203819901799263554}
+  - {fileID: -3982759520417388291}
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: 52abe04767e5eea469c81efaedb51486
-  graphPosition: {x: -980, y: 350}
+  guid: 8d737f122e6f3914abe5ef5a67665e17
+  graphPosition: {x: -910, y: 420}
   runtimeIndex: 1
   methodName: Inverter
   fieldEntries:
@@ -515,7 +339,136 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
---- !u!114 &4216597471724020634
+--- !u!114 &-527834056583384109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: -4228292697284719776}
+  - {fileID: -6280508667424968931}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 370cff277ea2feb4682870fdffd9cace
+  graphPosition: {x: 455, y: 420}
+  runtimeIndex: 4
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
+  m_Name: New tes
+  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
+  root: {fileID: 4387414753756541288}
+  blackboardDefinition: {fileID: 5607681554156976829}
+  commanderBlackboardDefinition: {fileID: 0}
+  nodesList:
+  - {fileID: 4387414753756541288}
+  - {fileID: -4005904485097708615}
+  - {fileID: -7152902248383910041}
+  - {fileID: 5268496488075305632}
+  - {fileID: 8527717477756768648}
+  - {fileID: 3251057075993228139}
+  - {fileID: 2760578243278671703}
+  - {fileID: 4313189994749750828}
+  - {fileID: -3693880911567755592}
+  - {fileID: -7377026648717409793}
+  - {fileID: -5907614029418886375}
+  - {fileID: -6280508667424968931}
+  - {fileID: -4228292697284719776}
+  - {fileID: -527834056583384109}
+  - {fileID: -2958461494531909659}
+  - {fileID: -3982759520417388291}
+  - {fileID: 1480455211697608618}
+  - {fileID: 2518580965032364068}
+--- !u!114 &1480455211697608618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: BB_LogGameObject
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: f02bb2966b51296448123b9541554086
+  graphPosition: {x: -1069.4159, y: 875}
+  runtimeIndex: 7
+  leafType: 3
+  methodName: BB_LogGameObject
+  fieldEntries:
+  - fieldName: value
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: CurrentCount
+    fieldType: 5
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  comment: 
+  BlackBoardTypeID: 0
+--- !u!114 &2518580965032364068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: WaitSeconds
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 09c3588e48c9c1546a3fb3fc99987b57
+  graphPosition: {x: -770, y: 875}
+  runtimeIndex: 8
+  leafType: 3
+  methodName: WaitSeconds
+  fieldEntries:
+  - fieldName: duration
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldType: 1
+    intValue: 0
+    floatValue: 5
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  comment: 
+  BlackBoardTypeID: 0
+--- !u!114 &2760578243278671703
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -530,10 +483,10 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: badbbc652e45e3d44a0737c967b18a39
-  graphPosition: {x: 292.332, y: 560}
-  runtimeIndex: 14
-  leafType: 4
+  guid: 518a2bda098d911478da405c6f6f5b73
+  graphPosition: {x: 105, y: 665}
+  runtimeIndex: 12
+  leafType: 3
   methodName: BB_LogInt
   fieldEntries:
   - fieldName: value
@@ -551,26 +504,7 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   comment: 
   BlackBoardTypeID: 0
---- !u!114 &4387414753756541288
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
-  m_Name: ROOT
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  children:
-  - {fileID: -1974468913133758217}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 15f266ca26a11894687af40ac76085ee
-  graphPosition: {x: 0, y: 0}
-  runtimeIndex: -1
---- !u!114 &5177822068760439217
+--- !u!114 &3251057075993228139
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -585,10 +519,114 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: f5b123bf0af4ec8469bd0651b70922c5
-  graphPosition: {x: -770, y: 560}
+  guid: d050cf080c6e02441a6fd7682638e5a4
+  graphPosition: {x: -175, y: 665}
+  runtimeIndex: 11
+  leafType: 2
+  methodName: BB_CompareInt
+  fieldEntries:
+  - fieldName: a
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: MyRole
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: b
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldType: 0
+    intValue: 1
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: operation
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldType: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  comment: 
+  BlackBoardTypeID: 0
+--- !u!114 &4313189994749750828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  children:
+  - {fileID: 3251057075993228139}
+  - {fileID: 2760578243278671703}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 8f5b666b95e8e83468f557269c385a77
+  graphPosition: {x: -35, y: 420}
+  runtimeIndex: 3
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+--- !u!114 &4387414753756541288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  children:
+  - {fileID: -4005904485097708615}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 15f266ca26a11894687af40ac76085ee
+  graphPosition: {x: 0, y: 0}
+  runtimeIndex: -1
+--- !u!114 &5268496488075305632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: BB_CompareInt
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 3099020cd2a849940b0dbb420850e5b0
+  graphPosition: {x: -612.97675, y: 665}
   runtimeIndex: 9
-  leafType: 3
+  leafType: 2
   methodName: BB_CompareInt
   fieldEntries:
   - fieldName: a
@@ -687,7 +725,7 @@ MonoBehaviour:
     initialBoolValues: 
     initialVector2Values: []
     initialVector3Values: []
---- !u!114 &8237309692064669514
+--- !u!114 &8527717477756768648
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -697,84 +735,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogGameObject
+  m_Name: BB_LogInt
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
-  guid: c0ea90b2d3ace8140a86bc3870d3ed7d
-  graphPosition: {x: -1120, y: 700}
-  runtimeIndex: 7
-  leafType: 4
-  methodName: BB_LogGameObject
+  guid: 13b9769c0ed7903408c225ed09a49953
+  graphPosition: {x: -350, y: 665}
+  runtimeIndex: 10
+  leafType: 3
+  methodName: BB_LogInt
   fieldEntries:
   - fieldName: value
     isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: CurrentCount
-    fieldType: 5
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &8636017450658746907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_CompareInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: cb8e3c34304b2ca44a14820d55c37daf
-  graphPosition: {x: 490, y: 560}
-  runtimeIndex: 15
-  leafType: 3
-  methodName: BB_CompareInt
-  fieldEntries:
-  - fieldName: a
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
     variableName: MyRole
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: b
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldType: 0
-    intValue: 3
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: operation
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
     fieldType: 0
     intValue: 0
     floatValue: 0

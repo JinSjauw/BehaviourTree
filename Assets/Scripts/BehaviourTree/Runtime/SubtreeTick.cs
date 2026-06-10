@@ -14,8 +14,7 @@ namespace BehaviourTree.Runtime
             ref NodeData node = ref ctx.nodeDatas[nodeIndex];
             int childIndex = node.firstChildIndex;
 
-            if (childIndex < 0)
-                return NodeState.FAILURE;
+            if (childIndex < 0) return NodeState.FAILURE;
 
             return TickDispatcher.TickNode(childIndex, ref ctx);
         }

@@ -1,17 +1,20 @@
-using System.Collections.Generic;
 using BehaviourTree.Core;
 
-namespace BehaviourTree.Runtime
+namespace BehaviourTree.Runtime.Methods
 {
     /// <summary>
-    /// Tick function for Parallel nodes.
-    /// All children are ticked every frame independently.
+    /// Parallel: all children are ticked every frame independently.
     /// Any FAILURE = overall FAILURE. All SUCCESS = overall SUCCESS.
     /// Any RUNNING = overall RUNNING.
+    /// Child completion state is stored on the instance (one per node).
     /// </summary>
-    internal static partial class TickFunctions
+    [NodeMethod("PARALLEL")]
+    public sealed class ParallelMethod : CompositeMethod
     {
-        internal static NodeState TickParallel(int nodeIndex, ref TickContext ctx)
+
+        private ParallelChildState[] children;
+
+        public override NodeState Execute(int nodeIndex, ref TickContext ctx)
         {
             ref NodeData node = ref ctx.nodeDatas[nodeIndex];
             if (node.firstChildIndex < 0)
@@ -19,14 +22,11 @@ namespace BehaviourTree.Runtime
 
             int childCount = node.lastChildIndex - node.firstChildIndex + 1;
 
-            Dictionary<int, ParallelChildState[]> states = ctx.parallelStates;
-
-            if (!states.TryGetValue(nodeIndex, out ParallelChildState[] children))
+            if (children == null)
             {
                 children = new ParallelChildState[childCount];
                 for (int i = 0; i < childCount; i++)
-                    children[i] = new ParallelChildState { nodeIndex = node.firstChildIndex + i, result = NodeState.NONE };
-                states[nodeIndex] = children;
+                    children[i] = new ParallelChildState { result = NodeState.NONE };
             }
 
             // Tick all children (not just leaves — supports nested composites)
@@ -36,9 +36,9 @@ namespace BehaviourTree.Runtime
                 if (child.result == NodeState.SUCCESS || child.result == NodeState.FAILURE)
                     continue;
 
-                NodeState result = TickDispatcher.TickNode(child.nodeIndex, ref ctx);
+                int childIndex = node.firstChildIndex + i;
+                NodeState result = TickDispatcher.TickNode(childIndex, ref ctx);
                 child.result = result;
-                ctx.nodeStates[child.nodeIndex] = result;
             }
 
             bool anyRunning = false;
@@ -53,14 +53,13 @@ namespace BehaviourTree.Runtime
 
             if (anyFailure)
             {
-                states.Remove(nodeIndex);
+                children = null;
                 return NodeState.FAILURE;
             }
 
-            if (anyRunning)
-                return NodeState.RUNNING;
+            if (anyRunning) return NodeState.RUNNING;
 
-            states.Remove(nodeIndex);
+            children = null;
             return NodeState.SUCCESS;
         }
     }
