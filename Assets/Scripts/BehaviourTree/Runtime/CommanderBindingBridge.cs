@@ -78,9 +78,9 @@ namespace BehaviourTree.Runtime
             if (selfDef == null || commanderDef == null)
                 return;
 
-            Debug.Log($"[Bridge.ResolveBindings] Resolving {bindings.Count} binding(s) for agent {agentID}. " +
-                      $"Commander def: '{commanderDef.name}' ({commanderDef.sharedVariables.Count} vars). " +
-                      $"Self def: '{selfDef.name}' ({selfDef.sharedVariables.Count} vars).");
+            // Debug.Log($"[Bridge.ResolveBindings] Resolving {bindings.Count} binding(s) for agent {agentID}. " +
+            //           $"Commander def: '{commanderDef.name}' ({commanderDef.sharedVariables.Count} vars). " +
+            //           $"Self def: '{selfDef.name}' ({selfDef.sharedVariables.Count} vars).");
 
             List<int> cToS = new List<int>();
             List<int> sToC = new List<int>();
@@ -127,9 +127,9 @@ namespace BehaviourTree.Runtime
                 int selfSlot = selfVarIndex;
                 selfManaged.GetVariableSlotRange(selfVarIndex, out int selfBaseSlot, out int selfStride);
 
-                Debug.Log($"[Bridge.ResolveBindings] Binding: '{binding.commanderVarName}' → '{binding.selfVarName}' | " +
-                          $"Commander: varIdx={commanderVarIndex} baseSlot={commanderBaseSlot} stride={stride} | " +
-                          $"Self: varIdx={selfVarIndex} baseSlot={selfBaseSlot} stride={selfStride}");
+                // Debug.Log($"[Bridge.ResolveBindings] Binding: '{binding.commanderVarName}' → '{binding.selfVarName}' | " +
+                //           $"Commander: varIdx={commanderVarIndex} baseSlot={commanderBaseSlot} stride={stride} | " +
+                //           $"Self: varIdx={selfVarIndex} baseSlot={selfBaseSlot} stride={selfStride}");
                 
                 if (!binding.onlyUpdateCommander)
                 {
@@ -182,7 +182,7 @@ namespace BehaviourTree.Runtime
                 int commanderSlot = (stride > 1) ? commanderBase + agentID : commanderBase;
 
                 object boxed = commanderBB.GetBoxed(commanderSlot);
-                Debug.Log($"[Bridge.CopyCommanderToAgent] agentID={agentID} selfSlot={selfSlot} ← cmdrSlot={commanderSlot}(base={commanderBase}+{(stride>1?agentID:0)}) stride={stride} value={boxed}");
+                //Debug.Log($"[Bridge.CopyCommanderToAgent] agentID={agentID} selfSlot={selfSlot} ← cmdrSlot={commanderSlot}(base={commanderBase}+{(stride>1?agentID:0)}) stride={stride} value={boxed}");
                 selfBB.SetBoxed(selfSlot, boxed);
             }
         }

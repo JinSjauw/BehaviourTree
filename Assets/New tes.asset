@@ -36,6 +36,42 @@ MonoBehaviour:
     transformValue: {fileID: 0}
   comment: 
   BlackBoardTypeID: 0
+--- !u!114 &-7489328759261880363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: BB_LogGameObject
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: eb9256c333a2ba24abf5d35e5bf19551
+  graphPosition: {x: 840, y: 700}
+  runtimeIndex: 17
+  leafType: 4
+  methodName: BB_LogGameObject
+  fieldEntries:
+  - fieldName: value
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: CurrentCount
+    fieldType: 5
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  comment: 
+  BlackBoardTypeID: 0
 --- !u!114 &-6327586976401137601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,6 +150,41 @@ MonoBehaviour:
   graphPosition: {x: -665, y: 350}
   runtimeIndex: 2
   compositeType: 2
+--- !u!114 &-4262676309076440148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7481cfd050e4cc741a9e04f011e99a2f, type: 3}
+  m_Name: Repeater
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
+  children:
+  - {fileID: -7489328759261880363}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 1fb9f7827e10fdc43ae0c33ba686419f
+  graphPosition: {x: 840, y: 560}
+  runtimeIndex: 16
+  methodName: Repeater
+  fieldEntries:
+  - fieldName: targetCount
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldType: 0
+    intValue: 3
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
 --- !u!114 &-4203819901799263554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,42 +227,6 @@ MonoBehaviour:
   graphPosition: {x: -234.59837, y: 350}
   runtimeIndex: 3
   compositeType: 2
---- !u!114 &-3160111227890229324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_LogInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: ceea5c265b9e2674a8ff3b89d09c4080
-  graphPosition: {x: 753.00006, y: 735}
-  runtimeIndex: 17
-  leafType: 4
-  methodName: BB_LogInt
-  fieldEntries:
-  - fieldName: value
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: MyRole
-    fieldType: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
 --- !u!114 &-2573098863615654210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   children:
   - {fileID: 8636017450658746907}
-  - {fileID: 929727372414151718}
+  - {fileID: -4262676309076440148}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 3a2c9d3d9b15d6247944247f08523eba
@@ -326,14 +361,14 @@ MonoBehaviour:
   - {fileID: 4216597471724020634}
   - {fileID: 3913339507486758733}
   - {fileID: -2573098863615654210}
-  - {fileID: -3160111227890229324}
   - {fileID: 8636017450658746907}
   - {fileID: -1974468913133758217}
   - {fileID: -6327586976401137601}
   - {fileID: 4153860342087835880}
-  - {fileID: 929727372414151718}
   - {fileID: -4203819901799263554}
   - {fileID: 8237309692064669514}
+  - {fileID: -4262676309076440148}
+  - {fileID: -7489328759261880363}
 --- !u!114 &541441171972917964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,41 +404,6 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   comment: 
-  BlackBoardTypeID: 0
---- !u!114 &929727372414151718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7481cfd050e4cc741a9e04f011e99a2f, type: 3}
-  m_Name: Repeater
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.DecoratorNode
-  children:
-  - {fileID: -3160111227890229324}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: a7647aa1b7cd3e24f9505cd97b1f4da4
-  graphPosition: {x: 753, y: 560}
-  runtimeIndex: 16
-  methodName: Repeater
-  fieldEntries:
-  - fieldName: targetCount
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldType: 0
-    intValue: 10
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
   BlackBoardTypeID: 0
 --- !u!114 &3913339507486758733
 MonoBehaviour:

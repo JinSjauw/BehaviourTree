@@ -5,24 +5,20 @@ using UnityEngine;
 
 namespace BehaviourTree.Runtime 
 {
-    public struct EvaluatorFrame 
-    {
-        public int nodeIndex;
-        public int childIndex;
-        public NodeState lastChildStatus;
-    }
-
+    /// <summary>
+    /// Tick-based behaviour tree evaluator.
+    /// Replaces the stack-based approach with fixed-size arrays (activeChildIndex)
+    /// and recursive TickNode dispatch. Each call to Evaluate() performs a single
+    /// tick from the root, resuming any RUNNING branches via activeChildIndex.
+    /// </summary>
     public class TreeEvaluator
     {
-        private const int maxIterations = 10000;
-
         private NodeData[] nodeDatas;
         private FieldData[] fieldDatas;
         private NodeMethod[] methodInstances;
-        private EvaluatorFrame[] frameStack;
-        private int frameCount;
+        private int[] activeChildIndex;
         private Dictionary<int, ParallelChildState[]> parallelStates;
-        private EvaluatorContext context;
+        private TickContext tickContext;
         private bool isInitialized = false;
 
         public int currentNodeIndex { get; private set; } = -1;
@@ -33,8 +29,8 @@ namespace BehaviourTree.Runtime
             Debug.Log("Created Tree Evaluator");
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
-            frameStack = new EvaluatorFrame[maxTreeDepth + 1];
             nodeStates = new NodeState[nodeDatas.Length];
+            activeChildIndex = new int[nodeDatas.Length];
             parallelStates = new Dictionary<int, ParallelChildState[]>();
 
             // Create class-based method instances for nodes that have methodName set
@@ -53,8 +49,6 @@ namespace BehaviourTree.Runtime
                 methodInstances[i] = instance;
             }
 
-            context = new EvaluatorContext(frameStack, nodeDatas, fieldDatas, methodInstances, nodeStates, parallelStates);
-
             if (nodeDatas == null || fieldDatas == null || nodeDatas.Length == 0)
             {
                 Debug.LogError("TreeEvaluator: nodeDatas or fieldDatas is NULL");
@@ -71,6 +65,11 @@ namespace BehaviourTree.Runtime
             return default;
         }
 
+        /// <summary>
+        /// Performs a single tick of the behaviour tree from the root.
+        /// Call once per frame. Tree state (activeChildIndex, nodeStates)
+        /// persists across calls so RUNNING branches resume automatically.
+        /// </summary>
         public void Evaluate(BlackBoard blackBoard)
         {
             if (!isInitialized)
@@ -79,64 +78,20 @@ namespace BehaviourTree.Runtime
                 return;
             }
 
-            if (frameCount == 0)
-            {
-                if (nodeDatas[0].firstChildIndex < 0) return;
-                frameStack[frameCount++] = new EvaluatorFrame { nodeIndex = 0, childIndex = 0, lastChildStatus = NodeState.NONE };
-                Array.Clear(nodeStates, 0, nodeStates.Length);
-            }
+            tickContext.nodeDatas = nodeDatas;
+            tickContext.methodInstances = methodInstances;
+            tickContext.nodeStates = nodeStates;
+            tickContext.activeChildIndex = activeChildIndex;
+            tickContext.parallelStates = parallelStates;
+            tickContext.blackBoard = blackBoard;
 
-            currentNodeIndex = -1;
+            // Effective root has no children — nothing to evaluate
+            if (nodeDatas[0].firstChildIndex < 0)
+                return;
 
-            UnwindSpecialComposites();
-
-            context.Reset(frameCount, blackBoard);
-
-            int iterationGuard = 0;
-
-            while (context.FrameCount > 0)
-            {
-                if (iterationGuard > maxIterations)
-                {
-                    Debug.LogError($"TreeEvaluator exceeded {maxIterations} iterations. Possible infinite loop in behaviour tree. Aborting evaluation.");
-                    context.FrameCount = 0;
-                    break;
-                }
-
-                iterationGuard++;
-
-                INodeHandler handler = NodeHandlerRegistry.GetHandler(nodeDatas[frameStack[context.FrameCount - 1].nodeIndex].nodeType);
-                if (handler == null)
-                {
-                    Debug.LogError($"No handler registered for node type {nodeDatas[frameStack[context.FrameCount - 1].nodeIndex].nodeType}");
-                    context.FrameCount--;
-                    continue;
-                }
-
-                handler.Process(context);
-
-                if (context.ShouldBreak)
-                    break;
-            }
-
-            frameCount = context.FrameCount;
-        }
-
-        private void UnwindSpecialComposites()
-        {
-            for (int i = frameCount - 1; i >= 0; i--)
-            {
-                BehaviourNodeType nodeType = nodeDatas[frameStack[i].nodeIndex].nodeType;
-
-                if (nodeType == BehaviourNodeType.PRIORITY)
-                {
-                    if (frameCount > i + 1)
-                        frameCount = i + 1;
-
-                    frameStack[i].childIndex = 0;
-                    frameStack[i].lastChildStatus = NodeState.NONE;
-                }
-            }
+            NodeState result = TickDispatcher.TickNode(0, ref tickContext);
+            nodeStates[0] = result;
+            currentNodeIndex = 0;
         }
     }
 }
