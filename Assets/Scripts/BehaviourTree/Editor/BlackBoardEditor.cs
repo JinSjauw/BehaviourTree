@@ -240,21 +240,7 @@ namespace BehaviourTree.Editor
             SerializedProperty element = serializedRefs.GetArrayElementAtIndex(slotIndex);
             UnityEngine.Object currentRef = element.objectReferenceValue;
             UnityEngine.Object definitionRef = bv.GetBoxedValue(elementIndex) as UnityEngine.Object;
-            bool definitionHasValue = definitionRef != null;
 
-            if (!definitionHasValue)
-            {
-                // No definition value — show ObjectField directly (component-level override not applicable)
-                bool hasValue = currentRef != null;
-                EditorGUI.BeginDisabledGroup(hasValue);
-                UnityEngine.Object newRef = EditorGUILayout.ObjectField(label, currentRef, type, true);
-                EditorGUI.EndDisabledGroup();
-                if (!hasValue)
-                    element.objectReferenceValue = newRef;
-                return;
-            }
-
-            // Definition has a value — show override pattern
             bool isOverridden = overrideActiveSlots.Contains(slotIndex) || blackboard.IsReferenceSlotOverridden(slotIndex);
 
             if (!isOverridden)

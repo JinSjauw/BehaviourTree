@@ -606,6 +606,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
   serializedReferences:
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   valueOverrides:
   - variableName: newVariable
     elementIndex: 0
@@ -615,6 +624,18 @@ MonoBehaviour:
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
+    vector4Value: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    enumUnderlyingValue: 0
+  - variableName: Nice
+    elementIndex: 0
+    typeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 34, y: 55, z: 667}
     vector4Value: {x: 0, y: 0, z: 0, w: 0}
     colorValue: {r: 0, g: 0, b: 0, a: 0}
     enumUnderlyingValue: 0

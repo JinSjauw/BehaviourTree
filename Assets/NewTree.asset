@@ -80,7 +80,7 @@ MonoBehaviour:
     isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: NEWGOBJECT
+    variableName: TestVariable
     fieldTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     intValue: 0
@@ -106,6 +106,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
   - rid: 3017916708520198258
+  - rid: 3017916708520198398
+  - rid: 3017916708520198399
+  - rid: 3017916708520198400
+  - rid: 3017916708520198401
+  - rid: 3017916708520198402
   references:
     version: 2
     RefIds:
@@ -118,6 +123,51 @@ MonoBehaviour:
           PublicKeyToken=b77a5c561934e089
         singleValue: 5
         arrayValues: 
+    - rid: 3017916708520198398
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TestVariable
+        variableStride: 1
+        variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {fileID: 0}
+        arrayValues: []
+    - rid: 3017916708520198399
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Transform, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TestTRANSVar
+        variableStride: 1
+        variableTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {fileID: 7797062281529876798, guid: 01efd14619743994991c2b134f3d8aaa, type: 3}
+        arrayValues: []
+    - rid: 3017916708520198400
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: WOW
+        variableStride: 1
+        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        singleValue: 0
+        arrayValues: []
+    - rid: 3017916708520198401
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: Nice
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {x: 0, y: 0, z: 0}
+        arrayValues: []
+    - rid: 3017916708520198402
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: WOWOW
+        variableStride: 5
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        singleValue: 0
+        arrayValues: 20000000bd010000170000002c020000a5020000
 --- !u!114 &-2539157933549927008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,7 +193,7 @@ MonoBehaviour:
     isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: TransofrmTEster
+    variableName: TestTRANSVar
     fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     intValue: 0
