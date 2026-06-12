@@ -158,6 +158,8 @@ public partial class BlackBoardView : VisualElement
             }
         });
 
+        imgui.style.flexGrow = 1;
+        imgui.style.flexShrink = 1;
         blackBoardViewContainer.Add(imgui);
     }
 

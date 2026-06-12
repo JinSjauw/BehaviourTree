@@ -25,7 +25,7 @@ namespace BehaviourTree.Editor
 
             float lineHeight = EditorGUIUtility.singleLineHeight;
             float spacing = 2f;
-            Rect r = new Rect(position.x, position.y, position.width, lineHeight);
+            Rect displayRect = new Rect(position.x, position.y, position.width, lineHeight);
 
             BlackboardVariableBase bv = property.managedReferenceValue as BlackboardVariableBase;
             Type currentType = bv?.GetValueType();
@@ -36,15 +36,15 @@ namespace BehaviourTree.Editor
             EditorGUIUtility.labelWidth = 44f;
 
             // ── Row 1: Name ───────────────────────────────────────────
-            EditorGUI.PropertyField(r, nameProp, new GUIContent("Name"));
-            r.y += lineHeight + spacing;
+            EditorGUI.PropertyField(displayRect, nameProp, new GUIContent("Name"));
+            displayRect.y += lineHeight + spacing;
 
             // ── Row 2: Type dropdown [│ Stride if array] ─────────────
             if (stride > 1)
             {
                 float strideWidth = 44f;
-                Rect typeRect = new Rect(r.x, r.y, r.width - strideWidth - 4f, r.height);
-                Rect strideRect = new Rect(r.x + typeRect.width + 4f, r.y, strideWidth, r.height);
+                Rect typeRect = new Rect(displayRect.x, displayRect.y, displayRect.width - strideWidth - 4f, displayRect.height);
+                Rect strideRect = new Rect(displayRect.x + typeRect.width + 4f, displayRect.y, strideWidth, displayRect.height);
 
                 int currentTypeIndex = GetCommonTypeIndex(currentType);
                 int newTypeIndex = EditorGUI.Popup(typeRect, "Type", currentTypeIndex, GetTypeDisplayNames());
@@ -68,7 +68,7 @@ namespace BehaviourTree.Editor
             }
             else
             {
-                Rect typeRect = new Rect(r.x, r.y, r.width, r.height);
+                Rect typeRect = new Rect(displayRect.x, displayRect.y, displayRect.width, displayRect.height);
                 int currentTypeIndex = GetCommonTypeIndex(currentType);
                 int newTypeIndex = EditorGUI.Popup(typeRect, "Type", currentTypeIndex, GetTypeDisplayNames());
                 if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Length)
@@ -78,14 +78,16 @@ namespace BehaviourTree.Editor
                     return;
                 }
             }
-            r.y += lineHeight + spacing;
+            displayRect.y += lineHeight + spacing;
+
+            float valueFieldHeight = GetValueFieldHeight(currentType);
 
             // ── Row 3: Value / Stride header ─────────────────────────
             if (stride > 1)
             {
                 // Array mode: show "Values" label, editor fields follow below
-                EditorGUI.LabelField(r, "Values", $"[{stride}]");
-                r.y += lineHeight + spacing;
+                EditorGUI.LabelField(displayRect, "Values", $"[{stride}]");
+                displayRect.y += lineHeight + spacing;
 
                 // Ensure array size matches stride
                 if (arrayValuesProp != null)
@@ -98,20 +100,21 @@ namespace BehaviourTree.Editor
                     for (int i = 0; i < stride; i++)
                     {
                         SerializedProperty elementProp = arrayValuesProp.GetArrayElementAtIndex(i);
-                        Rect elementRect = new Rect(r.x, r.y, r.width, r.height);
+                        Rect elementRect = new Rect(displayRect.x, displayRect.y, displayRect.width, valueFieldHeight);
                         DrawValueField(elementRect, $"[{i}]", elementProp, currentType);
-                        r.y += lineHeight + spacing;
+                        displayRect.y += valueFieldHeight + spacing;
                     }
                 }
             }
             else if (isValueType && singleValueProp != null)
             {
-                DrawValueField(r, "Value", singleValueProp, currentType);
+                Rect valueRect = new Rect(displayRect.x, displayRect.y, displayRect.width, valueFieldHeight);
+                DrawValueField(valueRect, "Value", singleValueProp, currentType);
             }
             else if (!isValueType && singleValueProp != null)
             {
                 // Reference type — show ObjectField
-                EditorGUI.PropertyField(r, singleValueProp, new GUIContent("Value"));
+                EditorGUI.PropertyField(displayRect, singleValueProp, new GUIContent("Value"));
             }
 
             EditorGUIUtility.labelWidth = savedLabelWidth;
@@ -128,15 +131,46 @@ namespace BehaviourTree.Editor
             float lineHeight = EditorGUIUtility.singleLineHeight;
             float spacing = 2f;
 
-            // 3 rows (name, type+stride, value/header) + array elements
+            // 3 rows (name, type+stride, value/header)
             float height = (lineHeight + spacing) * 3;
             if (stride > 1)
-                height += (lineHeight + spacing) * stride;
+            {
+                // Array mode: each element uses its own type-dependent height
+                BlackboardVariableBase bv = property.managedReferenceValue as BlackboardVariableBase;
+                Type valueType = bv?.GetValueType();
+                float elementHeight = GetValueFieldHeight(valueType);
+                height += (elementHeight + spacing) * stride;
+            }
+            else
+            {
+                // Scalar mode: value row uses type-dependent height
+                BlackboardVariableBase bv = property.managedReferenceValue as BlackboardVariableBase;
+                Type valueType = bv?.GetValueType();
+                float valueHeight = GetValueFieldHeight(valueType);
+                // Replace the fixed 3rd row with the actual value height
+                height = (lineHeight + spacing) * 2 + valueHeight;
+            }
 
             return height;
         }
 
-        private static void DrawValueField(Rect r, string label, SerializedProperty prop, Type type)
+        /// <summary>
+        /// Returns the height needed to draw a value field of the given type.
+        /// Multi-field types (Vector3, Vector4, Color, Quaternion) need 2 lines
+        /// when drawn at typical ReorderableList widths.
+        /// </summary>
+        private static float GetValueFieldHeight(Type type)
+        {
+            if (type == null) return EditorGUIUtility.singleLineHeight;
+
+            if (type == typeof(Vector3) || type == typeof(Vector4) ||
+                type == typeof(Color) || type == typeof(Quaternion))
+                return EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
+
+            return EditorGUIUtility.singleLineHeight;
+        }
+
+        private static void DrawValueField(Rect displayRect, string label, SerializedProperty prop, Type type)
         {
             if (prop == null || type == null) return;
 
@@ -144,29 +178,29 @@ namespace BehaviourTree.Editor
             EditorGUIUtility.labelWidth = 40f;
 
             if (type == typeof(int) || type == typeof(uint))
-                prop.intValue = EditorGUI.IntField(r, label, prop.intValue);
+                prop.intValue = EditorGUI.IntField(displayRect, label, prop.intValue);
             else if (type == typeof(float))
-                prop.floatValue = EditorGUI.FloatField(r, label, prop.floatValue);
+                prop.floatValue = EditorGUI.FloatField(displayRect, label, prop.floatValue);
             else if (type == typeof(bool))
-                prop.boolValue = EditorGUI.Toggle(r, label, prop.boolValue);
+                prop.boolValue = EditorGUI.Toggle(displayRect, label, prop.boolValue);
             else if (type == typeof(Vector2))
-                prop.vector2Value = EditorGUI.Vector2Field(r, label, prop.vector2Value);
+                prop.vector2Value = EditorGUI.Vector2Field(displayRect, label, prop.vector2Value);
             else if (type == typeof(Vector3))
-                prop.vector3Value = EditorGUI.Vector3Field(r, label, prop.vector3Value);
+                prop.vector3Value = EditorGUI.Vector3Field(displayRect, label, prop.vector3Value);
             else if (type == typeof(Vector4))
-                prop.vector4Value = EditorGUI.Vector4Field(r, label, prop.vector4Value);
+                prop.vector4Value = EditorGUI.Vector4Field(displayRect, label, prop.vector4Value);
             else if (type == typeof(Color))
-                prop.colorValue = EditorGUI.ColorField(r, label, prop.colorValue);
+                prop.colorValue = EditorGUI.ColorField(displayRect, label, prop.colorValue);
             else if (type == typeof(Quaternion))
             {
                 Vector4 v = new Vector4(prop.quaternionValue.x, prop.quaternionValue.y, prop.quaternionValue.z, prop.quaternionValue.w);
-                v = EditorGUI.Vector4Field(r, label, v);
+                v = EditorGUI.Vector4Field(displayRect, label, v);
                 prop.quaternionValue = new Quaternion(v.x, v.y, v.z, v.w);
             }
             else if (type == typeof(string))
-                prop.stringValue = EditorGUI.TextField(r, label, prop.stringValue);
+                prop.stringValue = EditorGUI.TextField(displayRect, label, prop.stringValue);
             else
-                EditorGUI.LabelField(r, label, $"(type: {type.Name})");
+                EditorGUI.LabelField(displayRect, label, $"(type: {type.Name})");
 
             EditorGUIUtility.labelWidth = savedLabelWidth;
         }
