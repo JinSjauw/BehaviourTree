@@ -134,7 +134,7 @@ namespace BehaviourTree.Runtime
             }
 
             commanderBB.Initialize(runtimeAsset.blackboardDefinition);
-            evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.maxTreeDepth);
+            evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.boxedConstants, runtimeAsset.maxTreeDepth);
 
             debugProvider = GetComponent<RuntimeDebugProvider>();
             if (debugProvider == null) debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();

@@ -12,6 +12,12 @@ public class RuntimeBehaviourTreeAsset : ScriptableObject
     /// <summary>Packed field data for all leaf nodes.</summary>
     public FieldData[] runtimeFieldData;
 
+    /// <summary>
+    /// Boxed constants for types larger than 4 bytes (Vector2, Vector3, Color, custom types).
+    /// Indexed by FieldData.value when FieldData.IsBoxedConstant is true.
+    /// </summary>
+    public object[] boxedConstants;
+
     public BlackboardDefinition blackboardDefinition;
 
     public int maxTreeDepth;

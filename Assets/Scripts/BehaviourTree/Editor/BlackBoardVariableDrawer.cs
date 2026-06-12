@@ -1,256 +1,209 @@
 using System;
-using System.Linq;
 using BehaviourTree.Core;
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(BlackboardVariable))]
-public class BlackboardVariableDrawer : PropertyDrawer
+namespace BehaviourTree.Editor
 {
-    private static GUIStyle cachedPlaceholderStyle;
-    private static string[] cachedDisplayNames;
-
-    private const float StrideLabelWidth = 14f;
-    private const float StrideFieldWidth = 30f;
-
-    private static GUIStyle PlaceholderStyle
+    [CustomPropertyDrawer(typeof(BlackboardVariableBase), true)]
+    public class BlackBoardVariableDrawer : UnityEditor.PropertyDrawer
     {
-        get
+        private static readonly Type[] CommonTypes = FieldTypeHelper.CommonTypes;
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (cachedPlaceholderStyle == null)
+            SerializedProperty nameProp = property.FindPropertyRelative("variableName");
+            SerializedProperty strideProp = property.FindPropertyRelative("variableStride");
+            SerializedProperty singleValueProp = property.FindPropertyRelative("singleValue");
+            SerializedProperty arrayValuesProp = property.FindPropertyRelative("arrayValues");
+
+            if (nameProp == null)
             {
-                cachedPlaceholderStyle = new GUIStyle(EditorStyles.label)
+                EditorGUI.LabelField(position, "Element", property.managedReferenceValue?.GetType().Name ?? "(null)");
+                return;
+            }
+
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            float spacing = 2f;
+            Rect r = new Rect(position.x, position.y, position.width, lineHeight);
+
+            BlackboardVariableBase bv = property.managedReferenceValue as BlackboardVariableBase;
+            Type currentType = bv?.GetValueType();
+            int stride = strideProp?.intValue ?? 1;
+            bool isValueType = currentType != null && currentType.IsValueType;
+
+            float savedLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 44f;
+
+            // ── Row 1: Name ───────────────────────────────────────────
+            EditorGUI.PropertyField(r, nameProp, new GUIContent("Name"));
+            r.y += lineHeight + spacing;
+
+            // ── Row 2: Type dropdown [│ Stride if array] ─────────────
+            if (stride > 1)
+            {
+                float strideWidth = 44f;
+                Rect typeRect = new Rect(r.x, r.y, r.width - strideWidth - 4f, r.height);
+                Rect strideRect = new Rect(r.x + typeRect.width + 4f, r.y, strideWidth, r.height);
+
+                int currentTypeIndex = GetCommonTypeIndex(currentType);
+                int newTypeIndex = EditorGUI.Popup(typeRect, "Type", currentTypeIndex, GetTypeDisplayNames());
+                if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Length)
                 {
-                    fontStyle = FontStyle.Italic,
-                    normal = { textColor = Color.gray }
-                };
-            }
-            return cachedPlaceholderStyle;
-        }
-    }
+                    ChangeType(property, bv, CommonTypes[newTypeIndex]);
+                    EditorGUIUtility.labelWidth = savedLabelWidth;
+                    return;
+                }
 
-    private static string[] DisplayNames
-    {
-        get
-        {
-            if (cachedDisplayNames == null)
-                cachedDisplayNames = FieldTypeHelper.AllFieldTypes.Select(ft => FieldTypeHelper.GetDisplayName(ft)).ToArray();
-            return cachedDisplayNames;
-        }
-    }
-
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-    {
-        SerializedProperty nameProp = property.FindPropertyRelative("name");
-        SerializedProperty typeProp = property.FindPropertyRelative("typeName");
-        SerializedProperty strideProp = property.FindPropertyRelative("stride");
-        SerializedProperty showFoldoutProp = property.FindPropertyRelative("showInitialValue");
-
-        float lineHeight = EditorGUIUtility.singleLineHeight;
-        float spacing = EditorGUIUtility.standardVerticalSpacing;
-
-        // ── Row 0 layout ──
-        Rect foldoutRect = new Rect(position.x, position.y, 14, lineHeight);
-        float strideWidth = StrideLabelWidth + StrideFieldWidth + 4f;
-        float typeWidth = (position.width - 18 - strideWidth) * 0.55f;
-        float nameWidth = (position.width - 18 - strideWidth) * 0.45f;
-
-        Rect nameRect = new Rect(position.x + 18, position.y, nameWidth, lineHeight);
-        Rect typeRect = new Rect(position.x + 18 + nameWidth + 4f, position.y, typeWidth, lineHeight);
-        Rect strideLabelRect = new Rect(typeRect.xMax + 4f, position.y, StrideLabelWidth, lineHeight);
-        Rect strideRect = new Rect(strideLabelRect.xMax, position.y, StrideFieldWidth, lineHeight);
-
-        // ── Foldout triangle (only for value types) ──
-        bool typeResolved = FieldTypeHelper.TryGetSystemTypeFromName(typeProp.stringValue, out Type resolvedType);
-        bool isValueType = resolvedType != null && resolvedType.IsValueType && !resolvedType.IsEnum;
-
-        if (isValueType)
-            showFoldoutProp.boolValue = EditorGUI.Foldout(foldoutRect, showFoldoutProp.boolValue, GUIContent.none);
-
-        // ── Name field ──
-        nameProp.stringValue = EditorGUI.TextField(nameRect, nameProp.stringValue);
-        if (string.IsNullOrEmpty(nameProp.stringValue))
-            EditorGUI.LabelField(nameRect, " Variable Name", PlaceholderStyle);
-
-        // ── Type dropdown ──
-        int currentIndex = 0;
-        bool typeMatched = false;
-        for (int i = 0; i < FieldTypeHelper.AllFieldTypes.Count; i++)
-        {
-            Type type = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[i]);
-            if (type.FullName == typeProp.stringValue || type.AssemblyQualifiedName == typeProp.stringValue)
-            {
-                currentIndex = i;
-                typeMatched = true;
-                break;
-            }
-        }
-        EditorGUI.BeginChangeCheck();
-        int nextIndex = EditorGUI.Popup(typeRect, currentIndex, DisplayNames);
-        if (EditorGUI.EndChangeCheck() || !typeMatched)
-        {
-            typeProp.stringValue = FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[nextIndex]).FullName;
-            typeResolved = FieldTypeHelper.TryGetSystemTypeFromName(typeProp.stringValue, out resolvedType);
-            isValueType = resolvedType != null && resolvedType.IsValueType && !resolvedType.IsEnum;
-        }
-
-        // ── Stride field ──
-        EditorGUI.LabelField(strideLabelRect, "N");
-        EditorGUI.BeginChangeCheck();
-        int newStride = EditorGUI.IntField(strideRect, strideProp.intValue);
-        if (EditorGUI.EndChangeCheck())
-        {
-            strideProp.intValue = Mathf.Max(1, newStride);
-        }
-
-        // ── Unresolved type warning ──
-        if (!typeResolved)
-        {
-            Rect warnRect = new Rect(position.x + 18, position.y + lineHeight + spacing, position.width - 18, lineHeight * 2f);
-            EditorGUI.HelpBox(warnRect, "Unresolved type name. Please re-select a supported type.", MessageType.Warning);
-        }
-
-        // ── Row 1+: initial value ──
-        if (isValueType && showFoldoutProp.boolValue)
-        {
-            float valueY = position.y + lineHeight + spacing + (!typeResolved ? (lineHeight * 2f + spacing) : 0f);
-            int effectiveStride = Mathf.Max(1, strideProp.intValue);
-
-            if (effectiveStride == 1)
-            {
-                DrawSingleInitialValue(position, valueY, resolvedType, property);
+                EditorGUI.BeginChangeCheck();
+                int newStride = EditorGUI.IntField(strideRect, stride);
+                if (EditorGUI.EndChangeCheck() && strideProp != null)
+                {
+                    newStride = Mathf.Max(1, newStride);
+                    strideProp.intValue = newStride;
+                    if (bv != null)
+                        bv.Stride = newStride;
+                    property.serializedObject.ApplyModifiedProperties();
+                }
             }
             else
             {
-                DrawArrayInitialValues(position, valueY, effectiveStride, resolvedType, property);
+                Rect typeRect = new Rect(r.x, r.y, r.width, r.height);
+                int currentTypeIndex = GetCommonTypeIndex(currentType);
+                int newTypeIndex = EditorGUI.Popup(typeRect, "Type", currentTypeIndex, GetTypeDisplayNames());
+                if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Length)
+                {
+                    ChangeType(property, bv, CommonTypes[newTypeIndex]);
+                    EditorGUIUtility.labelWidth = savedLabelWidth;
+                    return;
+                }
             }
-        }
-    }
+            r.y += lineHeight + spacing;
 
-    private void DrawSingleInitialValue(Rect position, float y, Type resolvedType, SerializedProperty property)
-    {
-        float lineHeight = EditorGUIUtility.singleLineHeight;
-        float valueHeight = lineHeight;
-        if (resolvedType == typeof(Vector2) || resolvedType == typeof(Vector3))
-            valueHeight = lineHeight * 2f;
-
-        Rect valueRect = new Rect(position.x + 18, y, position.width - 18, valueHeight);
-
-        if (resolvedType == typeof(int))
-        {
-            var prop = property.FindPropertyRelative("intValue");
-            prop.intValue = EditorGUI.IntField(valueRect, "Initial Value", prop.intValue);
-        }
-        else if (resolvedType == typeof(float))
-        {
-            var prop = property.FindPropertyRelative("floatValue");
-            prop.floatValue = EditorGUI.FloatField(valueRect, "Initial Value", prop.floatValue);
-        }
-        else if (resolvedType == typeof(bool))
-        {
-            var prop = property.FindPropertyRelative("boolValue");
-            prop.boolValue = EditorGUI.Toggle(valueRect, "Initial Value", prop.boolValue);
-        }
-        else if (resolvedType == typeof(Vector2))
-        {
-            var prop = property.FindPropertyRelative("vector2Value");
-            prop.vector2Value = EditorGUI.Vector2Field(valueRect, "Initial Value", prop.vector2Value);
-        }
-        else if (resolvedType == typeof(Vector3))
-        {
-            var prop = property.FindPropertyRelative("vector3Value");
-            prop.vector3Value = EditorGUI.Vector3Field(valueRect, "Initial Value", prop.vector3Value);
-        }
-    }
-
-    private void DrawArrayInitialValues(Rect position, float startY, int stride, Type resolvedType, SerializedProperty property)
-    {
-        float lineHeight = EditorGUIUtility.singleLineHeight;
-        float spacing = EditorGUIUtility.standardVerticalSpacing;
-        float elemWidth = position.width - 18;
-
-        string arrayFieldName = GetArrayFieldName(resolvedType);
-        if (arrayFieldName == null) return;
-
-        SerializedProperty arrayProp = property.FindPropertyRelative(arrayFieldName);
-
-        // Ensure array size matches stride
-        while (arrayProp.arraySize < stride)
-            arrayProp.InsertArrayElementAtIndex(arrayProp.arraySize);
-        while (arrayProp.arraySize > stride)
-            arrayProp.DeleteArrayElementAtIndex(arrayProp.arraySize - 1);
-
-        for (int i = 0; i < stride; i++)
-        {
-            float y = startY + i * (lineHeight + spacing);
-            float x = position.x + 18;
-
-            Rect labelRect = new Rect(x, y, 24, lineHeight);
-            Rect fieldRect = new Rect(x + 24, y, elemWidth - 24, lineHeight);
-
-            EditorGUI.LabelField(labelRect, $"[{i}]", EditorStyles.miniLabel);
-
-            SerializedProperty elemProp = arrayProp.GetArrayElementAtIndex(i);
-            DrawArrayElementField(fieldRect, resolvedType, elemProp);
-        }
-    }
-
-    private static string GetArrayFieldName(Type resolvedType)
-    {
-        if (resolvedType == typeof(int))      return "initialIntValues";
-        if (resolvedType == typeof(float))    return "initialFloatValues";
-        if (resolvedType == typeof(bool))     return "initialBoolValues";
-        if (resolvedType == typeof(Vector2))  return "initialVector2Values";
-        if (resolvedType == typeof(Vector3))  return "initialVector3Values";
-        return null;
-    }
-
-    private void DrawArrayElementField(Rect rect, Type resolvedType, SerializedProperty elemProp)
-    {
-        if (resolvedType == typeof(int))
-            elemProp.intValue = EditorGUI.IntField(rect, elemProp.intValue);
-        else if (resolvedType == typeof(float))
-            elemProp.floatValue = EditorGUI.FloatField(rect, elemProp.floatValue);
-        else if (resolvedType == typeof(bool))
-            elemProp.boolValue = EditorGUI.Toggle(rect, elemProp.boolValue);
-        else if (resolvedType == typeof(Vector2))
-            elemProp.vector2Value = EditorGUI.Vector2Field(rect, GUIContent.none, elemProp.vector2Value);
-        else if (resolvedType == typeof(Vector3))
-            elemProp.vector3Value = EditorGUI.Vector3Field(rect, GUIContent.none, elemProp.vector3Value);
-    }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        SerializedProperty typeProp = property.FindPropertyRelative("typeName");
-        SerializedProperty showFoldoutProp = property.FindPropertyRelative("showInitialValue");
-        SerializedProperty strideProp = property.FindPropertyRelative("stride");
-
-        bool typeResolved = FieldTypeHelper.TryGetSystemTypeFromName(typeProp.stringValue, out Type resolvedType);
-        bool isValueType = resolvedType != null && resolvedType.IsValueType && !resolvedType.IsEnum;
-
-        float lineHeight = EditorGUIUtility.singleLineHeight;
-        float spacing = EditorGUIUtility.standardVerticalSpacing;
-
-        float warnHeight = !typeResolved ? (lineHeight * 2f + spacing) : 0f;
-
-        if (isValueType && showFoldoutProp.boolValue)
-        {
-            int effectiveStride = Mathf.Max(1, strideProp.intValue);
-
-            if (effectiveStride == 1)
+            // ── Row 3: Value / Stride header ─────────────────────────
+            if (stride > 1)
             {
-                float valueHeight = (resolvedType == typeof(Vector2) || resolvedType == typeof(Vector3))
-                    ? lineHeight * 2f
-                    : lineHeight;
-                return warnHeight + lineHeight + spacing + valueHeight + spacing;
+                // Array mode: show "Values" label, editor fields follow below
+                EditorGUI.LabelField(r, "Values", $"[{stride}]");
+                r.y += lineHeight + spacing;
+
+                // Ensure array size matches stride
+                if (arrayValuesProp != null)
+                {
+                    while (arrayValuesProp.arraySize < stride)
+                        arrayValuesProp.InsertArrayElementAtIndex(arrayValuesProp.arraySize);
+                    while (arrayValuesProp.arraySize > stride)
+                        arrayValuesProp.DeleteArrayElementAtIndex(arrayValuesProp.arraySize - 1);
+
+                    for (int i = 0; i < stride; i++)
+                    {
+                        SerializedProperty elementProp = arrayValuesProp.GetArrayElementAtIndex(i);
+                        Rect elementRect = new Rect(r.x, r.y, r.width, r.height);
+                        DrawValueField(elementRect, $"[{i}]", elementProp, currentType);
+                        r.y += lineHeight + spacing;
+                    }
+                }
             }
+            else if (isValueType && singleValueProp != null)
+            {
+                DrawValueField(r, "Value", singleValueProp, currentType);
+            }
+            else if (!isValueType && singleValueProp != null)
+            {
+                // Reference type — show ObjectField
+                EditorGUI.PropertyField(r, singleValueProp, new GUIContent("Value"));
+            }
+
+            EditorGUIUtility.labelWidth = savedLabelWidth;
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            SerializedProperty nameProp = property.FindPropertyRelative("variableName");
+            if (nameProp == null)
+                return EditorGUIUtility.singleLineHeight + 2f;
+
+            SerializedProperty strideProp = property.FindPropertyRelative("variableStride");
+            int stride = strideProp?.intValue ?? 1;
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            float spacing = 2f;
+
+            // 3 rows (name, type+stride, value/header) + array elements
+            float height = (lineHeight + spacing) * 3;
+            if (stride > 1)
+                height += (lineHeight + spacing) * stride;
+
+            return height;
+        }
+
+        private static void DrawValueField(Rect r, string label, SerializedProperty prop, Type type)
+        {
+            if (prop == null || type == null) return;
+
+            float savedLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 40f;
+
+            if (type == typeof(int) || type == typeof(uint))
+                prop.intValue = EditorGUI.IntField(r, label, prop.intValue);
+            else if (type == typeof(float))
+                prop.floatValue = EditorGUI.FloatField(r, label, prop.floatValue);
+            else if (type == typeof(bool))
+                prop.boolValue = EditorGUI.Toggle(r, label, prop.boolValue);
+            else if (type == typeof(Vector2))
+                prop.vector2Value = EditorGUI.Vector2Field(r, label, prop.vector2Value);
+            else if (type == typeof(Vector3))
+                prop.vector3Value = EditorGUI.Vector3Field(r, label, prop.vector3Value);
+            else if (type == typeof(Vector4))
+                prop.vector4Value = EditorGUI.Vector4Field(r, label, prop.vector4Value);
+            else if (type == typeof(Color))
+                prop.colorValue = EditorGUI.ColorField(r, label, prop.colorValue);
+            else if (type == typeof(Quaternion))
+            {
+                Vector4 v = new Vector4(prop.quaternionValue.x, prop.quaternionValue.y, prop.quaternionValue.z, prop.quaternionValue.w);
+                v = EditorGUI.Vector4Field(r, label, v);
+                prop.quaternionValue = new Quaternion(v.x, v.y, v.z, v.w);
+            }
+            else if (type == typeof(string))
+                prop.stringValue = EditorGUI.TextField(r, label, prop.stringValue);
             else
-            {
-                float arrayHeight = effectiveStride * lineHeight + (effectiveStride - 1) * spacing;
-                return warnHeight + lineHeight + spacing + arrayHeight + spacing;
-            }
+                EditorGUI.LabelField(r, label, $"(type: {type.Name})");
+
+            EditorGUIUtility.labelWidth = savedLabelWidth;
         }
 
-        return warnHeight + lineHeight;
+        private static void ChangeType(SerializedProperty property, BlackboardVariableBase oldVar, Type newType)
+        {
+            if (oldVar == null) return;
+
+            string oldName = oldVar.Name;
+            int oldStride = oldVar.Stride;
+
+            Type sharedVarType = typeof(BlackboardVariable<>).MakeGenericType(newType);
+            BlackboardVariableBase newVar = (BlackboardVariableBase)Activator.CreateInstance(sharedVarType);
+            newVar.Name = oldName;
+            newVar.Stride = oldStride;
+
+            property.managedReferenceValue = newVar;
+            property.serializedObject.ApplyModifiedProperties();
+        }
+
+        private static int GetCommonTypeIndex(Type type)
+        {
+            if (type == null) return -1;
+            for (int i = 0; i < CommonTypes.Length; i++)
+            {
+                if (CommonTypes[i] == type)
+                    return i;
+            }
+            return -1;
+        }
+
+        private static string[] GetTypeDisplayNames()
+        {
+            string[] names = new string[CommonTypes.Length];
+            for (int i = 0; i < CommonTypes.Length; i++)
+                names[i] = FieldTypeHelper.GetDisplayName(CommonTypes[i]);
+            return names;
+        }
     }
 }

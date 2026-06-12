@@ -9,19 +9,9 @@ namespace BehaviourTree.Core
     /// </summary>
     public interface IBlackBoardAccess
     {
-        int GetInt(int slot);
-        void SetInt(int slot, int value);
-        float GetFloat(int slot);
-        void SetFloat(int slot, float value);
-        bool GetBool(int slot);
-        void SetBool(int slot, bool value);
-        Vector2 GetVector2(int slot);
-        void SetVector2(int slot, Vector2 value);
-        Vector3 GetVector3(int slot);
-        void SetVector3(int slot, Vector3 value);
-        GameObject GetGameObject(int slot);
-        void SetGameObject(int slot, GameObject value);
-        Transform GetTransform(int slot);
-        void SetTransform(int slot, Transform value);
+        T Get<T>(int slot);
+        void Set<T>(int slot, T value);
+        object GetBoxed(int slot);
+        void SetBoxed(int slot, object value);
     }
 }

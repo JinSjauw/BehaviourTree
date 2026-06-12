@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -35,7 +36,7 @@ namespace BehaviourTree.Editor
 
             foreach (var def in definitions)
             {
-                if (def == null || def.sharedVariables == null || def.sharedVariables.Count == 0)
+                if (def == null || def.VariableCount == 0)
                     continue;
 
                 string rawName = def.name;
@@ -59,24 +60,30 @@ namespace BehaviourTree.Editor
 
                 int[] slotOffsets = ComputeSlotOffsets(def);
 
-                for (int i = 0; i < def.sharedVariables.Count; i++)
+                IReadOnlyList<BlackboardVariableBase> allVars = def.GetAllVariables();
+                for (int i = 0; i < allVars.Count; i++)
                 {
-                    BlackboardVariable variable = def.sharedVariables[i];
-                    string varName = SanitizeIdentifier(variable.name);
+                    BlackboardVariableBase variable = allVars[i];
+                    string varName = SanitizeIdentifier(variable.Name);
                     if (string.IsNullOrEmpty(varName))
                         varName = $"Var_{i}";
                     if (char.IsDigit(varName[0]))
                         varName = "_" + varName;
 
-                    int stride = variable.stride;
+                    int stride = variable.Stride;
                     int effectiveStride = (stride > 1) ? stride : 1;
+
+                    // Resolve type for comment
+                    string typeComment = "";
+                    if (FieldTypeHelper.TryGetSystemTypeFromName(variable.TypeName, out Type resolvedType) && resolvedType != null)
+                        typeComment = $" // type: {resolvedType.Name}";
 
                     if (effectiveStride > 1)
                     {
-                        sb.AppendLine($"        // Slots {slotOffsets[i]}..{slotOffsets[i] + effectiveStride - 1} (stride={effectiveStride})");
+                        sb.AppendLine($"        // Slots {slotOffsets[i]}..{slotOffsets[i] + effectiveStride - 1} (stride={effectiveStride}){typeComment}");
                     }
 
-                    sb.AppendLine($"        {varName} = {slotOffsets[i]}{(i < def.sharedVariables.Count - 1 ? "," : "")}");
+                    sb.AppendLine($"        {varName} = {slotOffsets[i]}{(i < allVars.Count - 1 ? "," : "")}{(effectiveStride == 1 ? typeComment : "")}");
                 }
 
                 sb.AppendLine("    }");
@@ -123,16 +130,14 @@ namespace BehaviourTree.Editor
         /// </summary>
         private static int[] ComputeSlotOffsets(BlackboardDefinition def)
         {
-            if (def == null || def.sharedVariables == null)
-                return System.Array.Empty<int>();
-
-            int[] offsets = new int[def.sharedVariables.Count];
+            IReadOnlyList<BlackboardVariableBase> allVars = def.GetAllVariables();
+            int[] offsets = new int[allVars.Count];
             int currentSlot = 0;
 
-            for (int i = 0; i < def.sharedVariables.Count; i++)
+            for (int i = 0; i < allVars.Count; i++)
             {
                 offsets[i] = currentSlot;
-                int stride = def.sharedVariables[i].stride;
+                int stride = allVars[i].Stride;
                 currentSlot += (stride > 1) ? stride : 1;
             }
 

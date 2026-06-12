@@ -108,13 +108,11 @@ namespace BehaviourTree.Editor
                     SerializedProperty isArrayProp = entryProp.FindPropertyRelative("isArray");
                     SerializedProperty isToggleVariableProp = entryProp.FindPropertyRelative("isToggleVariable");
                     SerializedProperty variableNameProp = entryProp.FindPropertyRelative("variableName");
-                    SerializedProperty fieldTypeProp = entryProp.FindPropertyRelative("fieldType");
-
-                    FieldType fieldType = FieldTypeHelper.GetFieldType(info.fieldType);
+                    SerializedProperty fieldTypeNameProp = entryProp.FindPropertyRelative("fieldTypeName");
 
                     // Set static metadata
                     fieldNameProp.stringValue = info.fieldName;
-                    fieldTypeProp.enumValueIndex = (int)fieldType;
+                    fieldTypeNameProp.stringValue = info.fieldType?.AssemblyQualifiedName ?? string.Empty;
                     isArrayProp.boolValue = info.isArray;
 
                     EditorGUILayout.BeginVertical("box");
@@ -126,7 +124,7 @@ namespace BehaviourTree.Editor
                     }
                     else
                     {
-                        typeLabel = fieldType.ToString();
+                        typeLabel = info.fieldType != null ? info.fieldType.Name : "Unknown";
                         if (info.isArray) typeLabel += "[]";
                     }
                     
@@ -207,9 +205,26 @@ namespace BehaviourTree.Editor
                 SerializedProperty prop = entryProp.FindPropertyRelative("boolValue");
                 prop.boolValue = EditorGUILayout.Toggle("Value", prop.boolValue);
             }
+            else if (fieldType == typeof(Vector2))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("vector2Value");
+                prop.vector2Value = EditorGUILayout.Vector2Field("Value", prop.vector2Value);
+            }
+            else if (fieldType == typeof(Vector3))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("vector3Value");
+                prop.vector3Value = EditorGUILayout.Vector3Field("Value", prop.vector3Value);
+            }
+            else if (typeof(UnityEngine.Object).IsAssignableFrom(fieldType))
+            {
+                SerializedProperty prop = fieldType == typeof(GameObject)
+                    ? entryProp.FindPropertyRelative("gameObjectValue")
+                    : entryProp.FindPropertyRelative("transformValue");
+                prop.objectReferenceValue = EditorGUILayout.ObjectField("Value", prop.objectReferenceValue, fieldType, true);
+            }
             else
             {
-                EditorGUILayout.HelpBox($"Value type can't be static! Add [SharedVar] attribute", MessageType.Warning);
+                EditorGUILayout.HelpBox($"Type '{fieldType.Name}' requires a [SharedVar] — use a blackboard variable instead of a constant.", MessageType.Warning);
             }
         }
 
@@ -221,28 +236,7 @@ namespace BehaviourTree.Editor
                 return;
             }
 
-            if (expectedType.IsEnum)
-            {
-                EditorGUILayout.HelpBox($"[SharedVar] enum fields are not supported. Use an int SharedVar instead.", MessageType.Warning);
-                return;
-            }
-
-            bool isSupportedType = false;
-            for (int i = 0; i < FieldTypeHelper.AllFieldTypes.Count; i++)
-            {
-                if (FieldTypeHelper.GetSystemType(FieldTypeHelper.AllFieldTypes[i]) == expectedType)
-                {
-                    isSupportedType = true;
-                    break;
-                }
-            }
-
-            if (!isSupportedType)
-            {
-                EditorGUILayout.HelpBox($"[SharedVar] type '{expectedType.FullName}' is not supported as a blackboard variable.", MessageType.Warning);
-                return;
-            }
-
+            // All types are supported as blackboard variables (including enums)
             BlackboardDefinition blackBoardDef = BehaviourTreeEditor.currentBlackboardDef;
 
             if (blackBoardDef == null)
@@ -251,7 +245,8 @@ namespace BehaviourTree.Editor
                 return;
             }
 
-            if (blackBoardDef.sharedVariables == null || blackBoardDef.sharedVariables.Count == 0)
+            IReadOnlyList<BlackboardVariableBase> allVars = blackBoardDef.GetAllVariables();
+            if (allVars == null || allVars.Count == 0)
             {
                 EditorGUILayout.HelpBox("No Blackboard variables added.", MessageType.Warning);
                 return;
@@ -260,33 +255,30 @@ namespace BehaviourTree.Editor
             // Filter variables whose type matches and stride matches the param kind
             matchingVars.Clear();
             matchingVarNames.Clear();
-            for (int variableIndex = 0; variableIndex < blackBoardDef.sharedVariables.Count; variableIndex++)
+            for (int variableIndex = 0; variableIndex < allVars.Count; variableIndex++)
             {
-                BlackboardVariable bv = blackBoardDef.sharedVariables[variableIndex];
-                if (!FieldTypeHelper.TryGetSystemTypeFromName(bv.typeName, out Type bbType) || bbType == null)
-                    continue;
-                if (bbType != expectedType)
-                    continue;
+                BlackboardVariableBase bv = allVars[variableIndex];
+                Type bbType = bv.GetValueType();
+                if (bbType == null) continue;
+                if (bbType != expectedType) continue;
 
                 if (isArray)
                 {
-                    if (bv.stride <= 1)
-                        continue;
-                    matchingVarNames.Add(bv.name);
-                    matchingVars.Add($"{bv.name} [{bv.stride}]");
+                    if (bv.Stride <= 1) continue;
+                    matchingVarNames.Add(bv.Name);
+                    matchingVars.Add($"{bv.Name} [{bv.Stride}]");
                 }
                 else
                 {
-                    if (bv.stride > 1)
-                        continue;
-                    matchingVarNames.Add(bv.name);
-                    matchingVars.Add(bv.name);
+                    if (bv.Stride > 1) continue;
+                    matchingVarNames.Add(bv.Name);
+                    matchingVars.Add(bv.Name);
                 }
             }
 
             if (matchingVars.Count == 0)
             {
-                EditorGUILayout.HelpBox($"No matching variable of type <{FieldTypeHelper.GetFieldType(expectedType)}> in Blackboard.", MessageType.Info);
+                EditorGUILayout.HelpBox($"No matching variable of type '{expectedType.Name}' in Blackboard.", MessageType.Info);
                 variableNameProp.stringValue = "";
                 return;
             }

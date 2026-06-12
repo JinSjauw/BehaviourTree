@@ -1,74 +1,74 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BehaviourTree.Core
 {
     
 /// <summary>
-/// Static helpers for FieldType => System.Type resolution
+/// Static helpers for type resolution, display names, and common type queries.
 /// </summary>
 public static class FieldTypeHelper
     {
-        /// <summary>Every supported FieldType.</summary>
-        public static readonly IReadOnlyList<FieldType> AllFieldTypes = Enum.GetValues(typeof(FieldType)).Cast<FieldType>().ToList();
-
-        public static Type GetSystemType(FieldType ft) => ft switch
+        /// <summary>Common types available by default in the blackboard type picker.</summary>
+        public static readonly Type[] CommonTypes = new Type[]
         {
-            FieldType.Int => typeof(int),
-            FieldType.Float => typeof(float),
-            FieldType.Bool => typeof(bool),
-            FieldType.Vector2 => typeof(Vector2),
-            FieldType.Vector3 => typeof(Vector3),
-            FieldType.GameObject => typeof(GameObject),
-            FieldType.Transform => typeof(Transform),
-            _ => LogUnknownAndFallback(ft),
+            typeof(int),
+            typeof(float),
+            typeof(bool),
+            typeof(string),
+            typeof(Vector2),
+            typeof(Vector3),
+            typeof(Vector4),
+            typeof(Color),
+            typeof(Quaternion),
+            typeof(GameObject),
+            typeof(Transform),
+            typeof(Material),
         };
 
-        private static Type LogUnknownAndFallback(FieldType ft)
+        /// <summary>Human-readable display name for a type.</summary>
+        public static string GetDisplayName(Type type, int stride = 1)
         {
-            Debug.LogWarning($"[FieldTypeHelper] Unknown FieldType '{ft}' — falling back to Int.");
-            return typeof(int);
+            if (type == null) return "Unknown";
+
+            string baseName = type.Name;
+            // Use friendly names for common Unity types
+            if (type == typeof(int)) baseName = "Integer";
+            else if (type == typeof(float)) baseName = "Float";
+            else if (type == typeof(bool)) baseName = "Bool";
+            else if (type == typeof(string)) baseName = "String";
+            else if (type == typeof(GameObject)) baseName = "GameObject";
+            else if (type == typeof(Transform)) baseName = "Transform";
+
+            return stride > 1 ? $"{baseName}[{stride}]" : baseName;
         }
 
-
-        public static string GetTypeName(FieldType ft) => GetSystemType(ft).AssemblyQualifiedName;
-
-        /// <summary>Human-readable name shown in dropdowns.</summary>
-        public static string GetDisplayName(FieldType ft) => ft switch
+        /// <summary>Returns true if the type is one of the common built-in types.</summary>
+        public static bool IsCommonType(Type type)
         {
-            FieldType.Int => "Integer",
-            FieldType.Float => "Float",
-            FieldType.Bool => "Bool",
-            FieldType.Vector2 => "Vector2",
-            FieldType.Vector3 => "Vector3",
-            FieldType.GameObject => "GameObject",
-            FieldType.Transform => "Transform",
-            _ => "Unknown",
-        };
-
-        /// <summary>Human-readable name including stride for array types.</summary>
-        public static string GetDisplayName(BlackboardVariable variable)
-        {
-            if (string.IsNullOrEmpty(variable.typeName)) return "Unknown";
-            TryGetSystemTypeFromName(variable.typeName, out Type type);
-            FieldType ft = type != null ? GetFieldType(type) : FieldType.Int;
-            string baseName = GetDisplayName(ft);
-            return variable.IsArray ? $"{baseName}[{variable.stride}]" : baseName;
+            if (type == null) return false;
+            for (int i = 0; i < CommonTypes.Length; i++)
+            {
+                if (CommonTypes[i] == type)
+                    return true;
+            }
+            return false;
         }
 
-        /// <summary>Reverse-lookup: System.Type → FieldType</summary>
-        public static FieldType GetFieldType(Type type)
+        /// <summary>Returns true if the type can be stored as an inline constant in FieldData (int, float, bool, enum).</summary>
+        public static bool CanPackInline(Type type)
         {
-            if (type == typeof(int) || type == typeof(uint)) return FieldType.Int;
-            if (type == typeof(float)) return FieldType.Float;
-            if (type == typeof(bool)) return FieldType.Bool;
-            if (type == typeof(Vector2)) return FieldType.Vector2;
-            if (type == typeof(Vector3)) return FieldType.Vector3;
-            if (type == typeof(GameObject)) return FieldType.GameObject;
-            if (type == typeof(Transform)) return FieldType.Transform;
-            return FieldType.Int;
+            if (type == null) return false;
+            return type == typeof(int) || type == typeof(uint)
+                || type == typeof(float)
+                || type == typeof(bool)
+                || type.IsEnum;
+        }
+
+        /// <summary>Returns true if the type is a UnityEngine.Object subclass (needs serializedReferences list).</summary>
+        public static bool IsUnityObjectType(Type type)
+        {
+            return type != null && typeof(UnityEngine.Object).IsAssignableFrom(type);
         }
 
         /// <summary>
@@ -84,16 +84,6 @@ public static class FieldTypeHelper
             {
                 type = resolvedType;
                 return true;
-            }
-
-            foreach (FieldType ft in AllFieldTypes)
-            {
-                Type candidate = GetSystemType(ft);
-                if (candidate.FullName == typeName || candidate.AssemblyQualifiedName == typeName)
-                {
-                    type = candidate;
-                    return true;
-                }
             }
             return false;
         }

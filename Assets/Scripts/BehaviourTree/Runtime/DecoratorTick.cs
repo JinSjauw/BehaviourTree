@@ -21,9 +21,9 @@ namespace BehaviourTree.Runtime
             NodeMethod instance = ctx.methodInstances[nodeIndex];
             if (instance is DecoratorMethod decoratorInstance)
             {
-                decoratorInstance.ResolveInputs(ctx.blackBoard);
+                decoratorInstance.ResolveInputsGeneric(ctx.blackBoard);
                 NodeState transformed = decoratorInstance.Execute(childResult);
-                decoratorInstance.WriteOutputs(ctx.blackBoard);
+                decoratorInstance.WriteOutputsGeneric(ctx.blackBoard);
                 return transformed;
             }
 

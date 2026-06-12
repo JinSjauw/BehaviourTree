@@ -265,7 +265,8 @@ public class BehaviourTreeEditor : EditorWindow
 
         runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.root, currentTree, 
         ref runtimeAsset.runtimeNodeData, 
-        ref runtimeAsset.runtimeFieldData, 
+        ref runtimeAsset.runtimeFieldData,
+        ref runtimeAsset.boxedConstants,
         ref runtimeAsset.runtimeNodeGuids,
         out runtimeAsset.maxTreeDepth);
 

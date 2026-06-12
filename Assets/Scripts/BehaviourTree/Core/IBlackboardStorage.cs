@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BehaviourTree.Core
 {
@@ -14,9 +15,16 @@ namespace BehaviourTree.Core
         int Count { get; }
         BlackboardSlotKind GetSlotKind(int index);
         void Initialize(BlackboardDefinition definition);
+        void Initialize(IReadOnlyList<BlackboardVariableBase> variables);
         T Get<T>(int index);
         void Set<T>(int index, T value);
         object GetBoxed(int index);
         void SetBoxed(int index, object value);
+
+        /// <summary>
+        /// Given a variable index into the unified variable list,
+        /// returns the base slot index and stride in the flat values array.
+        /// </summary>
+        void GetVariableSlotRange(int variableIndex, out int baseSlot, out int stride);
     }
 }

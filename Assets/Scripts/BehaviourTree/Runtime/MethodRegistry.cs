@@ -57,7 +57,7 @@ namespace BehaviourTree.Runtime
 
                         methodTypeMap[methodName] = type;
                         bindingCache[type] = CreateBindings(type);
-                        Debug.Log($"[MethodRegistry] Registered: {methodName} ({type.Name})");
+                        //Debug.Log($"[MethodRegistry] Registered: {methodName} ({type.Name})");
                     }
                     catch (Exception ex)
                     {
@@ -136,12 +136,10 @@ namespace BehaviourTree.Runtime
                 if (isSharedVar && sharedVar.IsToggleVariable)
                     isOutput = false;
 
-                FieldType ft = FieldTypeHelper.GetFieldType(field.FieldType);
-
                 list.Add(new FieldBinding
                 {
                     fieldInfo = field,
-                    fieldType = ft,
+                    fieldTypeName = field.FieldType.AssemblyQualifiedName,
                     isOutput = isOutput,
                     bbSlotIndex = -1
                 });

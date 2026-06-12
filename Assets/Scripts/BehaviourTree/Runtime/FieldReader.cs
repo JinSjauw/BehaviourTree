@@ -8,58 +8,53 @@ namespace BehaviourTree
     /// Ref struct that reads values from a ReadOnlySpan<FieldData>.
     /// Handles both constant and blackboard-variable lookup.
     /// Also provides Set methods to write back to the blackboard (variable fields only).
+    /// Generic Get&lt;T&gt;/Set&lt;T&gt; methods support any type via boxing or boxed constants.
     /// </summary>
     public ref struct FieldReader
     {
         private readonly ReadOnlySpan<FieldData> fields;
+        private readonly object[] boxedConstants;
         private readonly BlackBoard blackboard;
 
         public FieldReader(ReadOnlySpan<FieldData> fields, BlackBoard blackboard)
+            : this(fields, blackboard, null) { }
+
+        public FieldReader(ReadOnlySpan<FieldData> fields, BlackBoard blackboard, object[] boxedConstants)
         {
             this.fields = fields;
             this.blackboard = blackboard;
+            this.boxedConstants = boxedConstants;
         }
 
-        // ─── Int ──────────────────────────────────────────────────────
+        // ─── Generic (new — supports any type) ───────────────────────
 
-        public int GetInt(int index)
+        /// <summary>
+        /// Reads a value from the field data at the given index.
+        /// Constants: returns packed value (int/float/bool) or boxed constant.
+        /// Variables: reads from the blackboard.
+        /// </summary>
+        public T Get<T>(int index)
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsConstant)
             {
-                return fd.GetInt();                
+                return ReadPackedConstant<T>(fd);
             }
-
-            return blackboard.Get<int>(fd.value);
+            if (fd.IsBoxedConstant)
+            {
+                return fd.GetBoxedConstant<T>(boxedConstants);
+            }
+            // Variable — read from blackboard
+            if (typeof(T) == typeof(GameObject) || typeof(T) == typeof(Transform) || typeof(T) == typeof(Component))
+            {
+                // Unity Object types go through typed blackboard access
+                return blackboard.Get<T>(fd.value);
+            }
+            return blackboard.Get<T>(fd.value);
         }
 
-        public void SetInt(int index, int value)
-        {
-            ref readonly FieldData fd = ref fields[index];
-            if (fd.IsVariable)
-            {
-                blackboard.Set(fd.value, value);                
-            }
-            else
-            {
-                Debug.LogWarning($"[FieldReader.SetInt] Field {index} is constant — write ignored.");                
-            }
-        }
-
-        // ─── Float ────────────────────────────────────────────────────
-
-        public float GetFloat(int index)
-        {
-            ref readonly FieldData fd = ref fields[index];
-            if (fd.IsConstant)
-            {
-                return fd.GetFloat();
-            }
-
-            return blackboard.Get<float>(fd.value);
-        }
-
-        public void SetFloat(int index, float value)
+        /// <summary>Sets a value to the blackboard at the given field index (variable fields only).</summary>
+        public void Set<T>(int index, T value)
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
@@ -68,8 +63,55 @@ namespace BehaviourTree
             }
             else
             {
-                Debug.LogWarning($"[FieldReader.SetFloat] Field {index} is constant — write ignored.");
+                Debug.LogWarning($"[FieldReader.Set] Field {index} is constant — write ignored.");
             }
+        }
+
+        private static T ReadPackedConstant<T>(FieldData fd)
+        {
+            Type t = typeof(T);
+            if (t == typeof(int))    return (T)(object)fd.GetInt();
+            if (t == typeof(float))  return (T)(object)fd.GetFloat();
+            if (t == typeof(bool))   return (T)(object)fd.GetBool();
+            if (t.IsEnum)            return (T)Enum.ToObject(t, fd.GetInt());
+            Debug.LogWarning($"[FieldReader.Get<{t.Name}>] Type cannot be packed as a 4-byte constant. Use a BB variable or boxed constant.");
+            return default;
+        }
+
+        // ─── Int ──────────────────────────────────────────────────────
+
+        public int GetInt(int index)
+        {
+            ref readonly FieldData fd = ref fields[index];
+            if (fd.IsConstant) return fd.GetInt();
+            return blackboard.Get<int>(fd.value);
+        }
+
+        public void SetInt(int index, int value)
+        {
+            ref readonly FieldData fd = ref fields[index];
+            if (fd.IsVariable)
+                blackboard.Set(fd.value, value);
+            else
+                Debug.LogWarning($"[FieldReader.SetInt] Field {index} is constant — write ignored.");
+        }
+
+        // ─── Float ────────────────────────────────────────────────────
+
+        public float GetFloat(int index)
+        {
+            ref readonly FieldData fd = ref fields[index];
+            if (fd.IsConstant) return fd.GetFloat();
+            return blackboard.Get<float>(fd.value);
+        }
+
+        public void SetFloat(int index, float value)
+        {
+            ref readonly FieldData fd = ref fields[index];
+            if (fd.IsVariable)
+                blackboard.Set(fd.value, value);
+            else
+                Debug.LogWarning($"[FieldReader.SetFloat] Field {index} is constant — write ignored.");
         }
 
         // ─── Bool ─────────────────────────────────────────────────────
@@ -77,10 +119,7 @@ namespace BehaviourTree
         public bool GetBool(int index)
         {
             ref readonly FieldData fd = ref fields[index];
-            if (fd.IsConstant)
-            {
-                return fd.GetBool();
-            }
+            if (fd.IsConstant) return fd.GetBool();
             return blackboard.Get<bool>(fd.value);
         }
 
@@ -88,13 +127,9 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-            {
-                blackboard.Set(fd.value, value);                
-            }
+                blackboard.Set(fd.value, value);
             else
-            {
                 Debug.LogWarning($"[FieldReader.SetBool] Field {index} is constant — write ignored.");
-            }
         }
 
         public T GetEnum<T>(int index) where T : struct
@@ -108,20 +143,11 @@ namespace BehaviourTree
 
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsConstant)
-            {
                 return (T)Enum.ToObject(enumType, fd.value);
-            }
 
             object raw = blackboard.Get<object>(fd.value);
-            if (raw is T typed)
-            {
-                return typed;
-            }
-            if (raw is int rawInt)
-            {
-                return (T)Enum.ToObject(enumType, rawInt);
-            }
-
+            if (raw is T typed) return typed;
+            if (raw is int rawInt) return (T)Enum.ToObject(enumType, rawInt);
             return default;
         }
 
@@ -136,30 +162,21 @@ namespace BehaviourTree
 
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-            {
                 blackboard.Set(fd.value, value);
-            }
             else
-            {
                 Debug.LogWarning($"[FieldReader.SetEnum] Field {index} is constant — write ignored.");
-            }
         }
 
         // ─── Vector2 ──────────────────────────────────────────────────
 
-        /// <summary>
-        /// Fields larger than 4 bytes (Vector2, Vector3, GameObject, Transform)
-        /// cannot be stored as constants
-        /// </summary>
         public Vector2 GetVector2(int index)
         {
             ref readonly FieldData fd = ref fields[index];
-            if(fd.IsConstant)
+            if (fd.IsConstant)
             {
-                Debug.LogWarning($"[FieldReader.SetVector2] field is constant. Vector2 not supported");
+                Debug.LogWarning($"[FieldReader.GetVector2] field is constant. Vector2 not supported as packed constant.");
                 return Vector2.zero;
             }
-            // Both branches use blackboard because 8 bytes don't fit in FieldData's 4-byte value slot.
             return blackboard.Get<Vector2>(fd.value);
         }
 
@@ -167,13 +184,9 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-            {
                 blackboard.Set(fd.value, value);
-            }
             else
-            {
                 Debug.LogWarning($"[FieldReader.SetVector2] Field {index} is constant — write ignored.");
-            }
         }
 
         // ─── Vector3 ──────────────────────────────────────────────────
@@ -181,9 +194,9 @@ namespace BehaviourTree
         public Vector3 GetVector3(int index)
         {
             ref readonly FieldData fd = ref fields[index];
-            if(fd.IsConstant)
+            if (fd.IsConstant)
             {
-                Debug.LogWarning($"[FieldReader.GetVector3] field is constant. Vector3 not supported");
+                Debug.LogWarning($"[FieldReader.GetVector3] field is constant. Vector3 not supported as packed constant.");
                 return Vector3.zero;
             }
             return blackboard.Get<Vector3>(fd.value);
@@ -193,13 +206,9 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-            {
                 blackboard.Set(fd.value, value);
-            }
             else
-            {
                 Debug.LogWarning($"[FieldReader.SetVector3] Field {index} is constant — write ignored.");
-            }
         }
 
         // ─── GameObject ───────────────────────────────────────────────
@@ -207,13 +216,11 @@ namespace BehaviourTree
         public GameObject GetGameObject(int index)
         {
             ref readonly FieldData fd = ref fields[index];
-
-            if(fd.IsConstant)
+            if (fd.IsConstant)
             {
-                Debug.LogWarning($"[FieldReader.GetGameObject] field is constant. GameObject not supported");
+                Debug.LogWarning($"[FieldReader.GetGameObject] field is constant. GameObject not supported as packed constant.");
                 return null;
             }
-
             return blackboard.Get<GameObject>(fd.value);
         }
 
@@ -221,13 +228,9 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-            {
                 blackboard.Set(fd.value, value);
-            }
             else
-            {
                 Debug.LogWarning($"[FieldReader.SetGameObject] Field {index} is constant — write ignored.");
-            }
         }
 
         // ─── Transform ────────────────────────────────────────────────
@@ -235,12 +238,11 @@ namespace BehaviourTree
         public Transform GetTransform(int index)
         {
             ref readonly FieldData fd = ref fields[index];
-            if(fd.IsConstant)
+            if (fd.IsConstant)
             {
-                Debug.LogWarning($"[FieldReader.GetGameObject] field is constant. Transform not supported");
+                Debug.LogWarning($"[FieldReader.GetTransform] field is constant. Transform not supported as packed constant.");
                 return null;
             }
-
             return blackboard.Get<Transform>(fd.value);
         }
 
@@ -248,13 +250,9 @@ namespace BehaviourTree
         {
             ref readonly FieldData fd = ref fields[index];
             if (fd.IsVariable)
-            {
                 blackboard.Set(fd.value, value);
-            }
             else
-            {
                 Debug.LogWarning($"[FieldReader.SetTransform] Field {index} is constant — write ignored.");
-            }
         }
     }
 }

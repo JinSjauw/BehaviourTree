@@ -25,10 +25,11 @@ namespace BehaviourTree.Core
         /// <summary>Blackboard variable name (only used when isVariable == true).</summary>
         public string variableName;
 
-        /// <summary>Type of the constant value (unified enum).</summary>
-        public FieldType fieldType;
+        /// <summary>Assembly-qualified name of the System.Type for this field.
+        /// Populated by the tree editor when creating field entries.</summary>
+        public string fieldTypeName;
 
-        // Constant values (only one used, determined by fieldType)
+        // Constant values (only one used, determined by fieldTypeName)
         public int intValue;
         public float floatValue;
         public bool boolValue;

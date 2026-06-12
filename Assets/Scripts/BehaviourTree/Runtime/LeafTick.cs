@@ -17,7 +17,7 @@ namespace BehaviourTree.Runtime
                 return NodeState.FAILURE;
             }
 
-            method.ResolveInputs(ctx.blackBoard);
+            method.ResolveInputsGeneric(ctx.blackBoard);
 
             NodeState result;
             if (method is ActionMethod action)
@@ -29,7 +29,7 @@ namespace BehaviourTree.Runtime
                 result = NodeState.FAILURE;
             }
 
-            method.WriteOutputs(ctx.blackBoard);
+            method.WriteOutputsGeneric(ctx.blackBoard);
             return result;
         }
     }

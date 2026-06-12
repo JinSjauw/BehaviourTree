@@ -68,7 +68,7 @@ Core/NodeMethod.cs
 ```
 FieldBinding:
   FieldInfo fieldInfo       ← reflection handle to the field
-  FieldType fieldType       ← Int/Float/Bool/Vector2/Vector3/GameObject/Transform
+  string fieldTypeName      ← assembly-qualified System.Type name
   int bbSlotIndex           ← -1 = constant; >=0 = BB slot index
   bool isOutput             ← true = write back to BB after Execute
 ```

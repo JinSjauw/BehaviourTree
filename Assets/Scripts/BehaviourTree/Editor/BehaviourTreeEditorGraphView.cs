@@ -546,6 +546,14 @@ namespace BehaviourTree.Editor
                 TreeRunner runner = BehaviourTreeEditor.currentRunner;
                 if (runner != null) runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);
             }
+
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChangedForFrameAll);
+        }
+
+        private void OnGeometryChangedForFrameAll(GeometryChangedEvent evt)
+        {
+            UnregisterCallback<GeometryChangedEvent>(OnGeometryChangedForFrameAll);
+            FrameAll();
         }
 
         private void InitTree(BehaviourTreeAsset tree)

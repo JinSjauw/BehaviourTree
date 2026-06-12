@@ -99,3 +99,5 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 Assets/Scripts/BehaviourTree/Editor/Tests
 .trae
+Assets/Scripts/BehaviourTree/Runtime/Tests
+Assets/Scripts/BehaviourTree/Runtime/Tests.meta

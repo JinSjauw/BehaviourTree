@@ -18,40 +18,82 @@ namespace BehaviourTree.Core
     public sealed class FieldBinding
     {
         public FieldInfo fieldInfo;
-        public FieldType fieldType;
+
+        /// <summary>
+        /// Assembly-qualified type name of this field.
+        /// Resolved from fieldInfo.FieldType when created by MethodRegistry.
+        /// </summary>
+        public string fieldTypeName;
+
         /// <summary>-1 = constant (value set directly on field); >=0 = BB slot index</summary>
         public int bbSlotIndex = -1;
+
         /// <summary>If true, the field value is written back to BB after Execute.</summary>
         public bool isOutput = true;
 
-        public void ReadFromBB(NodeMethod instance, IBlackBoardAccess bb)
+        /// <summary>Resolved System.Type for this binding (lazy).</summary>
+        public Type ResolvedType =>
+            resolvedType ?? (resolvedType = ResolveType());
+        private Type resolvedType;
+
+        private Type ResolveType()
         {
-            if (bbSlotIndex < 0) return;
-            switch (fieldType)
-            {
-                case FieldType.Int:       fieldInfo.SetValue(instance, bb.GetInt(bbSlotIndex)); break;
-                case FieldType.Float:     fieldInfo.SetValue(instance, bb.GetFloat(bbSlotIndex)); break;
-                case FieldType.Bool:      fieldInfo.SetValue(instance, bb.GetBool(bbSlotIndex)); break;
-                case FieldType.Vector2:   fieldInfo.SetValue(instance, bb.GetVector2(bbSlotIndex)); break;
-                case FieldType.Vector3:   fieldInfo.SetValue(instance, bb.GetVector3(bbSlotIndex)); break;
-                case FieldType.GameObject: fieldInfo.SetValue(instance, bb.GetGameObject(bbSlotIndex)); break;
-                case FieldType.Transform: fieldInfo.SetValue(instance, bb.GetTransform(bbSlotIndex)); break;
-            }
+            if (!string.IsNullOrEmpty(fieldTypeName))
+                return Type.GetType(fieldTypeName);
+            if (fieldInfo != null)
+                return fieldInfo.FieldType;
+            return null;
         }
 
-        public void WriteToBB(NodeMethod instance, IBlackBoardAccess bb)
+        // ── Generic read/write (uses GetBoxed/SetBoxed — with type coercion) ──
+
+        public void ReadFromBBGeneric(NodeMethod instance, IBlackBoardAccess bb)
+        {
+            if (bbSlotIndex < 0) return;
+            object value = bb.GetBoxed(bbSlotIndex);
+            if (value != null)
+            {
+                Type fieldType = fieldInfo.FieldType;
+                Type valueType = value.GetType();
+                if (fieldType != valueType && !fieldType.IsAssignableFrom(valueType))
+                {
+                    try { value = Convert.ChangeType(value, fieldType); }
+                    catch
+                    {
+#if UNITY_EDITOR
+                        Debug.LogWarning($"[FieldBinding] Cannot convert BB value '{value}' ({valueType.Name}) to field type '{fieldType.Name}' for field '{fieldInfo.Name}'");
+#endif
+                        return;
+                    }
+                }
+            }
+            fieldInfo.SetValue(instance, value);
+        }
+
+        public void WriteToBBGeneric(NodeMethod instance, IBlackBoardAccess bb)
         {
             if (!isOutput || bbSlotIndex < 0) return;
-            switch (fieldType)
+            object value = fieldInfo.GetValue(instance);
+            if (value != null)
             {
-                case FieldType.Int:       bb.SetInt(bbSlotIndex, (int)fieldInfo.GetValue(instance)); break;
-                case FieldType.Float:     bb.SetFloat(bbSlotIndex, (float)fieldInfo.GetValue(instance)); break;
-                case FieldType.Bool:      bb.SetBool(bbSlotIndex, (bool)fieldInfo.GetValue(instance)); break;
-                case FieldType.Vector2:   bb.SetVector2(bbSlotIndex, (Vector2)fieldInfo.GetValue(instance)); break;
-                case FieldType.Vector3:   bb.SetVector3(bbSlotIndex, (Vector3)fieldInfo.GetValue(instance)); break;
-                case FieldType.GameObject: bb.SetGameObject(bbSlotIndex, (GameObject)fieldInfo.GetValue(instance)); break;
-                case FieldType.Transform: bb.SetTransform(bbSlotIndex, (Transform)fieldInfo.GetValue(instance)); break;
+                Type bbType = ResolvedType;
+                if (bbType != null)
+                {
+                    Type valueType = value.GetType();
+                    if (bbType != valueType && !bbType.IsAssignableFrom(valueType))
+                    {
+                        try { value = Convert.ChangeType(value, bbType); }
+                        catch
+                        {
+#if UNITY_EDITOR
+                            Debug.LogWarning($"[FieldBinding] Cannot convert field value '{value}' ({valueType.Name}) to BB type '{bbType.Name}' for field '{fieldInfo.Name}'");
+#endif
+                            return;
+                        }
+                    }
+                }
             }
+            bb.SetBoxed(bbSlotIndex, value);
         }
     }
 
@@ -69,6 +111,7 @@ namespace BehaviourTree.Core
     public abstract class NodeMethod
     {
         internal FieldBinding[] bindings;
+        internal object[] boxedConstants;
         private IBlackBoardAccess bbAccess;
 
         /// <summary>Blackboard accessor. Available during Execute().</summary>
@@ -94,31 +137,77 @@ namespace BehaviourTree.Core
         /// </summary>
         public void DeserializeFields(ReadOnlySpan<FieldData> fields, FieldBinding[] bindings)
         {
-            this.bindings = bindings;
-            for (int i = 0; i < bindings.Length; i++)
+            DeserializeFields(fields, bindings, null);
+        }
+
+        /// <summary>
+        /// Called once during tree initialization. Accepts optional boxedConstants
+        /// array for constants larger than 4 bytes (Vector3, Color, custom types).
+        /// </summary>
+        public void DeserializeFields(ReadOnlySpan<FieldData> fields, FieldBinding[] bindings, object[] boxedConstants)
+        {
+            // Clone bindings to avoid mutating the shared cached array from MethodRegistry
+            if (bindings != null)
             {
-                FieldBinding binding = bindings[i];
+                this.bindings = new FieldBinding[bindings.Length];
+                for (int i = 0; i < bindings.Length; i++)
+                {
+                    FieldBinding source = bindings[i];
+                    if (source != null)
+                    {
+                        this.bindings[i] = new FieldBinding
+                        {
+                            fieldInfo = source.fieldInfo,
+                            fieldTypeName = source.fieldTypeName,
+                            isOutput = source.isOutput,
+                            bbSlotIndex = source.bbSlotIndex
+                        };
+                    }
+                }
+            }
+            else
+            {
+                this.bindings = null;
+            }
+
+            this.boxedConstants = boxedConstants;
+
+            int fieldCount = Math.Min(this.bindings != null ? this.bindings.Length : 0, fields.Length);
+            for (int i = 0; i < fieldCount; i++)
+            {
+                FieldBinding binding = this.bindings[i];
                 if (binding == null) continue;
 
                 ref readonly FieldData fd = ref fields[i];
                 if (fd.IsConstant)
                 {
-                    object constValue = ReadConstant(fd, binding.fieldType);
+                    object constValue = ReadConstant(fd, binding.fieldInfo.FieldType, boxedConstants);
                     binding.fieldInfo.SetValue(this, constValue);
                     binding.bbSlotIndex = -1;
                 }
-                else
+                else if (fd.IsBoxedConstant)
                 {
-                    binding.bbSlotIndex = fd.value;
+                    Type fieldType = binding.fieldInfo.FieldType;
+                    object constValue = fd.GetBoxedConstant<object>(boxedConstants);
+                    if (constValue != null && fieldType.IsAssignableFrom(constValue.GetType()))
+                        binding.fieldInfo.SetValue(this, constValue);
+                    binding.bbSlotIndex = -1;
                 }
+                else
+            {
+                binding.bbSlotIndex = fd.value;
+#if UNITY_EDITOR
+                Debug.Log($"[DeserializeFields] '{GetType().Name}' field='{binding.fieldInfo.Name}' bbSlotIndex={binding.bbSlotIndex} fd.value={fd.value}");
+#endif
+            }
             }
         }
 
         /// <summary>
         /// Called by the framework before each Execute(). Copies BB values into
-        /// [SharedVar] instance fields.
+        /// [SharedVar] instance fields using GetBoxed/SetBoxed (supports any type).
         /// </summary>
-        public void ResolveInputs(IBlackBoardAccess bb)
+        public void ResolveInputsGeneric(IBlackBoardAccess bb)
         {
             bbAccess = bb;
             FieldBinding[] b = bindings;
@@ -126,31 +215,44 @@ namespace BehaviourTree.Core
             for (int i = 0; i < b.Length; i++)
             {
                 if (b[i] != null && b[i].bbSlotIndex >= 0)
-                    b[i].ReadFromBB(this, bb);
+                {
+                    b[i].ReadFromBBGeneric(this, bb);
+#if UNITY_EDITOR
+                    object val = b[i].fieldInfo.GetValue(this);
+                    string valStr = val != null ? (val is UnityEngine.Object obj && obj != null ? obj.name : val.ToString()) : "null";
+                    Debug.Log($"[ResolveInputs] '{GetType().Name}.{b[i].fieldInfo.Name}' bbSlotIndex={b[i].bbSlotIndex} value='{valStr}'");
+#endif
+                }
             }
         }
 
         /// <summary>
         /// Called by the framework after each Execute(). Copies [SharedVar]
-        /// instance fields back to the BB.
+        /// instance fields back to the BB using GetBoxed/SetBoxed (supports any type).
         /// </summary>
-        public void WriteOutputs(IBlackBoardAccess bb)
+        public void WriteOutputsGeneric(IBlackBoardAccess bb)
         {
             FieldBinding[] b = bindings;
             if (b == null) return;
             for (int i = 0; i < b.Length; i++)
-                b[i]?.WriteToBB(this, bb);
+                b[i]?.WriteToBBGeneric(this, bb);
         }
 
-        private static object ReadConstant(FieldData fd, FieldType type)
+        private static object ReadConstant(FieldData fd, Type fieldType, object[] boxedConstants)
         {
-            return type switch
+            if (fd.IsBoxedConstant && boxedConstants != null)
             {
-                FieldType.Int   => fd.GetInt(),
-                FieldType.Float => fd.GetFloat(),
-                FieldType.Bool  => fd.GetBool(),
-                _               => fd.GetInt()
-            };
+                int index = fd.value;
+                if (index >= 0 && index < boxedConstants.Length)
+                    return boxedConstants[index];
+                return null;
+            }
+
+            if (fieldType == typeof(float))
+                return fd.GetFloat();
+            if (fieldType == typeof(bool))
+                return fd.GetBool();
+            return fd.GetInt(); // int, enum, and fallback
         }
     }
 

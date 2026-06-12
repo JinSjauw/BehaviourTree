@@ -127,7 +127,7 @@ namespace BehaviourTree.Runtime
          };
 
          blackBoard.Initialize(runtimeAsset.blackboardDefinition);
-         evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.maxTreeDepth);
+         evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.boxedConstants, runtimeAsset.maxTreeDepth);
 
          // Ensure debug provider exists
          debugProvider = GetComponent<RuntimeDebugProvider>();

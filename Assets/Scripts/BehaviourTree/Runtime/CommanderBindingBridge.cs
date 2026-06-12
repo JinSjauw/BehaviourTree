@@ -68,9 +68,15 @@ namespace BehaviourTree.Runtime
             IBlackboardStorage commanderStorage = commanderBB.Storage;
 
             if (selfStorage is not ManagedBlackboardStorage selfManaged)
+            {
+                Debug.LogError($"[Bridge.ResolveBindings] Self BB storage is not ManagedBlackboardStorage (got {selfStorage?.GetType().Name ?? "null"}). Bindings cannot be resolved.");
                 return;
+            }
             if (commanderStorage is not ManagedBlackboardStorage commanderManaged)
+            {
+                Debug.LogError($"[Bridge.ResolveBindings] Commander BB storage is not ManagedBlackboardStorage (got {commanderStorage?.GetType().Name ?? "null"}). Bindings cannot be resolved.");
                 return;
+            }
 
             BlackboardDefinition selfDef = selfStorage.Definition;
             BlackboardDefinition commanderDef = commanderStorage.Definition;
@@ -79,8 +85,11 @@ namespace BehaviourTree.Runtime
                 return;
 
             // Debug.Log($"[Bridge.ResolveBindings] Resolving {bindings.Count} binding(s) for agent {agentID}. " +
-            //           $"Commander def: '{commanderDef.name}' ({commanderDef.sharedVariables.Count} vars). " +
-            //           $"Self def: '{selfDef.name}' ({selfDef.sharedVariables.Count} vars).");
+            //           $"Commander def: '{commanderDef.name}' ({commanderDef.VariableCount} vars). " +
+            //           $"Self def: '{selfDef.name}' ({selfDef.VariableCount} vars).");
+
+            IReadOnlyList<BlackboardVariableBase> commanderVars = commanderDef.GetAllVariables();
+            IReadOnlyList<BlackboardVariableBase> selfVars = selfDef.GetAllVariables();
 
             List<int> cToS = new List<int>();
             List<int> sToC = new List<int>();
@@ -91,9 +100,9 @@ namespace BehaviourTree.Runtime
 
                 // Find commander variable index
                 int commanderVarIndex = -1;
-                for (int ci = 0; ci < commanderDef.sharedVariables.Count; ci++)
+                for (int ci = 0; ci < commanderVars.Count; ci++)
                 {
-                    if (commanderDef.sharedVariables[ci].name == binding.commanderVarName)
+                    if (commanderVars[ci].Name == binding.commanderVarName)
                     {
                         commanderVarIndex = ci;
                         break;
@@ -107,9 +116,9 @@ namespace BehaviourTree.Runtime
 
                 // Find self variable index
                 int selfVarIndex = -1;
-                for (int si = 0; si < selfDef.sharedVariables.Count; si++)
+                for (int si = 0; si < selfVars.Count; si++)
                 {
-                    if (selfDef.sharedVariables[si].name == binding.selfVarName)
+                    if (selfVars[si].Name == binding.selfVarName)
                     {
                         selfVarIndex = si;
                         break;

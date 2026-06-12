@@ -14,6 +14,7 @@ namespace BehaviourTree.Runtime
     {
         private NodeData[] nodeDatas;
         private FieldData[] fieldDatas;
+        private object[] boxedConstants;
         private NodeMethod[] methodInstances;
         private int[] activeChildIndex;
         private TickContext tickContext;
@@ -22,11 +23,12 @@ namespace BehaviourTree.Runtime
         public int currentNodeIndex { get; private set; } = -1;
         public NodeState[] nodeStates;
 
-        public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas, int maxTreeDepth)
+        public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas, object[] boxedConstants, int maxTreeDepth)
         {
             Debug.Log("Created Tree Evaluator");
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
+            this.boxedConstants = boxedConstants;
             nodeStates = new NodeState[nodeDatas.Length];
             activeChildIndex = new int[nodeDatas.Length];
 
@@ -42,7 +44,7 @@ namespace BehaviourTree.Runtime
 
                 FieldBinding[] bindings = MethodRegistry.GetBindings(name);
                 ReadOnlySpan<FieldData> fields = GetNodeFieldSlice(nodeDatas[i]);
-                instance.DeserializeFields(fields, bindings ?? Array.Empty<FieldBinding>());
+                instance.DeserializeFields(fields, bindings ?? Array.Empty<FieldBinding>(), boxedConstants);
                 methodInstances[i] = instance;
             }
 

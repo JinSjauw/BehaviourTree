@@ -113,7 +113,7 @@ namespace BehaviourTree.Editor
                 return;
             }
 
-            List<BlackboardVariable> subtreeVars = subtreeAsset.blackboardDefinition.sharedVariables ?? new List<BlackboardVariable>();
+            IReadOnlyList<BlackboardVariableBase> subtreeVars = subtreeAsset.blackboardDefinition.GetAllVariables();
             EnsureBindingsSize(subtreeVars);
 
             EditorGUILayout.BeginVertical("box");
@@ -123,21 +123,21 @@ namespace BehaviourTree.Editor
 
             for (int i = 0; i < subtreeVars.Count; i++)
             {
-                BlackboardVariable subVar = subtreeVars[i];
+                BlackboardVariableBase subVar = subtreeVars[i];
 
                 SerializedProperty bindingProp = bindingsProp.GetArrayElementAtIndex(i);
                 SerializedProperty subtreeNameProp = bindingProp.FindPropertyRelative("subtreeVariableName");
                 SerializedProperty parentNameProp = bindingProp.FindPropertyRelative("parentVariableName");
 
-                subtreeNameProp.stringValue = subVar.name;
+                subtreeNameProp.stringValue = subVar.Name;
 
-                string typeLabel = TypeLabel(subVar.typeName);
-                EditorGUILayout.LabelField($"<b>{subVar.name}</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
+                string typeLabel = TypeLabel(subVar.TypeName);
+                EditorGUILayout.LabelField($"<b>{subVar.Name}</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
 
                 string[] options;
                 int selectedIndex;
                 bool isMissing;
-                BuildParentOptions(parentDef, subVar.typeName, parentNameProp.stringValue, out options, out selectedIndex, out isMissing);
+                BuildParentOptions(parentDef, subVar.TypeName, parentNameProp.stringValue, out options, out selectedIndex, out isMissing);
 
                 if (InspectorView.IsRenderingReadOnly)
                 {
@@ -176,7 +176,7 @@ namespace BehaviourTree.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void EnsureBindingsSize(List<BlackboardVariable> subtreeVars)
+        private void EnsureBindingsSize(IReadOnlyList<BlackboardVariableBase> subtreeVars)
         {
             while (bindingsProp.arraySize < subtreeVars.Count)
                 bindingsProp.InsertArrayElementAtIndex(bindingsProp.arraySize);
@@ -191,12 +191,14 @@ namespace BehaviourTree.Editor
 
             if (FieldTypeHelper.TryGetSystemTypeFromName(subtreeTypeName, out Type subtreeType) && subtreeType != null)
             {
-                for (int i = 0; i < parentDef.sharedVariables.Count; i++)
+                IReadOnlyList<BlackboardVariableBase> allVars = parentDef.GetAllVariables();
+                for (int i = 0; i < allVars.Count; i++)
                 {
-                    BlackboardVariable pv = parentDef.sharedVariables[i];
-                    if (!FieldTypeHelper.TryGetSystemTypeFromName(pv.typeName, out Type pt) || pt == null) continue;
+                    BlackboardVariableBase pv = allVars[i];
+                    Type pt = pv.GetValueType();
+                    if (pt == null) continue;
                     if (pt == subtreeType)
-                        matchingOptions.Add(pv.name);
+                        matchingOptions.Add(pv.Name);
                 }
             }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviourTree.Core
@@ -6,6 +7,7 @@ namespace BehaviourTree.Core
     public sealed class ManagedBlackboardStorage : IBlackboardStorage
     {
         private BlackboardDefinition definition;
+        private IReadOnlyList<BlackboardVariableBase> runtimeVariables; // unified view cached on init
         private object[] values;
         private Type[] slotTypes;
         private BlackboardSlotKind[] slotKinds;
@@ -21,16 +23,39 @@ namespace BehaviourTree.Core
                 values = null;
                 slotTypes = null;
                 slotKinds = null;
+                runtimeVariables = null;
                 return;
             }
 
-            int varCount = definition.sharedVariables.Count;
+            // Build unified view: old struct vars + new generic vars
+            runtimeVariables = definition.GetAllVariables();
+            InitializeFromVariables(runtimeVariables);
+        }
 
-            // First pass: compute total slot count accounting for stride
+        /// <summary>Initialize from a list of new-style BlackboardVariableBase entries.</summary>
+        public void Initialize(IReadOnlyList<BlackboardVariableBase> variables)
+        {
+            definition = null;
+            runtimeVariables = variables;
+            InitializeFromVariables(variables);
+        }
+
+        private void InitializeFromVariables(IReadOnlyList<BlackboardVariableBase> variables)
+        {
+            if (variables == null || variables.Count == 0)
+            {
+                values = null;
+                slotTypes = null;
+                slotKinds = null;
+                return;
+            }
+
+            int varCount = variables.Count;
+
             int totalSlotCount = 0;
             for (int i = 0; i < varCount; i++)
             {
-                int stride = definition.sharedVariables[i].stride;
+                int stride = variables[i].Stride;
                 totalSlotCount += (stride > 1) ? stride : 1;
             }
 
@@ -38,59 +63,57 @@ namespace BehaviourTree.Core
             slotTypes = new Type[totalSlotCount];
             slotKinds = new BlackboardSlotKind[totalSlotCount];
 
-            // Second pass: fill slots, expanding strided variables
             int slotIndex = 0;
             for (int varIndex = 0; varIndex < varCount; varIndex++)
             {
-                BlackboardVariable variable = definition.sharedVariables[varIndex];
-                Type slotType = null;
-                if (!FieldTypeHelper.TryGetSystemTypeFromName(variable.typeName, out slotType))
-                {
-                    if (Debug.isDebugBuild)
-                    {
-                        Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.typeName}' for variable '{variable.name}' (variableIndex {varIndex}).");
-                    }
-                }
-
-                int variableStride = variable.stride;
+                BlackboardVariableBase variable = variables[varIndex];
+                Type slotType = ResolveVariableType(variable);
+                int variableStride = variable.Stride;
                 int actualStride = (variableStride > 1) ? variableStride : 1;
 
                 for (int slotOffset = 0; slotOffset < actualStride; slotOffset++)
                 {
                     slotTypes[slotIndex + slotOffset] = slotType;
                     slotKinds[slotIndex + slotOffset] = (slotType != null && !slotType.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
-                    values[slotIndex + slotOffset] = variable.GetInitialValue(slotOffset);
+                    values[slotIndex + slotOffset] = variable.GetBoxedValue(slotOffset);
                 }
 
                 slotIndex += actualStride;
             }
         }
 
+        private static Type ResolveVariableType(BlackboardVariableBase variable)
+        {
+            Type type = variable.GetValueType();
+            if (type == null && Debug.isDebugBuild)
+                Debug.LogWarning($"[Blackboard] Unresolved typeName '{variable.TypeName}' for variable '{variable.Name}'.");
+            return type;
+        }
+
         /// <summary>
-        /// Given a variable index into definition.sharedVariables,
+        /// Given a variable index into the unified variable list,
         /// returns the base slot index and stride in the flat values array.
-        /// For stride=1 variables, the slot is at the exact index.
-        /// For stride>1 variables (per-agent arrays), baseSlot is the start.
         /// </summary>
         public void GetVariableSlotRange(int variableIndex, out int baseSlot, out int stride)
         {
-            baseSlot = 0;
-            stride = 1;
-
-            if (definition == null || definition.sharedVariables == null
-                || variableIndex < 0 || variableIndex >= definition.sharedVariables.Count)
+            if (runtimeVariables == null || variableIndex < 0 || variableIndex >= runtimeVariables.Count)
             {
-                Debug.LogError($"[ManagedBlackboardStorage] GetVariableSlotRange: variableIndex {variableIndex} is out of bounds (definition has {definition?.sharedVariables?.Count ?? 0} variables).");
+                baseSlot = -1;
+                stride = -1;
+                Debug.LogError($"[ManagedBlackboardStorage] GetVariableSlotRange: variableIndex {variableIndex} is out of bounds ({(runtimeVariables?.Count ?? 0)} variables). Returning sentinel (-1, -1).");
                 return;
             }
 
+            baseSlot = 0;
+            stride = 1;
+
             for (int prevIndex = 0; prevIndex < variableIndex; prevIndex++)
             {
-                int prevStride = definition.sharedVariables[prevIndex].stride;
+                int prevStride = runtimeVariables[prevIndex].Stride;
                 baseSlot += (prevStride > 1) ? prevStride : 1;
             }
 
-            stride = definition.sharedVariables[variableIndex].stride;
+            stride = runtimeVariables[variableIndex].Stride;
             if (stride <= 1) stride = 1;
         }
 
@@ -116,142 +139,70 @@ namespace BehaviourTree.Core
                 return tVal;
             }
 
-            if (val != null)
-            {
 #if UNITY_EDITOR
-                Debug.LogWarning(
-                    $"[Blackboard] Type mismatch at index {index} — " +
-                    $"Expected: {typeof(T).Name}, Retrieved: {val.GetType().Name}. " +
-                    $"Returning default.");
+            Debug.LogError($"[Blackboard] Unexpected type in BB: index {index} expected {typeof(T).Name} but found {val?.GetType().Name ?? "null"}. Data loss may have occurred.");
 #endif
-            }
-
             return default;
         }
 
         public void Set<T>(int index, T value)
         {
-            if (values == null || index < 0 || index >= values.Length)
+            if (!CanWrite<T>(index, value))
             {
-#if UNITY_EDITOR
-                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL");
-#endif
-                return;
-            }
-
-            if (!CanWrite(index, value))
-            {
+                Debug.LogWarning($"[Blackboard.Set] Type mismatch at index {index}: expected {(slotTypes != null && index < slotTypes.Length ? slotTypes[index]?.Name : "unknown")}, got {typeof(T).Name}");
                 return;
             }
 
             values[index] = value;
         }
+
         public object GetBoxed(int index)
         {
-            if (values == null || index < 0 || index >= values.Length) return null;
+            if (values == null || index < 0 || index >= values.Length)
+                return null;
             return values[index];
         }
 
         public void SetBoxed(int index, object value)
         {
             if (values == null || index < 0 || index >= values.Length)
-            {
-#if UNITY_EDITOR
-                Debug.LogWarning($"[Blackboard] Invalid index or values[] is NULL");
-#endif
                 return;
-            }
-
-            if (!CanWriteBoxed(index, value))
-            {
-                return;
-            }
-
+            if (!CanWriteBoxed(index, value)) return;
             values[index] = value;
         }
 
         private bool CanWrite<T>(int index, T value)
         {
-            Type expectedType = slotTypes != null && index >= 0 && index < slotTypes.Length ? slotTypes[index] : null;
-            if (expectedType == null)
+            if (values == null || index < 0 || index >= values.Length) return false;
+            Type slotType = slotTypes?[index];
+            if (slotType == null) return true; // unresolved type — allow write
+
+            if (!slotType.IsValueType)
             {
-                Debug.LogError($"[Blackboard] Invalid index or slotTypes[] is NULL");
-                return false;
+                // Reference types: allow subclasses, accept null
+                if (value == null) return true;
+                return slotType.IsAssignableFrom(typeof(T));
             }
 
-            if (value == null)
-            {
-                if (expectedType.IsValueType)
-                {
-#if UNITY_EDITOR
-                    Debug.LogWarning(
-                        $"[Blackboard] Type mismatch at index: {index}" +
-                        $"Stored = {expectedType.Name}, Trying to write NULL" +
-                        $"Cancelling write"
-                    );
-#endif
-                    return false;
-                }
-                return true;
-            }
-
-            Type writeType = typeof(T);
-            bool ok = expectedType.IsValueType ? writeType == expectedType : expectedType.IsAssignableFrom(writeType);
-            if (!ok)
-            {
-#if UNITY_EDITOR
-                Debug.LogWarning(
-                    $"[Blackboard] Type mismatch at index: {index}" +
-                    $"Stored = {expectedType.Name}, Trying to write type: {writeType.Name}" +
-                    $"Cancelling write"
-                );
-#endif
-                return false;
-            }
-
-            return true;
+            // Value types: require exact match, reject null
+            if (value == null) return false;
+            return slotType == typeof(T);
         }
 
         private bool CanWriteBoxed(int index, object value)
         {
-            Type expectedType = slotTypes != null && index >= 0 && index < slotTypes.Length ? slotTypes[index] : null;
-            if (expectedType == null) 
+            if (values == null || index < 0 || index >= values.Length) return false;
+            Type slotType = slotTypes?[index];
+            if (slotType == null) return true;
+
+            if (!slotType.IsValueType)
             {
-                Debug.LogError($"[Blackboard] Invalid index or slotTypes[] is NULL");
-                return false; 
+                if (value == null) return true;
+                return slotType.IsAssignableFrom(value.GetType());
             }
 
-            if (value == null)
-            {
-                if (expectedType.IsValueType)
-                {
-#if UNITY_EDITOR
-                    Debug.LogWarning(
-                        $"[Blackboard] Type mismatch at index: {index}" +
-                        $"Stored = {expectedType.Name}, Trying to write NULL" +
-                        $"Cancelling write"
-                    );
-#endif
-                    return false;
-                }
-                return true;
-            }
-
-            Type writeType = value.GetType();
-            bool ok = expectedType.IsValueType ? writeType == expectedType : expectedType.IsAssignableFrom(writeType);
-            if (!ok)
-            {
-#if UNITY_EDITOR
-                Debug.LogWarning(
-                    $"[Blackboard] Type mismatch at index: {index}" +
-                    $"Stored = {expectedType.Name}, Trying to write type: {writeType.Name}" +
-                    $"Cancelling write"
-                );
-#endif
-                return false;
-            }
-
-            return true;
+            if (value == null) return false;
+            return slotType == value.GetType();
         }
     }
 }

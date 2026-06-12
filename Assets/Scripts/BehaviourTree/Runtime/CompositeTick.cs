@@ -5,7 +5,7 @@ namespace BehaviourTree.Runtime
     /// <summary>
     /// Tick function for composite nodes.
     /// Dispatches to the CompositeMethod instance stored in methodInstances.
-    /// Handles ResolveInputs/WriteOutputs for BB-bound composite fields.
+    /// Handles ResolveInputsGeneric/WriteOutputsGeneric for BB-bound composite fields.
     /// </summary>
     internal static partial class TickFunctions
     {
@@ -14,9 +14,9 @@ namespace BehaviourTree.Runtime
             NodeMethod method = ctx.methodInstances[nodeIndex];
             if (method is CompositeMethod composite)
             {
-                composite.ResolveInputs(ctx.blackBoard);
+                composite.ResolveInputsGeneric(ctx.blackBoard);
                 NodeState result = composite.Execute(nodeIndex, ref ctx);
-                composite.WriteOutputs(ctx.blackBoard);
+                composite.WriteOutputsGeneric(ctx.blackBoard);
                 return result;
             }
 
