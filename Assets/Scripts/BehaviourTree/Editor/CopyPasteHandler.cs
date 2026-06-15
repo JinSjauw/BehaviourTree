@@ -36,41 +36,50 @@ namespace BehaviourTree.Editor
         public void CopySelectedNodes()
         {
             List<BehaviourNodeView> selectedNodes = graphView.selection.OfType<BehaviourNodeView>().ToList();
-            if(selectedNodes.Count == 0) return;
+            if (selectedNodes.Count == 0) return;
 
-            clipBoard.nodeDatas.Clear();
-            clipBoard.edgeDatas.Clear();
+            ClipBoardData snapshot = BuildClipboardSnapshot(selectedNodes);
+            clipBoard = snapshot;
+        }
 
-            foreach(BehaviourNodeView nodeView in selectedNodes)
+        private ClipBoardData BuildClipboardSnapshot(List<BehaviourNodeView> selectedNodes)
+        {
+            ClipBoardData snapshot = new ClipBoardData();
+            HashSet<string> seenNodeGuids = new HashSet<string>();
+            HashSet<BehaviourNodeView> selectedNodeSet = new HashSet<BehaviourNodeView>(selectedNodes);
+
+            foreach (BehaviourNodeView nodeView in selectedNodes)
             {
                 BehaviourNode node = nodeView.NodeSO;
-
-                if(node == null) continue;
-                if(node.NodeType == BehaviourNodeType.ROOT || node is RootNode) continue;
+                if (node == null) continue;
+                if (node.NodeType == BehaviourNodeType.ROOT || node is RootNode) continue;
+                if (!seenNodeGuids.Add(node.guid)) continue;
 
                 SerializedNodeData serializedNode = SerializeNode(node);
-
-                if(serializedNode != null)
-                {
-                    clipBoard.nodeDatas.Add(serializedNode);
-                }
+                if (serializedNode != null)
+                    snapshot.nodeDatas.Add(serializedNode);
             }
 
             // Now capture edges between selected nodes
-            foreach (var edge in graphView.edges)
+            HashSet<string> seenEdgeKeys = new HashSet<string>();
+            foreach (Edge edge in graphView.edges)
             {
-                var sourceNodeView = edge.output.node as BehaviourNodeView;
-                var targetNodeView = edge.input.node as BehaviourNodeView;
-                if (sourceNodeView != null && targetNodeView != null &&
-                    selectedNodes.Contains(sourceNodeView) && selectedNodes.Contains(targetNodeView))
+                BehaviourNodeView sourceNodeView = edge.output.node as BehaviourNodeView;
+                BehaviourNodeView targetNodeView = edge.input.node as BehaviourNodeView;
+                if (sourceNodeView == null || targetNodeView == null) continue;
+                if (!selectedNodeSet.Contains(sourceNodeView) || !selectedNodeSet.Contains(targetNodeView)) continue;
+
+                string edgeKey = sourceNodeView.NodeSO.guid + "->" + targetNodeView.NodeSO.guid;
+                if (!seenEdgeKeys.Add(edgeKey)) continue;
+
+                snapshot.edgeDatas.Add(new SerializedEdgeData
                 {
-                    clipBoard.edgeDatas.Add(new SerializedEdgeData
-                    {
-                        sourceNodeGUID = sourceNodeView.NodeSO.guid,
-                        targetNodeGUID = targetNodeView.NodeSO.guid
-                    });
-                }
+                    sourceNodeGUID = sourceNodeView.NodeSO.guid,
+                    targetNodeGUID = targetNodeView.NodeSO.guid
+                });
             }
+
+            return snapshot;
         }
 
         //Paste
@@ -116,7 +125,7 @@ namespace BehaviourTree.Editor
             }
 
             //Use GUID to recreate edges
-            foreach (var serializedEdge in clipBoard.edgeDatas)
+            foreach (SerializedEdgeData serializedEdge in clipBoard.edgeDatas)
             {
                 if (guidMap.TryGetValue(serializedEdge.sourceNodeGUID, out string newSourceGuid) &&
                     guidMap.TryGetValue(serializedEdge.targetNodeGUID, out string newTargetGuid))

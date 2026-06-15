@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using BehaviourTree.Core;
+using BehaviourTree.Runtime;
 
 namespace BehaviourTree.Editor
 {
@@ -24,6 +25,17 @@ namespace BehaviourTree.Editor
     public static class MethodMetadataCache
     {
         private static Dictionary<string, List<ParamInfo>> cache;
+
+        static MethodMetadataCache()
+        {
+            MethodRegistry.OnRegistryRebuilt += InvalidateCache;
+        }
+
+        /// <summary>Clears the cached metadata so the next lookup rebuilds from the current assembly state.</summary>
+        public static void InvalidateCache()
+        {
+            cache = null;
+        }
 
         /// <summary>Lookup by method name string.</summary>
         public static List<ParamInfo> GetParamsForMethod(string methodName)
@@ -51,15 +63,9 @@ namespace BehaviourTree.Editor
                     if (type == null || type.IsAbstract) continue;
                     if (!typeof(NodeMethod).IsAssignableFrom(type)) continue;
 
-                    NodeMethod temp = null;
-                    string name = null;
-                    try
-                    {
-                        temp = (NodeMethod)Activator.CreateInstance(type);
-                        name = temp.MethodName;
-                    }
-                    catch { continue; }
-
+                    // Resolve method name from attribute or type name — no need to instantiate
+                    NodeMethodAttribute attr = type.GetCustomAttribute<NodeMethodAttribute>();
+                    string name = attr != null ? attr.methodName : type.Name;
                     if (string.IsNullOrEmpty(name) || cache.ContainsKey(name))
                         continue;
 

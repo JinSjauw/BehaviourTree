@@ -16,7 +16,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 7d43cc6ef0d72874ba7b7ae249ce329d
-  graphPosition: {x: -145, y: 450}
+  graphPosition: {x: -245, y: 455}
   runtimeIndex: 2
   leafType: 3
   methodName: BB_LogInt
@@ -71,7 +71,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 51a639995c4e71b4f8228406add4424d
-  graphPosition: {x: 105, y: 455}
+  graphPosition: {x: 0, y: 455}
   runtimeIndex: 3
   leafType: 3
   methodName: BB_LogGameObject
@@ -109,9 +109,9 @@ MonoBehaviour:
   - rid: 3017916708520198398
   - rid: 3017916708520198399
   - rid: 3017916708520198400
-  - rid: 3017916708520198424
   - rid: 3017916708520198425
   - rid: 3017916708520198402
+  - rid: 3017916776816312428
   references:
     version: 2
     RefIds:
@@ -160,15 +160,6 @@ MonoBehaviour:
           PublicKeyToken=b77a5c561934e089
         singleValue: 0
         arrayValues: 20000000bd010000170000002c020000a5020000
-    - rid: 3017916708520198424
-      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: Nice
-        variableStride: 1
-        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        singleValue: {x: 0, y: 0}
-        arrayValues: []
     - rid: 3017916708520198425
       type: {class: 'BlackboardVariable`1[[UnityEngine.Quaternion, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
@@ -177,6 +168,15 @@ MonoBehaviour:
         variableTypeName: UnityEngine.Quaternion, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         singleValue: {x: 0, y: 0, z: 0, w: 0}
+        arrayValues: []
+    - rid: 3017916776816312428
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwad
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {x: 0, y: 0}
         arrayValues: []
 --- !u!114 &-2539157933549927008
 MonoBehaviour:
@@ -194,7 +194,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: efc0ae5765b83014dbbe739482ab88ed
-  graphPosition: {x: 315, y: 455}
+  graphPosition: {x: 210, y: 455}
   runtimeIndex: 4
   leafType: 3
   methodName: BB_LogTransform
@@ -231,7 +231,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: a5405da5125cc824b93857c08165c0e1
-  graphPosition: {x: -326, y: 455}
+  graphPosition: {x: -420, y: 455}
   runtimeIndex: 1
   leafType: 3
   methodName: BB_LogFloat
@@ -240,7 +240,7 @@ MonoBehaviour:
     isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: Test
+    variableName: WOW
     fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     intValue: 0
     floatValue: 0
@@ -267,7 +267,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: e7fd7297d2fe6784aa0d803fd6b03a3c
-  graphPosition: {x: 572, y: 453}
+  graphPosition: {x: 420, y: 455}
   runtimeIndex: 5
   leafType: 3
   methodName: WaitSeconds
@@ -306,10 +306,10 @@ MonoBehaviour:
   - {fileID: -7274151979768354521}
   - {fileID: 4851532709648943883}
   - {fileID: -8935729518138422143}
-  - {fileID: -6160559792647264652}
-  - {fileID: -2539157933549927008}
   - {fileID: -163773529425579561}
   - {fileID: -2256756554523620371}
+  - {fileID: -6160559792647264652}
+  - {fileID: -2539157933549927008}
 --- !u!114 &4851532709648943883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,7 +331,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 127ae4b3aa63cb9418a593d3d0258819
-  graphPosition: {x: 30, y: 240}
+  graphPosition: {x: 0, y: 210}
   runtimeIndex: 0
   compositeType: 1
   methodName: SEQUENCE

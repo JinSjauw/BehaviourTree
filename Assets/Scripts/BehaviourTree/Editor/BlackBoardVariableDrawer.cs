@@ -163,7 +163,7 @@ namespace BehaviourTree.Editor
         {
             if (type == null) return EditorGUIUtility.singleLineHeight;
 
-            if (type == typeof(Vector3) || type == typeof(Vector4) ||
+            if (type == typeof(Vector2) || type == typeof(Vector3) || type == typeof(Vector4) ||
                 type == typeof(Color) || type == typeof(Quaternion))
                 return EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
 
@@ -193,9 +193,9 @@ namespace BehaviourTree.Editor
                 prop.colorValue = EditorGUI.ColorField(displayRect, label, prop.colorValue);
             else if (type == typeof(Quaternion))
             {
-                Vector4 v = new Vector4(prop.quaternionValue.x, prop.quaternionValue.y, prop.quaternionValue.z, prop.quaternionValue.w);
-                v = EditorGUI.Vector4Field(displayRect, label, v);
-                prop.quaternionValue = new Quaternion(v.x, v.y, v.z, v.w);
+                Vector4 vector = new Vector4(prop.quaternionValue.x, prop.quaternionValue.y, prop.quaternionValue.z, prop.quaternionValue.w);
+                vector = EditorGUI.Vector4Field(displayRect, label, vector);
+                prop.quaternionValue = new Quaternion(vector.x, vector.y, vector.z, vector.w);
             }
             else if (type == typeof(string))
                 prop.stringValue = EditorGUI.TextField(displayRect, label, prop.stringValue);

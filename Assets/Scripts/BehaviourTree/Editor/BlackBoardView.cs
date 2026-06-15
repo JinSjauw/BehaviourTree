@@ -121,7 +121,7 @@ public partial class BlackBoardView : VisualElement
                         Rect buttonRect = new Rect(rect.x + rect.width - 24f, rect.y + 4f, 22f, 18f);
                         Color prevColor = GUI.color;
                         GUI.color = Color.softRed;
-                        if (GUI.Button(buttonRect, "x"))
+                        if (GUI.Button(buttonRect, "X"))
                         {
                             Undo.RecordObject(sp.serializedObject.targetObject, "Remove Variable");
                             sp.DeleteArrayElementAtIndex(index);

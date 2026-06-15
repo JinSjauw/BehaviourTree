@@ -47,7 +47,7 @@ namespace BehaviourTree.Core
             return cachedType;
 
         cachedTypeName = variableTypeName;
-        cachedType = Type.GetType(variableTypeName);
+        cachedType = FieldTypeHelper.TryGetSystemTypeFromName(variableTypeName, out Type resolved) ? resolved : null;
         return cachedType;
     }
 

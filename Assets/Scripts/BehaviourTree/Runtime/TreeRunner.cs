@@ -113,9 +113,9 @@ namespace BehaviourTree.Runtime
 
          runtimeAsset = RuntimeAssetHelper.GetOrBake(runtimeAsset,
 #if UNITY_EDITOR
-             authoringAsset
+            authoringAsset
 #else
-             null
+            null
 #endif
          );
          if (runtimeAsset == null) return;

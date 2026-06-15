@@ -45,11 +45,6 @@ namespace BehaviourTree
                 return fd.GetBoxedConstant<T>(boxedConstants);
             }
             // Variable — read from blackboard
-            if (typeof(T) == typeof(GameObject) || typeof(T) == typeof(Transform) || typeof(T) == typeof(Component))
-            {
-                // Unity Object types go through typed blackboard access
-                return blackboard.Get<T>(fd.value);
-            }
             return blackboard.Get<T>(fd.value);
         }
 

@@ -9,6 +9,9 @@ namespace BehaviourTree.Editor
     [CustomEditor(typeof(BlackBoard))]
     public class BlackBoardEditor : UnityEditor.Editor
     {
+        private const float OverrideButtonWidth = 70f;
+        private const float ClearButtonWidth = 70f;
+
         /// <summary>Slots that are in override mode (ObjectField visible even though serializedReferences is null).
         /// Keyed by slot index. Cleared and rebuilt when the definition layout changes.</summary>
         private HashSet<int> overrideActiveSlots = new();
@@ -250,7 +253,7 @@ namespace BehaviourTree.Editor
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.ObjectField(label, definitionRef, type, false);
                 EditorGUI.EndDisabledGroup();
-                if (GUILayout.Button("Override", GUILayout.Width(70)))
+                if (GUILayout.Button("Override", GUILayout.Width(OverrideButtonWidth)))
                 {
                     overrideActiveSlots.Add(slotIndex);
                     Undo.RecordObject(blackboard, "Override Reference Slot");
@@ -265,7 +268,7 @@ namespace BehaviourTree.Editor
                 EditorGUILayout.BeginHorizontal();
                 UnityEngine.Object newRef = EditorGUILayout.ObjectField(label, currentRef, type, true);
                 element.objectReferenceValue = newRef;
-                if (GUILayout.Button("x", GUILayout.Width(22)))
+                if (GUILayout.Button("X", GUILayout.Width(ClearButtonWidth)))
                 {
                     element.objectReferenceValue = null;
                     overrideActiveSlots.Remove(slotIndex);
@@ -318,7 +321,7 @@ namespace BehaviourTree.Editor
                 EditorGUI.BeginDisabledGroup(true);
                 DrawTypedField(label, definitionValue, type);
                 EditorGUI.EndDisabledGroup();
-                if (GUILayout.Button("Override", GUILayout.Width(70)))
+                if (GUILayout.Button("Override", GUILayout.Width(OverrideButtonWidth)))
                     overrideActiveValueSlots.Add(overrideKey);
                 EditorGUILayout.EndHorizontal();
             }
@@ -338,7 +341,7 @@ namespace BehaviourTree.Editor
                     EditorUtility.SetDirty(blackboard);
                 }
 
-                if (GUILayout.Button("X", GUILayout.Width(22)))
+                if (GUILayout.Button("X", GUILayout.Width(ClearButtonWidth)))
                 {
                     Undo.RecordObject(blackboard, "Clear Blackboard Value Override");
                     blackboard.ClearValueOverride(bv.Name, elementIndex);

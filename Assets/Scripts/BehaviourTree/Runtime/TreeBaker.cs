@@ -73,11 +73,11 @@ namespace BehaviourTree.Runtime
             {
                 BehaviourNode node = instances[i].node;
                 if (node is LeafNode action)
-                    totalFieldDataCount += CountFieldDataForNode(action, runtimeBbDef);
+                    totalFieldDataCount += CountFieldDataForNode(action.fieldEntries, runtimeBbDef);
                 else if (node is DecoratorNode decorator)
-                    totalFieldDataCount += CountFieldDataForNode(decorator, runtimeBbDef);
+                    totalFieldDataCount += CountFieldDataForNode(decorator.fieldEntries, runtimeBbDef);
                 else if (node is CompositeNode composite)
-                    totalFieldDataCount += CountFieldDataForNode(composite, runtimeBbDef);
+                    totalFieldDataCount += CountFieldDataForNode(composite.fieldEntries, runtimeBbDef);
             }
 
             fieldDatas = new FieldData[totalFieldDataCount];
@@ -355,7 +355,7 @@ namespace BehaviourTree.Runtime
                     nodeData.methodName = action.methodName;
                     nodeData.blackBoardTypeID = action.BlackBoardTypeID;
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                    nodeData.fieldDataCount = CountFieldDataForNode(action, runtimeBbDef);
+                    nodeData.fieldDataCount = CountFieldDataForNode(action.fieldEntries, runtimeBbDef);
 
                     if (action.fieldEntries != null)
                     {
@@ -374,7 +374,7 @@ namespace BehaviourTree.Runtime
                     nodeData.firstChildIndex = firstChild[i];
                     nodeData.lastChildIndex = firstChild[i];
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                    nodeData.fieldDataCount = CountFieldDataForNode(decorator, runtimeBbDef);
+                    nodeData.fieldDataCount = CountFieldDataForNode(decorator.fieldEntries, runtimeBbDef);
 
                     if (decorator.fieldEntries != null)
                     {
@@ -390,7 +390,7 @@ namespace BehaviourTree.Runtime
                     CompositeNode composite = (CompositeNode)node;
                     nodeData.methodName = composite.methodName;
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
-                    nodeData.fieldDataCount = CountFieldDataForNode(composite, runtimeBbDef);
+                    nodeData.fieldDataCount = CountFieldDataForNode(composite.fieldEntries, runtimeBbDef);
 
                     if (composite.fieldEntries != null)
                     {
@@ -491,35 +491,13 @@ namespace BehaviourTree.Runtime
             return null;
         }
 
-        private static int CountFieldDataForNode(LeafNode node, BlackboardDefinition runtimeBbDef)
+        private static int CountFieldDataForNode(List<NodeFieldEntry> fieldEntries, BlackboardDefinition runtimeBbDef)
         {
-            if (node.fieldEntries == null) return 0;
+            if (fieldEntries == null) return 0;
             int count = 0;
-            for (int i = 0; i < node.fieldEntries.Count; i++)
+            for (int i = 0; i < fieldEntries.Count; i++)
             {
-                count += IsArrayFieldEntry(node.fieldEntries[i], runtimeBbDef) ? 2 : 1;
-            }
-            return count;
-        }
-
-        private static int CountFieldDataForNode(DecoratorNode node, BlackboardDefinition runtimeBbDef)
-        {
-            if (node.fieldEntries == null) return 0;
-            int count = 0;
-            for (int i = 0; i < node.fieldEntries.Count; i++)
-            {
-                count += IsArrayFieldEntry(node.fieldEntries[i], runtimeBbDef) ? 2 : 1;
-            }
-            return count;
-        }
-
-        private static int CountFieldDataForNode(CompositeNode node, BlackboardDefinition runtimeBbDef)
-        {
-            if (node.fieldEntries == null) return 0;
-            int count = 0;
-            for (int i = 0; i < node.fieldEntries.Count; i++)
-            {
-                count += IsArrayFieldEntry(node.fieldEntries[i], runtimeBbDef) ? 2 : 1;
+                count += IsArrayFieldEntry(fieldEntries[i], runtimeBbDef) ? 2 : 1;
             }
             return count;
         }
