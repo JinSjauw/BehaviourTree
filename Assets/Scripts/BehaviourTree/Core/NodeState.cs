@@ -4,4 +4,5 @@ public enum NodeState
     FAILURE = 1,
     SUCCESS = 2,
     RUNNING = 3,
+    INACTIVE = 4,
 }

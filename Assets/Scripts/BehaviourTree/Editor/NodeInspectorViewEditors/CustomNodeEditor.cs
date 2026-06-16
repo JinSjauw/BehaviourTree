@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using BehaviourTree;
 using BehaviourTree.Core;
 using System;
 
@@ -15,6 +16,7 @@ namespace BehaviourTree.Editor
         private SerializedProperty blackBoardTypeIDProp;
         private SerializedProperty childrenProp;
         private SerializedProperty commentProp;
+        private SerializedProperty abortTypeProp;
         private GUIStyle style;
         private List<string> matchingVars;
         private List<string> matchingVarNames;
@@ -41,6 +43,7 @@ namespace BehaviourTree.Editor
             blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
             childrenProp = serializedObject.FindProperty("children");
             if (target is LeafNode) commentProp = serializedObject.FindProperty("comment");
+            if (target is CompositeNode) abortTypeProp = serializedObject.FindProperty("abortType");
         }
 
         public override void OnInspectorGUI()
@@ -69,6 +72,26 @@ namespace BehaviourTree.Editor
             }
 
             BuildFieldEntries(selectedMethodName, methodChanged);
+
+            if (abortTypeProp != null)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Conditional Abort", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(abortTypeProp, new GUIContent("Abort Type"));
+
+                AbortType currentAbort = (AbortType)abortTypeProp.enumValueIndex;
+                if (currentAbort != AbortType.None)
+                {
+                    CompositeNode composite = (CompositeNode)target;
+                    if (!HasValidConditionForAbort(composite, currentAbort))
+                    {
+                        EditorGUILayout.HelpBox(
+                            "No reachable Condition node found. Add a Condition node as a " +
+                            "descendant for this abort type to take effect.",
+                            MessageType.Warning);
+                    }
+                }
+            }
 
             EditorGUILayout.Space();
             //EditorGUILayout.PropertyField(blackBoardTypeIDProp);
@@ -303,6 +326,45 @@ namespace BehaviourTree.Editor
             {
                 selectedIndex = EditorGUILayout.Popup("Shared Variable", selectedIndex, matchingVars.ToArray());
                 variableNameProp.stringValue = matchingVarNames[selectedIndex];
+            }
+        }
+
+        // ── Conditional Abort Validation ──
+
+        private static bool HasValidConditionForAbort(CompositeNode composite, AbortType abortType)
+        {
+            bool found = false;
+            HasConditionRecursiveEditor(composite.children, abortType, ref found);
+            return found;
+        }
+
+        private static void HasConditionRecursiveEditor(List<BehaviourNode> children,
+            AbortType requiredType, ref bool found)
+        {
+            if (children == null || found) return;
+
+            // Pass 1: check direct children for method-bearing condition nodes
+            for (int i = 0; i < children.Count; i++)
+            {
+                if (children[i] is LeafNode leaf &&
+                    leaf.NodeType == BehaviourNodeType.CONDITION &&
+                    !string.IsNullOrEmpty(leaf.methodName))
+                {
+                    found = true;
+                    return;
+                }
+            }
+
+            // Pass 2: recurse into child composites with compatible abort type
+            for (int i = 0; i < children.Count; i++)
+            {
+                if (children[i] is CompositeNode childComposite)
+                {
+                    AbortType childAbort = childComposite.abortType;
+                    bool compatible = childAbort == requiredType || childAbort == AbortType.Both;
+                    if (compatible)
+                        HasConditionRecursiveEditor(childComposite.children, requiredType, ref found);
+                }
             }
         }
     }

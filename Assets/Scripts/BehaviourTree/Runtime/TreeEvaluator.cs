@@ -17,6 +17,7 @@ namespace BehaviourTree.Runtime
         private object[] boxedConstants;
         private NodeMethod[] methodInstances;
         private int[] activeChildIndex;
+        private bool[] lastConditionResult;
         private TickContext tickContext;
         private bool isInitialized = false;
 
@@ -31,6 +32,7 @@ namespace BehaviourTree.Runtime
             this.boxedConstants = boxedConstants;
             nodeStates = new NodeState[nodeDatas.Length];
             activeChildIndex = new int[nodeDatas.Length];
+            lastConditionResult = new bool[nodeDatas.Length];
 
             // Create class-based method instances for nodes that have methodName set
             methodInstances = new NodeMethod[nodeDatas.Length];
@@ -81,6 +83,7 @@ namespace BehaviourTree.Runtime
             tickContext.methodInstances = methodInstances;
             tickContext.nodeStates = nodeStates;
             tickContext.activeChildIndex = activeChildIndex;
+            tickContext.lastConditionResult = lastConditionResult;
             tickContext.blackBoard = blackBoard;
 
             // Effective root has no children — nothing to evaluate

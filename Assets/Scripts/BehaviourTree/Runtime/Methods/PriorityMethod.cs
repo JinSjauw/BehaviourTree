@@ -15,6 +15,9 @@ namespace BehaviourTree.Runtime.Methods
             ref NodeData node = ref ctx.nodeDatas[nodeIndex];
             if (node.firstChildIndex < 0) return NodeState.FAILURE;
 
+            // ── Conditional abort check ──
+            TickFunctions.CheckConditionalAbort(nodeIndex, ref ctx);
+
             ctx.activeChildIndex[nodeIndex] = 0;
 
             int childCount = node.lastChildIndex - node.firstChildIndex + 1;

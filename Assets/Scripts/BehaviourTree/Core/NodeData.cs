@@ -15,6 +15,9 @@ namespace BehaviourTree.Core
         public int fieldDataStartIndex;
         /// <summary>Number of FieldData entries belonging to this node.</summary>
         public int fieldDataCount;
+
+        /// <summary>Conditional abort type. Only meaningful for COMPOSITE nodes.</summary>
+        public AbortType abortType;
     }
 }
 

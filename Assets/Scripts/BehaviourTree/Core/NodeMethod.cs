@@ -238,6 +238,14 @@ namespace BehaviourTree.Core
                 b[i]?.WriteToBBGeneric(this, bb);
         }
 
+        /// <summary>
+        /// Called by AbortSubtree before resetting this node's state to INACTIVE.
+        /// Override to clean up blackboard values or other shared state when a branch
+        /// is aborted. Only use the provided bbAccess — instance fields are shared
+        /// across agents and not safe to use here.
+        /// </summary>
+        public virtual void OnAbort(IBlackBoardAccess bbAccess) { }
+
         private static object ReadConstant(FieldData fd, Type fieldType, object[] boxedConstants)
         {
             if (fd.IsBoxedConstant && boxedConstants != null)

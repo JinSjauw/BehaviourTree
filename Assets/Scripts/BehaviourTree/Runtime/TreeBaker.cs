@@ -391,6 +391,7 @@ namespace BehaviourTree.Runtime
                     nodeData.methodName = composite.methodName;
                     nodeData.fieldDataStartIndex = currentFieldDataOffset;
                     nodeData.fieldDataCount = CountFieldDataForNode(composite.fieldEntries, runtimeBbDef);
+                    nodeData.abortType = composite.abortType;
 
                     if (composite.fieldEntries != null)
                     {
@@ -609,6 +610,8 @@ namespace BehaviourTree.Runtime
                 return FieldData.FromConstant(entry.floatValue);
             if (constType == typeof(bool))
                 return FieldData.FromConstant(entry.boolValue);
+            if (constType != null && constType.IsEnum)
+                return FieldData.FromConstant(entry.intValue);
 
             if (constType != null && boxedConstantsList != null)
             {

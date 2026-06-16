@@ -15,6 +15,9 @@ namespace BehaviourTree.Core
         /// <summary>Dynamic list of field entries — generated from method metadata.</summary>
         public List<NodeFieldEntry> fieldEntries = new List<NodeFieldEntry>();
 
+        /// <summary>Conditional abort type for this composite node.</summary>
+        [HideInInspector] public AbortType abortType = AbortType.None;
+
         public void SetCompositeType(BehaviourNodeType type)
         {
             if (type != BehaviourNodeType.COMPOSITE)

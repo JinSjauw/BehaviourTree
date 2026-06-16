@@ -24,6 +24,12 @@ namespace BehaviourTree.Runtime
         public NodeState[] nodeStates;
         public int[] activeChildIndex;
         public BlackBoard blackBoard;
+
+        /// <summary>
+        /// Per-node last condition result for conditional abort transition detection.
+        /// Indexed the same as nodeDatas. false = condition was not met last time it was checked.
+        /// </summary>
+        public bool[] lastConditionResult;
     }
 
     /// <summary>

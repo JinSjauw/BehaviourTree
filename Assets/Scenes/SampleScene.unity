@@ -388,7 +388,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4368838907190093760, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
   m_PrefabInstance: {fileID: 2908911668393476889}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 2908911668393476890}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
@@ -606,7 +606,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
   serializedReferences:
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 2908911668393476890}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -617,7 +617,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   valueOverrides: []
-  overriddenReferenceSlots: 
+  overriddenReferenceSlots: 01000000
 --- !u!114 &923873418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -885,6 +885,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
+--- !u!1 &2908911668393476890 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8891310645500174779, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
+  m_PrefabInstance: {fileID: 2908911668393476889}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5572016034708701122
 PrefabInstance:
   m_ObjectHideFlags: 0
