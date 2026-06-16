@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BehaviourTree.Core;
 using UnityEditor;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace BehaviourTree.Editor
     [CustomPropertyDrawer(typeof(BlackboardVariableBase), true)]
     public class BlackBoardVariableDrawer : UnityEditor.PropertyDrawer
     {
-        private static readonly Type[] CommonTypes = FieldTypeHelper.CommonTypes;
+        private static IReadOnlyList<Type> CommonTypes => VariableTypeRegistry.Types;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -48,7 +49,7 @@ namespace BehaviourTree.Editor
 
                 int currentTypeIndex = GetCommonTypeIndex(currentType);
                 int newTypeIndex = EditorGUI.Popup(typeRect, "Type", currentTypeIndex, GetTypeDisplayNames());
-                if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Length)
+                if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Count)
                 {
                     ChangeType(property, bv, CommonTypes[newTypeIndex]);
                     EditorGUIUtility.labelWidth = savedLabelWidth;
@@ -71,7 +72,7 @@ namespace BehaviourTree.Editor
                 Rect typeRect = new Rect(displayRect.x, displayRect.y, displayRect.width, displayRect.height);
                 int currentTypeIndex = GetCommonTypeIndex(currentType);
                 int newTypeIndex = EditorGUI.Popup(typeRect, "Type", currentTypeIndex, GetTypeDisplayNames());
-                if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Length)
+                if (newTypeIndex != currentTypeIndex && newTypeIndex >= 0 && newTypeIndex < CommonTypes.Count)
                 {
                     ChangeType(property, bv, CommonTypes[newTypeIndex]);
                     EditorGUIUtility.labelWidth = savedLabelWidth;
@@ -224,7 +225,7 @@ namespace BehaviourTree.Editor
         private static int GetCommonTypeIndex(Type type)
         {
             if (type == null) return -1;
-            for (int i = 0; i < CommonTypes.Length; i++)
+            for (int i = 0; i < CommonTypes.Count; i++)
             {
                 if (CommonTypes[i] == type)
                     return i;
@@ -234,8 +235,8 @@ namespace BehaviourTree.Editor
 
         private static string[] GetTypeDisplayNames()
         {
-            string[] names = new string[CommonTypes.Length];
-            for (int i = 0; i < CommonTypes.Length; i++)
+            string[] names = new string[CommonTypes.Count];
+            for (int i = 0; i < CommonTypes.Count; i++)
                 names[i] = FieldTypeHelper.GetDisplayName(CommonTypes[i]);
             return names;
         }

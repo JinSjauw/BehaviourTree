@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BehaviourTree.Core;
+using BehaviourTree.Editor;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -20,9 +21,6 @@ public partial class BlackBoardView : VisualElement
 
     // Creator fields
     private TextField creatorNameField;
-    private DropdownField creatorTypeDropdown;
-    private DropdownField creatorArrayDropdown;
-    private IntegerField creatorStrideField;
     private Button creatorButton;
     private VisualElement creatorRow;
 
@@ -146,8 +144,6 @@ public partial class BlackBoardView : VisualElement
             EditorGUILayout.EndScrollView();
 
             // Capture before ApplyModifiedProperties (which resets the flag).
-            // Only snapshot and propagate when the user actually changed something —
-            // avoids allocating HashSet + Dictionary every frame.
             bool hasChanges = so.hasModifiedProperties;
             so.ApplyModifiedProperties();
 
@@ -160,6 +156,7 @@ public partial class BlackBoardView : VisualElement
 
         imgui.style.flexGrow = 1;
         imgui.style.flexShrink = 1;
+        imgui.style.overflow = Overflow.Hidden;
         blackBoardViewContainer.Add(imgui);
     }
 
@@ -178,7 +175,7 @@ public partial class BlackBoardView : VisualElement
         };
         blackBoardViewContainer.Add(header);
 
-        // ── Row 1: Name │ Type │ Value/Array │ Stride ────────────────
+        // ── Row: Name │ Add ───────────────────────────────────────────
         creatorRow = new VisualElement
         {
             style =
@@ -190,56 +187,23 @@ public partial class BlackBoardView : VisualElement
             }
         };
 
-        creatorNameField = new TextField { style = { width = 120 }, value = "newVariable" };
+        creatorNameField = new TextField { style = { flexGrow = 1, marginRight = 4 }, value = "newVariable" };
 
-        creatorTypeDropdown = new DropdownField { style = { width = 110 } };
-        PopulateTypeDropdown();
-        creatorTypeDropdown.index = 0;
-
-        creatorArrayDropdown = new DropdownField
+        creatorButton = new Button(() => OpenVariableTypePopup())
         {
-            style = { width = 70 },
-            choices = new List<string> { "Value", "Array" },
-            index = 0
-        };
-        creatorArrayDropdown.RegisterValueChangedCallback(evt =>
-        {
-            creatorStrideField.visible = evt.newValue == "Array";
-        });
-
-        creatorStrideField = new IntegerField { style = { width = 50 }, value = 2, visible = false };
-
-        creatorRow.Add(creatorNameField);
-        creatorRow.Add(creatorTypeDropdown);
-        creatorRow.Add(creatorArrayDropdown);
-        creatorRow.Add(creatorStrideField);
-
-        blackBoardViewContainer.Add(creatorRow);
-
-        // ── Add button (centered, full-width) ────────────────────────
-        VisualElement buttonRow = new VisualElement
-        {
+            text = "Add",
             style =
             {
-                flexDirection = FlexDirection.Row,
-                justifyContent = Justify.Center,
-                marginBottom = 8,
+                width = 60,
+                height = 21,
                 flexShrink = 0
             }
         };
 
-        creatorButton = new Button(() => CreateVariable())
-        {
-            text = "+",
-            style =
-            {
-                width = 200,
-                height = 22
-            }
-        };
+        creatorRow.Add(creatorNameField);
+        creatorRow.Add(creatorButton);
 
-        buttonRow.Add(creatorButton);
-        blackBoardViewContainer.Add(buttonRow);
+        blackBoardViewContainer.Add(creatorRow);
     }
 
     /// <summary>
@@ -269,14 +233,18 @@ public partial class BlackBoardView : VisualElement
         }
     }
 
-    private void PopulateTypeDropdown()
+    private void OpenVariableTypePopup()
     {
-        creatorTypeDropdown.choices = FieldTypeHelper.CommonTypes
-            .Select(t => FieldTypeHelper.GetDisplayName(t))
-            .ToList();
+        // worldBound returns window-space coordinates including the window header
+        // — PopupWindow.Show accepts them directly, per Unity docs.
+        VariableTypeSearchPopup popup = new VariableTypeSearchPopup((Type type, bool isArray, int stride) =>
+        {
+            CreateVariable(type, isArray, stride);
+        });
+        UnityEditor.PopupWindow.Show(creatorButton.worldBound, popup);
     }
 
-    private void CreateVariable()
+    private void CreateVariable(Type selectedType, bool isArray, int stride)
     {
         if (cachedDefinition == null) return;
 
@@ -286,17 +254,6 @@ public partial class BlackBoardView : VisualElement
             Debug.LogWarning("[BlackBoardView] Variable name cannot be empty.");
             return;
         }
-
-        int typeIndex = creatorTypeDropdown.index;
-        if (typeIndex < 0 || typeIndex >= FieldTypeHelper.CommonTypes.Length)
-        {
-            Debug.LogWarning("[BlackBoardView] Invalid type selected.");
-            return;
-        }
-
-        Type selectedType = FieldTypeHelper.CommonTypes[typeIndex];
-        bool isArray = creatorArrayDropdown.value == "Array";
-        int stride = isArray ? Mathf.Max(1, creatorStrideField.value) : 1;
 
         Type sharedVarType = typeof(BlackboardVariable<>).MakeGenericType(selectedType);
         BlackboardVariableBase variable = (BlackboardVariableBase)Activator.CreateInstance(sharedVarType);

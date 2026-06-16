@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="VariableTypeSearchPopupUss"/>
+    <ui:VisualElement class="popup-root">
+        <ui:Label text="Type Search" style="-unity-text-align: upper-center; -unity-font-style: bold; margin-bottom: 6px; -unity-text-outline-color: rgb(42, 42, 42); border-bottom-width: 1px; border-left-color: rgb(187, 187, 187); border-right-color: rgb(187, 187, 187); border-top-color: rgb(187, 187, 187); border-bottom-color: rgb(187, 187, 187); padding-bottom: 6px;"/>
+        <ui:TextField name="search-field" class="search-field"/>
+        <ui:VisualElement name="radio-selection" class="radio-row" style="align-self: center;">
+            <ui:RadioButton name="radio-singular" label="Singular" class="radio-option"/>
+            <ui:RadioButton name="radio-array" label="Array" class="radio-option"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="size-row" class="size-row" style="align-self: center;">
+            <ui:Label text="Array size:" class="size-label"/>
+            <ui:IntegerField name="size-field" value="2" class="size-field"/>
+        </ui:VisualElement>
+        <ui:ListView name="type-list" selection-type="Single" class="type-list" style="background-color: rgb(39, 39, 39); margin-top: 3px; margin-right: 3px; margin-bottom: 3px; margin-left: 3px; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;"/>
+    </ui:VisualElement>
+</ui:UXML>

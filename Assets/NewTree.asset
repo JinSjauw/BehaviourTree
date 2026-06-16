@@ -74,7 +74,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 0f0ad19e4aa20ce4eae43bbd40171cbc
-  graphPosition: {x: -210, y: 438.61542}
+  graphPosition: {x: -210, y: 455}
   runtimeIndex: 1
   compositeType: 1
   methodName: SEQUENCE
@@ -96,10 +96,8 @@ MonoBehaviour:
   - rid: 3017916708520198258
   - rid: 3017916708520198398
   - rid: 3017916708520198399
-  - rid: 3017916708520198400
-  - rid: 3017916708520198425
-  - rid: 3017916708520198402
-  - rid: 3017916776816312428
+  - rid: 3017916805780603328
+  - rid: 3017916805780603329
   references:
     version: 2
     RefIds:
@@ -130,37 +128,19 @@ MonoBehaviour:
           Culture=neutral, PublicKeyToken=null
         singleValue: {fileID: 7797062281529876798, guid: 01efd14619743994991c2b134f3d8aaa, type: 3}
         arrayValues: []
-    - rid: 3017916708520198400
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+    - rid: 3017916805780603328
+      type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: WOW
+        variableName: dwee
         variableStride: 1
-        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+        variableTypeName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         singleValue: 0
-        arrayValues: []
-    - rid: 3017916708520198402
-      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: WOWOW
-        variableStride: 5
-        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-        singleValue: 0
-        arrayValues: 20000000bd010000170000002c020000a5020000
-    - rid: 3017916708520198425
-      type: {class: 'BlackboardVariable`1[[UnityEngine.Quaternion, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: dwad
-        variableStride: 1
-        variableTypeName: UnityEngine.Quaternion, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        singleValue: {x: 0, y: 0, z: 0, w: 0}
-        arrayValues: []
-    - rid: 3017916776816312428
+        arrayValues: 
+    - rid: 3017916805780603329
       type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: dwad
+        variableName: wewew
         variableStride: 1
         variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
@@ -208,7 +188,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 75702b78cf830c243afac49a6331f222
-  graphPosition: {x: -280, y: 619.00006}
+  graphPosition: {x: -280, y: 630}
   runtimeIndex: 4
   compositeType: 1
   methodName: SEQUENCE
@@ -230,7 +210,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: fbbdf1de75161984cbbd0a95ec078663
-  graphPosition: {x: -525, y: 615.5175}
+  graphPosition: {x: -540.0344, y: 630}
   runtimeIndex: 3
   leafType: 2
   methodName: BB_CheckGameObject
@@ -342,7 +322,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 6f8c32ba408cad74cab59132acd1a653
-  graphPosition: {x: -35, y: 630}
+  graphPosition: {x: 0, y: 630}
   runtimeIndex: 5
   leafType: 3
   methodName: WaitSeconds
@@ -378,7 +358,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: a949639c2aad25a4f99e8d7d71f3909d
-  graphPosition: {x: -402.28485, y: 945}
+  graphPosition: {x: -366.9999, y: 945}
   runtimeIndex: 6
   leafType: 2
   methodName: BB_CompareInt
@@ -400,7 +380,7 @@ MonoBehaviour:
     isVariable: 0
     isToggleVariable: 0
     isArray: 0
-    variableName: 
+    variableName: newVariable
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     intValue: 5
     floatValue: 0

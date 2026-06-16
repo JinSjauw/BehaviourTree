@@ -1,0 +1,47 @@
+.popup-root {
+    width: 300px;
+    max-height: 320px;
+    flex-direction: column;
+    background-color: rgb(46, 46, 46);
+    padding: 4px 6px;
+}
+
+.search-field {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.radio-row {
+    flex-direction: row;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.radio-option {
+    margin-right: 12px;
+}
+
+.size-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.size-label {
+    margin-right: 4px;
+}
+
+.size-field {
+    width: 50px;
+}
+
+.type-list {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.unity-base-field__label {
+    min-width: 10px;
+}
+
