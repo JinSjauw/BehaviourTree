@@ -79,8 +79,8 @@ namespace BehaviourTree.Editor
             typeListView.itemsSource = filteredTypes;
             typeListView.makeItem = MakeListItem;
             typeListView.bindItem = BindListItem;
-            typeListView.onItemsChosen += OnItemChosen;
-            typeListView.onSelectionChange += OnSelectionChanged;
+            typeListView.itemsChosen += OnItemChosen;
+            typeListView.selectionChanged += OnSelectionChanged;
 
             // Wire callbacks
             searchField.RegisterValueChangedCallback(OnSearchChanged);

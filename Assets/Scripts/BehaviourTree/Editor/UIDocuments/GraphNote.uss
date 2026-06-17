@@ -1,0 +1,98 @@
+.graph-note-container {
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.25);
+    padding: 8px;
+    flex-direction: column;
+    min-width: 120px;
+    min-height: 80px;
+}
+
+.graph-note-header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.graph-note-title {
+    flex-grow: 1;
+    font-size: 13px;
+    -unity-font-style: bold;
+    padding: 0;
+    margin: 0;
+}
+
+.graph-note-title > .unity-text-field__input {
+    background-color: transparent;
+    border-width: 0;
+    padding: 0;
+}
+
+.graph-note-color {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+}
+
+.graph-note-color > .unity-base-field__label {
+    display: none;
+}
+
+.graph-note-color > .unity-color-field__color-input {
+    width: 18px;
+    height: 18px;
+}
+
+.graph-note-divider {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.12);
+    margin-bottom: 4px;
+    flex-shrink: 0;
+}
+
+.graph-note-contents {
+    flex-grow: 1;
+    font-size: 12px;
+}
+
+.graph-note-contents > .unity-text-field__input {
+    background-color: transparent;
+    border-width: 0;
+    padding: 0;
+    white-space: normal;
+}
+
+.graph-note-text-color {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+}
+
+.graph-note-text-color > .unity-base-field__label {
+    display: none;
+}
+
+.graph-note-text-color > .unity-color-field__color-input {
+    width: 18px;
+    height: 18px;
+}
+
+.resizer {
+    background-color: rgb(255, 255, 255);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.resizer:hover {
+    background-color: rgb(100, 149, 237);
+    border-color: rgba(30, 80, 180, 0.6);
+    border-width: 2px;
+}
+
+.resizer-icon {
+    display: none;
+    visibility: hidden;
+}

@@ -9,6 +9,7 @@ namespace BehaviourTree.Editor
     public class BehaviourTreeAsset : BehaviourTreeAssetBase
     {
         [HideInInspector] public List<BehaviourNode> nodesList;
+        [HideInInspector] public List<EditorNoteData> editorNotes = new();
 
         //Create unique runtime instances of the SO's
         public void Initialize() 

@@ -13,5 +13,7 @@ namespace BehaviourTree.Editor
         public const string BlackboardVariableEntryUss = BasePath + "BlackboardVariableEntry.uss";
         public const string ArrayElementRowUxml = BasePath + "ArrayElementRow.uxml";
         public const string ArrayElementRowUss = BasePath + "ArrayElementRow.uss";
+        public const string GraphNoteUss = BasePath + "GraphNote.uss";
+        public const string GraphNoteUxml = BasePath + "GraphNote.uxml";
     }
 }

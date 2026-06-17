@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/GraphNote.uss?fileID=7433441132597879392&amp;guid=473d0f8f03d958346849695f5074bd17&amp;type=3#GraphNote"/>
+    <ui:VisualElement name="note-grab-header" style="flex-grow: 0; height: 30px; min-height: 20px; background-color: rgb(255, 170, 0); border-top-right-radius: 8px; border-top-left-radius: 8px;"/>
+    <ui:VisualElement name="main-container" class="graph-note-container" style="flex-grow: 1; border-top-right-radius: 0; border-top-left-radius: 0; min-width: auto; min-height: auto;">
+        <ui:VisualElement name="note-header" class="graph-note-header">
+            <ui:TextField name="note-title" multiline="false" select-all-on-focus="true" select-all-on-mouse-up="true" label="" class="graph-note-title" style="font-size: 20px;"/>
+            <editor:ColorField name="note-text-color" show-alpha="true" show-eye-dropper="false" class="graph-note-text-color"/>
+            <editor:ColorField name="note-color" show-alpha="true" show-eye-dropper="false" class="graph-note-color"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="note-divider" class="graph-note-divider"/>
+        <ui:TextField name="note-contents" multiline="true" select-all-on-focus="true" select-all-on-mouse-up="true" class="graph-note-contents"/>
+    </ui:VisualElement>
+</ui:UXML>

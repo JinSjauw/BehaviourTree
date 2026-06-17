@@ -5,24 +5,41 @@
 
 ---
 
-## 1. Conditional Aborts
+## Summary
 
-- [ ] Add `AbortType` enum (None, Self, LowerPriority, Both)
-- [ ] Add `abortType` field to `CompositeNode` (editor asset)
-- [ ] Add `abortType` field to `NodeData` (runtime struct)
-- [ ] Add `lastConditionResult[]` to `TickContext`
-- [ ] Implement `EvaluateLeafCondition` — evaluates a single method-bearing node
-- [ ] Implement `EvaluateCompositeCondition` / `FindFirstCondition` — recursive with abort-type constraint
-- [ ] Implement `CheckConditionalAbort` — Self pass (direct leaves) + LowerPriority pass (child composites)
-- [ ] Implement `AbortSubtree` — recursive state reset to INACTIVE
-- [ ] Implement `HasValidConditionForAbort` — editor validation pass
-- [ ] Wire into `SequenceMethod`, `SelectorMethod`, `PriorityMethod`, `ParallelMethod`
-- [ ] Allocate `lastConditionResult[]` in `TreeEvaluator`
-- [ ] Copy `abortType` from `CompositeNode` to `NodeData` in `TreeBaker`
-- [ ] Add `AbortType` dropdown in composite node inspector
-- [ ] Show editor warning when abort type is set but no reachable condition exists
-- [ ] Test: Self abort (condition fails → action aborted within same composite)
-- [ ] Test: LowerPriority abort (condition becomes true → sibling aborted under same parent)
+| # | Section | Status |
+|---|---|---|
+| 1 | Conditional Aborts | ✅ Done |
+| 2 | GameObject → Add TreeRunner + BehaviourTree Button | ⬜ Pending |
+| 3 | Overhaul Graph Inspector UI | ✅ Done |
+| 4 | Commander Module UX Improvements | ⬜ Pending |
+| 5 | Commander Nodes (Hardcoded for Speed) | ⬜ Pending |
+| 6 | NodeView Visual Overhaul (UI Toolkit) | ⬜ Pending |
+| 7 | Smooth Blackboard Add-Variable UI | ✅ Done |
+| 8 | Rewrite Node Palette | ⬜ Pending |
+| 9 | Bugs & Polish Before Playtest | ⬜ Pending |
+| 10 | Graph Editor Sticky Notes | ⬜ Pending |
+
+---
+
+## 1. Conditional Aborts ✓
+
+- [x] Add `AbortType` enum (None, Self, LowerPriority, Both)
+- [x] Add `abortType` field to `CompositeNode` (editor asset)
+- [x] Add `abortType` field to `NodeData` (runtime struct)
+- [x] Add `lastConditionResult[]` to `TickContext`
+- [x] Implement `EvaluateLeafCondition` — evaluates a single method-bearing node
+- [x] Implement `EvaluateCompositeCondition` / `FindFirstCondition` — recursive with abort-type constraint
+- [x] Implement `CheckConditionalAbort` — Self pass (direct leaves) + LowerPriority pass (child composites)
+- [x] Implement `AbortSubtree` — recursive state reset to INACTIVE
+- [x] Implement `HasValidConditionForAbort` — editor validation pass
+- [x] Wire into `SequenceMethod`, `SelectorMethod`, `PriorityMethod`, `ParallelMethod`
+- [x] Allocate `lastConditionResult[]` in `TreeEvaluator`
+- [x] Copy `abortType` from `CompositeNode` to `NodeData` in `TreeBaker`
+- [x] Add `AbortType` dropdown in composite node inspector
+- [x] Show editor warning when abort type is set but no reachable condition exists
+- [x] Test: Self abort (condition fails → action aborted within same composite)
+- [x] Test: LowerPriority abort (condition becomes true → sibling aborted under same parent)
 
 ---
 
@@ -36,26 +53,26 @@
 
 ---
 
-## 3. Overhaul Graph Inspector UI
+## 3. Overhaul Graph Inspector UI ✓
 
 ### 3.1 Blackboard Section (upper half)
 
-- [ ] Add tab system: **Blackboard** | **Tracked Variables** | **Commander**
-- [ ] **Blackboard tab** — current variable list (read/write)
+- [x] Add tab system: **Blackboard** | **Tracked Variables** | **Commander**
+- [x] **Blackboard tab** — current variable list (read/write)
 - [ ] **Tracked Variables tab** — shows `[BlackboardTrack]` annotated fields from agent components, mapping to blackboard variable names
 - [ ] **Commander tab** — commander tree related variables (shared variables, commander→agent mappings)
 
 ### 3.2 Node Inspector Section (lower half)
 
-- [ ] Selected node's properties (method name, field entries, abort type, etc.)
-- [ ] Replaces current separate inspector window
+- [x] Selected node's properties (method name, field entries, abort type, etc.)
+- [x] Replaces current separate inspector window
 - [ ] **Rename node** — editable name field in inspector. Default = method/type name. Custom name overrides display.
 - [ ] **Type subtitle** — when node is renamed from its default, show actual type as a smaller subtitle below the name (e.g. "WaitSeconds" under "Retreat Delay")
 
 ### 3.3 Layout
 
-- [ ] Vertical split: upper = blackboard tabs, lower = node inspector
-- [ ] Resizable splitter between sections
+- [x] Vertical split: upper = blackboard tabs, lower = node inspector
+- [x] Resizable splitter between sections
 
 ---
 
@@ -126,14 +143,14 @@
 
 ---
 
-## 7. Smooth Blackboard Add-Variable UI
+## 7. Smooth Blackboard Add-Variable UI ✓
 
-- [ ] Replace current type dropdown with search provider (like `NodeSearchProvider`)
-- [ ] Search filter for variable type name
-- [ ] Multi-choice toggle above search: **Single Value** / **Array (stride > 1)**
-- [ ] Selecting array mode prompts for stride count
-- [ ] Variable name field below type selection
-- [ ] Default value field (inline editor matching the selected type)
+- [x] Replace current type dropdown with search provider (like `NodeSearchProvider`)
+- [x] Search filter for variable type name
+- [x] Multi-choice toggle above search: **Single Value** / **Array (stride > 1)**
+- [x] Selecting array mode prompts for stride count
+- [x] Variable name field below type selection
+- [x] Default value field (inline editor matching the selected type)
 
 ---
 
@@ -164,11 +181,23 @@
 
 ---
 
+## 10. Graph Editor Sticky Notes
+
+- [ ] Add right-click context menu option: **Add Note**
+- [ ] Notes render as resizable, draggable colored boxes with text content
+- [ ] Double-click note to edit text (inline or popup)
+- [ ] Configurable note color
+- [ ] Notes are serialized as part of the `BehaviourTreeAsset` (editor only — not runtime)
+- [ ] Notes are purely visual — do not affect tree execution
+
+---
+
 ## Timeline (Target)
 
 | Date | Focus |
 |---|---|
-| Now → 16 Jun | Conditional aborts, GameObject button, node palette rewrite |
-| 16–18 Jun | Inspector overhaul, blackboard add-variable UI, commander nodes (hardcoded) |
+| Now → 16 Jun | ~~Conditional aborts~~, GameObject button, node palette rewrite |
+| 16–18 Jun | ~~Inspector overhaul~~, ~~blackboard add-variable UI~~, commander nodes (hardcoded) |
+| 18–21 Jun | Commander nodes, GameObject button, node palette rewrite, playtest prep |
 | 19–21 Jun | **Playtest with designers** — fixes only |
 | 21–26 Jun | NodeView UI Toolkit visual overhaul, commander module UX polish, remaining nodes |

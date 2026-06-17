@@ -313,7 +313,7 @@ namespace BehaviourTree.Editor
                 HandleEdgeCreation(change.edgesToCreate);
 
             if (change.movedElements != null)
-                HandleElementsMoved();
+                HandleElementsMoved(change.movedElements);
 
             return change;
         }
@@ -335,6 +335,12 @@ namespace BehaviourTree.Editor
                     BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
                     tree.RemoveChild(parentView.NodeSO, childView.NodeSO);
                 }
+                else if (elementsToRemove[i] is GraphNote graphNote)
+                {
+                    if (graphNote.Data != null)
+                        tree.editorNotes.Remove(graphNote.Data);
+                    EditorUtility.SetDirty(tree);
+                }
             }
 
             onGraphDataChanged?.Invoke(this);
@@ -354,10 +360,26 @@ namespace BehaviourTree.Editor
             onGraphDataChanged?.Invoke(this);
         }
 
-        private void HandleElementsMoved()
+        private void HandleElementsMoved(List<GraphElement> movedElements)
         {
             foreach (BehaviourNodeView nodeView in nodeViewDict.Values)
                 nodeView.SortChildren();
+
+            for (int i = 0; i < movedElements.Count; i++)
+            {
+                if (movedElements[i] is GraphNote note)
+                {
+                    note.PersistLayout();
+                    EditorUtility.SetDirty(tree);
+                }
+            }
+        }
+
+        private GraphNote CreateNoteFromData(EditorNoteData data)
+        {
+            GraphNote note = new GraphNote();
+            note.Bind(data, () => EditorUtility.SetDirty(tree));
+            return note;
         }
 
         public BehaviourNodeView CreateNodeView(BehaviourNode node)
@@ -525,6 +547,19 @@ namespace BehaviourTree.Editor
             {
                 subtreeExtractor.Extract(selection, tree, PopulateView);
             }, _ => subtreeExtractor.CanExtract(selection, tree) ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
+
+            evt.menu.AppendAction("Add Note", _ =>
+            {
+                EditorNoteData noteData = new EditorNoteData
+                {
+                    position = viewTransform.matrix.inverse.MultiplyPoint(
+                        evt.originalMousePosition),
+                };
+                tree.editorNotes.Add(noteData);
+                GraphNote note = CreateNoteFromData(noteData);
+                AddElement(note);
+                EditorUtility.SetDirty(tree);
+            }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
         }
 
         public void PopulateView(BehaviourTreeAsset tree)
@@ -540,6 +575,15 @@ namespace BehaviourTree.Editor
             EnsureRootNodeExists();
             CleanupAndCreateViews();
             CleanupAndWireEdges();
+
+            if (tree.editorNotes != null)
+            {
+                foreach (EditorNoteData noteData in tree.editorNotes)
+                {
+                    GraphNote note = CreateNoteFromData(noteData);
+                    AddElement(note);
+                }
+            }
 
             if (EditorApplication.isPlaying)
             {

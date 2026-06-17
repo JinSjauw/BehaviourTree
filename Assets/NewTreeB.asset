@@ -75,6 +75,7 @@ MonoBehaviour:
   sharedVariables:
   - rid: 3017916810423697922
   - rid: 3017916810423697921
+  - rid: 3017916810423698009
   references:
     version: 2
     RefIds:
@@ -96,6 +97,15 @@ MonoBehaviour:
           PublicKeyToken=b77a5c561934e089
         singleValue: 5
         arrayValues: 
+    - rid: 3017916810423698009
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: newVariable
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {x: 0, y: 0}
+        arrayValues: []
 --- !u!114 &-3456654351379911066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,14 +191,15 @@ MonoBehaviour:
   commanderBlackboardDefinition: {fileID: 0}
   nodesList:
   - {fileID: -3456654351379911066}
-  - {fileID: 995085664921084173}
-  - {fileID: -120448717158902639}
   - {fileID: -6547581460322908388}
-  - {fileID: -5552713232200417787}
   - {fileID: -795211583323274248}
-  - {fileID: 8412664519468591503}
-  - {fileID: 1204475877687682856}
   - {fileID: 6723386113716927207}
+  - {fileID: 1204475877687682856}
+  - {fileID: -120448717158902639}
+  - {fileID: -5552713232200417787}
+  - {fileID: 8412664519468591503}
+  - {fileID: 995085664921084173}
+  editorNotes: []
 --- !u!114 &995085664921084173
 MonoBehaviour:
   m_ObjectHideFlags: 0
