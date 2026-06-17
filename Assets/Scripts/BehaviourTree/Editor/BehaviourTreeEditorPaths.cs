@@ -15,5 +15,7 @@ namespace BehaviourTree.Editor
         public const string ArrayElementRowUss = BasePath + "ArrayElementRow.uss";
         public const string GraphNoteUss = BasePath + "GraphNote.uss";
         public const string GraphNoteUxml = BasePath + "GraphNote.uxml";
+        public const string BehaviourPortUxml = BasePath + "BehaviourPort.uxml";
+        public const string BehaviourPortUss = BasePath + "BehaviourPort.uss";
     }
 }

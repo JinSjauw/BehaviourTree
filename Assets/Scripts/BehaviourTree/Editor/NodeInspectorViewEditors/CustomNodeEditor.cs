@@ -10,10 +10,12 @@ namespace BehaviourTree.Editor
     [CustomEditor(typeof(BehaviourNode), true)]
     public class CustomNodeEditor : UnityEditor.Editor
     {
+        public bool nodeNameChangedThisFrame;
+
         private string lastMethodName;
+        private SerializedProperty nodeNameProp;
         private SerializedProperty methodNameProp;
         private SerializedProperty fieldEntriesProp;
-        private SerializedProperty blackBoardTypeIDProp;
         private SerializedProperty childrenProp;
         private SerializedProperty commentProp;
         private SerializedProperty abortTypeProp;
@@ -38,9 +40,9 @@ namespace BehaviourTree.Editor
             
             matchingVars = new List<string>();
             matchingVarNames = new List<string>();
+            nodeNameProp = serializedObject.FindProperty("nodeName");
             methodNameProp = serializedObject.FindProperty("methodName");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
-            blackBoardTypeIDProp = serializedObject.FindProperty("BlackBoardTypeID");
             childrenProp = serializedObject.FindProperty("children");
             if (target is LeafNode) commentProp = serializedObject.FindProperty("comment");
             if (target is CompositeNode) abortTypeProp = serializedObject.FindProperty("abortType");
@@ -49,13 +51,22 @@ namespace BehaviourTree.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-
+            
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(nodeNameProp, new GUIContent("Node Name"));
+            nodeNameChangedThisFrame = EditorGUI.EndChangeCheck();
+            
             if(!(target is LeafNode || target is DecoratorNode || target is CompositeNode)) 
             {
                 DrawDefaultInspector();
                 DrawChildrenDebug();
                 serializedObject.ApplyModifiedProperties();
                 return;
+            }
+
+            if(target is CompositeNode)
+            {
+                DrawChildrenDebug();
             }
 
             // Check if method changed and rebuild field entries

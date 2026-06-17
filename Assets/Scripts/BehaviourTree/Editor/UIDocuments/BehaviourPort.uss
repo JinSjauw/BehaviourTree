@@ -1,0 +1,124 @@
+.behaviour-port {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    min-width: auto;
+    min-height: auto;
+    background-color: rgb(42, 42, 42);
+    width: 46px;
+    height: 15px;
+    flex-grow: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.behaviour-port--input {
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    border-top-width: 0;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+}
+
+.behaviour-port--output {
+    flex-direction: column-reverse;
+    position: absolute;
+    bottom: 0;
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 0;
+    border-left-width: 2px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+}
+
+.behaviour-port .connectorBox {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-direction: column;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    opacity: 0;
+}
+
+.behaviour-port .connectorCap {
+    display: none;
+}
+
+.behaviour-port__cap {
+    width: 36px;
+    height: 15px;
+    border-radius: 2px;
+    flex-grow: 1;
+    position: absolute;
+    top: 0;
+    left: auto;
+    right: auto;
+    bottom: auto;
+}
+
+.behaviour-port--connected .behaviour-port__cap {
+    background-color: rgb(200, 200, 200);
+    border-top-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-left-color: rgb(255, 255, 255);
+    flex-grow: 1;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+    position: absolute;
+    top: auto;
+}
+
+.behaviour-port--disconnected .behaviour-port__cap {
+}
+
+#input .behaviour-port__cap {
+    transform-origin: center;
+    position: absolute;
+    top: -5px;
+}
+
+#output .behaviour-port__cap {
+    position: absolute;
+    top: 3px;
+}

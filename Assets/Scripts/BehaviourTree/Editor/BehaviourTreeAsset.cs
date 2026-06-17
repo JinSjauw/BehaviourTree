@@ -52,6 +52,7 @@ namespace BehaviourTree.Editor
         {
             BehaviourNode node = (BehaviourNode)CreateInstance(type);
             node.name = type.Name;
+            node.nodeName = type.Name;
             node.guid = GUID.Generate().ToString();
         
             return node;

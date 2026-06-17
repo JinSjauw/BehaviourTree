@@ -252,6 +252,8 @@ namespace BehaviourTree.Editor
             if (tree == null) return false;
 
             tree.AddChild(parentView.NodeSO, childView.NodeSO);
+            parentView.SortChildren();
+            EditorUtility.SetDirty(parentView.NodeSO);
 
             Edge edge = output.ConnectTo(input);
             AddElement(edge);
@@ -355,6 +357,8 @@ namespace BehaviourTree.Editor
                 BehaviourNodeView childView = edge.input.node as BehaviourNodeView;
 
                 tree.AddChild(parentView.NodeSO, childView.NodeSO);
+                parentView.SortChildren();
+                EditorUtility.SetDirty(parentView.NodeSO);
             }
 
             onGraphDataChanged?.Invoke(this);
@@ -416,16 +420,16 @@ namespace BehaviourTree.Editor
             return null;
         }
         
-        public BehaviourNodeView CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
-        {
-            CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
-            node.SetCompositeType(BehaviourNodeType.COMPOSITE);
-            node.name = BehaviourNodeType.COMPOSITE.ToString();
-            node.methodName = compositeType.ToString();
-            node.graphPosition = position;
-            tree.RegisterNode(node);
-            return CreateNodeView(node);
-        }
+        // public BehaviourNodeView CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
+        // {
+        //     CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
+        //     node.SetCompositeType(compositeType);
+        //     node.nodeName = compositeType.ToString();
+        //     node.methodName = compositeType.ToString();
+        //     node.graphPosition = position;
+        //     tree.RegisterNode(node);
+        //     return CreateNodeView(node);
+        // }
 
         public BehaviourNodeView CreateCompositeNode(string methodName, Vector2 position)
         {
@@ -537,19 +541,19 @@ namespace BehaviourTree.Editor
         {
             base.BuildContextualMenu(evt);
 
-            evt.menu.AppendAction($"Create Node", _ =>
+            evt.menu.InsertAction(0, $"Create Node", _ =>
             {
                 searchWindow.ClearPendingConnection();
                 OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
             }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
 
-            evt.menu.AppendAction("Extract Selection To Subtree", _ =>
+            evt.menu.InsertAction(1, $"Subtree/Extract Selection To Subtree", _ =>
             {
                 subtreeExtractor.Extract(selection, tree, PopulateView);
             }, _ => subtreeExtractor.CanExtract(selection, tree) ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
 
             Vector2 mouseLocal = evt.localMousePosition;
-            evt.menu.AppendAction("Add Note", _ =>
+            evt.menu.InsertAction(2, $"Add Note", _ =>
             {
                 Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, mouseLocal);
                 EditorNoteData noteData = new EditorNoteData

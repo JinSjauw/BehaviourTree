@@ -197,7 +197,7 @@ namespace BehaviourTree.Core
             {
                 binding.bbSlotIndex = fd.value;
 #if UNITY_EDITOR
-                Debug.Log($"[DeserializeFields] '{GetType().Name}' field='{binding.fieldInfo.Name}' bbSlotIndex={binding.bbSlotIndex} fd.value={fd.value}");
+                //Debug.Log($"[DeserializeFields] '{GetType().Name}' field='{binding.fieldInfo.Name}' bbSlotIndex={binding.bbSlotIndex} fd.value={fd.value}");
 #endif
             }
             }
@@ -220,7 +220,7 @@ namespace BehaviourTree.Core
 #if UNITY_EDITOR
                     object val = b[i].fieldInfo.GetValue(this);
                     string valStr = val != null ? (val is UnityEngine.Object obj && obj != null ? obj.name : val.ToString()) : "null";
-                    Debug.Log($"[ResolveInputs] '{GetType().Name}.{b[i].fieldInfo.Name}' bbSlotIndex={b[i].bbSlotIndex} value='{valStr}'");
+                    //Debug.Log($"[ResolveInputs] '{GetType().Name}.{b[i].fieldInfo.Name}' bbSlotIndex={b[i].bbSlotIndex} value='{valStr}'");
 #endif
                 }
             }

@@ -25,6 +25,8 @@ namespace BehaviourTree.Editor
         public Action<BehaviourNodeView> OnNodeSelected;
 
         private VisualElement statusborder;
+        private TextField titleField;
+        private Label subTitleLabel;
 
         public BehaviourNodeView(BehaviourNode nodeObject) : base(BehaviourTreeEditorPaths.GraphNodeViewUxml)
         {
@@ -33,7 +35,7 @@ namespace BehaviourTree.Editor
             NodeSO = nodeObject;
             Guid = NodeSO.guid;
 
-            title = nodeObject.name;
+            //title = nodeObject.nodeName;
             style.left = NodeSO.graphPosition.x;
             style.top = NodeSO.graphPosition.y;
 
@@ -46,6 +48,8 @@ namespace BehaviourTree.Editor
             SetNodeColor();
             CreateInputPorts();
             CreateOutputPorts();
+
+            SetupTitleField();
 
             if (NodeSO.NodeType == BehaviourNodeType.ROOT)
                 capabilities &= ~(Capabilities.Movable | Capabilities.Selectable |Capabilities.Deletable | Capabilities.Copiable);
@@ -106,9 +110,6 @@ namespace BehaviourTree.Editor
             inputContainer.style.justifyContent = Justify.Center;
             inputContainer.style.alignItems     = Align.Center;
 
-            float borderRadius = 10;
-            inputContainer.style.borderTopLeftRadius = borderRadius;
-            inputContainer.style.borderTopRightRadius = borderRadius;
 
             outputContainer.style.flexDirection = FlexDirection.Row;
             outputContainer.style.justifyContent = Justify.Center;
@@ -157,6 +158,11 @@ namespace BehaviourTree.Editor
             tooltip = description;
         }
 
+        public override Port InstantiatePort(Orientation orientation, Direction direction, Port.Capacity capacity, Type type)
+        {
+            return new BehaviourPort(orientation, direction, capacity, type);
+        }
+
         private void CreateInputPorts()
         {
             if (NodeSO.NodeType == BehaviourNodeType.ROOT) return;
@@ -165,15 +171,6 @@ namespace BehaviourTree.Editor
 
             if (input != null)
             {
-                input.portName = "";
-                input.style.flexDirection = FlexDirection.Column;
-
-                VisualElement connectorElement = input.Q<VisualElement>("connector");
-                if (connectorElement != null)
-                {
-                    connectorElement.pickingMode = PickingMode.Position;
-                }
-
                 inputContainer.Add(input);
             }
         }
@@ -196,17 +193,107 @@ namespace BehaviourTree.Editor
 
             if (output != null)
             {
-                output.portName = "";
-                output.style.flexDirection = FlexDirection.ColumnReverse;
-
-                VisualElement connectorElement = output.Q<VisualElement>("connector");
-                if (connectorElement != null)
-                {
-                    connectorElement.pickingMode = PickingMode.Position;
-                }
-
                 outputContainer.Add(output);
             }
+        }
+
+        private void SetupTitleField()
+        {
+            titleField = this.Q<TextField>("node-title-field");
+            subTitleLabel = this.Q<Label>("sub-title-label");
+
+            if (titleField != null)
+            {
+                titleField.SetValueWithoutNotify(GetDisplayName());
+                titleField.RegisterCallback<KeyDownEvent>(OnTitleKeyDown, TrickleDown.TrickleDown);
+                titleField.RegisterCallback<BlurEvent>(OnTitleBlur);
+            }
+
+            RefreshSubTitle();
+        }
+
+        private void OnTitleKeyDown(KeyDownEvent evt)
+        {
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+            {
+                CommitTitle();
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnTitleBlur(BlurEvent evt)
+        {
+            CommitTitle();
+        }
+
+        private void CommitTitle()
+        {
+            if (titleField == null || NodeSO == null) return;
+
+            string newValue = titleField.value;
+
+            if (string.IsNullOrEmpty(newValue))
+            {
+                titleField.SetValueWithoutNotify(GetDisplayName());
+                if (NodeSO.nodeName != "")
+                {
+                    Undo.RecordObject(NodeSO, "(BTree) Rename Node");
+                    NodeSO.nodeName = "";
+                    EditorUtility.SetDirty(NodeSO);
+                }
+            }
+            else if (newValue != NodeSO.nodeName)
+            {
+                Undo.RecordObject(NodeSO, "(BTree) Rename Node");
+                NodeSO.nodeName = newValue;
+                EditorUtility.SetDirty(NodeSO);
+            }
+
+            RefreshSubTitle();
+        }
+
+        private void RefreshSubTitle()
+        {
+            if (subTitleLabel == null) return;
+
+            string methodName = GetMethodName();
+            if (!string.IsNullOrEmpty(NodeSO.nodeName)
+                && !string.IsNullOrEmpty(methodName)
+                && NodeSO.nodeName != methodName)
+            {
+                subTitleLabel.text = methodName;
+                subTitleLabel.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                subTitleLabel.text = "";
+                subTitleLabel.style.display = DisplayStyle.None;
+            }
+        }
+
+        private string GetDisplayName()
+        {
+            if (!string.IsNullOrEmpty(NodeSO.nodeName))
+                return NodeSO.nodeName;
+            return GetMethodName() ?? NodeSO.name;
+        }
+
+        public void RefreshTitle()
+        {
+            if (titleField != null)
+                titleField.SetValueWithoutNotify(GetDisplayName());
+            RefreshSubTitle();
+        }
+
+        private string GetMethodName()
+        {
+            return NodeSO switch
+            {
+                LeafNode leaf => leaf.methodName,
+                CompositeNode composite => composite.methodName,
+                DecoratorNode decorator => decorator.methodName,
+                _ => null
+            };
         }
 
         public override void OnSelected()
@@ -244,6 +331,7 @@ namespace BehaviourTree.Editor
             if (NodeSO.NodeType == BehaviourNodeType.COMPOSITE)
             {
                 NodeSO.children.Sort(SortByHorizontalPosition);
+                EditorUtility.SetDirty(NodeSO);
             }
         }
 

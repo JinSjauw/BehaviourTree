@@ -147,6 +147,9 @@ namespace BehaviourTree.Editor
                 }
             }
 
+            foreach (BehaviourNodeView view in pastedViews)
+                view.SortChildren();
+
             clipBoard.nodeDatas.Clear();
             clipBoard.edgeDatas.Clear();
 

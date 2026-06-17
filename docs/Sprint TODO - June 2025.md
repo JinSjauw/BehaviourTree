@@ -18,7 +18,7 @@
 | 7 | Smooth Blackboard Add-Variable UI | ✅ Done |
 | 8 | Rewrite Node Palette | ⬜ Pending |
 | 9 | Bugs & Polish Before Playtest | ⬜ Pending |
-| 10 | Graph Editor Sticky Notes | ⬜ Pending |
+| 10 | Graph Editor Sticky Notes | ✅ Done |
 
 ---
 
@@ -131,15 +131,15 @@
 - [ ] Ensure existing node interaction (drag, select, context menu, double-click) works on new visual elements
 - [ ] Backward compat: fallback to current visuals if UI Toolkit runtime not available
 
-### 6.1 Graph Editor Notes (Sticky Notes)
+### 6.1 Graph Editor Notes (Sticky Notes) ✓
 
-- [ ] Add right-click context menu option: **Add Note**
-- [ ] Notes render as resizable, draggable colored boxes with text content
-- [ ] Double-click note to edit text (inline or popup)
-- [ ] Configurable note color
-- [ ] Notes are serialized as part of the `BehaviourTreeAsset` (not runtime — editor only)
-- [ ] Notes are purely visual — they do not affect tree execution
-- [ ] Example content: "This branch handles retreat when HP < 30%", "TODO: add cooldown to Flank"
+- [x] Add right-click context menu option: **Add Note**
+- [x] Notes render as resizable, draggable colored boxes with text content
+- [x] Double-click note to edit text (inline or popup)
+- [x] Configurable note color
+- [x] Notes are serialized as part of the `BehaviourTreeAsset` (not runtime — editor only)
+- [x] Notes are purely visual — they do not affect tree execution
+- [x] Example content: "This branch handles retreat when HP < 30%", "TODO: add cooldown to Flank"
 
 ---
 
@@ -181,14 +181,14 @@
 
 ---
 
-## 10. Graph Editor Sticky Notes
+## 10. Graph Editor Sticky Notes ✓
 
-- [ ] Add right-click context menu option: **Add Note**
-- [ ] Notes render as resizable, draggable colored boxes with text content
-- [ ] Double-click note to edit text (inline or popup)
-- [ ] Configurable note color
-- [ ] Notes are serialized as part of the `BehaviourTreeAsset` (editor only — not runtime)
-- [ ] Notes are purely visual — do not affect tree execution
+- [x] Add right-click context menu option: **Add Note**
+- [x] Notes render as resizable, draggable colored boxes with text content
+- [x] Double-click note to edit text (inline or popup)
+- [x] Configurable note color
+- [x] Notes are serialized as part of the `BehaviourTreeAsset` (editor only — not runtime)
+- [x] Notes are purely visual — do not affect tree execution
 
 ---
 

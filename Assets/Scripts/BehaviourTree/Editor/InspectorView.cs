@@ -69,6 +69,13 @@ public partial class InspectorView : VisualElement
                 inspectorScrollPos = EditorGUILayout.BeginScrollView(inspectorScrollPos);
                 editor.OnInspectorGUI();
                 EditorGUILayout.EndScrollView();
+
+                if (editor is CustomNodeEditor customEditor && customEditor.nodeNameChangedThisFrame)
+                {
+                    currentNodeView?.RefreshTitle();
+                    customEditor.nodeNameChangedThisFrame = false;
+                }
+
                 IsRenderingReadOnly = false;
                 CurrentProxyMappings = null;
                 if (isReadOnly) EditorGUI.EndDisabledGroup();

@@ -5,6 +5,7 @@ namespace BehaviourTree.Core
 {
     public abstract class BehaviourNode : ScriptableObject
     {
+        [HideInInspector] public string nodeName;
         [HideInInspector] public List<BehaviourNode> children = new List<BehaviourNode>();
         [HideInInspector] public abstract BehaviourNodeType NodeType { get; }
         [HideInInspector] public int firstChildIndex;

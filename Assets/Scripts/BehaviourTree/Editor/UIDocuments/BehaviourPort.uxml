@@ -1,0 +1,4 @@
+<engine:UXML xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourPort.uss?fileID=7433441132597879392&amp;guid=41ce2d8e797f00e44a7149917704cf85&amp;type=3#BehaviourPort"/>
+    <engine:VisualElement name="port-cap" picking-mode="Ignore" class="behaviour-port__cap"/>
+</engine:UXML>

@@ -108,6 +108,12 @@ public class BehaviourTreeEditor : EditorWindow
         OnSelectionChange();
 
         EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+        if (EditorApplication.isPlaying)
+        {
+            EditorApplication.update -= PollDebugState;
+            EditorApplication.update += PollDebugState;
+        }
     }
 
     private void OnPlayModeStateChanged(PlayModeStateChange change)
