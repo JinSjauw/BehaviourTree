@@ -4,9 +4,9 @@
         <uie:ToolbarMenu text="Assets" name="AssetBarMenu"/>
     </uie:Toolbar>
     <SplitView fixed-pane-index="0" fixed-pane-initial-dimension="380" orientation="Horizontal">
-        <ui:VisualElement name="InspectorPane" style="flex-grow: 1; flex-shrink: 1; height: 100%; width: 100%;">
+        <ui:VisualElement name="InspectorPane" style="flex-grow: 1; flex-shrink: 1; height: 100%; width: 40%;">
             <ui:TabView name="TabView" style="height: 45%; flex-grow: 1; min-height: auto; flex-shrink: 1;">
-                <ui:Tab label="Shared" name="SharedVariablesTab" style="flex-grow: 1; height: auto; flex-shrink: 0;">
+                <ui:Tab label="Shared" name="SharedVariablesTab" style="flex-grow: 1; height: auto; flex-shrink: 1;">
                     <BlackBoardView name="BlackBoardView" style="flex-grow: 1; margin-top: 12px; margin-right: 12px; margin-bottom: 0; margin-left: 12px; padding-bottom: 24px; flex-shrink: 1; border-top-left-radius: 8px; border-top-right-radius: 8px;"/>
                 </ui:Tab>
                 <ui:Tab label="Tracked" name="TrackedVariablesTab" style="flex-grow: 1;"/>

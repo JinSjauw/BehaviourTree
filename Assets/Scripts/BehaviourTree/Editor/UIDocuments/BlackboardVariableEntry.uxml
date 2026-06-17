@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/BlackboardVariableEntry.uss?fileID=7433441132597879392&amp;guid=af96b787c3d543a43bff441e0007af36&amp;type=3#BlackboardVariableEntry"/>
+    <ui:VisualElement name="entry-row" class="entry-row" style="background-color: rgb(56, 56, 56); padding-top: 6px; padding-right: 4px; padding-bottom: 6px; padding-left: 4px; margin-right: 6px; margin-bottom: 4px; margin-top: 4px; border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">
+        <ui:VisualElement name="drag-handle" class="drag-handle"/>
+        <ui:VisualElement name="entry-container" class="entry-fields" style="max-width: none; background-color: rgba(0, 0, 0, 0); padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;">
+            <ui:VisualElement name="name-container" style="flex-grow: 1; flex-direction: row; justify-content: flex-start; align-content: flex-start;">
+                <ui:Label text="Name:" name="field-name" style="height: auto; flex-grow: 0; align-items: stretch; align-content: flex-start; align-self: center; width: 50px; margin-right: 12px;"/>
+                <ui:TextField name="name-field" class="entry-name" style="flex-direction: column; flex-grow: 1;"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="type-container" style="flex-grow: 1; flex-direction: row;">
+                <ui:Label text="Type:" name="field-name" style="height: auto; flex-grow: 0; align-items: stretch; align-content: flex-start; align-self: center; width: 50px; margin-right: 12px;"/>
+                <ui:DropdownField name="type-dropdown" class="entry-type" style="flex-grow: 1;"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="stride-container" style="flex-grow: 1; flex-direction: row; display: flex;">
+                <ui:Label text="Stride:" name="field-name" style="height: auto; flex-grow: 0; align-items: stretch; align-content: flex-start; align-self: center; width: 50px; margin-right: 12px;"/>
+                <ui:IntegerField value="1" label="" name="stride-field" class="entry-stride" style="height: auto; width: auto; flex-direction: column; align-items: stretch; flex-grow: 1;"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="value-container" style="flex-grow: 1; flex-direction: row; top: auto; max-width: none;">
+                <ui:Label text="Value:" name="field-name" style="height: auto; flex-grow: 0; align-items: stretch; align-content: flex-start; align-self: flex-start; width: 50px; margin-right: 12px; flex-direction: column; justify-content: flex-start; position: relative; top: auto; left: auto;"/>
+                <ui:VisualElement name="value-cell" class="entry-value" style="height: auto; left: auto; position: relative; flex-grow: 1; width: auto; max-width: none;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Button name="delete-button" text="X" class="entry-delete"/>
+    </ui:VisualElement>
+</ui:UXML>

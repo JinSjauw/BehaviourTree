@@ -74,7 +74,7 @@ namespace BehaviourTree.Core
         }
 
         /// <summary>Ensures the array values array matches the stride.</summary>
-        public void EnsureArraySize()
+        public override void EnsureArraySize()
         {
             int stride = Stride;
             if (stride <= 1)

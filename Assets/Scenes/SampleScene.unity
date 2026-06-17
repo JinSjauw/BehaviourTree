@@ -591,7 +591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
   blackBoard: {fileID: 923873417}
   runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
+  authoringAsset: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}
 --- !u!114 &923873417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,11 +605,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
   serializedReferences:
-  - {fileID: 0}
   - {fileID: 2908911668393476890}
-  - {fileID: 0}
+  - {fileID: 2908911668393476890}
   valueOverrides: []
-  overriddenReferenceSlots: 01000000
+  overriddenReferenceSlots: 0000000001000000
 --- !u!114 &923873418
 MonoBehaviour:
   m_ObjectHideFlags: 0

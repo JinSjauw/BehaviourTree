@@ -33,9 +33,10 @@ namespace BehaviourTree.Core
             protected set => variableTypeName = value;
         }
 
-        public bool IsArray => variableStride > 1;
 
-        /// <summary>Resolves the System.Type from the stored type name.</summary>
+        public bool IsArray { get; set; }
+
+    /// <summary>Resolves the System.Type from the stored type name.</summary>
     public Type GetValueType()
     {
         if (string.IsNullOrEmpty(variableTypeName))
@@ -59,6 +60,9 @@ namespace BehaviourTree.Core
 
         /// <summary>Sets the boxed value for a given slot element index.</summary>
         public abstract void SetBoxedValue(object value, int elementIndex = 0);
+
+        /// <summary>Ensures the internal storage matches the current stride. No-op in base class.</summary>
+        public virtual void EnsureArraySize() { }
 
         /// <summary>Creates a shallow clone with the same name, stride, and type but default values.</summary>
         public virtual BlackboardVariableBase Clone()

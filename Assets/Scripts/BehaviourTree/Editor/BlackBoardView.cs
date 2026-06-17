@@ -4,7 +4,6 @@ using System.Linq;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,19 +11,21 @@ using UnityEngine.UIElements;
 public partial class BlackBoardView : VisualElement
 {
     private VisualElement blackBoardViewContainer;
-    private SerializedObject cachedSerializedObject;
     private BlackboardDefinition cachedDefinition;
     private HashSet<string> previousVariableNames = new();
     private Dictionary<string, string> previousVariableTypes = new();
     private bool typeSyncDone;
-    private Vector2 scrollPos;
 
     // Creator fields
     private TextField creatorNameField;
     private Button creatorButton;
     private VisualElement creatorRow;
 
-    private ReorderableList reorderableList;
+    // ListView fields
+    private ListView variableListView;
+    private VisualTreeAsset entryTemplate;
+    private VisualTreeAsset arrayElementTemplate;
+    private StyleSheet entryStyleSheet;
 
     public BlackBoardView()
     {
@@ -35,10 +36,10 @@ public partial class BlackBoardView : VisualElement
         style.paddingBottom = 8;
         style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
-        blackBoardViewContainer = new VisualElement { style = { flexGrow = 1 } };
+        blackBoardViewContainer = new VisualElement { style = { flexGrow = 1, overflow = Overflow.Hidden } };
         Add(blackBoardViewContainer);
 
-        var placeholder = new Label("Add a blackboard definition")
+        Label placeholder = new Label("Add a blackboard definition")
         {
             style =
             {
@@ -59,14 +60,9 @@ public partial class BlackBoardView : VisualElement
         typeSyncDone = false;
         blackBoardViewContainer.Clear();
 
-        if (cachedSerializedObject == null || cachedSerializedObject.targetObject != blackboardDefinition)
-        {
-            cachedSerializedObject?.Dispose();
-            cachedSerializedObject = blackboardDefinition != null ? new SerializedObject(blackboardDefinition) : null;
-        }
-
-        // Clean up any pre-existing null holes in the [SerializeReference] list
-        RemoveNullHoles();
+        // Filter legacy null holes from [SerializeReference] list
+        if (cachedDefinition?.sharedVariables != null)
+            cachedDefinition.sharedVariables.RemoveAll(v => v == null);
 
         if (cachedDefinition != null)
         {
@@ -87,78 +83,190 @@ public partial class BlackBoardView : VisualElement
             blackBoardViewContainer.Add(separator);
         }
 
-        IMGUIContainer imgui = new IMGUIContainer(() =>
+        // ── ListView (replaces IMGUI ReorderableList) ────────────────
+        LoadEntryTemplate();
+
+        variableListView = new ListView
         {
-            SerializedObject so = cachedSerializedObject;
-            if (so == null) return;
-            so.Update();
-            SerializedProperty varsProp = so.FindProperty("sharedVariables");
+            reorderable = true,
+            reorderMode = ListViewReorderMode.Animated,
+            showBorder = true,
+            showFoldoutHeader = false,
+            showAddRemoveFooter = false,
+            selectionType = SelectionType.None,
+            virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
+            fixedItemHeight = 24,
+            style = { flexGrow = 1, flexShrink = 1 },
+            itemsSource = cachedDefinition?.sharedVariables,
+            makeItem = () => entryTemplate.CloneTree(),
+            bindItem = BindVariableListItem,
+            unbindItem = UnbindVariableListItem,
+        };
+        variableListView.itemIndexChanged += OnVariableItemIndexChanged;
+        blackBoardViewContainer.Add(variableListView);
 
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+        // Periodic rename/type-change detection
+        schedule.Execute(() =>
+        {
+            HandleRenames();
+            HandleTypeChanges();
+        }).Every(100);
+    }
 
-            if (reorderableList == null)
-            {
-                reorderableList = new ReorderableList(varsProp.serializedObject, varsProp, true, false, false, false)
-                {
-                    drawHeaderCallback = null,
-                    elementHeightCallback = index =>
-                    {
-                        SerializedProperty sp = reorderableList.serializedProperty;
-                        if (index < 0 || index >= sp.arraySize) return EditorGUIUtility.singleLineHeight + 10f;
-                        return EditorGUI.GetPropertyHeight(sp.GetArrayElementAtIndex(index), true) + 10f;
-                    },
-                    drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-                    {
-                        SerializedProperty sp = reorderableList.serializedProperty;
-                        if (index < 0 || index >= sp.arraySize) return;
-                        SerializedProperty element = sp.GetArrayElementAtIndex(index);
+    private void LoadEntryTemplate()
+    {
+        if (entryTemplate == null)
+            entryTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.BlackboardVariableEntryUxml);
+        if (arrayElementTemplate == null)
+            arrayElementTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.ArrayElementRowUxml);
+        if (entryStyleSheet == null)
+            entryStyleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.BlackboardVariableEntryUss);
+    }
 
-                        Rect contentRect = new Rect(rect.x, rect.y + 4f, rect.width - 28f, rect.height - 8f);
-                        EditorGUI.PropertyField(contentRect, element, GUIContent.none, true);
+    // ── ListView bind/unbind/reorder ─────────────────────────────────
 
-                        Rect buttonRect = new Rect(rect.x + rect.width - 24f, rect.y + 4f, 22f, 18f);
-                        Color prevColor = GUI.color;
-                        GUI.color = Color.softRed;
-                        if (GUI.Button(buttonRect, "X"))
-                        {
-                            Undo.RecordObject(sp.serializedObject.targetObject, "Remove Variable");
-                            sp.DeleteArrayElementAtIndex(index);
-                            sp.serializedObject.ApplyModifiedProperties();
-                        }
-                        GUI.color = prevColor;
-                    },
-                    drawElementBackgroundCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-                    {
-                        if (Event.current.type == EventType.Repaint)
-                        {
-                            Rect bgRect = new Rect(rect.x, rect.y + 1f, rect.width, rect.height - 3f);
-                            EditorGUI.DrawRect(bgRect, new Color(0.16f, 0.16f, 0.16f, 1f));
-                        }
-                    },
-                    footerHeight = 0f,
-                };
-            }
-            reorderableList.serializedProperty = varsProp;
+    private void BindVariableListItem(VisualElement ve, int index)
+    {
+        if (cachedDefinition?.sharedVariables == null) return;
+        if (index < 0 || index >= cachedDefinition.sharedVariables.Count) return;
 
-            reorderableList.DoLayoutList();
-            EditorGUILayout.EndScrollView();
+        BlackboardVariableBase variable = cachedDefinition.sharedVariables[index];
+        if (variable == null) return;
+        
+        Type currentType = variable.GetValueType();
+        int stride = variable.Stride;
 
-            // Capture before ApplyModifiedProperties (which resets the flag).
-            bool hasChanges = so.hasModifiedProperties;
-            so.ApplyModifiedProperties();
+        TextField nameField = ve.Q<TextField>("name-field");
+        DropdownField typeDropdown = ve.Q<DropdownField>("type-dropdown");
+        VisualElement strideContainer = ve.Q<VisualElement>("stride-container");
+        IntegerField strideField = ve.Q<IntegerField>("stride-field");
+        VisualElement valueCell = ve.Q<VisualElement>("value-cell");
+        Button deleteButton = ve.Q<Button>("delete-button");
 
-            if (hasChanges)
-            {
-                HandleRenames(varsProp);
-                HandleTypeChanges(varsProp);
-            }
+        // ── Name ────────────────────────────────────────
+        nameField.SetValueWithoutNotify(variable.Name);
+        nameField.RegisterValueChangedCallback(evt =>
+        {
+            variable.Name = evt.newValue;
+            EditorUtility.SetDirty(cachedDefinition);
         });
 
-        imgui.style.flexGrow = 1;
-        imgui.style.flexShrink = 1;
-        imgui.style.overflow = Overflow.Hidden;
-        blackBoardViewContainer.Add(imgui);
+        // ── Type dropdown ───────────────────────────────
+        List<Type> types = VariableTypeRegistry.Types.ToList();
+        typeDropdown.choices = types.Select(t => FieldTypeHelper.GetDisplayName(t)).ToList();
+        int typeIndex = -1;
+        if (currentType != null)
+        {
+            for (int i = 0; i < types.Count; i++)
+            {
+                if (types[i] == currentType) { typeIndex = i; break; }
+            }
+        }
+        typeDropdown.index = typeIndex;
+        typeDropdown.RegisterValueChangedCallback(evt =>
+        {
+            int newIndex = types.FindIndex(t => FieldTypeHelper.GetDisplayName(t) == evt.newValue);
+            if (newIndex >= 0 && types[newIndex] != currentType)
+                ChangeVariableType(variable, index, types[newIndex]);
+        });
+
+        // ── Stride ──────────────────────────────────────
+        if (variable.IsArray)
+        {
+            strideContainer.style.display = DisplayStyle.Flex;
+            strideField.SetValueWithoutNotify(stride);
+            strideField.RegisterValueChangedCallback(evt =>
+            {
+                int newStride = Mathf.Max(1, evt.newValue);
+                variable.Stride = newStride;
+                variable.EnsureArraySize();
+                EditorUtility.SetDirty(cachedDefinition);
+                variableListView.RefreshItem(index);
+            });
+        }
+        else
+        {
+            strideContainer.style.display = DisplayStyle.None;
+        }
+
+        // ── Value cell ──────────────────────────────────
+        valueCell.Clear();
+        if (currentType != null
+            && VariableTypeRegistry.TryGetFieldFactory(currentType, out Func<VisualElement> factory)
+            && VariableTypeRegistry.TryGetBinder(currentType, out Action<VisualElement, BlackboardVariableBase, int> binder))
+        {
+            if (stride <= 1)
+            {
+                VisualElement editor = factory();
+                binder(editor, variable, 0);
+                editor.style.flexGrow = 1;
+                valueCell.Add(editor);
+            }
+            else
+            {
+                for (int elementIndex = 0; elementIndex < stride; elementIndex++)
+                {
+                    VisualElement row = arrayElementTemplate.CloneTree();
+                    row.Q<Label>("element-index").text = $"[{elementIndex}]";
+                    VisualElement editorCell = row.Q<VisualElement>("element-editor");
+                    VisualElement editor = factory();
+                    editor.style.flexGrow = 1;
+                    binder(editor, variable, elementIndex);
+                    editorCell.Add(editor);
+                    valueCell.Add(row);
+                }
+            }
+        }
+        else
+        {
+            valueCell.Add(new Label($"(no editor for {currentType?.Name ?? "null"})")
+            {
+                style = { color = Color.grey }
+            });
+        }
+
+        // ── Delete ──────────────────────────────────────
+        deleteButton.clicked += () =>
+        {
+            Undo.RecordObject(cachedDefinition, "Remove Variable");
+            cachedDefinition.sharedVariables.RemoveAt(index);
+            EditorUtility.SetDirty(cachedDefinition);
+            variableListView.Rebuild();
+        };
+
+        // ── Apply USS ───────────────────────────────────
+        if (entryStyleSheet != null && !ve.styleSheets.Contains(entryStyleSheet))
+            ve.styleSheets.Add(entryStyleSheet);
     }
+
+    private void UnbindVariableListItem(VisualElement ve, int index)
+    {
+        VisualElement valueCell = ve.Q<VisualElement>("value-cell");
+        valueCell?.Clear();
+    }
+
+    private void OnVariableItemIndexChanged(int oldIndex, int newIndex)
+    {
+        EditorUtility.SetDirty(cachedDefinition);
+    }
+
+    private void ChangeVariableType(BlackboardVariableBase oldVar, int listIndex, Type newType)
+    {
+        string oldName = oldVar.Name;
+        int oldStride = oldVar.Stride;
+
+        Type genericType = typeof(BlackboardVariable<>).MakeGenericType(newType);
+        BlackboardVariableBase newVar = (BlackboardVariableBase)Activator.CreateInstance(genericType);
+        newVar.Name = oldName;
+        newVar.Stride = oldStride;
+
+        Undo.RecordObject(cachedDefinition, "Change Variable Type");
+        cachedDefinition.sharedVariables[listIndex] = newVar;
+        EditorUtility.SetDirty(cachedDefinition);
+        variableListView.Rebuild();
+    }
+
+    // ── Creator UI ──────────────────────────────────────────────────
 
     private void BuildCreatorUI()
     {
@@ -175,7 +283,7 @@ public partial class BlackBoardView : VisualElement
         };
         blackBoardViewContainer.Add(header);
 
-        // ── Row: Name │ Add ───────────────────────────────────────────
+        // ── Row: Name │ Add ──────────────────────────────────────────
         creatorRow = new VisualElement
         {
             style =
@@ -206,33 +314,6 @@ public partial class BlackBoardView : VisualElement
         blackBoardViewContainer.Add(creatorRow);
     }
 
-    /// <summary>
-    /// Removes any null entries from the [SerializeReference] sharedVariables list.
-    /// Null holes can exist from legacy deletion code that only called DeleteArrayElementAtIndex once.
-    /// </summary>
-    private void RemoveNullHoles()
-    {
-        if (cachedDefinition?.sharedVariables == null) return;
-
-        List<BlackboardVariableBase> list = cachedDefinition.sharedVariables;
-        bool foundNull = false;
-        for (int i = list.Count - 1; i >= 0; i--)
-        {
-            if (list[i] == null)
-            {
-                list.RemoveAt(i);
-                foundNull = true;
-            }
-        }
-
-        if (foundNull)
-        {
-            EditorUtility.SetDirty(cachedDefinition);
-            cachedSerializedObject?.Dispose();
-            cachedSerializedObject = new SerializedObject(cachedDefinition);
-        }
-    }
-
     private void OpenVariableTypePopup()
     {
         // worldBound returns window-space coordinates including the window header
@@ -259,6 +340,7 @@ public partial class BlackBoardView : VisualElement
         BlackboardVariableBase variable = (BlackboardVariableBase)Activator.CreateInstance(sharedVarType);
         variable.Name = name;
         variable.Stride = stride;
+        variable.IsArray = isArray;
 
         Undo.RecordObject(cachedDefinition, "Add Blackboard Variable");
         if (cachedDefinition.sharedVariables == null)
@@ -267,44 +349,77 @@ public partial class BlackBoardView : VisualElement
         EditorUtility.SetDirty(cachedDefinition);
 
         creatorNameField.value = string.Empty;
-
-        cachedSerializedObject?.Dispose();
-        cachedSerializedObject = new SerializedObject(cachedDefinition);
+        variableListView?.Rebuild();
     }
 
-    private void HandleRenames(SerializedProperty varsProp)
-    {
-        HashSet<string> currentNames = SnapshotNameSet(varsProp);
+    // ── Rename / type-change detection ──────────────────────────────
 
-        // Only propagate renames if the sets actually differ (not just a reorder)
+    private void HandleRenames()
+    {
+        HashSet<string> currentNames = SnapshotNameSet();
+
         if (!currentNames.SetEquals(previousVariableNames))
         {
             List<string> removed = previousVariableNames.Except(currentNames).ToList();
             List<string> added = currentNames.Except(previousVariableNames).ToList();
 
-            // Pair up removed and added names — these are likely renames
             int pairCount = Math.Min(removed.Count, added.Count);
             for (int i = 0; i < pairCount; i++)
-            {
                 PropagateRename(removed[i], added[i]);
-            }
         }
 
         previousVariableNames = currentNames;
     }
 
-    private static HashSet<string> SnapshotNameSet(SerializedProperty varsProp)
+    private HashSet<string> SnapshotNameSet()
     {
-        var names = new HashSet<string>();
-        for (int i = 0; i < varsProp.arraySize; i++)
+        HashSet<string> names = new();
+        if (cachedDefinition?.sharedVariables == null) return names;
+        foreach (BlackboardVariableBase v in cachedDefinition.sharedVariables)
         {
-            SerializedProperty varProp = varsProp.GetArrayElementAtIndex(i);
-            SerializedProperty nameProp = varProp.FindPropertyRelative("variableName");
-            if (nameProp != null && !string.IsNullOrEmpty(nameProp.stringValue))
-                names.Add(nameProp.stringValue);
+            if (v != null && !string.IsNullOrEmpty(v.Name))
+                names.Add(v.Name);
         }
         return names;
     }
+
+    private void HandleTypeChanges()
+    {
+        Dictionary<string, string> currentTypes = SnapshotTypeMap();
+
+        if (!typeSyncDone && currentTypes.Count > 0)
+        {
+            typeSyncDone = true;
+            foreach (KeyValuePair<string, string> kvp in currentTypes)
+                PropagateTypeChange(kvp.Key, kvp.Value);
+        }
+        else
+        {
+            foreach (KeyValuePair<string, string> kvp in currentTypes)
+            {
+                string name = kvp.Key;
+                string newType = kvp.Value;
+                if (previousVariableTypes.TryGetValue(name, out string oldType) && oldType != newType)
+                    PropagateTypeChange(name, newType);
+            }
+        }
+
+        previousVariableTypes = currentTypes;
+    }
+
+    private Dictionary<string, string> SnapshotTypeMap()
+    {
+        Dictionary<string, string> types = new();
+        if (cachedDefinition?.sharedVariables == null) return types;
+        foreach (BlackboardVariableBase variable in cachedDefinition.sharedVariables)
+        {
+            if (variable != null && !string.IsNullOrEmpty(variable.Name))
+                types[variable.Name] = variable.TypeName;
+        }
+        return types;
+    }
+
+    // ── Asset-wide propagation ──────────────────────────────────────
 
     private void PropagateRename(string oldName, string newName)
     {
@@ -326,7 +441,7 @@ public partial class BlackBoardView : VisualElement
 
         UnityEngine.Object[] subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
-        foreach (var obj in subAssets)
+        foreach (UnityEngine.Object obj in subAssets)
         {
             bool changed = false;
 
@@ -380,46 +495,6 @@ public partial class BlackBoardView : VisualElement
         }
     }
 
-    private void HandleTypeChanges(SerializedProperty varsProp)
-    {
-        Dictionary<string, string> currentTypes = SnapshotTypeMap(varsProp);
-
-        // First time opening — do a full sync of all variable types to catch stale fieldEntry types
-        if (!typeSyncDone && currentTypes.Count > 0)
-        {
-            typeSyncDone = true;
-            foreach (var kvp in currentTypes)
-                PropagateTypeChange(kvp.Key, kvp.Value);
-        }
-        else
-        {
-            // Name-based comparison — immune to reordering
-            foreach (var kvp in currentTypes)
-            {
-                string name = kvp.Key;
-                string newType = kvp.Value;
-                if (previousVariableTypes.TryGetValue(name, out string oldType) && oldType != newType)
-                    PropagateTypeChange(name, newType);
-            }
-        }
-
-        previousVariableTypes = currentTypes;
-    }
-
-    private static Dictionary<string, string> SnapshotTypeMap(SerializedProperty varsProp)
-    {
-        var types = new Dictionary<string, string>();
-        for (int i = 0; i < varsProp.arraySize; i++)
-        {
-            SerializedProperty varProp = varsProp.GetArrayElementAtIndex(i);
-            SerializedProperty nameProp = varProp.FindPropertyRelative("variableName");
-            SerializedProperty typeProp = varProp.FindPropertyRelative("variableTypeName");
-            if (nameProp != null && typeProp != null && !string.IsNullOrEmpty(nameProp.stringValue))
-                types[nameProp.stringValue] = typeProp.stringValue;
-        }
-        return types;
-    }
-
     private void PropagateTypeChange(string variableName, string newTypeName)
     {
         string[] guids = AssetDatabase.FindAssets("t:BehaviourTreeAssetBase");
@@ -440,7 +515,7 @@ public partial class BlackBoardView : VisualElement
 
         UnityEngine.Object[] subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
-        foreach (var obj in subAssets)
+        foreach (UnityEngine.Object obj in subAssets)
         {
             bool changed = false;
 

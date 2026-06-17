@@ -1,0 +1,19 @@
+.array-element-row {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+
+.element-index {
+    width: 24px;
+    flex-shrink: 0;
+    font-size: 10px;
+    -unity-text-align: middle-right;
+    margin-right: 4px;
+}
+
+.element-editor {
+    flex-grow: 1;
+    flex-direction: column;
+}
