@@ -14,10 +14,10 @@
 | 3 | Overhaul Graph Inspector UI | ✅ Done |
 | 4 | Commander Module UX Improvements | ⬜ Pending |
 | 5 | Commander Nodes (Hardcoded for Speed) | ⬜ Pending |
-| 6 | NodeView Visual Overhaul (UI Toolkit) | ⬜ Pending |
+| 6 | NodeView Visual Overhaul (UI Toolkit) | 🔄 In Progress |
 | 7 | Smooth Blackboard Add-Variable UI | ✅ Done |
 | 8 | Rewrite Node Palette | ⬜ Pending |
-| 9 | Bugs & Polish Before Playtest | ⬜ Pending |
+| 9 | Bugs & Polish Before Playtest | 🔄 In Progress |
 | 10 | Graph Editor Sticky Notes | ✅ Done |
 
 ---
@@ -66,8 +66,8 @@
 
 - [x] Selected node's properties (method name, field entries, abort type, etc.)
 - [x] Replaces current separate inspector window
-- [ ] **Rename node** — editable name field in inspector. Default = method/type name. Custom name overrides display.
-- [ ] **Type subtitle** — when node is renamed from its default, show actual type as a smaller subtitle below the name (e.g. "WaitSeconds" under "Retreat Delay")
+- [x] **Rename node** — editable name field in inspector. Default = method/type name. Custom name overrides display.
+- [x] **Type subtitle** — when node is renamed from its default, show actual type as a smaller subtitle below the name (e.g. "WaitSeconds" under "Retreat Delay")
 
 ### 3.3 Layout
 
@@ -77,6 +77,54 @@
 ---
 
 ## 4. Commander Module UX Improvements
+
+**Target:** Before 21st June
+
+### 4.1 Type Hierarchy: AgentTreeAsset / CommanderTreeAsset
+
+- [ ] Split `BehaviourTreeAsset` into a base class with two subclasses:
+  - `AgentTreeAsset` — identical to current tree behaviour, all existing nodes available
+  - `CommanderTreeAsset` — largely the same structure but:
+    - Commander-specific nodes accessible in addition to standard nodes (Suppress, Flank, Ambush, etc.)
+    - Agent-only nodes that are coupled to a single agent are filtered out of the node palette
+- [ ] Keep existing `.asset` files backward-compatible (default to `AgentTreeAsset`)
+
+### 4.2 Commander Blackboard Binding Tab
+
+- [ ] Add an extra tab to the commander tree editor (alongside Inspector / Blackboard)
+- [ ] Tab contains a dropdown listing every `BehaviourTreeAsset` in the project
+- [ ] Selecting an agent tree asset from the dropdown creates a **binding** between the two trees
+- [ ] In the binding, the user maps fields between the two blackboard schemas:
+  - Commander blackboard variables ↔ Agent blackboard variables
+  - Each binding row: commander var name → agent var name
+- [ ] Bindings are persisted on the `CommanderTreeAsset`
+
+### 4.3 CommanderBindingBridge Component Integration
+
+- [ ] `CommanderBindingBridge` already exists on the same GameObject as the agent `TreeRunner`
+- [ ] Component holds a reference to a `CommanderTreeAsset`
+- [ ] On load / init:
+  - Retrieves all existing bindings that this commander asset type has with this agent asset type
+  - Loads those bindings into the runtime bridge
+- [ ] Any updates made on the component at runtime are reflected back into the commander asset's persisted bindings
+- [ ] Two-way sync: editing bindings in the commander editor tab updates the bridge; bridge runtime changes update the asset
+
+### 4.4 Agent Registration & Per-Agent Array Access
+
+- [ ] Commander tree holds a **collection of registered agents** (dynamic at runtime, configured in editor)
+- [ ] When an agent registers (via `CommanderBindingBridge`), it is assigned an **agent ID** (index into the collection)
+- [ ] Commander blackboard variables with stride > 1 are backed by arrays: one slot per agent
+  - Example: `AgentRole[8]` → stride=8 → 8 agents, each reads `AgentRole[agentID]`
+  - Agent reads only its own slot via its assigned ID; commander reads/writes all slots
+- [ ] **Agents Data tab** in the commander editor:
+  - Displays all per-agent array variables as a table (rows = agents, columns = variables)
+  - Agent name/ID on the left, each variable column shows the value for that agent's slot
+  - Row count matches the commander's `maxSize` (max agents)
+  - Design-time defaults for each agent slot can be configured here
+- [ ] `CommanderBindingBridge` stores the assigned agent ID received on registration
+- [ ] Agent's `TreeRunner` uses the bridge's agent ID to offset into per-agent blackboard arrays
+
+### 4.5 Polish
 
 - [ ] Clean up commander setup flow (create, assign, link)
 - [ ] Better error messages and validation (missing bindings, unlinked agents)
@@ -118,18 +166,20 @@
 
 **Target:** Before 26th June
 
-- [ ] Migrate `BehaviourNodeView` from Unity IMGUI (`VisualElement` wrappers) to native UI Toolkit rendering
-- [ ] Redesign node visuals:
+- [x] Replace `GraphView` node rendering with `USS`-styled `VisualElement` classes — flat node-body layout with #input/#text-container/#output
+- [x] Redesign node visuals:
   - Title bar with colored type indicator (Composite = blue, Decorator = orange, Action = green, Condition = yellow)
-  - Abort type badge on composite nodes (e.g. "LP" for LowerPriority, "S" for Self)
-  - Runtime status icon (idle/running/success/failure) with distinct colors
-  - Port circles with hover highlights
-- [ ] Replace `GraphView` node rendering with `USS`-styled `VisualElement` classes
-- [ ] Add `.uss` stylesheet for consistent theming (dark theme, spacing, fonts)
-- [ ] Node selection state: border highlight, subtle background change
-- [ ] Animated transitions: running state pulse, abort flash, connection highlight
+  - Editable node title with methodName subtitle — Enter/blur commit, Undo support, inspector synced
+  - Runtime status border with colored states (running/success/failure) and CSS transitions
+  - Custom port elements (`BehaviourPort`) with separated hit area and visual connector cap, hover highlights, connection state classes
+- [x] Add `.uss` stylesheets for consistent theming (dark theme, spacing, fonts, port styling with `BehaviourPort.uss`)
+- [x] Node selection/hover state: border highlight on `#node-body` with `:hover`, `:selected`, `:hover:selected` pseudo-classes
+- [ ] Add `BehaviourPort.uxml` for UI Builder-editable port template layout
+- [ ] Animated transitions: running state pulse, abort flash, connection highlight animation
 - [ ] Ensure existing node interaction (drag, select, context menu, double-click) works on new visual elements
 - [ ] Backward compat: fallback to current visuals if UI Toolkit runtime not available
+- [ ] Abort type badge on composite nodes (e.g. "LP" for LowerPriority, "S" for Self)
+- [ ] Runtime status icon (separate element from border — idle/running/success/failure icon)
 
 ### 6.1 Graph Editor Notes (Sticky Notes) ✓
 
@@ -174,6 +224,18 @@
 
 ## 9. Bugs & Polish Before Playtest
 
+### 9.1 Subtree Fixes & Improvements
+
+- [ ] Subtree nodes must unfold and display their internal tree during runtime debugging
+- [ ] Verify conditional aborts work correctly inside subtrees (edge cases with cross-tree transitions)
+- [ ] Subtrees automatically copy necessary blackboard variables from the parent tree on creation
+- [ ] Blackboard view refreshes when a subtree is created or opened (avoids stale display)
+- [ ] Add right-click option **Copy Selection Into Subtree** — creates a subtree from selected nodes without removing them from the parent tree (in addition to existing **Extract** which moves them)
+
+### 9.2 General
+- [x] Fix child sorting on composite nodes — children now sorted by X position after edge creation, paste, and search window connections
+- [x] Fix BehaviourTreeEditor not wiring PollDebugState when window opens during already-running Play Mode
+- [x] Fix status-border z-ordering — moved behind node-body in UXML so debug colors don't cover port connectors
 - [ ] Run through all open console warnings/errors, fix any that surfaced during sprint
 - [ ] Validate tree bake with conditional abort enabled (no regressions)
 - [ ] Validate commander multi-agent scenarios
@@ -201,3 +263,16 @@
 | 18–21 Jun | Commander nodes, GameObject button, node palette rewrite, playtest prep |
 | 19–21 Jun | **Playtest with designers** — fixes only |
 | 21–26 Jun | NodeView UI Toolkit visual overhaul, commander module UX polish, remaining nodes |
+
+---
+
+## Progress Update (17 Jun)
+
+**Completed since last update:**
+- Node rename + type subtitle (section 3.2)
+- Custom port elements with USS styling, hover/connection states (section 6)
+- Node view UXML redesign: flat layout, editable TextField, status-border z-order fix
+- Inspector-to-graph title sync via CustomNodeEditor flag
+- Child sorting fixes on edge creation, paste, search window
+- PlayMode init debug polling fix
+- Context menu order fix
