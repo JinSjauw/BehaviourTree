@@ -40,7 +40,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 1277b9c6fdab04842bfae27fb378cee4
-  graphPosition: {x: -22, y: 660}
+  graphPosition: {x: -0, y: 665}
   runtimeIndex: 5
   leafType: 3
   methodName: WaitSeconds
@@ -144,7 +144,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: dee42763e163ec641b4ad9d176e90404
-  graphPosition: {x: -180, y: 485}
+  graphPosition: {x: -245, y: 490}
   runtimeIndex: 1
   compositeType: 1
   methodName: SEQUENCE
@@ -168,7 +168,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: bd6ca922f4176174ca6808597cec164b
-  graphPosition: {x: -250, y: 660}
+  graphPosition: {x: -245, y: 665}
   runtimeIndex: 4
   compositeType: 1
   methodName: SEQUENCE
@@ -216,7 +216,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 771d1ac718abb4a47869cae3bbdf4f8d
-  graphPosition: {x: -40, y: 975}
+  graphPosition: {x: -140, y: 980}
   runtimeIndex: 7
   leafType: 3
   methodName: WaitSeconds
@@ -252,7 +252,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 85f92065419575849bb5bd1730a0d147
-  graphPosition: {x: -510.03442, y: 660}
+  graphPosition: {x: -490, y: 665}
   runtimeIndex: 3
   leafType: 2
   methodName: BB_CheckGameObject
@@ -303,7 +303,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: c87110fa0a02f2e4f85b8248a6513e37
-  graphPosition: {x: 450, y: 485}
+  graphPosition: {x: 265, y: 490}
   runtimeIndex: 2
   leafType: 3
   methodName: WaitSeconds
@@ -339,7 +339,7 @@ MonoBehaviour:
   firstChildIndex: 0
   lastChildIndex: 0
   guid: 24eca948f0c67fe43a65cdf92090320c
-  graphPosition: {x: -320, y: 975}
+  graphPosition: {x: -350, y: 980}
   runtimeIndex: 6
   leafType: 2
   methodName: BB_CompareInt

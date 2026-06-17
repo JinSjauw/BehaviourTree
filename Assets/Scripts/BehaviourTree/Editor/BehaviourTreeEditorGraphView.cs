@@ -548,12 +548,13 @@ namespace BehaviourTree.Editor
                 subtreeExtractor.Extract(selection, tree, PopulateView);
             }, _ => subtreeExtractor.CanExtract(selection, tree) ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
 
+            Vector2 mouseLocal = evt.localMousePosition;
             evt.menu.AppendAction("Add Note", _ =>
             {
+                Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, mouseLocal);
                 EditorNoteData noteData = new EditorNoteData
                 {
-                    position = viewTransform.matrix.inverse.MultiplyPoint(
-                        evt.originalMousePosition),
+                    position = localPos,
                 };
                 tree.editorNotes.Add(noteData);
                 GraphNote note = CreateNoteFromData(noteData);

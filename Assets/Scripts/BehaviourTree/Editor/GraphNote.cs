@@ -16,6 +16,7 @@ namespace BehaviourTree.Editor
 
         private VisualElement mainContainer;
         private VisualElement grabHeader;
+        private VisualElement selectionIndicator;
         private TextField titleField;
         private TextField contentsField;
         private ColorField colorField;
@@ -24,6 +25,8 @@ namespace BehaviourTree.Editor
         private VisualElement contentsTextInput;
         private System.Action onChanged;
 
+        private const string selectedIndicatorClass = "selected-indicator";
+
         public GraphNote()
         {
             capabilities = Capabilities.Movable
@@ -31,7 +34,7 @@ namespace BehaviourTree.Editor
                            | Capabilities.Selectable
                            | Capabilities.Deletable;
 
-            // Render behind nodes so they always overlap the note.
+            // Render behind edges and nodes so they always overlap the note.
             layer = -1;
 
             focusable = true;
@@ -41,6 +44,7 @@ namespace BehaviourTree.Editor
 
             mainContainer = this.Q<VisualElement>("main-container");
             grabHeader = this.Q<VisualElement>("note-grab-header");
+            selectionIndicator = this.Q<VisualElement>("note-selection-indicator");
             titleField = this.Q<TextField>("note-title");
             contentsField = this.Q<TextField>("note-contents");
             colorField = this.Q<ColorField>("note-color");
@@ -63,7 +67,7 @@ namespace BehaviourTree.Editor
             contentsField.SetValueWithoutNotify(data.contents);
             colorField.SetValueWithoutNotify(data.noteColor);
             textColorField.SetValueWithoutNotify(data.textColor);
-
+            Debug.Log(data.position);
             SetPosition(new Rect(data.position, data.size));
             ApplyBackgroundColor(data.noteColor);
             ApplyTextColor(data.textColor);
@@ -129,6 +133,18 @@ namespace BehaviourTree.Editor
             base.UpdatePresenterPosition();
             PersistLayout();
             onChanged?.Invoke();
+        }
+
+        public override void OnSelected()
+        {
+            base.OnSelected();
+            selectionIndicator?.AddToClassList(selectedIndicatorClass);
+        }
+
+        public override void OnUnselected()
+        {
+            base.OnUnselected();
+            selectionIndicator?.RemoveFromClassList(selectedIndicatorClass);
         }
     }
 }

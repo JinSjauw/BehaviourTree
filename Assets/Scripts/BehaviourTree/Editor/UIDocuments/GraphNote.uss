@@ -80,19 +80,74 @@
 }
 
 .resizer {
-    background-color: rgb(255, 255, 255);
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0.15);
     border-radius: 3px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
 }
 
 .resizer:hover {
-    background-color: rgb(100, 149, 237);
     border-color: rgba(30, 80, 180, 0.6);
     border-width: 2px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
 }
 
 .resizer-icon {
-    display: none;
-    visibility: hidden;
+    display: flex;
+    visibility: visible;
+    flex-grow: 1;
+    background-image: url("project://database/Assets/Scripts/BehaviourTree/Editor/UITextures/resize-icon.png?fileID=2800000&guid=ea61ec00adf709341b5733c080f62387&type=3#resize-icon");
+    background-color: rgba(255, 255, 255, 0);
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    bottom: 0;
+    right: 0;
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    -unity-background-image-tint-color: rgb(200, 200, 200);
+}
+
+:hover#note-selection-indicator {
+    border-top-width: 3px;
+    border-left-color: rgb(197, 197, 197);
+    border-right-color: rgb(197, 197, 197);
+    border-top-color: rgb(197, 197, 197);
+    border-bottom-color: rgb(197, 197, 197);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+.selected-indicator#note-selection-indicator {
+    border-top-width: 4px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+.selected-indicator:hover#note-selection-indicator {
+    border-top-width: 4px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
 }
