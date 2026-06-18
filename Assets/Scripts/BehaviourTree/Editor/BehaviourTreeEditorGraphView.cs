@@ -165,19 +165,16 @@ namespace BehaviourTree.Editor
             };
         }
 
-        private void OpenNodeSearchAtScreenPosition(Vector2 screenPosition, bool setCreationPosition = true)
+        private void OpenNodeSearchAtScreenPosition(Vector2 screenPosition)
         {
             EnsureSearchWindow();
             if (tree == null) return;
 
-            if (setCreationPosition)
-            {
-                Rect windowRect = EditorWindow.focusedWindow.position;
-                Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer,
-                    this.WorldToLocal(screenPosition - new Vector2(windowRect.x, windowRect.y)));
+            Rect windowRect = EditorWindow.focusedWindow.position;
+            Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer,
+                this.WorldToLocal(screenPosition - new Vector2(windowRect.x, windowRect.y)));
 
-                searchWindow.SetCreationPosition(localPos);
-            }
+            searchWindow.SetCreationPosition(localPos);
             searchWindow.ClearPendingConnection();
             OpenSearchWindow(screenPosition);
         }
@@ -551,9 +548,10 @@ namespace BehaviourTree.Editor
             base.BuildContextualMenu(evt);
 
             Vector2 screenPosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
+            Debug.Log(screenPosition);
             evt.menu.InsertAction(0, $"Create Node", _ =>
             {
-                OpenNodeSearchAtScreenPosition(screenPosition, setCreationPosition: false);
+                OpenNodeSearchAtScreenPosition(screenPosition);
             }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
 
             evt.menu.InsertAction(1, $"Subtree/Extract Selection To Subtree", _ =>
