@@ -43,5 +43,30 @@ namespace BehaviourTree.Core
             sharedVariables.Add(variable);
             return variable;
         }
+
+        /// <summary>
+        /// Copies a variable definition (name, stride, type) without its values.
+        /// Creates a new variable with default(T) and adds it to this definition.
+        /// Does nothing if a variable with the same name already exists.
+        /// </summary>
+        public BlackboardVariableBase CopyVariable(BlackboardVariableBase source)
+        {
+            if (source == null) return null;
+
+            if (FindVariable(source.Name) != null) return null;
+
+            Type valueType = source.GetValueType();
+            if (valueType == null) return null;
+
+            Type genericType = typeof(BlackboardVariable<>).MakeGenericType(valueType);
+            BlackboardVariableBase clone = (BlackboardVariableBase)Activator.CreateInstance(genericType);
+            clone.Name = source.Name;
+            clone.Stride = source.Stride;
+
+            if (sharedVariables == null)
+                sharedVariables = new List<BlackboardVariableBase>();
+            sharedVariables.Add(clone);
+            return clone;
+        }
     }
 }

@@ -45,7 +45,25 @@
 
 ## 2. GameObject → Add TreeRunner + BehaviourTree Button
 
-- [ ] Editor menu item or component context menu: "Add BehaviourTree Runner"
+**Target:** Before 21st June
+
+### 2.1 Asset Menu — Tree Selection & Navigation
+
+- [ ] **Recent trees menu** — cycle through the 5 most recently opened trees (MRU list persisted per-user)
+- [ ] **Scene TreeRunner dropdown** — lists all active `TreeRunner` components in the current scene, select to focus that runner's tree in the editor
+- [ ] **Selected GameObject info** — asset menu bar displays the currently selected GameObject and its assigned tree asset
+  - If the GameObject has a `TreeRunner` with an assigned tree: show tree name, click to open
+  - If the GameObject has no tree component: show a **Create Tree** button and an extra context menu item to create + assign a new tree
+  - Creating a tree auto-adds a `TreeRunner` component if needed, then assigns the tree asset
+
+### 2.2 Lock Toggle
+
+- [ ] **Lock toggle** in the asset menu bar — when enabled, blocks `PopulateView` / `RepopulateView` calls so the editor keeps the current tree asset ref even when selection changes
+- [ ] Lock still allows tree reassignment during authoring transitions (editor → Play Mode, Play Mode → editor) so the runtime-debugged tree instance replaces the authored one correctly
+
+### 2.3 Editor Menu / Component Context Menu
+
+- [ ] Editor menu item or component context menu: **"Add BehaviourTree Runner"**
 - [ ] Creates/assigns a `TreeRunner` component
 - [ ] Optionally creates a new `BehaviourTreeAsset` if none exists
 - [ ] Auto-assigns asset to runner
@@ -226,11 +244,11 @@
 
 ### 9.1 Subtree Fixes & Improvements
 
-- [ ] Subtree nodes must unfold and display their internal tree during runtime debugging
-- [ ] Verify conditional aborts work correctly inside subtrees (edge cases with cross-tree transitions)
-- [ ] Subtrees automatically copy necessary blackboard variables from the parent tree on creation
+- [x] Subtree nodes must unfold and display their internal tree during runtime debugging — fixed `DebugProxiesAreSetup` flag gate + `currentRunner` null on direct asset selection
+- [x] Verify conditional aborts work correctly inside subtrees — fixed Self pass, LP pass, and `FindFirstCondition` to traverse through SUBTREE descendants
+- [x] Subtrees automatically copy necessary blackboard variables from the parent tree on creation — `CopyVariable` on `BlackboardDefinition` + `CopyReferencedBlackboardVariables` in `SubtreeExtractor`, auto-dedups shared variables
 - [ ] Blackboard view refreshes when a subtree is created or opened (avoids stale display)
-- [ ] Add right-click option **Copy Selection Into Subtree** — creates a subtree from selected nodes without removing them from the parent tree (in addition to existing **Extract** which moves them)
+- [x] Add right-click option **Copy Selection Into Subtree** — creates a subtree from selected nodes without removing them from the parent tree (in addition to existing **Extract** which moves them)
 
 ### 9.2 General
 - [x] Fix child sorting on composite nodes — children now sorted by X position after edge creation, paste, and search window connections
@@ -269,6 +287,9 @@
 ## Progress Update (17 Jun)
 
 **Completed since last update:**
+- Expanded section 2 (TreeRunner menu, recent trees, lock toggle)
+- Expanded section 4 (Commander UX: type hierarchy, binding tab, bridge integration, agent registration)
+- Added section 9.1 (Subtree fixes & improvements)
 - Node rename + type subtitle (section 3.2)
 - Custom port elements with USS styling, hover/connection states (section 6)
 - Node view UXML redesign: flat layout, editable TextField, status-border z-order fix
@@ -276,3 +297,11 @@
 - Child sorting fixes on edge creation, paste, search window
 - PlayMode init debug polling fix
 - Context menu order fix
+
+**Completed (18 Jun):**
+- **Section 9.1:** Subtree runtime debug unfolding (`DebugProxiesAreSetup` flag), conditional aborts traversing SUBTREE descendants (Self pass, LP pass recursive helper, `FindFirstCondition`), auto-copy blackboard variables on subtree creation (`CopyVariable` + `CopyReferencedBlackboardVariables`), Copy Selection Into Subtree context menu option
+- Fixed `abortType` not persisting through subtree extraction (missing field in `CloneNodeIntoAsset`)
+- Fixed `abortType` not persisting through copy/paste (missing in `SerializedNodeData` + `CopyPasteHandler`)
+- Fixed new nodes showing type name ("CompositeNode") instead of methodName — `nodeName` now cleared in all `Create*Node` methods
+- Fixed context menu `NullReferenceException` from stale `Event.current` in node creation menu
+- Fixed stale screen position in context menu search window — extracted shared `OpenNodeSearchAtScreenPosition` with `setCreationPosition` flag

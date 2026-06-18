@@ -200,6 +200,7 @@ namespace BehaviourTree.Editor
                     compositeNode.name = data.methodName ?? data.nodeType.ToString();
                     compositeNode.methodName = data.methodName ?? data.nodeType.ToString();
                     compositeNode.fieldEntries = data.fieldEntries;
+                    compositeNode.abortType = data.abortType;
                     node = compositeNode;
                     break;
                 case BehaviourNodeType.SUBTREE:
@@ -263,6 +264,7 @@ namespace BehaviourTree.Editor
                 CompositeNode compositeNode = (CompositeNode)node;
                 serializedNode.methodName = compositeNode.methodName;
                 serializedNode.fieldEntries = compositeNode.fieldEntries;
+                serializedNode.abortType = compositeNode.abortType;
             }
             else if (node.NodeType == BehaviourNodeType.SUBTREE)
             {

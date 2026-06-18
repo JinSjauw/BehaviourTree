@@ -26,8 +26,14 @@ namespace BehaviourTree.Editor
         private RuntimeDebugManager runtimeDebugManager;
         private SubtreeExtractor subtreeExtractor;
         private List<Port> compatiblePortsCache = new List<Port>();
+        private bool debugProxiesAreSetup;
 
         public bool HasTree => tree != null;
+        public bool DebugProxiesAreSetup
+        {
+            get => debugProxiesAreSetup;
+            set => debugProxiesAreSetup = value;
+        }
 
         public BehaviourTreeEditorGraphView()
         {
@@ -155,17 +161,25 @@ namespace BehaviourTree.Editor
 
             nodeCreationRequest = context =>
             {
-                EnsureSearchWindow();
-                if (tree == null) return;
+                OpenNodeSearchAtScreenPosition(context.screenMousePosition);
+            };
+        }
 
+        private void OpenNodeSearchAtScreenPosition(Vector2 screenPosition, bool setCreationPosition = true)
+        {
+            EnsureSearchWindow();
+            if (tree == null) return;
+
+            if (setCreationPosition)
+            {
                 Rect windowRect = EditorWindow.focusedWindow.position;
-
-                Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer, this.WorldToLocal(context.screenMousePosition - new Vector2(windowRect.x, windowRect.y)));
+                Vector2 localPos = this.ChangeCoordinatesTo(contentViewContainer,
+                    this.WorldToLocal(screenPosition - new Vector2(windowRect.x, windowRect.y)));
 
                 searchWindow.SetCreationPosition(localPos);
-                searchWindow.ClearPendingConnection();
-                OpenSearchWindow(context.screenMousePosition);
-            };
+            }
+            searchWindow.ClearPendingConnection();
+            OpenSearchWindow(screenPosition);
         }
 
         private void OpenSearchWindow(Vector2 mousePosition)
@@ -204,6 +218,7 @@ namespace BehaviourTree.Editor
         public void ClearView()
         {
             tree = null;
+            debugProxiesAreSetup = false;
             graphTitleLabel.SetValueWithoutNotify("Behaviour Tree");
 
             graphViewChanged -= OnGraphViewChanged;
@@ -278,6 +293,7 @@ namespace BehaviourTree.Editor
             BehaviourNodeView current = target;
             while (current != null)
             {
+                if(current.input == null) return false;
                 if (current == source && current.input.capacity != Port.Capacity.Single) return true;
                 current = GetParent(current);
             }
@@ -419,17 +435,6 @@ namespace BehaviourTree.Editor
             
             return null;
         }
-        
-        // public BehaviourNodeView CreateCompositeNode(BehaviourNodeType compositeType, Vector2 position)
-        // {
-        //     CompositeNode node = (CompositeNode)tree.CreateNode(typeof(CompositeNode));
-        //     node.SetCompositeType(compositeType);
-        //     node.nodeName = compositeType.ToString();
-        //     node.methodName = compositeType.ToString();
-        //     node.graphPosition = position;
-        //     tree.RegisterNode(node);
-        //     return CreateNodeView(node);
-        // }
 
         public BehaviourNodeView CreateCompositeNode(string methodName, Vector2 position)
         {
@@ -442,6 +447,7 @@ namespace BehaviourTree.Editor
             node.SetCompositeType(compositeType);
             node.name = methodName;
             node.methodName = methodName;
+            node.nodeName = string.Empty;
             node.graphPosition = position;
             tree.RegisterNode(node);
             return CreateNodeView(node);
@@ -454,6 +460,7 @@ namespace BehaviourTree.Editor
             node.SetLeafType(leafType);
             node.methodName = methodName;
             node.name = !string.IsNullOrEmpty(methodName) ? methodName : "Untitled";
+            node.nodeName = string.Empty;
             node.graphPosition = position;
             tree.RegisterNode(node);
 
@@ -466,6 +473,7 @@ namespace BehaviourTree.Editor
             //Undo.RecordObject(node, "(BTree) Configure Node");
             node.methodName = methodName;
             node.name = !string.IsNullOrEmpty(methodName) ? methodName : "Untitled";
+            node.nodeName = string.Empty;
             node.graphPosition = position;
             tree.RegisterNode(node);
             
@@ -476,6 +484,7 @@ namespace BehaviourTree.Editor
         {
             SubtreeNode node = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
             node.name = "SUBTREE";
+            node.nodeName = string.Empty;
             node.graphPosition = position;
             tree.RegisterNode(node);
 
@@ -541,15 +550,20 @@ namespace BehaviourTree.Editor
         {
             base.BuildContextualMenu(evt);
 
+            Vector2 screenPosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
             evt.menu.InsertAction(0, $"Create Node", _ =>
             {
-                searchWindow.ClearPendingConnection();
-                OpenSearchWindow(GUIUtility.GUIToScreenPoint(Event.current.mousePosition));
+                OpenNodeSearchAtScreenPosition(screenPosition, setCreationPosition: false);
             }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
 
             evt.menu.InsertAction(1, $"Subtree/Extract Selection To Subtree", _ =>
             {
                 subtreeExtractor.Extract(selection, tree, PopulateView);
+            }, _ => subtreeExtractor.CanExtract(selection, tree) ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
+
+            evt.menu.InsertAction(1, $"Subtree/Copy Selection Into Subtree", _ =>
+            {
+                subtreeExtractor.Extract(selection, tree, PopulateView, deleteOriginals: false);
             }, _ => subtreeExtractor.CanExtract(selection, tree) ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
 
             Vector2 mouseLocal = evt.localMousePosition;
@@ -590,10 +604,14 @@ namespace BehaviourTree.Editor
                 }
             }
 
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying && !debugProxiesAreSetup)
             {
                 TreeRunner runner = BehaviourTreeEditor.currentRunner;
-                if (runner != null) runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);
+                if (runner != null)
+                {
+                    runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);
+                    debugProxiesAreSetup = true;
+                }
             }
 
             RegisterCallback<GeometryChangedEvent>(OnGeometryChangedForFrameAll);
@@ -622,6 +640,7 @@ namespace BehaviourTree.Editor
 
         private void ClearAndRebuildViews()
         {
+            debugProxiesAreSetup = false;
             graphViewChanged -= OnGraphViewChanged;
             try
             {
@@ -703,6 +722,7 @@ namespace BehaviourTree.Editor
 
         public void ClearRuntimeDebugProxies()
         {
+            debugProxiesAreSetup = false;
             runtimeDebugManager.RemoveAllProxies();
             foreach (BehaviourNodeView nodeView in nodeViewDict.Values)
             {

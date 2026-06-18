@@ -43,10 +43,25 @@ namespace BehaviourTree.Runtime
                 for (int c = 0; c < childCount; c++)
                 {
                     int childIndex = first + c;
-                    // Self only checks leaves with methods (conditions)
-                    if (ctx.methodInstances[childIndex] == null) continue;
+                    ref NodeData childNode = ref ctx.nodeDatas[childIndex];
 
-                    bool conditionMet = EvaluateLeafCondition(childIndex, ref ctx);
+                    bool conditionMet;
+                    if (ctx.methodInstances[childIndex] != null)
+                    {
+                        // Direct condition leaf — evaluate it
+                        conditionMet = EvaluateLeafCondition(childIndex, ref ctx);
+                    }
+                    else if (childNode.nodeType == BehaviourNodeType.SUBTREE
+                        && childNode.firstChildIndex >= 0)
+                    {
+                        // Subtree is transparent — walk through to find its first condition
+                        conditionMet = EvaluateCompositeCondition(childIndex, AbortType.Self, ref ctx);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
                     bool wasMet = ctx.lastConditionResult[childIndex];
                     ctx.lastConditionResult[childIndex] = conditionMet;
 
@@ -69,6 +84,17 @@ namespace BehaviourTree.Runtime
             {
                 int childIndex = first + c;
                 ref NodeData childNode = ref ctx.nodeDatas[childIndex];
+
+                // Subtree children → recursively find composites with LP/Both abort
+                if (childNode.nodeType == BehaviourNodeType.SUBTREE
+                    && childNode.firstChildIndex >= 0)
+                {
+                    int abortIndex = EvaluateLpConditionsRecursive(
+                        childNode.firstChildIndex, childNode.lastChildIndex,
+                        first, runningChildLocal, c, ref ctx);
+                    if (abortIndex >= 0) return abortIndex;
+                    continue;
+                }
 
                 // Only composites can have abort types
                 if (childNode.nodeType != BehaviourNodeType.COMPOSITE) continue;
@@ -182,12 +208,73 @@ namespace BehaviourTree.Runtime
                                        child.abortType == AbortType.Both;
                     if (!hasRequired) continue;
 
-                    bool found = FindFirstCondition(child.firstChildIndex, child.lastChildIndex, requiredType, ref ctx);
+                    bool found = FindFirstCondition(child.firstChildIndex,
+                        child.lastChildIndex, requiredType, ref ctx);
                     if (!found) return false; // condition found and FAILED
+                    continue;
+                }
+
+                // Subtree with children → always recurse (subtrees are transparent)
+                if (child.firstChildIndex >= 0 && child.nodeType == BehaviourNodeType.SUBTREE)
+                {
+                    bool found = FindFirstCondition(child.firstChildIndex,
+                        child.lastChildIndex, requiredType, ref ctx);
+                    if (!found) return false;
                 }
             }
 
             return true; // no qualifying condition-bearing children found
+        }
+
+        /// <summary>
+        /// Recursively evaluates LowerPriority/Both composites within [first, last],
+        /// walking transparently through SUBTREE nodes.
+        /// parentFirst: the original parent composite's firstChildIndex (for AbortSubtree target).
+        /// parentPosition: the original subtree's child position in the parent composite.
+        /// runningChildLocal: position of the currently RUNNING child in the parent composite.
+        /// Returns the child position to resume from if an abort occurred, or -1.
+        /// </summary>
+        private static int EvaluateLpConditionsRecursive(
+            int first, int last,
+            int parentFirst,
+            int runningChildLocal,
+            int parentPosition,
+            ref TickContext ctx)
+        {
+            int childCount = last - first + 1;
+            for (int i = 0; i < childCount; i++)
+            {
+                int childIndex = first + i;
+                ref NodeData childNode = ref ctx.nodeDatas[childIndex];
+
+                if (childNode.nodeType == BehaviourNodeType.COMPOSITE)
+                {
+                    AbortType childAbort = childNode.abortType;
+                    if (childAbort != AbortType.LowerPriority
+                        && childAbort != AbortType.Both) continue;
+
+                    bool conditionMet = EvaluateCompositeCondition(childIndex, childAbort, ref ctx);
+                    bool wasMet = ctx.lastConditionResult[childIndex];
+                    ctx.lastConditionResult[childIndex] = conditionMet;
+
+                    if (!wasMet && conditionMet
+                        && runningChildLocal >= 0
+                        && runningChildLocal > parentPosition)
+                    {
+                        AbortSubtree(parentFirst + runningChildLocal, ref ctx);
+                        return parentPosition;
+                    }
+                }
+                else if (childNode.nodeType == BehaviourNodeType.SUBTREE
+                    && childNode.firstChildIndex >= 0)
+                {
+                    int abortIndex = EvaluateLpConditionsRecursive(
+                        childNode.firstChildIndex, childNode.lastChildIndex,
+                        parentFirst, runningChildLocal, parentPosition, ref ctx);
+                    if (abortIndex >= 0) return abortIndex;
+                }
+            }
+            return -1;
         }
     }
 }

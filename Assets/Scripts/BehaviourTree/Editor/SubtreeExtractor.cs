@@ -33,7 +33,7 @@ namespace BehaviourTree.Editor
             return true;
         }
 
-        public void Extract(List<ISelectable> selection, BehaviourTreeAsset tree, Action<BehaviourTreeAsset> populateAction)
+        public void Extract(List<ISelectable> selection, BehaviourTreeAsset tree, Action<BehaviourTreeAsset> populateAction, bool deleteOriginals = true)
         {
             if (!CanExtract(selection, tree)) return;
 
@@ -87,6 +87,8 @@ namespace BehaviourTree.Editor
                 cloneMap[node] = clone;
             }
 
+            CopyReferencedBlackboardVariables(cloneMap, tree, subtreeAsset);
+
             foreach (var kvp in cloneMap)
             {
                 BehaviourNode src = kvp.Key;
@@ -107,48 +109,51 @@ namespace BehaviourTree.Editor
             EditorUtility.SetDirty(subtreeAsset);
             AssetDatabase.SaveAssets();
 
-            BehaviourNode replaceNode = rootCandidates.Count == 1 ? rootCandidates[0] : null;
-            BehaviourNode externalParent = replaceNode != null ? FindFirstParentOutsideSelection(replaceNode, selectedNodes, tree) : null;
-
-            if (replaceNode != null && externalParent != null)
+            if (deleteOriginals)
             {
-                SubtreeNode subtreeRefNode = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
-                subtreeRefNode.name = "Subtree";
-                subtreeRefNode.graphPosition = replaceNode.graphPosition;
-                subtreeRefNode.subTreeAsset = subtreeAsset;
-                tree.RegisterNode(subtreeRefNode);
+                BehaviourNode replaceNode = rootCandidates.Count == 1 ? rootCandidates[0] : null;
+                BehaviourNode externalParent = replaceNode != null ? FindFirstParentOutsideSelection(replaceNode, selectedNodes, tree) : null;
 
-                int childIdx = externalParent.children.IndexOf(replaceNode);
-                if (childIdx >= 0)
+                if (replaceNode != null && externalParent != null)
                 {
-                    Undo.RecordObject(externalParent, "(BTree) Replace Child");
-                    externalParent.children[childIdx] = subtreeRefNode;
-                    EditorUtility.SetDirty(externalParent);
-                }
-            }
-            else
-            {
-                SubtreeNode subtreeRefNode = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
+                    SubtreeNode subtreeRefNode = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
+                    subtreeRefNode.name = "Subtree";
+                    subtreeRefNode.graphPosition = replaceNode.graphPosition;
+                    subtreeRefNode.subTreeAsset = subtreeAsset;
+                    tree.RegisterNode(subtreeRefNode);
 
-                if(rootCandidates.Count > 0)
-                {
-                    subtreeRefNode.graphPosition = rootCandidates[0].graphPosition;
+                    int childIdx = externalParent.children.IndexOf(replaceNode);
+                    if (childIdx >= 0)
+                    {
+                        Undo.RecordObject(externalParent, "(BTree) Replace Child");
+                        externalParent.children[childIdx] = subtreeRefNode;
+                        EditorUtility.SetDirty(externalParent);
+                    }
                 }
                 else
                 {
-                    subtreeRefNode.graphPosition = Vector2.zero;
+                    SubtreeNode subtreeRefNode = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
+
+                    if(rootCandidates.Count > 0)
+                    {
+                        subtreeRefNode.graphPosition = rootCandidates[0].graphPosition;
+                    }
+                    else
+                    {
+                        subtreeRefNode.graphPosition = Vector2.zero;
+                    }
+
+                    subtreeRefNode.name = "Subtree";
+                    subtreeRefNode.subTreeAsset = subtreeAsset;
+                    tree.RegisterNode(subtreeRefNode);
                 }
 
-                subtreeRefNode.name = "Subtree";
-                subtreeRefNode.subTreeAsset = subtreeAsset;
-                tree.RegisterNode(subtreeRefNode);
-            }
-
-            {
-                List<BehaviourNode> toDelete = selectedNodes.ToList();
-                for (int i = 0; i < toDelete.Count; i++)
                 {
-                    tree.DeleteNode(toDelete[i]);
+                    List<BehaviourNode> toDelete = selectedNodes.ToList();
+                    for (int i = 0; i < toDelete.Count; i++)
+                    {
+                        tree.DeleteNode(toDelete[i]);
+                    }
                 }
             }
 
@@ -192,6 +197,47 @@ namespace BehaviourTree.Editor
             return null;
         }
 
+        private static void CopyReferencedBlackboardVariables(
+            Dictionary<BehaviourNode, BehaviourNode> cloneMap,
+            BehaviourTreeAsset sourceTree,
+            BehaviourTreeAsset subtreeAsset)
+        {
+            BlackboardDefinition sourceDef = sourceTree.blackboardDefinition;
+            BlackboardDefinition destDef = subtreeAsset.blackboardDefinition;
+            if (sourceDef == null || destDef == null) return;
+
+            HashSet<string> variableNames = new HashSet<string>();
+
+            foreach (BehaviourNode node in cloneMap.Values)
+            {
+                List<NodeFieldEntry> entries = null;
+                if (node is LeafNode leaf)
+                    entries = leaf.fieldEntries;
+                else if (node is DecoratorNode decorator)
+                    entries = decorator.fieldEntries;
+                else if (node is CompositeNode composite)
+                    entries = composite.fieldEntries;
+
+                if (entries == null) continue;
+
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    NodeFieldEntry entry = entries[i];
+                    if (entry.isVariable && !string.IsNullOrEmpty(entry.variableName))
+                        variableNames.Add(entry.variableName);
+                }
+            }
+
+            foreach (string name in variableNames)
+            {
+                BlackboardVariableBase sourceVar = sourceDef.FindVariable(name);
+                if (sourceVar == null) continue;
+                destDef.CopyVariable(sourceVar);
+            }
+
+            EditorUtility.SetDirty(destDef);
+        }
+
         private BehaviourNode CloneNodeIntoAsset(BehaviourNode src, BehaviourTreeAsset destination)
         {
             BehaviourNode dst;
@@ -221,6 +267,7 @@ namespace BehaviourTree.Editor
                 created.name = composite.name;
                 created.methodName = composite.methodName;
                 created.fieldEntries = composite.fieldEntries;
+                created.abortType = composite.abortType;
                 dst = created;
             }
             else if (src is SubtreeNode subtree)

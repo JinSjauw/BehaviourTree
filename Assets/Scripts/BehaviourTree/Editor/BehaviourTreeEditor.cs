@@ -292,7 +292,21 @@ public class BehaviourTreeEditor : EditorWindow
 
         if(selectedAsset == null) return;
 
-        if (selectedAsset == currentTree) return;
+        // Reset proxy flag when a different tree is selected
+        if (selectedAsset != currentTree && treeGraphView != null) treeGraphView.DebugProxiesAreSetup = false;
+
+        if (selectedAsset == currentTree)
+        {
+            // In play mode, if proxies haven't been set up yet but a runner is now available,
+            // allow repopulation to set them up
+            if (!(EditorApplication.isPlaying
+                && treeGraphView != null
+                && !treeGraphView.DebugProxiesAreSetup
+                && currentRunner != null))
+            {
+                return;
+            }
+        }
 
         currentTree = selectedAsset;
         

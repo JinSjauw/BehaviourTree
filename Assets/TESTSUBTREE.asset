@@ -1,209 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8174504115251439135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: WaitSeconds
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 718677429a369594ebe8100636531b24
-  graphPosition: {x: 280, y: 385}
-  runtimeIndex: -1
-  leafType: 3
-  methodName: WaitSeconds
-  fieldEntries:
-  - fieldName: duration
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    intValue: 0
-    floatValue: 3
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &-2942232229145303589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_CompareInt
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: ac4db66d9ea5ec343a464ca5b93d97dd
-  graphPosition: {x: -105, y: 700}
-  runtimeIndex: -1
-  leafType: 2
-  methodName: BB_CompareInt
-  fieldEntries:
-  - fieldName: a
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: testInt
-    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: b
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: newVariable
-    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    intValue: 5
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: operation
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldTypeName: BehaviourTree.Runtime.NumericCompareOp, BehaviourTree.Runtime,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
---- !u!114 &-2027656781645654869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  nodeName: CompositeNode
-  children:
-  - {fileID: -1494782064085218225}
-  - {fileID: -1704324880774203390}
-  - {fileID: -8174504115251439135}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: fbc0dd97c63141a43a95d7275c61930c
-  graphPosition: {x: 0, y: 175}
-  runtimeIndex: -1
-  compositeType: 1
-  methodName: SEQUENCE
-  fieldEntries: []
-  abortType: 3
---- !u!114 &-1704324880774203390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
-  m_Name: SEQUENCE
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  nodeName: CompositeNode
-  children:
-  - {fileID: -2942232229145303589}
-  - {fileID: 4029422710404613541}
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 1ca9b7deeadd0f54bb519f9c3ea24629
-  graphPosition: {x: 0, y: 385}
-  runtimeIndex: -1
-  compositeType: 1
-  methodName: SEQUENCE
-  fieldEntries: []
-  abortType: 0
---- !u!114 &-1494782064085218225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: BB_CheckGameObject
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: CheckGO
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: 21d8fe2b66c69fc48b57847c776c69e0
-  graphPosition: {x: -245, y: 385}
-  runtimeIndex: -1
-  leafType: 2
-  methodName: BB_CheckGameObject
-  fieldEntries:
-  - fieldName: value
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: testGO
-    fieldTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: operation
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldTypeName: BehaviourTree.Runtime.ObjectCheckOp, BehaviourTree.Runtime, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-    intValue: 2
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,12 +17,7 @@ MonoBehaviour:
   commanderBlackboardDefinition: {fileID: 0}
   nodesList:
   - {fileID: 2300751862412526686}
-  - {fileID: -1494782064085218225}
-  - {fileID: 4029422710404613541}
-  - {fileID: -2942232229145303589}
-  - {fileID: -8174504115251439135}
-  - {fileID: -1704324880774203390}
-  - {fileID: -2027656781645654869}
+  - {fileID: 2211033645857662212}
   editorNotes: []
 --- !u!114 &775798989232047232
 MonoBehaviour:
@@ -264,6 +55,31 @@ MonoBehaviour:
           PublicKeyToken=b77a5c561934e089
         singleValue: 5
         arrayValues: 
+--- !u!114 &2211033645857662212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
+  m_Name: Subtree
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
+  nodeName: SubtreeNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  guid: 6fcce4ce5de6eb742b4dd7df8bb9a882
+  graphPosition: {x: 0, y: 385}
+  runtimeIndex: -1
+  subTreeAsset: {fileID: 11400000, guid: 14fe57e909a146e4297a2d0d1631887e, type: 2}
+  bindings:
+  - subtreeVariableName: testInt
+    parentVariableName: testInt
+  - subtreeVariableName: testGO
+    parentVariableName: testGO
 --- !u!114 &2300751862412526686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,48 +92,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
   m_Name: ROOT
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  nodeName: RootNode
+  nodeName: START
   children:
-  - {fileID: -2027656781645654869}
+  - {fileID: 2211033645857662212}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: d48be46e09ce4d54b8e8c1fe260af895
   graphPosition: {x: 0, y: 0}
   runtimeIndex: -1
---- !u!114 &4029422710404613541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: WaitSeconds
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: LeafNode
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  guid: dfa75c6e027786c4aa56b377ad9546f2
-  graphPosition: {x: 121, y: 700}
-  runtimeIndex: -1
-  leafType: 3
-  methodName: WaitSeconds
-  fieldEntries:
-  - fieldName: duration
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    intValue: 0
-    floatValue: 5
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  comment: 
-  BlackBoardTypeID: 0

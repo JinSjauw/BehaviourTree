@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
   m_Name: SELECTOR
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  nodeName: 
+  nodeName: dwda
   children:
   - {fileID: -6241964446423491603}
   - {fileID: 6723386113716927207}
   firstChildIndex: 0
   lastChildIndex: 0
   guid: a4c219e3b444846488d06218b9085513
-  graphPosition: {x: 0, y: 280}
+  graphPosition: {x: -0, y: 280}
   runtimeIndex: 0
   compositeType: 1
   methodName: SELECTOR
   fieldEntries: []
-  abortType: 0
+  abortType: 3
 --- !u!114 &-6241964446423491603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37,7 +37,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096724a717d406f41b69975887de3619, type: 3}
   m_Name: Subtree
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SubtreeNode
-  nodeName: SubtreeNode
+  nodeName: CondtionalAbortCheck
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
@@ -134,8 +134,8 @@ MonoBehaviour:
   nodesList:
   - {fileID: -3456654351379911066}
   - {fileID: -6547581460322908388}
-  - {fileID: 6723386113716927207}
   - {fileID: -6241964446423491603}
+  - {fileID: 6723386113716927207}
   editorNotes: []
 --- !u!114 &6723386113716927207
 MonoBehaviour:

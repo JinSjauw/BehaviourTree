@@ -20,6 +20,7 @@ namespace BehaviourTree.Editor
 
         public string subtreeAssetGUID;
         public List<SubtreeBinding> bindings;
+        public AbortType abortType;
     }
 
     [Serializable]

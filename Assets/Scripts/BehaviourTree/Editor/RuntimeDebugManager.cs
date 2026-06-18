@@ -385,13 +385,11 @@ namespace BehaviourTree.Editor
                         if (subRoot != null)
                         {
                             string rootChildGuid = directChildGuid + "/" + subRoot.guid;
-                            Debug.Log($"[EnsureProxyEdges] parent={runtimeGuid} node={node.name} child={child.name} → bypassed SubtreeNode proxy, rootChildGuid={rootChildGuid}");
                             TryAddProxyEdge(runtimeGuid, rootChildGuid);
                         }
                     }
                     else
                     {
-                        Debug.Log($"[EnsureProxyEdges] parent={runtimeGuid} node={node.name} child={child.name} childGuid={directChildGuid}");
                         TryAddProxyEdge(runtimeGuid, directChildGuid);
                     }
                 }
@@ -418,15 +416,11 @@ namespace BehaviourTree.Editor
 
             string key = parentGuid + "->" + childGuid;
             if (proxyInternalEdges.ContainsKey(key))
-            {
-                Debug.Log($"[TryAddProxyEdge] SKIP duplicate: {key}");
                 return;
-            }
 
             Edge edge = parentView.output.ConnectTo(childView.input);
             proxyInternalEdges[key] = edge;
             graphView.AddElement(edge);
-            Debug.Log($"[TryAddProxyEdge] OK: {key}");
         }
 
         private void ReplaceSubtreeNodesWithRootProxies(Dictionary<string, BehaviourNodeView> nodeViewDict)
@@ -436,13 +430,13 @@ namespace BehaviourTree.Editor
                 ReplaceSubtreeViewWithRootProxy(subtreeView);
             }
 
-            foreach (BehaviourNodeView subtreeView in proxyNodeViews.Values)
+            foreach (KeyValuePair<string, BehaviourNodeView> kvp in proxyNodeViews)
             {
-                ReplaceSubtreeViewWithRootProxy(subtreeView);
+                ReplaceSubtreeViewWithRootProxy(kvp.Value, kvp.Key);
             }
         }
 
-        private void ReplaceSubtreeViewWithRootProxy(BehaviourNodeView subtreeView)
+        private void ReplaceSubtreeViewWithRootProxy(BehaviourNodeView subtreeView, string proxyRuntimeGuid = null)
         {
             if (subtreeView?.NodeSO is not SubtreeNode subtreeNode) return;
             if (subtreeNode.SubTreeAsset == null) return;
@@ -451,7 +445,8 @@ namespace BehaviourTree.Editor
             BehaviourNode subRoot = GetAuthoringEffectiveRoot(subtreeNode.SubTreeAsset);
             if (subRoot == null || string.IsNullOrEmpty(subRoot.guid)) return;
 
-            string rootRuntimeGuid = subtreeNode.guid + "/" + subRoot.guid;
+            string baseGuid = proxyRuntimeGuid ?? subtreeNode.guid;
+            string rootRuntimeGuid = baseGuid + "/" + subRoot.guid;
             if (!proxyNodeViews.TryGetValue(rootRuntimeGuid, out BehaviourNodeView rootProxy)) return;
             if (rootProxy == null) return;
 
