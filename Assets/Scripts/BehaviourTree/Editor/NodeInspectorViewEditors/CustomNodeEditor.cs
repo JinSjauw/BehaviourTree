@@ -44,7 +44,7 @@ namespace BehaviourTree.Editor
             methodNameProp = serializedObject.FindProperty("methodName");
             fieldEntriesProp = serializedObject.FindProperty("fieldEntries");
             childrenProp = serializedObject.FindProperty("children");
-            if (target is LeafNode) commentProp = serializedObject.FindProperty("comment");
+            commentProp = serializedObject.FindProperty("comment");
             if (target is CompositeNode) abortTypeProp = serializedObject.FindProperty("abortType");
         }
 
@@ -52,9 +52,11 @@ namespace BehaviourTree.Editor
         {
             serializedObject.Update();
             
+            if(target is RootNode) return;
+
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(nodeNameProp, new GUIContent("Node Name"));
-            nodeNameChangedThisFrame = EditorGUI.EndChangeCheck();
+            nodeNameChangedThisFrame = EditorGUI.EndChangeCheck();            
             
             if(!(target is LeafNode || target is DecoratorNode || target is CompositeNode)) 
             {
@@ -64,18 +66,13 @@ namespace BehaviourTree.Editor
                 return;
             }
 
-            if(target is CompositeNode)
-            {
-                DrawChildrenDebug();
-            }
-
             // Check if method changed and rebuild field entries
             string selectedMethodName = methodNameProp != null ? methodNameProp.stringValue : null;
             bool methodChanged = selectedMethodName != lastMethodName;
             lastMethodName = selectedMethodName;
             EditorGUI.BeginChangeCheck();
 
-            if (target is LeafNode && commentProp != null)
+            if (commentProp != null)
             {
                 EditorGUILayout.LabelField("Comment", EditorStyles.boldLabel);
                 commentProp.stringValue = EditorGUILayout.TextArea(commentProp.stringValue, GUILayout.Height(60));
@@ -104,8 +101,12 @@ namespace BehaviourTree.Editor
                 }
             }
 
+            if(target is CompositeNode)
+            {
+                DrawChildrenDebug();
+            }
+
             EditorGUILayout.Space();
-            //EditorGUILayout.PropertyField(blackBoardTypeIDProp);
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -201,6 +202,9 @@ namespace BehaviourTree.Editor
             {
                 // No metadata; clear entries
                 fieldEntriesProp.ClearArray();
+
+                if(target is CompositeNode) return;
+
                 string methodDesc = !string.IsNullOrEmpty(selectedMethodName) ? selectedMethodName : "(none)";
                 EditorGUILayout.HelpBox($"No schema found for method '{methodDesc}'.", MessageType.Info);
             }

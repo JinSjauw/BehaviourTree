@@ -36,8 +36,8 @@ namespace BehaviourTree.Editor
             Register(typeof(Quaternion),() => new Vector4Field());
 
             // Reference types
-            Register(typeof(GameObject),() => new ObjectField { objectType = typeof(GameObject), allowSceneObjects = true });
-            Register(typeof(Transform), () => new ObjectField { objectType = typeof(Transform), allowSceneObjects = true });
+            Register(typeof(GameObject),() => new ObjectField { objectType = typeof(GameObject), allowSceneObjects = false });
+            Register(typeof(Transform), () => new ObjectField { objectType = typeof(Transform), allowSceneObjects = false });
             Register(typeof(Material),  () => new ObjectField { objectType = typeof(Material), allowSceneObjects = false });
         }
 

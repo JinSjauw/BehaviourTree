@@ -51,10 +51,11 @@ namespace BehaviourTree.Core
             int count = GetTotalSlotCount(definition);
             if (storage == null) storage = new ManagedBlackboardStorage();
             storage.Initialize(definition);
+            
+            IReadOnlyList<BlackboardVariableBase> allVars = definition.GetAllVariables();
 
 #if UNITY_EDITOR
             Debug.Log($"[BB.Initialize] def='{definition.name}' totalSlots={count} serializedRefs.Count={serializedReferences.Count}");
-            IReadOnlyList<BlackboardVariableBase> allVars = definition.GetAllVariables();
             for (int vi = 0; vi < allVars.Count; vi++)
             {
                 BlackboardVariableBase bv = allVars[vi];

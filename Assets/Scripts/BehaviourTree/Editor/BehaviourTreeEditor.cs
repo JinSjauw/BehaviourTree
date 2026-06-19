@@ -17,6 +17,7 @@ public class BehaviourTreeEditor : EditorWindow
     
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
+    private TrackedVariablesView trackedVariablesView;
     private ToolbarMenu assetBarMenu;
     private TabView tabView;
     private Tab inspectorTab;
@@ -77,6 +78,7 @@ public class BehaviourTreeEditor : EditorWindow
         treeGraphView = root.Q<BehaviourTreeEditorGraphView>();
         inspectorView = root.Q<InspectorView>();
         blackBoardView = root.Q<BlackBoardView>();
+        trackedVariablesView = root.Q<TrackedVariablesView>();
         assetBarMenu = root.Q<ToolbarMenu>("AssetBarMenu");
         tabView = root.Q<TabView>("TabView");
         inspectorTab = tabView?.Q<Tab>("InspectorTab");
@@ -241,11 +243,13 @@ public class BehaviourTreeEditor : EditorWindow
         if(selected != null && selected.TryGetComponent(out TreeRunner runner))
         {
             currentRunner = runner;
+            trackedVariablesView?.Refresh(currentRunner);
 
             return runner.GetSourceTree() as BehaviourTreeAsset;
         }
         else
         {
+            trackedVariablesView?.Refresh(null);
             return Selection.activeObject as BehaviourTreeAsset;
         }
     }
@@ -309,6 +313,10 @@ public class BehaviourTreeEditor : EditorWindow
         }
 
         currentTree = selectedAsset;
+        
+        // Refresh tracked variables view — the binding group depends on currentTree
+        if (selectedAsset != null)
+            trackedVariablesView?.Refresh(currentRunner);
         
         // Null check for tree asset before using it
         if (currentTree == null)

@@ -31,6 +31,10 @@ namespace BehaviourTree.Runtime
                     temp.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
                     temp.name = authoringAsset.DisplayName + "_Runtime";
                     temp.sourceTree = authoringAsset;
+#if UNITY_EDITOR
+                    string assetPath = UnityEditor.AssetDatabase.GetAssetPath(authoringAsset);
+                    temp.sourceTreeGuid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+#endif
 
                     temp.blackboardDefinition = TreeBaker.BakeTree(
                         authoringAsset.Root, authoringAsset,

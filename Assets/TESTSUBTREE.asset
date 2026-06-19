@@ -18,7 +18,13 @@ MonoBehaviour:
   nodesList:
   - {fileID: 2300751862412526686}
   - {fileID: 2211033645857662212}
-  editorNotes: []
+  editorNotes:
+  - position: {x: 379, y: 316}
+    size: {x: 200, y: 150}
+    title: Note
+    contents: 
+    noteColor: {r: 1, g: 0.92, b: 0.55, a: 0.85}
+    textColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &775798989232047232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,12 +77,13 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
+  comment: 
   guid: 6fcce4ce5de6eb742b4dd7df8bb9a882
   graphPosition: {x: 0, y: 385}
   runtimeIndex: -1
   subTreeAsset: {fileID: 11400000, guid: 14fe57e909a146e4297a2d0d1631887e, type: 2}
   bindings:
-  - subtreeVariableName: testInt
+  - subtreeVariableName: testInt2
     parentVariableName: testInt
   - subtreeVariableName: testGO
     parentVariableName: testGO
@@ -97,6 +104,7 @@ MonoBehaviour:
   - {fileID: 2211033645857662212}
   firstChildIndex: 0
   lastChildIndex: 0
+  comment: 
   guid: d48be46e09ce4d54b8e8c1fe260af895
   graphPosition: {x: 0, y: 0}
   runtimeIndex: -1

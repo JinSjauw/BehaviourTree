@@ -1,0 +1,70 @@
+.binding-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: auto;
+    flex-grow: 1;
+}
+
+.binding-row-num {
+    width: 24px;
+    font-size: 11px;
+    color: rgb(120, 120, 120);
+}
+
+.binding-row-component {
+    flex-grow: 1;
+    margin-right: 4px;
+    overflow: hidden;
+    max-width: 40%;
+    min-width: 30%;
+}
+
+.binding-row-component .component-member-button {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.binding-row-arrow {
+    width: 20px;
+    -unity-text-align: middle-center;
+    color: rgb(200, 200, 200);
+    -unity-font-style: bold;
+}
+
+.binding-row-variable {
+    flex-grow: 1;
+    margin-left: 4px;
+    margin-right: 4px;
+    overflow: hidden;
+    min-width: 30%;
+    max-width: 40%;
+}
+
+.binding-row-variable .variable-button {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.binding-row-remove {
+    width: 20px;
+    height: 20px;
+    margin-left: 0;
+    margin-right: 0;
+    min-width: 5%;
+    min-height: auto;
+    flex-shrink: 0;
+    background-color: rgb(240, 89, 95);
+    border-left-color: rgb(217, 54, 68);
+    border-right-color: rgb(217, 54, 68);
+    border-top-color: rgb(217, 54, 68);
+    border-bottom-color: rgb(217, 54, 68);
+    -unity-font-style: bold;
+    color: rgb(232, 223, 223);
+    -unity-text-align: middle-center;
+}
+
+.binding-row-remove:hover {
+    background-color: rgb(240, 126, 131);
+}

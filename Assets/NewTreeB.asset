@@ -18,13 +18,14 @@ MonoBehaviour:
   - {fileID: 6723386113716927207}
   firstChildIndex: 0
   lastChildIndex: 0
+  comment: 
   guid: a4c219e3b444846488d06218b9085513
   graphPosition: {x: -0, y: 280}
   runtimeIndex: 0
   compositeType: 1
   methodName: SELECTOR
   fieldEntries: []
-  abortType: 3
+  abortType: 0
 --- !u!114 &-6241964446423491603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41,6 +42,7 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
+  comment: 
   guid: 9428233c120be7b44b1030ded868e5b7
   graphPosition: {x: -245, y: 490}
   runtimeIndex: 1
@@ -49,7 +51,7 @@ MonoBehaviour:
   - subtreeVariableName: testGO
     parentVariableName: TESTGO
   - subtreeVariableName: testInt
-    parentVariableName: TESTINT
+    parentVariableName: TESTINTTTTTTTTTTTTTTTTTTTT
 --- !u!114 &-3858515658822153359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,11 +83,11 @@ MonoBehaviour:
     - rid: 3017916810423697922
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: TESTINT
+        variableName: TESTINTTTTTTTTTTTTTTTTTTTT
         variableStride: 1
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-        singleValue: 5
+        singleValue: 2
         arrayValues: 
     - rid: 3017916810423698009
       type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
@@ -94,7 +96,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-        singleValue: {x: 0, y: 0}
+        singleValue: {x: 43, y: 43}
         arrayValues: []
 --- !u!114 &-3456654351379911066
 MonoBehaviour:
@@ -108,11 +110,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
   m_Name: ROOT
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  nodeName: START
+  nodeName: ROOT
   children:
   - {fileID: -6547581460322908388}
   firstChildIndex: 0
   lastChildIndex: 0
+  comment: 
   guid: b737fad281baa2b44b14952eef347bd7
   graphPosition: {x: 0, y: 0}
   runtimeIndex: -1
@@ -153,6 +156,7 @@ MonoBehaviour:
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
+  comment: 
   guid: c87110fa0a02f2e4f85b8248a6513e37
   graphPosition: {x: 245, y: 490}
   runtimeIndex: 2
@@ -172,5 +176,4 @@ MonoBehaviour:
     vector3Value: {x: 0, y: 0, z: 0}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
-  comment: 
   BlackBoardTypeID: 0

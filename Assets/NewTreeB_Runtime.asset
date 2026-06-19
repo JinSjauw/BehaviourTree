@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5829576759008386132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
+  m_Name: NewTreeB_Runtime_BB_Definition
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
+  sharedVariables:
+  - rid: 3017916869405311102
+  - rid: 3017916869405311103
+  - rid: 3017916869405311104
+  references:
+    version: 2
+    RefIds:
+    - rid: 3017916869405311102
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TESTINTTTTTTTTTTTTTTTTTTTT
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        singleValue: 2
+        arrayValues: 
+    - rid: 3017916869405311103
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TESTGO
+        variableStride: 1
+        variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {fileID: 0}
+        arrayValues: []
+    - rid: 3017916869405311104
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: newVariable
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        singleValue: {x: 43, y: 43}
+        arrayValues: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c25e780b933274d83104b31a416a22, type: 3}
+  m_Name: NewTreeB_Runtime
+  m_EditorClassIdentifier: BehaviourTree.Runtime::RuntimeBehaviourTreeAsset
+  runtimeNodeData:
+  - nodeType: 1
+    firstChildIndex: 1
+    lastChildIndex: 2
+    methodName: SELECTOR
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 0
+    fieldDataCount: 0
+    abortType: 0
+  - nodeType: 5
+    firstChildIndex: 3
+    lastChildIndex: 3
+    methodName: 
+    blackBoardTypeID: 0
+    fieldDataStartIndex: -1
+    fieldDataCount: 0
+    abortType: 0
+  - nodeType: 3
+    firstChildIndex: -1
+    lastChildIndex: -1
+    methodName: WaitSeconds
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 0
+    fieldDataCount: 1
+    abortType: 0
+  - nodeType: 5
+    firstChildIndex: 4
+    lastChildIndex: 4
+    methodName: 
+    blackBoardTypeID: 0
+    fieldDataStartIndex: -1
+    fieldDataCount: 0
+    abortType: 0
+  - nodeType: 1
+    firstChildIndex: 5
+    lastChildIndex: 7
+    methodName: SEQUENCE
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 1
+    fieldDataCount: 0
+    abortType: 3
+  - nodeType: 2
+    firstChildIndex: -1
+    lastChildIndex: -1
+    methodName: BB_CheckGameObject
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 1
+    fieldDataCount: 2
+    abortType: 0
+  - nodeType: 3
+    firstChildIndex: -1
+    lastChildIndex: -1
+    methodName: BB_LogInt
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 3
+    fieldDataCount: 1
+    abortType: 0
+  - nodeType: 3
+    firstChildIndex: -1
+    lastChildIndex: -1
+    methodName: WaitSeconds
+    blackBoardTypeID: 0
+    fieldDataStartIndex: 4
+    fieldDataCount: 1
+    abortType: 0
+  runtimeNodeGuids:
+  - a4c219e3b444846488d06218b9085513
+  - 9428233c120be7b44b1030ded868e5b7
+  - c87110fa0a02f2e4f85b8248a6513e37
+  - 9428233c120be7b44b1030ded868e5b7/6fcce4ce5de6eb742b4dd7df8bb9a882
+  - 9428233c120be7b44b1030ded868e5b7/6fcce4ce5de6eb742b4dd7df8bb9a882/1557491f08ec881499f087cc0392443c
+  - 9428233c120be7b44b1030ded868e5b7/6fcce4ce5de6eb742b4dd7df8bb9a882/ba401020c1264204b9e43d2dcc66cdf4
+  - 9428233c120be7b44b1030ded868e5b7/6fcce4ce5de6eb742b4dd7df8bb9a882/cb2e29a88061f1c42aea96b5eb59014b
+  - 9428233c120be7b44b1030ded868e5b7/6fcce4ce5de6eb742b4dd7df8bb9a882/436815b5a353ec346b425a31f0366e41
+  runtimeFieldData:
+  - mode: 0
+    value: 1092616192
+  - mode: 1
+    value: 1
+  - mode: 0
+    value: 2
+  - mode: 1
+    value: 0
+  - mode: 0
+    value: 1073741824
+  blackboardDefinition: {fileID: -5829576759008386132}
+  maxTreeDepth: 4
+  sourceTreeGuid: 
+  sourceTree: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}

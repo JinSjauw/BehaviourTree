@@ -22,6 +22,9 @@ public class RuntimeBehaviourTreeAsset : ScriptableObject
 
     public int maxTreeDepth;
 
+    /// <summary>GUID of the source tree asset. Populated during bake. Used for matching tracked bindings in builds.</summary>
+    public string sourceTreeGuid;
+
 #if UNITY_EDITOR
     [HideInInspector] public UnityEngine.Object sourceTree;
 #endif

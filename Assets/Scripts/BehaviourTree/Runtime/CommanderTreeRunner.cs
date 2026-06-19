@@ -159,15 +159,14 @@ namespace BehaviourTree.Runtime
 
             initialized = true;
         }
+#if UNITY_EDITOR
 
         public Object GetSourceTree()
         {
             if (runtimeAsset != null && runtimeAsset.sourceTree != null) return runtimeAsset.sourceTree;
-#if UNITY_EDITOR
-            return authoringAsset;
-#else
-            return null;
-#endif
+            return authoringAsset ?? null;
         }
+#endif
+
     }
 }

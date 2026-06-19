@@ -32,6 +32,8 @@ GridBackground {
     background-color: rgb(58, 58, 58);
     color: rgb(190, 190, 190);
     border-bottom-width: 0;
+    flex-grow: 1;
+    width: auto;
 }
 
 .unity-tab-view__content-viewport {
@@ -44,6 +46,13 @@ GridBackground {
 }
 
 .unity-tab {
+    margin-top: 8px;
+    padding-top: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-left: 6px;
+    margin-right: 6px;
+    flex-grow: 1;
 }
 
 #GraphTitle {

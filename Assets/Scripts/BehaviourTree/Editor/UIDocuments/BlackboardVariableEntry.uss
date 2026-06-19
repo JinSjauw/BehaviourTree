@@ -19,28 +19,34 @@
 }
 
 .entry-name {
-    flex-shrink: 0;
+    flex-shrink: 1;
     margin-bottom: 2px;
+    flex-grow: 1;
+    overflow: hidden;
 }
 
 .entry-type {
-    flex-shrink: 0;
+    flex-shrink: 1;
     margin-bottom: 2px;
+    overflow: hidden;
 }
 
 .entry-stride {
-    flex-shrink: 0;
+    flex-shrink: 1;
     margin-bottom: 2px;
+    overflow: hidden;
 }
 
 .entry-value {
     flex-grow: 1;
     flex-shrink: 1;
     flex-direction: column;
+    min-height: 100%;
+    overflow: hidden;
 }
 
 .entry-delete {
-    width: 22px;
+    width: 20px;
     flex-shrink: 0;
     margin-left: 4px;
     background-color: rgb(240, 89, 95);
@@ -49,10 +55,10 @@
     border-right-color: rgb(217, 54, 68);
     border-top-color: rgb(217, 54, 68);
     border-bottom-color: rgb(217, 54, 68);
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-    border-bottom-left-radius: 2px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
     -unity-font-style: bold;
     border-top-width: 1px;
     border-right-width: 1px;

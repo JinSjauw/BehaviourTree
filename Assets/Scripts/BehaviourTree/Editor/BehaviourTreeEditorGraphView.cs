@@ -548,7 +548,6 @@ namespace BehaviourTree.Editor
             base.BuildContextualMenu(evt);
 
             Vector2 screenPosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
-            Debug.Log(screenPosition);
             evt.menu.InsertAction(0, $"Create Node", _ =>
             {
                 OpenNodeSearchAtScreenPosition(screenPosition);

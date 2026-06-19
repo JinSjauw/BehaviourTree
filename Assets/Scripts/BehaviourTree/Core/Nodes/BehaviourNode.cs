@@ -10,6 +10,7 @@ namespace BehaviourTree.Core
         [HideInInspector] public abstract BehaviourNodeType NodeType { get; }
         [HideInInspector] public int firstChildIndex;
         [HideInInspector] public int lastChildIndex;
+        [SerializeField] public string comment;
 
         [HideInInspector] public string guid;
         [HideInInspector] public Vector2 graphPosition;

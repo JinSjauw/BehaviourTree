@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TrackedBindingRow.uss?fileID=7433441132597879392&amp;guid=03be9d577f8804b43b4aec1060b97078&amp;type=3#TrackedBindingRow"/>
+    <ui:VisualElement name="binding-row" class="binding-row">
+        <ui:Label name="row-number" class="binding-row-num"/>
+        <ui:VisualElement name="component-member" class="binding-row-component">
+            <ui:Button name="component-member-button" class="component-member-button"/>
+        </ui:VisualElement>
+        <ui:Label text="→" class="binding-row-arrow"/>
+        <ui:VisualElement name="variable" class="binding-row-variable">
+            <ui:Button name="variable-button" class="variable-button"/>
+        </ui:VisualElement>
+        <ui:Button text="X" name="remove-button" class="binding-row-remove"/>
+    </ui:VisualElement>
+</ui:UXML>

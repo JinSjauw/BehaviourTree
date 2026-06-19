@@ -34,6 +34,20 @@ namespace BehaviourTree.Core
             return null;
         }
 
+        /// <summary>Gets the index of a variable by name. Returns -1 if not found.</summary>
+        public int GetVariableIndex(string variableName)
+        {
+            if (string.IsNullOrEmpty(variableName) || sharedVariables == null)
+                return -1;
+
+            for (int i = 0; i < sharedVariables.Count; i++)
+            {
+                if (sharedVariables[i].Name == variableName)
+                    return i;
+            }
+            return -1;
+        }
+
         /// <summary>Creates and adds a new variable of the given type.</summary>
         public BlackboardVariable<T> AddVariable<T>(string name, int stride = 1, T initialValue = default)
         {
