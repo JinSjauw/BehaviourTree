@@ -330,6 +330,9 @@ namespace BehaviourTree.Editor
             if (change.movedElements != null)
                 HandleElementsMoved(change.movedElements);
 
+            // Defer — edges/nodes aren't parented to the graph yet at this point
+            schedule.Execute(() => RefreshAllNodeIcons());
+
             return change;
         }
 
@@ -410,6 +413,7 @@ namespace BehaviourTree.Editor
         {
             BehaviourNodeView nodeView = new BehaviourNodeView(node);
             nodeView.OnNodeSelected = OnNodeSelected;
+            nodeView.GraphView = this;
             nodeView.layer = 0;
             return nodeView;
         }
@@ -592,6 +596,9 @@ namespace BehaviourTree.Editor
             CleanupAndCreateViews();
             CleanupAndWireEdges();
 
+            // Icons depend on edges being wired (parent traversal)
+            RefreshAllNodeIcons();
+
             if (tree.editorNotes != null)
             {
                 foreach (EditorNoteData noteData in tree.editorNotes)
@@ -633,6 +640,15 @@ namespace BehaviourTree.Editor
         {
             if (graphTitleLabel == null) return;
             graphTitleLabel.SetValueWithoutNotify(tree != null ? tree.name : "Behaviour Tree");
+        }
+
+        public void RefreshAllNodeIcons()
+        {
+            foreach (VisualElement child in graphElements.ToList())
+            {
+                if (child is BehaviourNodeView nodeView)
+                    nodeView.RefreshNodeIcons();
+            }
         }
 
         private void ClearAndRebuildViews()

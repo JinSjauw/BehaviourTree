@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: BB_LogInt
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: 
+  nodeName: BB_LogInt
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
   guid: cb2e29a88061f1c42aea96b5eb59014b
-  graphPosition: {x: 164.00012, y: 420}
+  graphPosition: {x: -0, y: 420}
   runtimeIndex: -1
   leafType: 3
   methodName: BB_LogInt
@@ -55,7 +55,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 436815b5a353ec346b425a31f0366e41
-  graphPosition: {x: 465.97012, y: 420}
+  graphPosition: {x: 221, y: 420}
   runtimeIndex: -1
   leafType: 3
   methodName: WaitSeconds
@@ -92,9 +92,9 @@ MonoBehaviour:
   nodesList:
   - {fileID: 9044277694249262304}
   - {fileID: 1455733442287262454}
-  - {fileID: 7770133189197741054}
   - {fileID: -6959408981744604765}
   - {fileID: -6672070987919359108}
+  - {fileID: 8764137446109216688}
   editorNotes: []
 --- !u!114 &1455733442287262454
 MonoBehaviour:
@@ -110,19 +110,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   nodeName: CompositeNode
   children:
-  - {fileID: 7770133189197741054}
+  - {fileID: 8764137446109216688}
   - {fileID: -6959408981744604765}
   - {fileID: -6672070987919359108}
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
   guid: 1557491f08ec881499f087cc0392443c
-  graphPosition: {x: 0, y: 200}
+  graphPosition: {x: 0, y: 210}
   runtimeIndex: -1
   compositeType: 1
   methodName: SEQUENCE
   fieldEntries: []
-  abortType: 3
+  abortType: 0
 --- !u!114 &5443998300010221992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,7 +159,7 @@ MonoBehaviour:
           Culture=neutral, PublicKeyToken=null
         singleValue: {fileID: 0}
         arrayValues: []
---- !u!114 &7770133189197741054
+--- !u!114 &8764137446109216688
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,13 +171,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: BB_CheckGameObject
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: LeafNode
+  nodeName: BB_CheckGameObject
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
-  guid: ba401020c1264204b9e43d2dcc66cdf4
-  graphPosition: {x: -140, y: 420}
+  guid: 010b58b4c9827104d97be783644fd4f0
+  graphPosition: {x: -210, y: 420}
   runtimeIndex: -1
   leafType: 2
   methodName: BB_CheckGameObject

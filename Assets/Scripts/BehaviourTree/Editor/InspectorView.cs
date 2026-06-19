@@ -76,6 +76,12 @@ public partial class InspectorView : VisualElement
                     customEditor.nodeNameChangedThisFrame = false;
                 }
 
+                if (editor is CustomNodeEditor customEditor2 && customEditor2.nodeVisualsChangedThisFrame)
+                {
+                    currentNodeView?.GraphView?.RefreshAllNodeIcons();
+                    customEditor2.nodeVisualsChangedThisFrame = false;
+                }
+
                 IsRenderingReadOnly = false;
                 CurrentProxyMappings = null;
                 if (isReadOnly) EditorGUI.EndDisabledGroup();

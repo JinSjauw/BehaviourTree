@@ -28,6 +28,12 @@ namespace BehaviourTree.Editor
         private TextField titleField;
         private Label subTitleLabel;
 
+        private VisualElement abortTypeIcon;
+        private VisualElement warningIcon;
+        private Label abortLabel;
+
+        public BehaviourTreeEditorGraphView GraphView { get; set; }
+
         public BehaviourNodeView(BehaviourNode nodeObject) : base(BehaviourTreeEditorPaths.GraphNodeViewUxml)
         {
             if (nodeObject == null) throw new ArgumentNullException(nameof(nodeObject));
@@ -45,6 +51,13 @@ namespace BehaviourTree.Editor
             // Cache debug visuals
             statusborder = this.Q<VisualElement>("status-border");
 
+            // Cache icon references
+            abortTypeIcon = this.Q<VisualElement>("abort-type-icon");
+            warningIcon = this.Q<VisualElement>("warning-icon");
+
+            // Create abort text label as child of abort icon
+            abortLabel = this.Q<Label>("abort-label");
+
             SetNodeColor();
             CreateInputPorts();
             CreateOutputPorts();
@@ -55,6 +68,8 @@ namespace BehaviourTree.Editor
                 capabilities &= ~(Capabilities.Movable | Capabilities.Selectable |Capabilities.Deletable | Capabilities.Copiable);
 
             RegisterCallback<MouseDownEvent>(OnNodeClicked);
+
+            RefreshNodeIcons();
         }
 
         private void OnNodeClicked(MouseDownEvent evt)
@@ -358,6 +373,127 @@ namespace BehaviourTree.Editor
                 };
 
                 statusborder.AddToClassList(nodeStatusClass);
+            }
+        }
+
+        // ── Node Icons ────────────────────────────────────────────────
+
+        public void RefreshNodeIcons()
+        {
+            RefreshAbortIcon();
+            RefreshWarningIcon();
+        }
+
+        private void RefreshAbortIcon()
+        {
+            if (abortTypeIcon == null) return;
+
+            // Case 1: Composite with non-None abort type
+            if (NodeSO is CompositeNode composite && composite.abortType != AbortType.None)
+            {
+                SetAbortIconActive(composite.abortType, GetAbortTypeTooltip(composite.abortType));
+                return;
+            }
+
+            // Case 2: Condition leaf participating in parent composite's abort
+            if (TryGetParentAbortType(out AbortType parentAbort))
+            {
+                SetAbortIconActive(parentAbort,
+                    "Conditional Abort: " + parentAbort + "\n" +
+                    "This condition is evaluated by the parent composite's abort logic.");
+                return;
+            }
+
+            // Case 3: Nothing to show
+            abortTypeIcon.style.display = DisplayStyle.None;
+            if (abortLabel != null) abortLabel.text = "";
+        }
+
+        private void SetAbortIconActive(AbortType type, string tooltip)
+        {
+            abortTypeIcon.style.display = DisplayStyle.Flex;
+
+            abortTypeIcon.style.backgroundColor = type switch
+            {
+                AbortType.Self          => new Color(0.38f, 0f, 1f),
+                AbortType.LowerPriority => new Color(0f, 0.78f, 1f),
+                AbortType.Both          => new Color(1f, 0f, 0.78f),
+                _                       => Color.gray,
+            };
+
+            if (abortLabel != null)
+            {
+                abortLabel.text = type switch
+                {
+                    AbortType.Self          => "S",
+                    AbortType.LowerPriority => "LP",
+                    AbortType.Both          => "B",
+                    _                       => "",
+                };
+            }
+
+            abortTypeIcon.tooltip = tooltip;
+        }
+
+        private static string GetAbortTypeTooltip(AbortType type)
+        {
+            return type switch
+            {
+                AbortType.Self =>
+                    "Conditional Abort: Self\nRe-evaluates own conditions each tick.",
+                AbortType.LowerPriority =>
+                    "Conditional Abort: Lower Priority\nChild composites may abort right-side siblings.",
+                AbortType.Both =>
+                    "Conditional Abort: Both\nSelf + Lower Priority combined.",
+                _ => "Conditional Abort: " + type,
+            };
+        }
+
+        private bool TryGetParentAbortType(out AbortType parentAbort)
+        {
+            parentAbort = AbortType.None;
+
+            if (NodeSO is not LeafNode leaf || leaf.NodeType != BehaviourNodeType.CONDITION)
+                return false;
+
+            BehaviourNodeView parentView = FindParentNodeView();
+            if (parentView == null || parentView.NodeSO is not CompositeNode parentComposite)
+                return false;
+
+            if (parentComposite.abortType == AbortType.None)
+                return false;
+
+            LeafNode firstCondition = NodeWarningEvaluator.GetFirstReachableCondition(parentComposite, parentComposite.abortType);
+            if (firstCondition != leaf) return false;
+
+            parentAbort = parentComposite.abortType;
+            return true;
+        }
+
+        private BehaviourNodeView FindParentNodeView()
+        {
+            if (GraphView == null) return null;
+            foreach (Edge edge in GraphView.edges.ToList())
+            {
+                if (edge.input?.node == this)
+                    return edge.output?.node as BehaviourNodeView;
+            }
+            return null;
+        }
+
+        private void RefreshWarningIcon()
+        {
+            if (warningIcon == null) return;
+
+            List<NodeWarning> warnings = NodeWarningEvaluator.Evaluate(NodeSO);
+            if (warnings.Count > 0)
+            {
+                warningIcon.style.display = DisplayStyle.Flex;
+                warningIcon.tooltip = NodeWarningEvaluator.BuildWarningTooltip(NodeSO);
+            }
+            else
+            {
+                warningIcon.style.display = DisplayStyle.None;
             }
         }
     }
