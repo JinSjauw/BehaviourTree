@@ -47,7 +47,7 @@ namespace BehaviourTree.Editor
             Rect totalRect = EditorGUILayout.GetControlRect();
             Rect fieldRect = EditorGUI.PrefixLabel(totalRect, new GUIContent("Subtree Asset"));
             UnityEngine.Object current = subTreeAssetProp.objectReferenceValue;
-            UnityEngine.Object next = EditorGUI.ObjectField(fieldRect, current, typeof(BehaviourTreeAsset), false);
+            UnityEngine.Object next = EditorGUI.ObjectField(fieldRect, current, typeof(BaseEditorTreeAsset), false);
             if (next != current)
             {
                 BehaviourTreeAssetBase candidate = next as BehaviourTreeAssetBase;
@@ -63,7 +63,7 @@ namespace BehaviourTree.Editor
                 }
             }
 
-            BehaviourTreeAsset subtreeAsset = subTreeAssetProp.objectReferenceValue as BehaviourTreeAsset;
+            BaseEditorTreeAsset subtreeAsset = subTreeAssetProp.objectReferenceValue as BaseEditorTreeAsset;
 
             if (subtreeAsset != null)
             {
@@ -232,10 +232,10 @@ namespace BehaviourTree.Editor
 
         private void CreateAndAssignNewSubtreeAsset()
         {
-            string path = EditorUtility.SaveFilePanelInProject("Create Subtree", "NewSubtree", "asset", "Create a new BehaviourTreeAsset for the subtree");
+            string path = EditorUtility.SaveFilePanelInProject("Create Subtree", "NewSubtree", "asset", "Create a new AgentTreeAsset for the subtree");
             if (string.IsNullOrEmpty(path)) return;
 
-            BehaviourTreeAsset subtreeAsset = CreateInstance<BehaviourTreeAsset>();
+            AgentTreeAsset subtreeAsset = CreateInstance<AgentTreeAsset>();
             subtreeAsset.name = System.IO.Path.GetFileNameWithoutExtension(path);
             AssetDatabase.CreateAsset(subtreeAsset, path);
 

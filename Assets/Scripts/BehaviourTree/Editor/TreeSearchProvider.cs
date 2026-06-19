@@ -21,7 +21,7 @@ namespace BehaviourTree.Editor
             var searchList = new List<SearchTreeEntry>();
             searchList.Add(new SearchTreeGroupEntry(new GUIContent("Behaviour Trees"), 0));
 
-            string[] guids = AssetDatabase.FindAssets("t:BehaviourTreeAsset");
+            string[] guids = AssetDatabase.FindAssets("t:AgentTreeAsset t:CommanderTreeAsset");
 
             if (guids.Length == 0)
             {
@@ -36,7 +36,7 @@ namespace BehaviourTree.Editor
                 foreach (string guid in guids)
                 {
                     string path = AssetDatabase.GUIDToAssetPath(guid);
-                    BehaviourTreeAsset asset = AssetDatabase.LoadAssetAtPath<BehaviourTreeAsset>(path);
+                    BaseEditorTreeAsset asset = AssetDatabase.LoadAssetAtPath<BaseEditorTreeAsset>(path);
                     if (asset == null) continue;
 
                     searchList.Add(new SearchTreeEntry(new GUIContent(asset.name, identationIcon))
@@ -52,7 +52,7 @@ namespace BehaviourTree.Editor
 
         public bool OnSelectEntry(SearchTreeEntry entry, SearchWindowContext context)
         {
-            if (entry.userData is BehaviourTreeAsset treeAsset)
+            if (entry.userData is BaseEditorTreeAsset treeAsset)
             {
                 Selection.activeObject = treeAsset;
                 AssetDatabase.OpenAsset(treeAsset);

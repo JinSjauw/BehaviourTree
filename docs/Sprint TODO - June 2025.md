@@ -14,7 +14,7 @@
 | 3 | Overhaul Graph Inspector UI | ✅ Done |
 | 4 | Commander Module UX Improvements | ⬜ Pending |
 | 5 | Commander Nodes (Hardcoded for Speed) | ⬜ Pending |
-| 6 | NodeView Visual Overhaul (UI Toolkit) | 🔄 In Progress |
+| 6 | NodeView Visual Overhaul (UI Toolkit) | ✅ Done |
 | 7 | Smooth Blackboard Add-Variable UI | ✅ Done |
 | 8 | Rewrite Node Palette | ⬜ Pending |
 | 9 | Bugs & Polish Before Playtest | 🔄 In Progress |
@@ -196,7 +196,8 @@
 - [ ] Animated transitions: running state pulse, abort flash, connection highlight animation
 - [ ] Ensure existing node interaction (drag, select, context menu, double-click) works on new visual elements
 - [ ] Backward compat: fallback to current visuals if UI Toolkit runtime not available
-- [ ] Abort type badge on composite nodes (e.g. "LP" for LowerPriority, "S" for Self)
+- [x] Abort type badge on composite nodes (e.g. "LP" for LowerPriority, "S" for Self) — also shows on leftmost condition leaf reachable by parent's conditional abort
+- [x] Warning icon on nodes with unassigned/missing variables or invalid abort config, with tooltip
 - [ ] Runtime status icon (separate element from border — idle/running/success/failure icon)
 
 ### 6.1 Graph Editor Notes (Sticky Notes) ✓

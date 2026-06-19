@@ -14,7 +14,7 @@ using System.IO;
 public class BehaviourTreeEditor : EditorWindow
 {
     private BehaviourTreeEditorGraphView treeGraphView;
-    
+
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
     private TrackedVariablesView trackedVariablesView;
@@ -24,8 +24,8 @@ public class BehaviourTreeEditor : EditorWindow
     private TreeSearchProvider treeSearchProvider;
 
     public static BlackboardDefinition currentBlackboardDef { get; private set; }
-    public static BehaviourTreeAsset currentTree { get; private set; }
-    public static TreeRunner currentRunner { get; private set; }
+    public static BaseEditorTreeAsset currentTree { get; private set; }
+    public static BehaviourTreeRunnerBase currentRunner { get; private set; }
 
     [MenuItem("BehaviourTree/Open Behaviour Tree Graph", priority = 29)]
     public static void OpenWindow()
@@ -39,7 +39,7 @@ public class BehaviourTreeEditor : EditorWindow
     [OnOpenAsset]
     public static bool OnOpenAsset(int instanceID, int line)
     {
-        if(Selection.activeObject is BehaviourTreeAsset)
+        if (Selection.activeObject is BaseEditorTreeAsset)
         {
             OpenWindow();
             return true;
@@ -50,7 +50,7 @@ public class BehaviourTreeEditor : EditorWindow
     public void CreateGUI()
     {
         VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.EditorUxml);
-        
+
         // Null check for UXML asset
         if (visualTree == null)
         {
@@ -93,12 +93,12 @@ public class BehaviourTreeEditor : EditorWindow
             Debug.LogError("Could not find InspectorView in UXML");
         }
 
-        if(blackBoardView == null)
+        if (blackBoardView == null)
         {
             Debug.LogError("Could not find BlackBoardView in UXML");
         }
 
-        if(assetBarMenu == null)
+        if (assetBarMenu == null)
         {
             Debug.LogError("Could not find AssetBarMenu in UXML");
         }
@@ -138,7 +138,7 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void SyncTree(DropdownMenuAction action)
     {
-        if(currentTree == null) return;
+        if (currentTree == null) return;
         currentTree.SyncNodesListFromAssets();
     }
 
@@ -157,15 +157,15 @@ public class BehaviourTreeEditor : EditorWindow
         menu.AppendAction("Create New Tree", CreateNewTree);
         menu.AppendSeparator();
 
-        // Populate Open Tree submenu with recent BehaviourTreeAsset files (last modified, limited to 15)
+        // Populate Open Tree submenu with recent AgentTreeAsset/CommanderTreeAsset files (last modified, limited to 15)
         const int maxRecentEntries = 5;
-        string[] guids = AssetDatabase.FindAssets("t:BehaviourTreeAsset");
+        string[] guids = AssetDatabase.FindAssets("t:AgentTreeAsset t:CommanderTreeAsset");
 
         var recentTrees = guids
             .Select(guid => new
             {
                 Path = AssetDatabase.GUIDToAssetPath(guid),
-                Asset = AssetDatabase.LoadAssetAtPath<BehaviourTreeAsset>(AssetDatabase.GUIDToAssetPath(guid))
+                Asset = AssetDatabase.LoadAssetAtPath<BaseEditorTreeAsset>(AssetDatabase.GUIDToAssetPath(guid))
             })
             .Where(t => t.Asset != null)
             .Select(t => new
@@ -178,7 +178,7 @@ public class BehaviourTreeEditor : EditorWindow
 
         foreach (var entry in recentTrees)
         {
-            BehaviourTreeAsset capturedAsset = entry.Asset;
+            BaseEditorTreeAsset capturedAsset = entry.Asset;
             menu.AppendAction("Open Tree/" + capturedAsset.name, _ =>
             {
                 Selection.activeObject = capturedAsset;
@@ -207,10 +207,10 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void CreateNewTree(DropdownMenuAction action)
     {
-        string path = EditorUtility.SaveFilePanelInProject("Create Behaviour Tree", "NewTree", "asset", "Create a new BehaviourTreeAsset");
+        string path = EditorUtility.SaveFilePanelInProject("Create Agent Tree", "NewTree", "asset", "Create a new AgentTreeAsset");
         if (string.IsNullOrEmpty(path)) return;
 
-        BehaviourTreeAsset treeAsset = CreateInstance<BehaviourTreeAsset>();
+        AgentTreeAsset treeAsset = CreateInstance<AgentTreeAsset>();
         treeAsset.name = System.IO.Path.GetFileNameWithoutExtension(path);
         AssetDatabase.CreateAsset(treeAsset, path);
 
@@ -226,7 +226,7 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void SaveTree(DropdownMenuAction action)
     {
-        if(currentTree == null) return;
+        if (currentTree == null) return;
         EditorUtility.SetDirty(currentTree);
         AssetDatabase.SaveAssets();
     }
@@ -236,21 +236,25 @@ public class BehaviourTreeEditor : EditorWindow
         treeGraphView?.RefreshDebugVisuals(currentRunner);
     }
 
-    private BehaviourTreeAsset OnSelectTree()
+    private BaseEditorTreeAsset OnSelectTree()
     {
         GameObject selected = Selection.activeGameObject;
 
-        if(selected != null && selected.TryGetComponent(out TreeRunner runner))
+        if (selected != null && selected.TryGetComponent(out BehaviourTreeRunnerBase runner))
         {
             currentRunner = runner;
-            trackedVariablesView?.Refresh(currentRunner);
 
-            return runner.GetSourceTree() as BehaviourTreeAsset;
+            if (runner is AgentTreeRunner agentRunner)
+                trackedVariablesView?.Refresh(agentRunner);
+            else
+                trackedVariablesView?.Refresh(null);
+
+            return runner.GetSourceTree() as BaseEditorTreeAsset;
         }
         else
         {
             trackedVariablesView?.Refresh(null);
-            return Selection.activeObject as BehaviourTreeAsset;
+            return Selection.activeObject as BaseEditorTreeAsset;
         }
     }
 
@@ -265,7 +269,7 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void BakeTree(DropdownMenuAction dropdownMenuAction)
     {
-        if(currentTree == null || currentBlackboardDef == null) return;
+        if (currentTree == null || currentBlackboardDef == null) return;
 
         Debug.Log("Baking Tree!");
 
@@ -273,15 +277,15 @@ public class BehaviourTreeEditor : EditorWindow
         runtimeAsset.name = currentTree.name + "_Runtime";
         runtimeAsset.sourceTree = currentTree;
 
-        runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.root, currentTree, 
-        ref runtimeAsset.runtimeNodeData, 
+        runtimeAsset.blackboardDefinition = TreeBaker.BakeTree(currentTree.root, currentTree,
+        ref runtimeAsset.runtimeNodeData,
         ref runtimeAsset.runtimeFieldData,
         ref runtimeAsset.boxedConstants,
         ref runtimeAsset.runtimeNodeGuids,
         out runtimeAsset.maxTreeDepth);
 
-        string path = $"Assets/{runtimeAsset.name}.asset";
-        AssetDatabase.CreateAsset(runtimeAsset, path);
+        string assetPath = $"Assets/{runtimeAsset.name}.asset";
+        AssetDatabase.CreateAsset(runtimeAsset, assetPath);
         if (runtimeAsset.blackboardDefinition != null)
         {
             runtimeAsset.blackboardDefinition.name = runtimeAsset.name + "_BB_Definition";
@@ -292,32 +296,38 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void OnSelectionChange()
     {
-        BehaviourTreeAsset selectedAsset = OnSelectTree();
+        BaseEditorTreeAsset selectedAsset = OnSelectTree();
 
-        if(selectedAsset == null) return;
+        if (selectedAsset == null) return;
 
         // Reset proxy flag when a different tree is selected
         if (selectedAsset != currentTree && treeGraphView != null) treeGraphView.DebugProxiesAreSetup = false;
 
         if (selectedAsset == currentTree)
         {
-            // In play mode, if proxies haven't been set up yet but a runner is now available,
-            // allow repopulation to set them up
-            if (!(EditorApplication.isPlaying
+            // Reconfigure tabs — runner type may have changed (agent ↔ commander)
+            // without the tree asset changing
+            ConfigureTabsForTreeType();
+
+            // If the runner is stale (destroyed, deselected, or scene changed),
+            // fall through to repopulate and reset state.
+            bool runnerIsStale = currentRunner == null;
+
+            // In play mode, allow repopulation to set up debug proxies
+            bool needsPlayModeRepop = EditorApplication.isPlaying
                 && treeGraphView != null
-                && !treeGraphView.DebugProxiesAreSetup
-                && currentRunner != null))
-            {
+                && !treeGraphView.DebugProxiesAreSetup;
+
+            if (!runnerIsStale && !needsPlayModeRepop)
                 return;
-            }
         }
 
         currentTree = selectedAsset;
-        
+
         // Refresh tracked variables view — the binding group depends on currentTree
         if (selectedAsset != null)
-            trackedVariablesView?.Refresh(currentRunner);
-        
+            trackedVariablesView?.Refresh(currentRunner as AgentTreeRunner);
+
         // Null check for tree asset before using it
         if (currentTree == null)
         {
@@ -325,19 +335,22 @@ public class BehaviourTreeEditor : EditorWindow
             treeGraphView?.ClearView();
             return;
         }
-        
-        if(!AssetDatabase.CanOpenAssetInEditor(currentTree.GetEntityId()))
+
+        if (!AssetDatabase.CanOpenAssetInEditor(currentTree.GetEntityId()))
         {
             return;
         }
 
-        if(currentTree.blackboardDefinition == null)
+        if (currentTree.blackboardDefinition == null)
         {
             currentTree.CreateBlackBoard();
         }
 
         currentBlackboardDef = null;
         currentBlackboardDef = currentTree?.blackboardDefinition;
+
+        // Configure tabs based on tree type
+        ConfigureTabsForTreeType();
 
         // Null check for graph view before using it
         if (treeGraphView != null)
@@ -354,6 +367,22 @@ public class BehaviourTreeEditor : EditorWindow
                 Debug.LogError($"Error populating view: {ex.Message}");
             }
         }
+    }
+
+    private void ConfigureTabsForTreeType()
+    {
+        if (tabView == null) return;
+
+        Tab commanderTab = tabView.Q<Tab>("CommanderTab");
+        if (commanderTab == null) return;
+
+        // Commander tab visibility depends on the selected runner, not the tree asset type.
+        // A CommanderTreeRunner may use an AgentTreeAsset while still needing
+        // the Commander tab (e.g., for squad bindings).
+        if (currentRunner is CommanderTreeRunner)
+            commanderTab.style.display = DisplayStyle.Flex;
+        else
+            commanderTab.style.display = DisplayStyle.None;
     }
 
     private void OnProjectChanged()
@@ -398,4 +427,3 @@ public class BehaviourTreeEditor : EditorWindow
         }
     }
 }
-

@@ -7,7 +7,7 @@ namespace BehaviourTree.Editor
     {
         private static AssetMoveResult OnWillMoveAsset(string oldPath, string newPath)
         {
-            if (AssetDatabase.LoadMainAssetAtPath(oldPath) is BehaviourTreeAsset so)
+            if (AssetDatabase.LoadMainAssetAtPath(oldPath) is AgentTreeAsset so)
             {
                 string oldName = System.IO.Path.GetFileNameWithoutExtension(oldPath);
                 string newName = System.IO.Path.GetFileNameWithoutExtension(newPath);

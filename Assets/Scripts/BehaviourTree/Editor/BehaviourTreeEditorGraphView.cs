@@ -17,7 +17,7 @@ namespace BehaviourTree.Editor
         public Action<BehaviourTreeEditorGraphView> onGraphDataChanged;
         public Action<BehaviourNodeView> OnNodeSelected;
         
-        private BehaviourTreeAsset tree;
+        private BaseEditorTreeAsset tree;
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
         private NodeSearchProvider searchWindow;
         private TextField graphTitleLabel;
@@ -183,6 +183,7 @@ namespace BehaviourTree.Editor
         {
             EnsureSearchWindow();
             if (tree == null) return;
+            searchWindow.currentTreeAsset = tree;
             SearchWindow.Open(new SearchWindowContext(mousePosition), searchWindow);
         }
 
@@ -582,7 +583,7 @@ namespace BehaviourTree.Editor
             }, _ => tree == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal);
         }
 
-        public void PopulateView(BehaviourTreeAsset tree)
+        public void PopulateView(BaseEditorTreeAsset tree)
         {
             if (!tree)
             {
@@ -610,11 +611,13 @@ namespace BehaviourTree.Editor
 
             if (EditorApplication.isPlaying && !debugProxiesAreSetup)
             {
-                TreeRunner runner = BehaviourTreeEditor.currentRunner;
+                BehaviourTreeRunnerBase runner = BehaviourTreeEditor.currentRunner;
                 if (runner != null)
                 {
                     runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);
                     debugProxiesAreSetup = true;
+                    // Proxy nodes need their abort/warning icons refreshed since they were created after initial icon pass
+                    RefreshAllNodeIcons();
                 }
             }
 
@@ -627,7 +630,7 @@ namespace BehaviourTree.Editor
             FrameAll();
         }
 
-        private void InitTree(BehaviourTreeAsset tree)
+        private void InitTree(BaseEditorTreeAsset tree)
         {
             this.tree = tree;
             RefreshTitle();
@@ -728,7 +731,7 @@ namespace BehaviourTree.Editor
             }
         }
     
-        public void RefreshDebugVisuals(TreeRunner runner)
+        public void RefreshDebugVisuals(BehaviourTreeRunnerBase runner)
         {
             runtimeDebugManager.RefreshDebugVisuals(runner, nodeViewDict);
         }
@@ -743,7 +746,7 @@ namespace BehaviourTree.Editor
             }
         }
 
-        // public void SetupRuntimeDebugProxies(TreeRunner runner)
+        // public void SetupRuntimeDebugProxies(BehaviourTreeRunnerBase runner)
         // {
         //     runtimeDebugManager.SetupDebugProxies(runner, nodeViewDict);    
         // }

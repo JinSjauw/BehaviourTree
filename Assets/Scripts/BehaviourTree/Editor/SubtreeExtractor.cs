@@ -17,7 +17,7 @@ namespace BehaviourTree.Editor
             this.graphView = graphView;
         }
 
-        public bool CanExtract(List<ISelectable> selection, BehaviourTreeAsset tree)
+        public bool CanExtract(List<ISelectable> selection, BaseEditorTreeAsset tree)
         {
             if (tree == null) return false;
             if (EditorApplication.isPlaying) return false;
@@ -33,7 +33,7 @@ namespace BehaviourTree.Editor
             return true;
         }
 
-        public void Extract(List<ISelectable> selection, BehaviourTreeAsset tree, Action<BehaviourTreeAsset> populateAction, bool deleteOriginals = true)
+        public void Extract(List<ISelectable> selection, BaseEditorTreeAsset tree, Action<BaseEditorTreeAsset> populateAction, bool deleteOriginals = true)
         {
             if (!CanExtract(selection, tree)) return;
 
@@ -49,14 +49,14 @@ namespace BehaviourTree.Editor
             HashSet<BehaviourNode> selectedNodes = new HashSet<BehaviourNode>(selectedViews.Select(node => node.NodeSO));
             List<BehaviourNode> rootCandidates = FindSelectionRootCandidates(selectedNodes, tree);
 
-            string path = EditorUtility.SaveFilePanelInProject("Create Subtree", "NewSubtree", "asset", "Create a new BehaviourTreeAsset for the subtree");
+            string path = EditorUtility.SaveFilePanelInProject("Create Subtree", "NewSubtree", "asset", "Create a new AgentTreeAsset for the subtree");
             if (string.IsNullOrEmpty(path)) return;
 
             Undo.IncrementCurrentGroup();
             int undoGroup = Undo.GetCurrentGroup();
             Undo.SetCurrentGroupName("(BTree) Extract Selection To Subtree");
 
-            BehaviourTreeAsset subtreeAsset = ScriptableObject.CreateInstance<BehaviourTreeAsset>();
+            AgentTreeAsset subtreeAsset = ScriptableObject.CreateInstance<AgentTreeAsset>();
             subtreeAsset.name = System.IO.Path.GetFileNameWithoutExtension(path);
             AssetDatabase.CreateAsset(subtreeAsset, path);
 
@@ -122,11 +122,11 @@ namespace BehaviourTree.Editor
                     subtreeRefNode.subTreeAsset = subtreeAsset;
                     tree.RegisterNode(subtreeRefNode);
 
-                    int childIdx = externalParent.children.IndexOf(replaceNode);
-                    if (childIdx >= 0)
+                    int childIndex = externalParent.children.IndexOf(replaceNode);
+                    if (childIndex >= 0)
                     {
                         Undo.RecordObject(externalParent, "(BTree) Replace Child");
-                        externalParent.children[childIdx] = subtreeRefNode;
+                        externalParent.children[childIndex] = subtreeRefNode;
                         EditorUtility.SetDirty(externalParent);
                     }
                 }
@@ -134,7 +134,7 @@ namespace BehaviourTree.Editor
                 {
                     SubtreeNode subtreeRefNode = (SubtreeNode)tree.CreateNode(typeof(SubtreeNode));
 
-                    if(rootCandidates.Count > 0)
+                    if (rootCandidates.Count > 0)
                     {
                         subtreeRefNode.graphPosition = rootCandidates[0].graphPosition;
                     }
@@ -162,7 +162,7 @@ namespace BehaviourTree.Editor
             populateAction(subtreeAsset);
         }
 
-        private List<BehaviourNode> FindSelectionRootCandidates(HashSet<BehaviourNode> selectedNodes, BehaviourTreeAsset tree)
+        private List<BehaviourNode> FindSelectionRootCandidates(HashSet<BehaviourNode> selectedNodes, BaseEditorTreeAsset tree)
         {
             List<BehaviourNode> candidates = new List<BehaviourNode>();
             foreach (BehaviourNode node in selectedNodes)
@@ -184,7 +184,7 @@ namespace BehaviourTree.Editor
             return candidates;
         }
 
-        private BehaviourNode FindFirstParentOutsideSelection(BehaviourNode childNode, HashSet<BehaviourNode> selectedNodes, BehaviourTreeAsset tree)
+        private BehaviourNode FindFirstParentOutsideSelection(BehaviourNode childNode, HashSet<BehaviourNode> selectedNodes, BaseEditorTreeAsset tree)
         {
             for (int i = 0; i < tree.nodesList.Count; i++)
             {
@@ -199,8 +199,8 @@ namespace BehaviourTree.Editor
 
         private static void CopyReferencedBlackboardVariables(
             Dictionary<BehaviourNode, BehaviourNode> cloneMap,
-            BehaviourTreeAsset sourceTree,
-            BehaviourTreeAsset subtreeAsset)
+            BaseEditorTreeAsset sourceTree,
+            BaseEditorTreeAsset subtreeAsset)
         {
             BlackboardDefinition sourceDef = sourceTree.blackboardDefinition;
             BlackboardDefinition destDef = subtreeAsset.blackboardDefinition;
@@ -238,7 +238,7 @@ namespace BehaviourTree.Editor
             EditorUtility.SetDirty(destDef);
         }
 
-        private BehaviourNode CloneNodeIntoAsset(BehaviourNode src, BehaviourTreeAsset destination)
+        private BehaviourNode CloneNodeIntoAsset(BehaviourNode src, BaseEditorTreeAsset destination)
         {
             BehaviourNode dst;
             if (src is LeafNode leaf)

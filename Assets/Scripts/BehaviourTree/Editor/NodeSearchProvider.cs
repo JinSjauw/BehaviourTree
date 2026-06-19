@@ -20,6 +20,9 @@ namespace BehaviourTree.Editor
         private Port pendingConnectionPort;
         private Texture2D identationIcon;
 
+        /// <summary>Set before opening the search window to enable per-tree-type node filtering.</summary>
+        public BaseEditorTreeAsset currentTreeAsset;
+
         private void OnDestroy()
         {
             if (identationIcon != null)

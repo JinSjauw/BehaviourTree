@@ -10,19 +10,10 @@ namespace BehaviourTree.Runtime
     /// then evaluates the commander tree against the shared commander BB.
     /// </summary>
     [RequireComponent(typeof(BlackBoard))]
-    public class CommanderTreeRunner : MonoBehaviour
+    public class CommanderTreeRunner : BehaviourTreeRunnerBase
     {
-        [SerializeField] private BlackBoard commanderBB;
-        [SerializeField] private RuntimeBehaviourTreeAsset runtimeAsset;
-        [SerializeField] private List<TreeRunner> registeredAgents = new List<TreeRunner>();
-#if UNITY_EDITOR
-        [SerializeField] private BehaviourTreeAssetBase authoringAsset;
-#endif
-
-        private TreeEvaluator evaluator;
-        private RuntimeDebugProvider debugProvider;
+        [SerializeField] private List<AgentTreeRunner> registeredAgents = new List<AgentTreeRunner>();
         private CommanderBindingBridge[] cachedBridges;
-        private bool initialized = false;
 
         private void Start()
         {
@@ -31,7 +22,7 @@ namespace BehaviourTree.Runtime
 
         private void Update()
         {
-            if (evaluator == null || commanderBB == null) return;
+            if (evaluator == null || blackBoard == null) return;
 
             TickAgents();
             EvaluateCommander();
@@ -47,7 +38,7 @@ namespace BehaviourTree.Runtime
 
             for (int i = 0; i < registeredAgents.Count; i++)
             {
-                TreeRunner agent = registeredAgents[i];
+                AgentTreeRunner agent = registeredAgents[i];
                 CommanderBindingBridge bridge = cachedBridges[i];
                 if (agent == null) continue;
 
@@ -70,7 +61,7 @@ namespace BehaviourTree.Runtime
         /// </summary>
         private void EvaluateCommander()
         {
-            evaluator.Evaluate(commanderBB);
+            evaluator.Evaluate(blackBoard);
 
             if (debugProvider != null)
             {
@@ -80,70 +71,13 @@ namespace BehaviourTree.Runtime
             }
         }
 
-        private void OnDestroy()
+        protected override void OnPostInitialize()
         {
-            if (runtimeAsset == null) return;
-            Destroy(runtimeAsset);
-            runtimeAsset = null;
-        }
-
-        private void OnDisable()
-        {
-            initialized = false;
-        }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (runtimeAsset != null)
-            {
-                commanderBB?.BuildSerializedReferences(runtimeAsset.blackboardDefinition);
-            }
-            else
-            {
-                BehaviourTreeAssetBase authoring = authoringAsset as BehaviourTreeAssetBase;
-                if (authoring != null)
-                {
-                    commanderBB?.BuildSerializedReferences(authoring.BlackboardDefinition);
-                }
-            }
-
-            if (runtimeAsset == null && authoringAsset == null)
-            {
-                commanderBB?.ClearSerializedReferences();
-            }
-        }
-#endif
-        public void Initialize()
-        {
-            if (initialized) return;
-
-            runtimeAsset = RuntimeAssetHelper.GetOrBake(runtimeAsset,
-#if UNITY_EDITOR
-                authoringAsset,
-#else
-                null,
-#endif
-                "CommanderTreeRunner");
-            if (runtimeAsset == null) return;
-
-            if (commanderBB == null)
-            {
-                Debug.LogError("[CommanderTreeRunner] Commander BlackBoard is null.");
-                return;
-            }
-
-            commanderBB.Initialize(runtimeAsset.blackboardDefinition);
-            evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.boxedConstants, runtimeAsset.maxTreeDepth);
-
-            debugProvider = GetComponent<RuntimeDebugProvider>();
-            if (debugProvider == null) debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();
-
             // Disable independent update on registered agents — we tick them manually
             cachedBridges = new CommanderBindingBridge[registeredAgents.Count];
             for (int i = 0; i < registeredAgents.Count; i++)
             {
-                TreeRunner agent = registeredAgents[i];
+                AgentTreeRunner agent = registeredAgents[i];
                 if (agent != null)
                 {
                     agent.Initialize(); // Ensure agent BB is initialized before resolving bridge
@@ -156,17 +90,6 @@ namespace BehaviourTree.Runtime
                     }
                 }
             }
-
-            initialized = true;
         }
-#if UNITY_EDITOR
-
-        public Object GetSourceTree()
-        {
-            if (runtimeAsset != null && runtimeAsset.sourceTree != null) return runtimeAsset.sourceTree;
-            return authoringAsset ?? null;
-        }
-#endif
-
     }
 }

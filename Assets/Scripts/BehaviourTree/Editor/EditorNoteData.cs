@@ -5,7 +5,7 @@ namespace BehaviourTree.Editor
 {
     /// <summary>
     /// Serialized data for a graph editor note.
-    /// Stored on the BehaviourTreeAsset and restored on graph load.
+    /// Stored on the BaseEditorTreeAsset and restored on graph load.
     /// </summary>
     [Serializable]
     public class EditorNoteData

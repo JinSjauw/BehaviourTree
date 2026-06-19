@@ -28,7 +28,7 @@ namespace BehaviourTree.Runtime
     /// Tick order:
     ///   1. PushDataProviders()        – components write to self BB
     ///   2. CopyCommanderToAgent()     – commander BB → self BB (role, target, etc.)
-    ///   3. TreeRunner.Evaluate()      – agent tree reads self BB
+    ///   3. AgentTreeRunner.Evaluate()      — agent tree reads self BB
     ///   4. CopyAgentToCommander()     – self BB → commander BB (health, position, etc.)
     /// </summary>
     public class CommanderBindingBridge : MonoBehaviour

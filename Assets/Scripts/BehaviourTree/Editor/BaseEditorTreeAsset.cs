@@ -1,0 +1,244 @@
+using System;
+using System.Collections.Generic;
+using BehaviourTree.Core;
+using UnityEditor;
+using UnityEngine;
+
+namespace BehaviourTree.Editor
+{
+    /// <summary>
+    /// Shared base class for agent and commander tree assets.
+    /// Contains all editor node management logic.
+    /// </summary>
+    public abstract class BaseEditorTreeAsset : BehaviourTreeAssetBase
+    {
+        [HideInInspector] public List<BehaviourNode> nodesList;
+        [HideInInspector] public List<EditorNoteData> editorNotes = new();
+
+        public abstract void CreateBlackBoard();
+
+        public void Initialize()
+        {
+            if (root == null)
+            {
+                Debug.LogError("Root node is null!");
+                return;
+            }
+
+            nodesList = new List<BehaviourNode> { root };
+
+            for (int i = 0; i < root.children.Count; i++)
+            {
+                BehaviourNode nodeCopy = Instantiate(root.children[i]);
+
+                root.children[i] = nodeCopy;
+                nodesList.Add(nodeCopy);
+
+                for (int j = 0; j < nodeCopy.children.Count; j++)
+                {
+                    BehaviourNode childCopy = Instantiate(nodeCopy.children[j]);
+                    nodeCopy.children[j] = childCopy;
+                    nodesList.Add(childCopy);
+                }
+            }
+        }
+
+        public BehaviourNode CreateNode(Type type)
+        {
+            BehaviourNode node = (BehaviourNode)CreateInstance(type);
+            node.name = type.Name;
+            node.nodeName = type.Name;
+            node.guid = GUID.Generate().ToString();
+
+            return node;
+        }
+
+        public void RegisterNode(BehaviourNode node)
+        {
+            if (node == null) return;
+
+            Undo.RecordObject(this, "(BTree) Register Node");
+            nodesList.Add(node);
+
+            AssetDatabase.AddObjectToAsset(node, this);
+            Undo.RegisterCreatedObjectUndo(node, "(BTree) Register Node");
+
+            EditorUtility.SetDirty(this);
+        }
+
+        public bool NeedsNodesListSync()
+        {
+            if (nodesList == null) return true;
+
+            HashSet<BehaviourNode> nodeSet = new HashSet<BehaviourNode>();
+            HashSet<string> guidSet = new HashSet<string>();
+
+            for (int i = 0; i < nodesList.Count; i++)
+            {
+                BehaviourNode node = nodesList[i];
+                if (node == null) return true;
+
+                if (!nodeSet.Add(node)) return true;
+
+                string key = !string.IsNullOrEmpty(node.guid) ? node.guid : node.GetInstanceID().ToString();
+                if (!guidSet.Add(key)) return true;
+            }
+
+            if (root != null && !nodeSet.Contains(root)) return true;
+
+            for (int i = 0; i < nodesList.Count; i++)
+            {
+                BehaviourNode node = nodesList[i];
+                if (node == null) continue;
+
+                List<BehaviourNode> children = node.children;
+                if (children == null) continue;
+
+                for (int j = 0; j < children.Count; j++)
+                {
+                    BehaviourNode child = children[j];
+                    if (child == null) continue;
+                    if (!nodeSet.Contains(child)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void SyncNodesListFromAssets()
+        {
+            string path = AssetDatabase.GetAssetPath(this);
+            if (string.IsNullOrEmpty(path)) return;
+
+            UnityEngine.Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
+            if (assets == null || assets.Length == 0) return;
+
+            List<BehaviourNode> found = new List<BehaviourNode>();
+            HashSet<string> seen = new HashSet<string>();
+
+            for (int i = 0; i < assets.Length; i++)
+            {
+                if (assets[i] is not BehaviourNode node) continue;
+
+                string key = !string.IsNullOrEmpty(node.guid) ? node.guid : node.GetInstanceID().ToString();
+                if (!seen.Add(key)) continue;
+
+                found.Add(node);
+            }
+
+            if (root != null)
+            {
+                for (int i = found.Count - 1; i >= 0; i--)
+                {
+                    if (found[i] == root)
+                        found.RemoveAt(i);
+                }
+                found.Insert(0, root);
+            }
+
+            if (found.Count > 1)
+            {
+                int startIndex = root != null ? 1 : 0;
+                List<BehaviourNode> rest = new List<BehaviourNode>();
+                for (int i = startIndex; i < found.Count; i++)
+                    rest.Add(found[i]);
+
+                rest.Sort((a, b) =>
+                {
+                    int cmp = a.graphPosition.y.CompareTo(b.graphPosition.y);
+                    if (cmp != 0) return cmp;
+                    cmp = a.graphPosition.x.CompareTo(b.graphPosition.x);
+                    if (cmp != 0) return cmp;
+                    cmp = string.CompareOrdinal(a.name, b.name);
+                    if (cmp != 0) return cmp;
+                    return string.CompareOrdinal(a.guid, b.guid);
+                });
+
+                int write = startIndex;
+                for (int i = 0; i < rest.Count; i++)
+                    found[write++] = rest[i];
+            }
+
+            bool changed = nodesList == null || nodesList.Count != found.Count;
+            if (!changed && nodesList != null)
+            {
+                for (int i = 0; i < found.Count; i++)
+                {
+                    if (nodesList[i] != found[i])
+                    {
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!changed) return;
+
+            Undo.RecordObject(this, "(BTree) Sync Nodes");
+            nodesList = found;
+            EditorUtility.SetDirty(this);
+        }
+
+        public void DeleteNode(BehaviourNode node)
+        {
+            Undo.RecordObject(this, "(BTree) Delete Node");
+            nodesList.Remove(node);
+            Undo.DestroyObjectImmediate(node);
+        }
+
+        public void AddChild(BehaviourNode parent, BehaviourNode child)
+        {
+            if (parent.NodeType != BehaviourNodeType.ACTION && parent.NodeType != BehaviourNodeType.CONDITION)
+            {
+                if (child.NodeType == BehaviourNodeType.ROOT)
+                {
+                    Debug.LogError("ROOT NODE CANNOT BE CHILD!");
+                    return;
+                }
+
+                if (!parent.children.Contains(child))
+                {
+                    if (!nodesList.Contains(child))
+                    {
+                        RegisterNode(child);
+                    }
+
+                    Undo.RecordObject(parent, "(BTree) Add Child");
+                    parent.children.Add(child);
+                    EditorUtility.SetDirty(parent);
+                }
+                else
+                {
+                    Debug.LogWarning("Parent already contains child!");
+                }
+            }
+        }
+
+        public void RemoveChild(BehaviourNode parent, BehaviourNode child)
+        {
+            if (parent.children.Contains(child))
+            {
+                Undo.RecordObject(parent, "(BTree) Remove Child");
+                parent.children.Remove(child);
+                EditorUtility.SetDirty(parent);
+            }
+            else
+            {
+                Debug.LogWarning("Parent does not contain child");
+            }
+        }
+
+        public void ClearNodes()
+        {
+            for (int i = 0; i < nodesList.Count; i++)
+            {
+                Destroy(nodesList[i]);
+            }
+
+            Destroy(root);
+
+            root = null;
+            nodesList.Clear();
+        }
+    }
+}

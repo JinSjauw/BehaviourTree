@@ -8,7 +8,7 @@ namespace BehaviourTree.Runtime
 {
     /// <summary>
     /// Serializable binding that maps a component field/property to a blackboard variable.
-    /// Persisted on the TreeRunner component. At runtime, the TreeRunner resolves the
+    /// Persisted on the AgentTreeRunner component. At runtime, the AgentTreeRunner resolves the
     /// member info and variable index once, then pushes the value each frame.
     /// </summary>
     [Serializable]

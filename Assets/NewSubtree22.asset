@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: BB_LogInt
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: BB_LogInt
+  nodeName: WOW
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
     isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: testInt2
+    variableName: 
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     intValue: 0
     floatValue: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: WaitSeconds
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: 
+  nodeName: WaitSeconds
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
@@ -122,7 +122,7 @@ MonoBehaviour:
   compositeType: 1
   methodName: SEQUENCE
   fieldEntries: []
-  abortType: 0
+  abortType: 3
 --- !u!114 &5443998300010221992
 MonoBehaviour:
   m_ObjectHideFlags: 0

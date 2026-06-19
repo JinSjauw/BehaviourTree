@@ -7,7 +7,7 @@ namespace BehaviourTree.Editor
     {
         private static readonly Dictionary<BehaviourTreeAssetBase, HashSet<BehaviourTreeAssetBase>> reachableCache = new();
 
-        public static bool WouldCreateCycle(BehaviourTreeAssetBase candidateSubtree, BehaviourTreeAsset parentTree)
+        public static bool WouldCreateCycle(BehaviourTreeAssetBase candidateSubtree, BaseEditorTreeAsset parentTree)
         {
             if (candidateSubtree == null || parentTree == null) return false;
             if (candidateSubtree == parentTree) return true;
@@ -27,7 +27,7 @@ namespace BehaviourTree.Editor
 
         private static void BuildReachableSet(BehaviourTreeAssetBase asset, HashSet<BehaviourTreeAssetBase> result)
         {
-            if (asset is not BehaviourTreeAsset editorAsset || editorAsset.nodesList == null) return;
+            if (asset is not BaseEditorTreeAsset editorAsset || editorAsset.nodesList == null) return;
 
             for (int i = 0; i < editorAsset.nodesList.Count; i++)
             {

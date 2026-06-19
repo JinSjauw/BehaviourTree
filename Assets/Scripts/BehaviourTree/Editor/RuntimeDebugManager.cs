@@ -21,12 +21,12 @@ namespace BehaviourTree.Editor
         private readonly HashSet<string> replacedSubtreeGuids = new HashSet<string>();
         private readonly List<BehaviourNodeView> hiddenSubtreeViews = new List<BehaviourNodeView>();
 
-        private readonly Dictionary<BehaviourTreeAsset, Dictionary<string, BehaviourNode>> authoringNodeLookupCache;
+        private readonly Dictionary<BaseEditorTreeAsset, Dictionary<string, BehaviourNode>> authoringNodeLookupCache;
 
         public RuntimeDebugManager(BehaviourTreeEditorGraphView graphView)
         {
             this.graphView = graphView;
-            authoringNodeLookupCache = new Dictionary<BehaviourTreeAsset, Dictionary<string, BehaviourNode>>();
+            authoringNodeLookupCache = new Dictionary<BaseEditorTreeAsset, Dictionary<string, BehaviourNode>>();
         }
 
         public void ClearCaches()
@@ -41,7 +41,7 @@ namespace BehaviourTree.Editor
             authoringNodeLookupCache.Clear();
         }
 
-        public void SetupDebugProxies(TreeRunner runner, Dictionary<string, BehaviourNodeView> nodeViewDict)
+        public void SetupDebugProxies(BehaviourTreeRunnerBase runner, Dictionary<string, BehaviourNodeView> nodeViewDict)
         {
             if (runner == null) return;
 
@@ -54,7 +54,7 @@ namespace BehaviourTree.Editor
             ReplaceSubtreeNodesWithRootProxies(nodeViewDict);
         }
 
-        public void RefreshDebugVisuals(TreeRunner runner, Dictionary<string, BehaviourNodeView> nodeViewDict)
+        public void RefreshDebugVisuals(BehaviourTreeRunnerBase runner, Dictionary<string, BehaviourNodeView> nodeViewDict)
         {
             if (runner == null) return;
 
@@ -205,6 +205,7 @@ namespace BehaviourTree.Editor
                 return null;
 
             BehaviourNodeView proxy = new BehaviourNodeView(targetNode);
+            proxy.GraphView = graphView;
             proxy.capabilities &= ~(Capabilities.Movable | Capabilities.Deletable | Capabilities.Copiable);
             proxy.IsReadOnlyProxy = true;
             proxy.OnNodeSelected = graphView.OnNodeSelected;
@@ -317,7 +318,7 @@ namespace BehaviourTree.Editor
         private bool TryGetAuthoringNodeByGuid(BehaviourTreeAssetBase authoring, string guid, out BehaviourNode resultNode)
         {
             resultNode = null;
-            if (authoring is not BehaviourTreeAsset treeAsset) return false;
+            if (authoring is not BaseEditorTreeAsset treeAsset) return false;
             if (treeAsset.nodesList == null) return false;
 
             if (!authoringNodeLookupCache.TryGetValue(treeAsset, out Dictionary<string, BehaviourNode> map) || map == null)
@@ -384,8 +385,9 @@ namespace BehaviourTree.Editor
                             subRoot = subRoot.children[0];
                         if (subRoot != null)
                         {
-                            string rootChildGuid = directChildGuid + "/" + subRoot.guid;
-                            TryAddProxyEdge(runtimeGuid, rootChildGuid);
+                            string rootChildGuid = scopePrefix + "/" + subRoot.guid;
+                            if (proxyNodeViews.ContainsKey(rootChildGuid))
+                                TryAddProxyEdge(runtimeGuid, rootChildGuid);
                         }
                     }
                     else

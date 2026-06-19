@@ -22,7 +22,7 @@ public partial class TrackedVariablesView : VisualElement
     private Label emptyStateLabel;
 
     // ── State ────────────────────────────────────────────────
-    private TreeRunner currentRunner;
+    private AgentTreeRunner currentRunner;
     private List<TrackedBinding> activeBindings;
     private List<TrackedBinding> displayBindings = new();
 
@@ -68,18 +68,18 @@ public partial class TrackedVariablesView : VisualElement
         if (addBindingFromSceneButton != null) addBindingFromSceneButton.clicked += OnAddBindingFromSceneClicked;
         if (sceneAddButton != null) sceneAddButton.clicked += OnSceneAddClicked;
 
-        ShowEmptyState("Select a GameObject with a TreeRunner in the scene.");
+        ShowEmptyState("Select a GameObject with an AgentTreeRunner in the scene.");
     }
 
     // ── Public API ───────────────────────────────────────────
 
-    public void Refresh(TreeRunner runner)
+    public void Refresh(AgentTreeRunner runner)
     {
         currentRunner = runner;
 
         if (currentRunner == null)
         {
-            ShowEmptyState("Select a GameObject with a TreeRunner in the scene.");
+            ShowEmptyState("Select a GameObject with an AgentTreeRunner in the scene.");
             return;
         }
 
@@ -103,7 +103,7 @@ public partial class TrackedVariablesView : VisualElement
     /// Finds the TrackedBindingGroup that matches the currently open tree asset.
     /// Matches by GUID first, then by direct reference (fallback for old data).
     /// </summary>
-    private static List<TrackedBinding> ResolveActiveBindingGroup(TreeRunner runner)
+    private static List<TrackedBinding> ResolveActiveBindingGroup(AgentTreeRunner runner)
     {
         if (runner == null || runner.trackedBindingGroups == null)
             return null;
@@ -132,7 +132,7 @@ public partial class TrackedVariablesView : VisualElement
     /// Gets or creates the TrackedBindingGroup for the currently open tree asset.
     /// Populates the GUID on creation for build-time matching.
     /// </summary>
-    private static TrackedBindingGroup GetOrCreateActiveGroup(TreeRunner runner)
+    private static TrackedBindingGroup GetOrCreateActiveGroup(AgentTreeRunner runner)
     {
         if (runner == null || runner.trackedBindingGroups == null)
             return null;

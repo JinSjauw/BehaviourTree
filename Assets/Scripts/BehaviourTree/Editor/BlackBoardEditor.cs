@@ -33,7 +33,7 @@ namespace BehaviourTree.Editor
             BlackboardDefinition definition = blackboard.Definition;
             if (definition == null)
             {
-                EditorGUILayout.HelpBox("No BlackboardDefinition found. Assign tree asset to TreeRunner", MessageType.Info);
+                EditorGUILayout.HelpBox("No BlackboardDefinition found. Assign tree asset to AgentTreeRunner", MessageType.Info);
                 return;
             }
 

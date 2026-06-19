@@ -26,7 +26,7 @@ namespace BehaviourTree.Editor
         {
             this.graphView = graphView;
 
-            if(clipBoard == null)
+            if (clipBoard == null)
             {
                 clipBoard = new ClipBoardData();
             }
@@ -83,7 +83,7 @@ namespace BehaviourTree.Editor
         }
 
         //Paste
-        public void PasteNodes(BehaviourTreeAsset treeAsset)
+        public void PasteNodes(BaseEditorTreeAsset treeAsset)
         {
             if (clipBoard.nodeDatas.Count == 0) return;
 
@@ -107,10 +107,10 @@ namespace BehaviourTree.Editor
                 guidMap[serializedNode.guid] = newGuid;
 
                 BehaviourNode newNode = CreateNodeDataFromSerialized(serializedNode, treeAsset);
-                if(newNode == null) 
+                if (newNode == null)
                 {
                     Debug.LogWarning($"Failed to create node from serialized data for GUID {serializedNode.guid}");
-                    continue; 
+                    continue;
                 }
 
                 newNode.guid = newGuid;
@@ -118,7 +118,7 @@ namespace BehaviourTree.Editor
 
                 BehaviourNodeView nodeView = graphView.CreateNodeView(newNode);
 
-                if(!pastedViews.Contains(nodeView))
+                if (!pastedViews.Contains(nodeView))
                 {
                     pastedViews.Add(nodeView);
                 }
@@ -170,7 +170,7 @@ namespace BehaviourTree.Editor
             return JsonUtility.ToJson(clipBoard, prettyPrint: false);
         }
 
-        private BehaviourNode CreateNodeDataFromSerialized(SerializedNodeData data, BehaviourTreeAsset treeAsset)
+        private BehaviourNode CreateNodeDataFromSerialized(SerializedNodeData data, BaseEditorTreeAsset treeAsset)
         {
             //Instantiate correct node type based on data.nodeType
             BehaviourNode node = null;
@@ -209,15 +209,15 @@ namespace BehaviourTree.Editor
                     subtreeNode.bindings = data.bindings ?? new List<SubtreeBinding>();
                     if (!string.IsNullOrEmpty(data.subtreeAssetGUID))
                     {
-                        string path = AssetDatabase.GUIDToAssetPath(data.subtreeAssetGUID);
-                        subtreeNode.subTreeAsset = AssetDatabase.LoadAssetAtPath<BehaviourTreeAssetBase>(path);
+                        string assetPath = AssetDatabase.GUIDToAssetPath(data.subtreeAssetGUID);
+                        subtreeNode.subTreeAsset = AssetDatabase.LoadAssetAtPath<BehaviourTreeAssetBase>(assetPath);
                     }
                     node = subtreeNode;
                     break;
                 default:
                     return null;
             }
-            
+
             treeAsset.RegisterNode(node);
 
             return node;
@@ -245,21 +245,21 @@ namespace BehaviourTree.Editor
                 graphPosition = node.graphPosition
             };
 
-            if(node.NodeType == BehaviourNodeType.ACTION || node.NodeType == BehaviourNodeType.CONDITION)
+            if (node.NodeType == BehaviourNodeType.ACTION || node.NodeType == BehaviourNodeType.CONDITION)
             {
                 LeafNode actionNode = (LeafNode)node;
                 serializedNode.methodName = actionNode.methodName;
                 serializedNode.fieldEntries = actionNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = actionNode.BlackBoardTypeID;
             }
-            else if(node.NodeType == BehaviourNodeType.DECORATOR)
+            else if (node.NodeType == BehaviourNodeType.DECORATOR)
             {
                 DecoratorNode decoratorNode = (DecoratorNode)node;
                 serializedNode.methodName = decoratorNode.methodName;
                 serializedNode.fieldEntries = decoratorNode.fieldEntries;
                 serializedNode.BlackBoardTypeID = decoratorNode.BlackBoardTypeID;
             }
-            else if(node.NodeType == BehaviourNodeType.COMPOSITE)
+            else if (node.NodeType == BehaviourNodeType.COMPOSITE)
             {
                 CompositeNode compositeNode = (CompositeNode)node;
                 serializedNode.methodName = compositeNode.methodName;
@@ -272,11 +272,11 @@ namespace BehaviourTree.Editor
                 serializedNode.bindings = subtreeNode.bindings != null ? new List<SubtreeBinding>(subtreeNode.bindings) : new List<SubtreeBinding>();
                 if (subtreeNode.subTreeAsset != null)
                 {
-                    string path = AssetDatabase.GetAssetPath(subtreeNode.subTreeAsset);
-                    serializedNode.subtreeAssetGUID = AssetDatabase.AssetPathToGUID(path);
+                    string assetPath = AssetDatabase.GetAssetPath(subtreeNode.subTreeAsset);
+                    serializedNode.subtreeAssetGUID = AssetDatabase.AssetPathToGUID(assetPath);
                 }
             }
-            
+
             return serializedNode;
         }
 

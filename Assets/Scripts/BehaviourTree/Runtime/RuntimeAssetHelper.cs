@@ -6,7 +6,7 @@ namespace BehaviourTree.Runtime
     /// <summary>
     /// Shared logic for resolving a RuntimeBehaviourTreeAsset from either
     /// an authoring asset (editor bake) or a pre-baked runtime asset (build).
-    /// Used by both TreeRunner and CommanderTreeRunner.
+    /// Used by both AgentTreeRunner and CommanderTreeRunner.
     /// </summary>
     public static class RuntimeAssetHelper
     {
@@ -20,7 +20,7 @@ namespace BehaviourTree.Runtime
         public static RuntimeBehaviourTreeAsset GetOrBake(
             RuntimeBehaviourTreeAsset existing,
             BehaviourTreeAssetBase authoringAsset,
-            string logContext = "TreeRunner")
+            string logContext = "AgentTreeRunner")
         {
             if (existing == null)
             {

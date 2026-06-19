@@ -67,6 +67,12 @@ namespace BehaviourTree.Editor
             }
             if (!anyVariableField) return;
 
+            // Skip variable validation for nodes from subtrees — their blackboard
+            // is a separate asset potentially not loaded in the current editor context.
+            BaseEditorTreeAsset currentTree = BehaviourTreeEditor.currentTree;
+            if (currentTree != null && currentTree.nodesList != null && !currentTree.nodesList.Contains(node))
+                return;
+
             if (blackBoardDef == null)
             {
                 warnings.Add(new NodeWarning
@@ -105,15 +111,17 @@ namespace BehaviourTree.Editor
                     continue;
                 }
 
-                bool found = false;
-                for (int j = 0; j < allVars.Count; j++)
+                // Search the tree's own blackboard and, if present, the commander blackboard.
+                // Shared/commander variables live in the commander BB, not the tree's own BB.
+                bool found = IsVariableInBlackboard(entry.variableName, blackBoardDef);
+
+                if (!found)
                 {
-                    if (allVars[j].Name == entry.variableName)
-                    {
-                        found = true;
-                        break;
-                    }
+                    BlackboardDefinition commanderDef = BehaviourTreeEditor.currentTree?.CommanderBlackboardDefinition;
+                    if (commanderDef != null && commanderDef != blackBoardDef)
+                        found = IsVariableInBlackboard(entry.variableName, commanderDef);
                 }
+
                 if (!found)
                 {
                     warnings.Add(new NodeWarning
@@ -123,6 +131,20 @@ namespace BehaviourTree.Editor
                     });
                 }
             }
+        }
+
+        private static bool IsVariableInBlackboard(string variableName, BlackboardDefinition blackboardDef)
+        {
+            if (blackboardDef == null) return false;
+            IReadOnlyList<BlackboardVariableBase> allVars = blackboardDef.GetAllVariables();
+            if (allVars == null) return false;
+
+            for (int j = 0; j < allVars.Count; j++)
+            {
+                if (allVars[j].Name == variableName)
+                    return true;
+            }
+            return false;
         }
 
         private static List<NodeFieldEntry> GetFieldEntries(BehaviourNode node)
