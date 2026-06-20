@@ -1,0 +1,42 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True" style="flex-grow: 1;">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/SquadEditor/SquadDefinitionEditor.uss?fileID=7433441132597879392&amp;guid=56fe8de00c4c61c42a728614795a1d57&amp;type=3#SquadDefinitionEditor"/>
+    <uie:Toolbar>
+        <uie:ToolbarMenu text="Squad" name="squad-bar-menu"/>
+    </uie:Toolbar>
+    <ui:VisualElement name="content-area" style="margin-bottom: 24px; margin-top: 8px; padding-bottom: 28px;">
+        <ui:Label text="Squad Definition Editor" name="title-header" enable-rich-text="false" class="squad-section-header squad-section-header--first"/>
+        <ui:VisualElement name="squad-nav-row">
+            <ui:Button text="Create New Squad" name="create-new-squad-button"/>
+            <ui:Button text="Browse..." name="browse-squad-button"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="name-container" style="flex-grow: 0;">
+            <ui:VisualElement name="section-separator"/>
+            <ui:Label text="Name" name="squad-definition-name" style="font-size: 22px; -unity-text-align: middle-center; -unity-font-style: bold;"/>
+            <ui:VisualElement name="section-separator"/>
+        </ui:VisualElement>
+        <ui:ScrollView name="sections-scroll" style="flex-grow: 1; padding-right: 0; padding-left: 0; padding-top: 4px; padding-bottom: 0; margin-right: 0; margin-left: 0; border-bottom-width: 2px; border-left-color: rgb(231, 231, 231); border-right-color: rgb(231, 231, 231); border-top-color: rgb(231, 231, 231); border-bottom-color: rgb(231, 231, 231);">
+            <ui:VisualElement name="blackboard-container" class="element-container">
+                <BlackBoardView name="squad-blackboard-view"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="roles-container" class="element-container" style="flex-direction: column; flex-grow: 1; align-items: stretch; padding-left: 6px; padding-right: 6px; background-color: rgb(46, 46, 46); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px;">
+                <ui:Label text="Available Roles" name="roles-header" class="squad-section-header squad-section-header--subsequent"/>
+                <ui:VisualElement name="role-add-container" style="flex-grow: 1; flex-direction: row;">
+                    <ui:TextField name="new-role-field" style="width: 75%; flex-shrink: 1; flex-grow: 1; -unity-text-align: lower-center; justify-content: center; align-self: stretch;"/>
+                    <ui:Button text="Add Role" name="add-role-button" style="margin-bottom: 4px; align-self: center; align-content: stretch; flex-grow: 1; width: 20%; flex-shrink: 1; height: 100%;"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="sub-section-separator" style="border-left-color: rgb(80, 80, 80); border-right-color: rgb(80, 80, 80); border-top-color: rgb(80, 80, 80); border-bottom-color: rgb(80, 80, 80); margin-bottom: 4px;"/>
+                <ui:ScrollView name="roles-scroll" style="height: 300px; flex-shrink: 0; padding-bottom: 12px; padding-right: 4px; padding-left: 4px;">
+                    <ui:VisualElement name="roles-list"/>
+                </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:VisualElement name="bindings-container" class="element-container" style="height: 300px; background-color: rgb(46, 46, 46); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px; padding-left: 6px; padding-right: 6px;">
+                <ui:Label text="Tree Bindings" name="bindings-header" class="squad-section-header squad-section-header--subsequent"/>
+                <ui:VisualElement name="bindings-add-row" style="flex-direction: column;">
+                    <ui:Button text="+ Add" name="add-binding-group-button"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="sub-section-separator" style="border-left-color: rgb(80, 80, 80); border-right-color: rgb(80, 80, 80); border-top-color: rgb(80, 80, 80); border-bottom-color: rgb(80, 80, 80); margin-bottom: 4px;"/>
+                <ui:ScrollView name="binding-groups-scroll" style="padding-left: 6px; padding-right: 6px;"/>
+            </ui:VisualElement>
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

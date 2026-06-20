@@ -16,12 +16,33 @@ MonoBehaviour:
   availableRoles:
   - FLANKER
   - ASSAULT
+  - dwad
+  - dwada
+  - dawdad
+  - wadawwdda
   bindingGroups:
+  - treeAsset: {fileID: 11400000, guid: 14fe57e909a146e4297a2d0d1631887e, type: 2}
+    bindings:
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
   - treeAsset: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}
     bindings:
-    - treeVariableName: TESTGO
-      squadVariableName: TESTINTTTTTTTTTTTTTTTTTTTT
-      direction: 0
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
 --- !u!114 &5414574867650723179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35,16 +56,104 @@ MonoBehaviour:
   m_Name: NewSquadB_Schema
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
-  - rid: 3017916869405311521
+  - rid: 3017916894397071654
+  - rid: 3017916892728525685
+  - rid: 3017916892728525686
+  - rid: 3017916892728525687
+  - rid: 3017916892728525688
+  - rid: 3017916892728525689
+  - rid: 3017916892728525712
+  - rid: 3017916892728525713
+  - rid: 3017916892728525714
   references:
     version: 2
     RefIds:
-    - rid: 3017916869405311521
-      type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+    - rid: 3017916892728525685
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: newVariable
+        variableStride: 1
+        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        singleValue: 0
+        arrayValues: []
+    - rid: 3017916892728525686
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwad
+        variableStride: 1
+        variableTypeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        singleValue: 
+        arrayValues: []
+    - rid: 3017916892728525687
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwadaw
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        singleValue: {x: 0, y: 0, z: 0}
+        arrayValues: []
+    - rid: 3017916892728525688
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Quaternion, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwadwad
+        variableStride: 1
+        variableTypeName: UnityEngine.Quaternion, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        singleValue: {x: 0, y: 0, z: 0, w: 0}
+        arrayValues: []
+    - rid: 3017916892728525689
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwadwad
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        singleValue: {x: 0, y: 0, z: 0}
+        arrayValues: []
+    - rid: 3017916892728525712
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwadad
+        variableStride: 1
+        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        singleValue: 0
+        arrayValues: []
+    - rid: 3017916892728525713
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwada
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        singleValue: {x: 0, y: 0}
+        arrayValues: []
+    - rid: 3017916892728525714
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwada
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        singleValue: {x: 0, y: 0, z: 0}
+        arrayValues: []
+    - rid: 3017916894397071654
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: Test
         variableStride: 1
-        variableTypeName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 0
         singleValue: 0

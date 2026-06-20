@@ -15,9 +15,27 @@ MonoBehaviour:
   blackboardDefinition: {fileID: 8613412856697111606}
   availableRoles:
   - FLANKER
-  - ASSAULT
-  - SUPPORT
-  bindingGroups: []
+  bindingGroups:
+  - treeAsset: {fileID: 11400000, guid: 14fe57e909a146e4297a2d0d1631887e, type: 2}
+    bindings:
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
 --- !u!114 &8613412856697111606
 MonoBehaviour:
   m_ObjectHideFlags: 0

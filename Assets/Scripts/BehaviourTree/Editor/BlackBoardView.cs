@@ -36,7 +36,7 @@ public partial class BlackBoardView : VisualElement
         style.paddingBottom = 8;
         style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
-        blackBoardViewContainer = new VisualElement { style = { flexGrow = 1, overflow = Overflow.Hidden } };
+        blackBoardViewContainer = new VisualElement { style = { flexGrow = 1 } };
         Add(blackBoardViewContainer);
 
         Label placeholder = new Label("Add a blackboard definition")

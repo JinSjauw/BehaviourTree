@@ -30,7 +30,9 @@ namespace BehaviourTree.Editor
         public const string TrackedBindingRowUss = BasePath + "TrackedBindingRow.uss";
 
         // ── Squad editor ──────────────────────────────────────
-        public const string SquadDefinitionEditorUxml = BasePath + "SquadDefinitionEditor.uxml";
-        public const string SquadTabViewUxml = BasePath + "SquadTabView.uxml";
+        private const string SquadEditorPath = BasePath + "SquadEditor/";
+        public const string SquadDefinitionEditorUxml = SquadEditorPath + "SquadDefinitionEditor.uxml";
+        public const string SquadDefinitionEditorUss = SquadEditorPath + "SquadDefinitionEditor.uss";
+        public const string SquadTabViewUxml = SquadEditorPath + "SquadTabView.uxml";
     }
 }
