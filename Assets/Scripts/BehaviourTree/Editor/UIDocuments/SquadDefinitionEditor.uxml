@@ -1,0 +1,26 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True" style="flex-grow: 1;">
+    <uie:Toolbar>
+        <uie:ToolbarMenu text="Squad" name="SquadBarMenu"/>
+    </uie:Toolbar>
+    <ui:VisualElement name="ContentArea" style="flex-grow: 1; flex-direction: column; padding-left: 8px; padding-right: 8px; padding-top: 4px; padding-bottom: 4px; overflow: hidden;">
+        <ui:Label text="Schema" name="SchemaHeader" style="font-size: 13px; -unity-font-style: bold; margin-top: 8px; margin-bottom: 4px; color: rgb(200, 200, 200);"/>
+        <ui:VisualElement name="SquadNavRow" style="flex-direction: row; align-items: center; margin-bottom: 4px; flex-shrink: 0;">
+            <ui:Button text="Create New Squad" name="CreateNewSquadButton" style="margin-right: 4px; padding-left: 8px; padding-right: 8px;"/>
+            <ui:Button text="Browse..." name="BrowseSquadButton" style="padding-left: 8px; padding-right: 8px;"/>
+        </ui:VisualElement>
+        <BlackBoardView name="SquadBlackBoardView" style="flex-grow: 0; height: 200px; min-height: 120px;"/>
+
+        <ui:Label text="Available Roles" name="RolesHeader" style="font-size: 13px; -unity-font-style: bold; margin-top: 12px; margin-bottom: 4px; color: rgb(200, 200, 200);"/>
+        <ui:VisualElement name="RolesContainer" style="flex-direction: column; flex-shrink: 0;">
+            <ui:TextField name="NewRoleField" style="flex-grow: 1; margin-right: 4px;"/>
+            <ui:Button text="Add Role" name="AddRoleButton" style="width: 80px; margin-top: 4px;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="RolesList" style="flex-direction: column; flex-shrink: 0; margin-top: 4px;"/>
+
+        <ui:Label text="Tree Bindings" name="BindingsHeader" style="font-size: 13px; -unity-font-style: bold; margin-top: 12px; margin-bottom: 4px; color: rgb(200, 200, 200);"/>
+        <ui:VisualElement name="BindingsAddRow" style="flex-direction: row; align-items: center; margin-bottom: 4px; flex-shrink: 0;">
+            <ui:Button text="+ Add" name="AddBindingGroupButton" style="padding-left: 8px; padding-right: 8px;"/>
+        </ui:VisualElement>
+        <ui:ScrollView name="BindingGroupsScroll" style="flex-grow: 1; flex-shrink: 1;"/>
+    </ui:VisualElement>
+</ui:UXML>

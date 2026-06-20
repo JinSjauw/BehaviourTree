@@ -36,6 +36,12 @@ namespace BehaviourTree.Core
 
         public bool IsArray { get; set; }
 
+        /// <summary>
+        /// If true, stride is managed dynamically at runtime by CommanderTreeRunner
+        /// when agents register/unregister. Used for per-agent squad data arrays.
+        /// </summary>
+        public bool isSquadData;
+
     /// <summary>Resolves the System.Type from the stored type name.</summary>
     public Type GetValueType()
     {

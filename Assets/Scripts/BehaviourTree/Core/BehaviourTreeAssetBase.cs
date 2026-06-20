@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviourTree.Core
@@ -7,6 +8,12 @@ namespace BehaviourTree.Core
         [HideInInspector] public BehaviourNode root;
         [HideInInspector] public BlackboardDefinition blackboardDefinition;
         [HideInInspector] public CommanderBlackboardDefinition commanderBlackboardDefinition;
+
+        /// <summary>
+        /// Squads this tree connects to. Each entry pairs a SquadDefinition
+        /// with an optional role assignment (agent-only).
+        /// </summary>
+        public List<SquadConnection> squadConnections = new List<SquadConnection>();
 
         public BehaviourNode Root => root;
         public BlackboardDefinition BlackboardDefinition => blackboardDefinition;

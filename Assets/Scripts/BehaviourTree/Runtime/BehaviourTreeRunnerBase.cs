@@ -11,6 +11,9 @@ namespace BehaviourTree.Runtime
     public abstract class BehaviourTreeRunnerBase : MonoBehaviour
     {
         [SerializeField] protected BlackBoard blackBoard;
+
+        /// <summary>Public accessor for the blackboard. Used by squad copy helpers.</summary>
+        public BlackBoard BlackBoard => blackBoard;
         [SerializeField] protected RuntimeBehaviourTreeAsset runtimeAsset;
 #if UNITY_EDITOR
         [SerializeField] protected BehaviourTreeAssetBase authoringAsset;

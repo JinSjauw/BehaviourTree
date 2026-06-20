@@ -12,7 +12,9 @@
                 <ui:Tab label="Tracked" name="TrackedVariablesTab" style="flex-grow: 1;">
                     <TrackedVariablesView name="tracked-variables-view" style="flex-grow: 1; flex-shrink: 1; background-color: rgb(46, 46, 46); border-top-left-radius: 8px; border-top-right-radius: 8px;"/>
                 </ui:Tab>
-                <ui:Tab label="Squads" name="SquadsTab" style="flex-grow: 1;"/>
+                <ui:Tab label="Squads" name="SquadsTab" style="flex-grow: 1;">
+                    <SquadTabView name="squad-tab-view" style="flex-grow: 1;"/>
+                </ui:Tab>
                 <ui:Tab label="Commander" name="CommanderTab" style="flex-grow: 1;"/>
             </ui:TabView>
             <InspectorView enabled="true" style="flex-grow: 1; width: auto; display: flex; visibility: visible; min-height: auto; max-height: none; height: 55%; margin-top: 0; margin-right: 12px; margin-bottom: 12px; margin-left: 12px; flex-shrink: 1; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;"/>

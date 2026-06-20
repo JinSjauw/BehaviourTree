@@ -119,6 +119,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
         singleValue: 2131
         arrayValues: 
 --- !u!114 &11400000
@@ -136,6 +137,7 @@ MonoBehaviour:
   root: {fileID: -4322702840018697125}
   blackboardDefinition: {fileID: -1935232789091175409}
   commanderBlackboardDefinition: {fileID: 0}
+  squadConnections: []
   nodesList:
   - {fileID: -4322702840018697125}
   - {fileID: -5035151152255818293}

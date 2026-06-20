@@ -117,6 +117,83 @@ namespace BehaviourTree.Core
             if (stride <= 1) stride = 1;
         }
 
+        /// <summary>
+        /// Rebuilds the internal storage arrays from the given variable list,
+        /// preserving existing data where slot offsets overlap between old and new layouts.
+        /// Used by CommanderTreeRunner when resizing squad-data strides dynamically.
+        /// </summary>
+        public void ResizeFromVariables(IReadOnlyList<BlackboardVariableBase> variables)
+        {
+            if (variables == null || variables.Count == 0)
+            {
+                values = null;
+                slotTypes = null;
+                slotKinds = null;
+                runtimeVariables = null;
+                return;
+            }
+
+            int newSlotCount = 0;
+            for (int i = 0; i < variables.Count; i++)
+            {
+                int stride = variables[i].Stride;
+                newSlotCount += (stride > 1) ? stride : 1;
+            }
+
+            object[] newValues = new object[newSlotCount];
+            Type[] newSlotTypes = new Type[newSlotCount];
+            BlackboardSlotKind[] newSlotKinds = new BlackboardSlotKind[newSlotCount];
+
+            int oldSlot = 0;
+            int newSlot = 0;
+
+            for (int varIndex = 0; varIndex < variables.Count; varIndex++)
+            {
+                int oldStride = 1;
+                if (runtimeVariables != null && varIndex < runtimeVariables.Count)
+                {
+                    int stride = runtimeVariables[varIndex].Stride;
+                    oldStride = (stride > 1) ? stride : 1;
+                }
+
+                int newStrideRaw = variables[varIndex].Stride;
+                int newStride = (newStrideRaw > 1) ? newStrideRaw : 1;
+                int copyCount = Mathf.Min(oldStride, newStride);
+
+                Type slotType = (slotTypes != null && oldSlot < slotTypes.Length)
+                    ? slotTypes[oldSlot]
+                    : ResolveVariableType(variables[varIndex]);
+                BlackboardSlotKind kind = (slotType != null && !slotType.IsValueType) ? BlackboardSlotKind.Reference : BlackboardSlotKind.Value;
+
+                for (int j = 0; j < copyCount; j++)
+                {
+                    if (values != null && oldSlot + j < values.Length)
+                        newValues[newSlot + j] = values[oldSlot + j];
+                    else
+                        newValues[newSlot + j] = variables[varIndex].GetBoxedValue(j);
+
+                    newSlotTypes[newSlot + j] = slotType;
+                    newSlotKinds[newSlot + j] = kind;
+                }
+
+                // New slots beyond old stride get default values
+                for (int j = copyCount; j < newStride; j++)
+                {
+                    newValues[newSlot + j] = variables[varIndex].GetBoxedValue(j);
+                    newSlotTypes[newSlot + j] = slotType;
+                    newSlotKinds[newSlot + j] = kind;
+                }
+
+                oldSlot += oldStride;
+                newSlot += newStride;
+            }
+
+            values = newValues;
+            slotTypes = newSlotTypes;
+            slotKinds = newSlotKinds;
+            runtimeVariables = variables;
+        }
+
         public BlackboardSlotKind GetSlotKind(int index)
         {
             if (slotKinds == null || index < 0 || index >= slotKinds.Length) return BlackboardSlotKind.Value;

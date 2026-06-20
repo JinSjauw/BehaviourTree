@@ -78,6 +78,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
         singleValue: {fileID: 0}
         arrayValues: []
     - rid: 3017916810423697922
@@ -87,6 +88,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
         singleValue: 2
         arrayValues: 
     - rid: 3017916810423698009
@@ -96,6 +98,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
         singleValue: {x: 43, y: 43}
         arrayValues: []
 --- !u!114 &-3456654351379911066
@@ -134,6 +137,9 @@ MonoBehaviour:
   root: {fileID: -3456654351379911066}
   blackboardDefinition: {fileID: -3858515658822153359}
   commanderBlackboardDefinition: {fileID: 0}
+  squadConnections:
+  - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
+    assignedRole: FLANKER
   nodesList:
   - {fileID: -3456654351379911066}
   - {fileID: -6547581460322908388}

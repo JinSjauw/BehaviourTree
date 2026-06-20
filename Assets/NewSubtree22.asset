@@ -89,6 +89,7 @@ MonoBehaviour:
   root: {fileID: 9044277694249262304}
   blackboardDefinition: {fileID: 5443998300010221992}
   commanderBlackboardDefinition: {fileID: 0}
+  squadConnections: []
   nodesList:
   - {fileID: 9044277694249262304}
   - {fileID: 1455733442287262454}
@@ -148,6 +149,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
         singleValue: 0
         arrayValues: 
     - rid: 3017916852249821270
@@ -157,6 +159,7 @@ MonoBehaviour:
         variableStride: 1
         variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
         singleValue: {fileID: 0}
         arrayValues: []
 --- !u!114 &8764137446109216688

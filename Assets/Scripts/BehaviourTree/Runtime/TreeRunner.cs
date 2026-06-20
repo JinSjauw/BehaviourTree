@@ -18,6 +18,10 @@ namespace BehaviourTree.Runtime
 
         private List<IBlackboardDataProvider> dataProviders;
 
+        /// <summary>Squad instances this agent has registered with.
+        /// Populated via RegisterSquad() during spawn or by the commander.</summary>
+        [System.NonSerialized] public List<SquadInstance> registeredSquads = new List<SquadInstance>();
+
         /// <summary>User-curated list of tracked bindings grouped by tree asset.
         /// Only the group matching the currently active tree is resolved and pushed.</summary>
         [SerializeField] public List<TrackedBindingGroup> trackedBindingGroups = new();
@@ -155,6 +159,31 @@ namespace BehaviourTree.Runtime
 
                 blackBoard.SetBoxed(binding.variableIndex, value);
             }
+        }
+
+        /// <summary>
+        /// Registers this agent with a squad instance. Resolves bindings
+        /// between the agent's tree BB and the squad BB.
+        /// Called during spawn setup or by the commander.
+        /// </summary>
+        public void RegisterSquad(SquadInstance squad)
+        {
+            if (squad == null || registeredSquads.Contains(squad))
+                return;
+
+            registeredSquads.Add(squad);
+
+            if (blackBoard != null && blackBoard.Definition != null)
+                squad.EnsureResolved(blackBoard.Definition);
+        }
+
+        /// <summary>
+        /// Unregisters this agent from a squad instance.
+        /// Called when the agent is despawned or removed from the commander.
+        /// </summary>
+        public void UnregisterSquad(SquadInstance squad)
+        {
+            registeredSquads.Remove(squad);
         }
     }
 }

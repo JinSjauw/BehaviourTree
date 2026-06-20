@@ -18,6 +18,7 @@ public class BehaviourTreeEditor : EditorWindow
     private InspectorView inspectorView;
     private BlackBoardView blackBoardView;
     private TrackedVariablesView trackedVariablesView;
+    private SquadTabView squadTabView;
     private ToolbarMenu assetBarMenu;
     private TabView tabView;
     private Tab inspectorTab;
@@ -79,6 +80,7 @@ public class BehaviourTreeEditor : EditorWindow
         inspectorView = root.Q<InspectorView>();
         blackBoardView = root.Q<BlackBoardView>();
         trackedVariablesView = root.Q<TrackedVariablesView>();
+        squadTabView = root.Q<SquadTabView>();
         assetBarMenu = root.Q<ToolbarMenu>("AssetBarMenu");
         tabView = root.Q<TabView>("TabView");
         inspectorTab = tabView?.Q<Tab>("InspectorTab");
@@ -193,6 +195,67 @@ public class BehaviourTreeEditor : EditorWindow
         menu.AppendAction("Bake Tree", BakeTree);
         menu.AppendAction("Save Tree", SaveTree);
         menu.AppendAction("Sync Tree", SyncTree);
+
+        // ── Squad entries ──
+        menu.AppendSeparator();
+        {
+            string[] squadGuids = AssetDatabase.FindAssets("t:SquadDefinition");
+            System.Collections.Generic.List<SquadDefinition> recentSquads = squadGuids
+                .Select(g => AssetDatabase.LoadAssetAtPath<SquadDefinition>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(s => s != null)
+                .OrderByDescending(s => File.GetLastWriteTime(AssetDatabase.GetAssetPath(s)))
+                .Take(5)
+                .ToList();
+
+            foreach (SquadDefinition squad in recentSquads)
+            {
+                SquadDefinition captured = squad;
+                menu.AppendAction("Open Squad/" + captured.name, _ => OpenSquadEditor(captured));
+            }
+            menu.AppendSeparator("Open Squad/");
+            menu.AppendAction("Open Squad/Browse...", BrowseOpenSquad);
+            menu.AppendAction("Create New Squad", CreateNewSquad);
+        }
+    }
+
+    private static void OpenSquadEditor(SquadDefinition squad)
+    {
+        SquadDefinitionEditor wnd = GetWindow<SquadDefinitionEditor>();
+        wnd.titleContent = new GUIContent("Squad Editor");
+        wnd.LoadSquad(squad);
+    }
+
+    private void BrowseOpenSquad(DropdownMenuAction action)
+    {
+        SquadDefinitionEditor wnd = GetWindow<SquadDefinitionEditor>();
+        wnd.titleContent = new GUIContent("Squad Editor");
+
+        string path = EditorUtility.OpenFilePanel("Open Squad Definition", "Assets", "asset");
+        if (string.IsNullOrEmpty(path)) return;
+
+        string projectRelative = "Assets" + path.Replace("\\", "/")
+            .Replace(Application.dataPath.Replace("\\", "/"), "");
+
+        SquadDefinition squad = AssetDatabase.LoadAssetAtPath<SquadDefinition>(projectRelative);
+        if (squad != null)
+            wnd.LoadSquad(squad);
+    }
+
+    private void CreateNewSquad(DropdownMenuAction action)
+    {
+        string path = EditorUtility.SaveFilePanelInProject(
+            "Create Squad Definition", "NewSquad", "asset",
+            "Create a new SquadDefinition");
+
+        if (string.IsNullOrEmpty(path)) return;
+
+        SquadDefinition squad = CreateInstance<SquadDefinition>();
+        squad.name = System.IO.Path.GetFileNameWithoutExtension(path);
+        AssetDatabase.CreateAsset(squad, path);
+        EditorUtility.SetDirty(squad);
+        AssetDatabase.SaveAssets();
+
+        OpenSquadEditor(squad);
     }
 
     private void BrowseOpenTree(DropdownMenuAction action)
@@ -326,7 +389,10 @@ public class BehaviourTreeEditor : EditorWindow
 
         // Refresh tracked variables view — the binding group depends on currentTree
         if (selectedAsset != null)
+        {
             trackedVariablesView?.Refresh(currentRunner as AgentTreeRunner);
+            squadTabView?.Refresh(currentTree);
+        }
 
         // Null check for tree asset before using it
         if (currentTree == null)
