@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/SquadEditor/BindingGroupFoldout.uss?fileID=7433441132597879392&amp;guid=455ea69e500e50f43873ea13e3d648db&amp;type=3#BindingGroupFoldout"/>
+    <ui:Foldout text="Bindings for:  " name="binding-group-foldout" class="binding-group-foldout" style="flex-grow: 1; margin-top: 6px;">
+        <ui:VisualElement name="button-container" style="flex-grow: 1; flex-direction: row; background-color: rgb(82, 82, 82); padding-bottom: 6px; padding-top: 6px; padding-left: 4px; padding-right: 4px; border-top-left-radius: 0; border-top-right-radius: 0;">
+            <ui:Button text="+ Add Binding" name="add-binding-to-group-button" class="binding-control-button" style="left: 0; flex-direction: column; flex-grow: 1; min-width: 60%;"/>
+            <ui:Button text="- Remove Group" name="remove-binding-group-button" class="binding-control-button" style="flex-grow: 1; background-color: rgb(240, 89, 95);"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="binding-rows-container" style="border-top-left-radius: 0; border-top-right-radius: 0;"/>
+    </ui:Foldout>
+</ui:UXML>

@@ -56,10 +56,10 @@ namespace BehaviourTree.Core
         public BlackboardDefinition blackboardDefinition;
 
         /// <summary>
-        /// Roles available in this squad (e.g. "Scout", "Flanker", "Defender").
+        /// Roles available in this squad, with colour, max amount, and fallback settings.
         /// Agents pick one role. Commander trees iterate over roles.
         /// </summary>
-        public List<string> availableRoles = new List<string>();
+        public List<SquadRole> availableRoles = new List<SquadRole>();
 
         /// <summary>
         /// One binding group per tree that connects to this squad.

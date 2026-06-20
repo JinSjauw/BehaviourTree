@@ -4,10 +4,10 @@
         <uie:ToolbarMenu text="Squad" name="squad-bar-menu"/>
     </uie:Toolbar>
     <ui:VisualElement name="content-area" style="margin-bottom: 24px; margin-top: 8px; padding-bottom: 28px;">
-        <ui:Label text="Squad Definition Editor" name="title-header" enable-rich-text="false" class="squad-section-header squad-section-header--first"/>
-        <ui:VisualElement name="squad-nav-row">
-            <ui:Button text="Create New Squad" name="create-new-squad-button"/>
-            <ui:Button text="Browse..." name="browse-squad-button"/>
+        <ui:Label text="Squad Definition Editor" name="title-header" enable-rich-text="false" class="squad-section-header squad-section-header--first" style="font-size: 18px; border-top-width: 0; border-right-width: 0; border-bottom-width: 2px; border-left-width: 0; border-left-color: rgb(210, 210, 210); border-right-color: rgb(210, 210, 210); border-top-color: rgb(210, 210, 210); border-bottom-color: rgb(210, 210, 210); padding-bottom: 10px; -unity-text-align: upper-center; margin-bottom: 1px;"/>
+        <ui:VisualElement name="squad-nav-row" style="flex-grow: 0; height: 45px; align-self: center; margin-bottom: 12px;">
+            <ui:Button text="Create New Squad" name="create-new-squad-button" style="height: 100%;"/>
+            <ui:Button text="Browse..." name="browse-squad-button" style="height: 100%;"/>
         </ui:VisualElement>
         <ui:VisualElement name="name-container" style="flex-grow: 0;">
             <ui:VisualElement name="section-separator"/>
@@ -25,14 +25,14 @@
                     <ui:Button text="Add Role" name="add-role-button" style="margin-bottom: 4px; align-self: center; align-content: stretch; flex-grow: 1; width: 20%; flex-shrink: 1; height: 100%;"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="sub-section-separator" style="border-left-color: rgb(80, 80, 80); border-right-color: rgb(80, 80, 80); border-top-color: rgb(80, 80, 80); border-bottom-color: rgb(80, 80, 80); margin-bottom: 4px;"/>
-                <ui:ScrollView name="roles-scroll" style="height: 300px; flex-shrink: 0; padding-bottom: 12px; padding-right: 4px; padding-left: 4px;">
+                <ui:ScrollView name="roles-scroll" style="height: 200px; flex-shrink: 0; padding-bottom: 12px; padding-right: 4px; padding-left: 4px;">
                     <ui:VisualElement name="roles-list"/>
                 </ui:ScrollView>
             </ui:VisualElement>
-            <ui:VisualElement name="bindings-container" class="element-container" style="height: 300px; background-color: rgb(46, 46, 46); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px; padding-left: 6px; padding-right: 6px;">
+            <ui:VisualElement name="bindings-container" class="element-container" style="height: 400px; background-color: rgb(46, 46, 46); border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-bottom-left-radius: 8px; padding-left: 6px; padding-right: 6px; margin-bottom: 150px; padding-bottom: 12px;">
                 <ui:Label text="Tree Bindings" name="bindings-header" class="squad-section-header squad-section-header--subsequent"/>
                 <ui:VisualElement name="bindings-add-row" style="flex-direction: column;">
-                    <ui:Button text="+ Add" name="add-binding-group-button"/>
+                    <ui:Button text="+ Add" name="add-binding-group-button" style="width: 200px; height: 30px; min-width: 150px; flex-grow: 1; flex-shrink: 1; overflow: hidden; text-overflow: ellipsis;"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="sub-section-separator" style="border-left-color: rgb(80, 80, 80); border-right-color: rgb(80, 80, 80); border-top-color: rgb(80, 80, 80); border-bottom-color: rgb(80, 80, 80); margin-bottom: 4px;"/>
                 <ui:ScrollView name="binding-groups-scroll" style="padding-left: 6px; padding-right: 6px;"/>

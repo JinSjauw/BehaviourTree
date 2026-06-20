@@ -34,5 +34,9 @@ namespace BehaviourTree.Editor
         public const string SquadDefinitionEditorUxml = SquadEditorPath + "SquadDefinitionEditor.uxml";
         public const string SquadDefinitionEditorUss = SquadEditorPath + "SquadDefinitionEditor.uss";
         public const string SquadTabViewUxml = SquadEditorPath + "SquadTabView.uxml";
+        public const string RoleRowUxml = SquadEditorPath + "RoleRow.uxml";
+        public const string RoleRowUss = SquadEditorPath + "RoleRow.uss";
+        public const string BindingRowUxml = SquadEditorPath + "BindingRow.uxml";
+        public const string BindingGroupFoldoutUxml = SquadEditorPath + "BindingGroupFoldout.uxml";
     }
 }

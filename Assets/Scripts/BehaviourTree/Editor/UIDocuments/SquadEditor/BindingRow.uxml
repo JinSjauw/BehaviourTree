@@ -1,0 +1,10 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/BindingRow.uss?fileID=7433441132597879392&amp;guid=dd7a5a0b16100904b8a2fc867ae02e8e&amp;type=3#BindingRow"/>
+    <ui:VisualElement name="binding-row-container" class="binding-row" style="flex-direction: row; flex-grow: 1;">
+        <ui:VisualElement name="tree-var-placeholder" class="row-dropdown"/>
+        <ui:Label text="↔" name="binding-arrow" class="binding-arrow" style="display: flex; -unity-text-align: middle-center; margin-left: 6px; margin-right: 8px; width: 10px;"/>
+        <ui:VisualElement name="squad-var-placeholder" class="row-dropdown"/>
+        <ui:VisualElement name="direction-placeholder"/>
+        <ui:Button text="X" name="binding-remove-button" class="binding-remove-button" style="width: 10%; max-width: 25px;"/>
+    </ui:VisualElement>
+</ui:UXML>

@@ -164,10 +164,14 @@ public partial class SquadTabView : VisualElement
             };
             roleRow.Add(roleLabel);
 
+            List<string> roleNames = new List<string>();
+            for (int i = 0; i < connection.squad.availableRoles.Count; i++)
+                roleNames.Add(connection.squad.availableRoles[i].name);
+
             PopupField<string> rolePopup = new PopupField<string>(
-                connection.squad.availableRoles,
+                roleNames,
                 string.IsNullOrEmpty(connection.assignedRole) ? 0
-                    : Mathf.Max(0, connection.squad.availableRoles.IndexOf(connection.assignedRole)))
+                    : Mathf.Max(0, roleNames.IndexOf(connection.assignedRole)))
             {
                 style = { flexGrow = 1 }
             };

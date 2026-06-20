@@ -139,7 +139,7 @@ MonoBehaviour:
   commanderBlackboardDefinition: {fileID: 0}
   squadConnections:
   - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
-    assignedRole: ASSAULT
+    assignedRole: FLANKER
   nodesList:
   - {fileID: -3456654351379911066}
   - {fileID: -6547581460322908388}

@@ -72,30 +72,11 @@
     margin-top: 4px;
 }
 
-.role-row {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 2px;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    background-color: rgb(56, 56, 56);
-}
 
-.role-label {
-    flex-grow: 1;
-    color: rgb(217, 217, 217);
-    -unity-text-align: middle-left;
-}
 
-.role-remove-button {
-    width: 24px;
-    height: 20px;
-    margin-left: 4px;
-    padding-left: 0;
-    padding-right: 0;
-}
+
+
+
 
 #bindings-add-row {
     flex-direction: row;
@@ -128,68 +109,11 @@
     white-space: normal;
 }
 
-.binding-group-foldout {
-    margin-bottom: 4px;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-}
 
-.binding-row {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 2px;
-    padding-left: 8px;
-    padding-right: 4px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    background-color: rgb(46, 46, 46);
-}
 
-.binding-tree-var {
-    flex-grow: 1;
-    margin-right: 2px;
-}
 
-.binding-arrow {
-    width: 20px;
-    -unity-text-align: middle-center;
-    color: rgb(153, 153, 153);
-    margin-left: 2px;
-    margin-right: 2px;
-}
 
-.binding-squad-var {
-    flex-grow: 1;
-    margin-right: 2px;
-}
 
-.binding-direction-field {
-    width: 80px;
-    margin-right: 2px;
-}
-
-.binding-remove-button {
-    width: 24px;
-    height: 20px;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.binding-add-button {
-    margin-left: 8px;
-    margin-top: 4px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.binding-remove-group-button {
-    margin-left: 8px;
-    margin-top: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
 
 #sub-section-separator {
     border-top-width: 2px;
@@ -229,24 +153,14 @@
     border-bottom-left-radius: 4px;
 }
 
-#content-area > #sections-scroll > #bindings-container > #binding-groups-scroll > #unity-content-and-vertical-scroll-container {
-    padding-right: 12px;
-    padding-left: 12px;
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-left-color: rgb(32, 32, 32);
-    border-right-color: rgb(32, 32, 32);
-    border-top-color: rgb(32, 32, 32);
-    border-bottom-color: rgb(32, 32, 32);
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-}
-
 .element-container {
     margin-bottom: 10px;
     margin-top: 10px;
+}
+
+
+
+#content-area > #sections-scroll > #bindings-container > #binding-groups-scroll > #unity-content-and-vertical-scroll-container > #unity-content-viewport {
+    padding-left: 6px;
+    padding-right: 6px;
 }

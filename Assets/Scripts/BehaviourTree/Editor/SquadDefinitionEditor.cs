@@ -27,6 +27,14 @@ namespace BehaviourTree.Editor
         private Button addRoleButton;
         private Button addBindingGroupButton;
         private ScrollView bindingGroupsScroll;
+        private Label squadDefinitionNameLabel;
+        private VisualTreeAsset roleRowTemplate;
+        private VisualTreeAsset bindingRowTemplate;
+        private VisualTreeAsset bindingGroupFoldoutTemplate;
+
+        // Preserve foldout expanded state across UI rebuilds
+        private HashSet<string> expandedRoleFoldouts = new HashSet<string>();
+        private HashSet<string> expandedBindingGroupFoldouts = new HashSet<string>();
 
         [MenuItem("BehaviourTree/Open Squad Editor", priority = 30)]
         public static void OpenWindow()
@@ -68,6 +76,21 @@ namespace BehaviourTree.Editor
             if (styleSheet != null)
                 rootVisual.styleSheets.Add(styleSheet);
 
+            // Load entry-row stylesheets so class selectors cascade to cloned templates
+            StyleSheet roleRowUss = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                BehaviourTreeEditorPaths.RoleRowUss);
+            if (roleRowUss != null)
+                rootVisual.styleSheets.Add(roleRowUss);
+
+            // Cache entry-row templates for BuildRolesUI / BuildBindingGroupsUI
+            roleRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                BehaviourTreeEditorPaths.RoleRowUxml);
+            bindingRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                BehaviourTreeEditorPaths.BindingRowUxml);
+            bindingGroupFoldoutTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                BehaviourTreeEditorPaths.BindingGroupFoldoutUxml);
+            
+
             squadBlackBoardView = rootVisual.Q<BlackBoardView>("squad-blackboard-view");
             createNewSquadButton = rootVisual.Q<Button>("create-new-squad-button");
             browseSquadButton = rootVisual.Q<Button>("browse-squad-button");
@@ -77,6 +100,7 @@ namespace BehaviourTree.Editor
             addBindingGroupButton = rootVisual.Q<Button>("add-binding-group-button");
             bindingGroupsScroll = rootVisual.Q<ScrollView>("binding-groups-scroll");
             squadBarMenu = rootVisual.Q<ToolbarMenu>("squad-bar-menu");
+            squadDefinitionNameLabel = rootVisual.Q<Label>("squad-definition-name");
 
             if (squadBlackBoardView != null)
                 RegisterNestedScrollHandling(rootVisual);
@@ -106,8 +130,9 @@ namespace BehaviourTree.Editor
         /// <summary>
         /// Intercepts wheel events on the content-area (parent of #sections-scroll) during
         /// TrickleDown, before the outer ScrollView receives them. If the mouse is over an
-        /// inner scrollable area (blackboard ListView, roles list, or bindings list), the
-        /// delta is forwarded to that inner ScrollView and propagation is stopped.
+        /// inner scrollable area (blackboard ListView, roles list, or bindings list) and that
+        /// area has overflow in the scroll direction, the delta is forwarded to it and
+        /// propagation is stopped. Otherwise the event falls through to the outer ScrollView.
         /// </summary>
         private float scrollSpeed = 10;
         private void RegisterNestedScrollHandling(VisualElement rootVisual)
@@ -129,26 +154,49 @@ namespace BehaviourTree.Editor
                 ScrollView blackboardInnerScroll = squadBlackBoardView?.Q<ScrollView>();
                 if (blackboardInnerScroll != null && IsDescendantOf(target, squadBlackBoardView))
                 {
-                    blackboardInnerScroll.scrollOffset += delta;
-                    evt.StopPropagation();
+                    if (TryForwardScrollTo(blackboardInnerScroll, delta))
+                        evt.StopPropagation();
                     return;
                 }
 
                 // Check if the mouse is over the roles ScrollView
                 if (rolesScroll != null && IsDescendantOf(target, rolesScroll))
                 {
-                    rolesScroll.scrollOffset += delta;
-                    evt.StopPropagation();
+                    if (TryForwardScrollTo(rolesScroll, delta))
+                        evt.StopPropagation();
                     return;
                 }
 
                 // Check if the mouse is over the bindings ScrollView
                 if (bindingGroupsScroll != null && IsDescendantOf(target, bindingGroupsScroll))
                 {
-                    bindingGroupsScroll.scrollOffset += delta;
-                    evt.StopPropagation();
+                    if (TryForwardScrollTo(bindingGroupsScroll, delta))
+                        evt.StopPropagation();
                 }
             }, TrickleDown.TrickleDown);
+        }
+
+        /// <summary>
+        /// Forwards <paramref name="delta"/> to <paramref name="scrollView"/> if the
+        /// content overflows the viewport. If there is overflow the event is always consumed
+        /// (even when already at the scroll limit) to prevent the outer ScrollView from
+        /// taking over.
+        /// Returns true if the scroll was consumed, false if it should bubble up.
+        /// </summary>
+        private static bool TryForwardScrollTo(ScrollView scrollView, Vector2 delta)
+        {
+            if (scrollView?.contentContainer == null || scrollView.contentViewport == null)
+                return false;
+
+            float contentHeight = scrollView.contentContainer.layout.height;
+            float viewportHeight = scrollView.contentViewport.layout.height;
+
+            // No overflow — let the outer ScrollView handle it
+            if (contentHeight <= viewportHeight + 1f)
+                return false;
+
+            scrollView.scrollOffset += delta;
+            return true;
         }
 
         private static bool IsDescendantOf(VisualElement element, VisualElement ancestor)
@@ -210,6 +258,10 @@ namespace BehaviourTree.Editor
             if (squadBlackBoardView != null)
                 squadBlackBoardView.BuildBlackboardView(currentSquad.blackboardDefinition);
 
+            // Name label
+            if (squadDefinitionNameLabel != null)
+                squadDefinitionNameLabel.text = currentSquad.name;
+
             // Roles
             if (rolesList != null)
                 BuildRolesUI();
@@ -222,6 +274,8 @@ namespace BehaviourTree.Editor
         private void ClearUI()
         {
             squadBlackBoardView?.BuildBlackboardView(null);
+            if (squadDefinitionNameLabel != null)
+                squadDefinitionNameLabel.text = string.Empty;
             rolesList?.Clear();
             bindingGroupsScroll?.Clear();
         }
@@ -359,9 +413,18 @@ namespace BehaviourTree.Editor
             string roleName = newRoleField.value?.Trim();
             if (string.IsNullOrEmpty(roleName)) return;
 
-            if (!currentSquad.availableRoles.Contains(roleName))
+            bool alreadyExists = false;
+            for (int i = 0; i < currentSquad.availableRoles.Count; i++)
             {
-                currentSquad.availableRoles.Add(roleName);
+                if (currentSquad.availableRoles[i].name == roleName)
+                {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+            if (!alreadyExists)
+            {
+                currentSquad.availableRoles.Add(new SquadRole { name = roleName });
                 EditorUtility.SetDirty(currentSquad);
                 BuildRolesUI();
             }
@@ -370,34 +433,94 @@ namespace BehaviourTree.Editor
             newRoleField.Focus();
         }
 
+        private static void ReplacePlaceholder(VisualElement parent, string placeholderName, VisualElement replacement)
+        {
+            VisualElement placeholder = parent.Q<VisualElement>(placeholderName);
+            if (placeholder == null) return;
+            int index = placeholder.parent.IndexOf(placeholder);
+            placeholder.parent.Insert(index, replacement);
+            placeholder.RemoveFromHierarchy();
+        }
+
         private void BuildRolesUI()
         {
+            // Save expanded state of existing role foldouts before clearing
+            expandedRoleFoldouts.Clear();
+            for (int i = 0; i < rolesList.childCount; i++)
+            {
+                Foldout foldout = rolesList[i].Q<Foldout>("role-foldout");
+                if (foldout != null && foldout.value)
+                    expandedRoleFoldouts.Add(foldout.text);
+            }
+
             rolesList.Clear();
 
-            List<string> roles = currentSquad.availableRoles;
+            if (roleRowTemplate == null || currentSquad == null) return;
+
+            List<SquadRole> roles = currentSquad.availableRoles;
             for (int i = 0; i < roles.Count; i++)
             {
                 int capturedIndex = i;
-                string role = roles[i];
+                SquadRole role = roles[i];
 
-                VisualElement row = new VisualElement();
-                row.AddToClassList("role-row");
+                VisualElement row = roleRowTemplate.CloneTree();
 
-                Label roleLabel = new Label(role);
-                roleLabel.AddToClassList("role-label");
-                row.Add(roleLabel);
+                // Foldout text = role name
+                Foldout foldout = row.Q<Foldout>("role-foldout");
+                if (foldout != null)
+                {
+                    foldout.text = role.name;
+                    foldout.value = expandedRoleFoldouts.Contains(role.name);
+                }
 
-                Button removeButton = new Button(() =>
+                // Colour picker + banner
+                ColorField colourPicker = row.Q<ColorField>("role-color-picker");
+                VisualElement colourBanner = row.Q<VisualElement>("role-color-banner");
+                if (colourPicker != null)
+                {
+                    colourPicker.value = role.colour;
+                    colourPicker.RegisterValueChangedCallback(evt =>
+                    {
+                        currentSquad.availableRoles[capturedIndex].colour = evt.newValue;
+                        if (colourBanner != null)
+                            colourBanner.style.backgroundColor = evt.newValue;
+                        EditorUtility.SetDirty(currentSquad);
+                    });
+                }
+                if (colourBanner != null)
+                    colourBanner.style.backgroundColor = role.colour;
+
+                // Max amount (inside foldout)
+                IntegerField maxAmountField = foldout?.Q<IntegerField>();
+                if (maxAmountField != null)
+                {
+                    maxAmountField.value = role.maxAmount;
+                    maxAmountField.RegisterValueChangedCallback(evt =>
+                    {
+                        currentSquad.availableRoles[capturedIndex].maxAmount = evt.newValue;
+                        EditorUtility.SetDirty(currentSquad);
+                    });
+                }
+
+                // Is fallback (inside foldout)
+                Toggle fallbackToggle = foldout?.Q<Toggle>();
+                if (fallbackToggle != null)
+                {
+                    fallbackToggle.value = role.isFallback;
+                    fallbackToggle.RegisterValueChangedCallback(evt =>
+                    {
+                        currentSquad.availableRoles[capturedIndex].isFallback = evt.newValue;
+                        EditorUtility.SetDirty(currentSquad);
+                    });
+                }
+
+                // Remove button
+                row.Q<Button>("role-remove-button").clicked += () =>
                 {
                     currentSquad.availableRoles.RemoveAt(capturedIndex);
                     EditorUtility.SetDirty(currentSquad);
                     BuildRolesUI();
-                })
-                {
-                    text = "X"
                 };
-                removeButton.AddToClassList("role-remove-button");
-                row.Add(removeButton);
 
                 rolesList.Add(row);
             }
@@ -443,6 +566,15 @@ namespace BehaviourTree.Editor
 
         private void BuildBindingGroupsUI()
         {
+            // Save expanded state of existing binding group foldouts before clearing
+            expandedBindingGroupFoldouts.Clear();
+            for (int i = 0; i < bindingGroupsScroll.childCount; i++)
+            {
+                Foldout foldout = bindingGroupsScroll[i].Q<Foldout>("binding-group-foldout");
+                if (foldout != null && foldout.value)
+                    expandedBindingGroupFoldouts.Add(foldout.text);
+            }
+
             bindingGroupsScroll.Clear();
 
             if (currentSquad.bindingGroups == null || currentSquad.bindingGroups.Count == 0)
@@ -458,16 +590,31 @@ namespace BehaviourTree.Editor
                 SquadBindingGroup group = currentSquad.bindingGroups[groupIndex];
                 int capturedGroupIndex = groupIndex;
 
-                string treeName = group.treeAsset != null ? group.treeAsset.name : "Unknown Tree";
-                Foldout groupFoldout = new Foldout
+                // Clone the foldout template (or create bare Foldout as fallback)
+                VisualElement foldoutRoot;
+                if (bindingGroupFoldoutTemplate != null)
+                    foldoutRoot = bindingGroupFoldoutTemplate.CloneTree();
+                else
                 {
-                    text = "Bindings for: " + treeName
-                };
-                groupFoldout.AddToClassList("binding-group-foldout");
+                    foldoutRoot = new Foldout();
+                    foldoutRoot.AddToClassList("binding-group-foldout");
+                }
+
+                string treeName = group.treeAsset != null ? group.treeAsset.name : "Unknown Tree";
+                string foldoutText = "Bindings for: " + treeName;
+                Foldout groupFoldout = foldoutRoot.Q<Foldout>("binding-group-foldout");
+                if (groupFoldout != null)
+                {
+                    groupFoldout.text = foldoutText;
+                    groupFoldout.value = expandedBindingGroupFoldouts.Contains(foldoutText);
+                }
 
                 // Resolve variable name dropdowns from BB definitions
                 List<string> treeVarNames = GetVariableNames(group.treeAsset?.BlackboardDefinition);
                 List<string> squadVarNames = GetVariableNames(currentSquad.blackboardDefinition);
+
+                // Container for binding rows (from template or use the Foldout content area)
+                VisualElement rowsContainer = foldoutRoot.Q<VisualElement>("binding-rows-container") ?? groupFoldout ?? foldoutRoot;
 
                 // Bindings list
                 if (group.bindings != null && group.bindings.Count > 0)
@@ -477,10 +624,16 @@ namespace BehaviourTree.Editor
                         VariableBinding binding = group.bindings[bindingIndex];
                         int capturedBindingIndex = bindingIndex;
 
-                        VisualElement bindingRow = new VisualElement();
-                        bindingRow.AddToClassList("binding-row");
+                        VisualElement bindingRow;
+                        if (bindingRowTemplate != null)
+                            bindingRow = bindingRowTemplate.CloneTree();
+                        else
+                        {
+                            bindingRow = new VisualElement();
+                            bindingRow.AddToClassList("binding-row");
+                        }
 
-                        // Tree variable dropdown
+                        // Tree variable dropdown (replaces tree-var-placeholder)
                         int treeIndex = treeVarNames.IndexOf(binding.treeVariableName ?? "");
                         PopupField<string> treeVarPopup = new PopupField<string>(treeVarNames, Mathf.Max(0, treeIndex));
                         treeVarPopup.AddToClassList("binding-tree-var");
@@ -489,14 +642,22 @@ namespace BehaviourTree.Editor
                             binding.treeVariableName = evt.newValue;
                             EditorUtility.SetDirty(currentSquad);
                         });
-                        bindingRow.Add(treeVarPopup);
+                        ReplacePlaceholder(bindingRow, "tree-var-placeholder", treeVarPopup);
+                        if (treeVarPopup.parent == null)
+                            bindingRow.Add(treeVarPopup);
 
-                        Label arrowLabel = new Label(binding.direction == BindingDirection.ToSquad ? "→" :
-                            binding.direction == BindingDirection.FromSquad ? "←" : "↔");
-                        arrowLabel.AddToClassList("binding-arrow");
-                        bindingRow.Add(arrowLabel);
+                        // Arrow label
+                        Label arrowLabel = bindingRow.Q<Label>("binding-arrow");
+                        if (arrowLabel == null)
+                        {
+                            arrowLabel = new Label();
+                            arrowLabel.AddToClassList("binding-arrow");
+                            bindingRow.Add(arrowLabel);
+                        }
+                        arrowLabel.text = binding.direction == BindingDirection.ToSquad ? "←" :
+                            binding.direction == BindingDirection.FromSquad ? "→" : "↔";
 
-                        // Squad variable dropdown
+                        // Squad variable dropdown (replaces squad-var-placeholder)
                         int squadIndex = squadVarNames.IndexOf(binding.squadVariableName ?? "");
                         PopupField<string> squadVarPopup = new PopupField<string>(squadVarNames, Mathf.Max(0, squadIndex));
                         squadVarPopup.AddToClassList("binding-squad-var");
@@ -505,8 +666,11 @@ namespace BehaviourTree.Editor
                             binding.squadVariableName = evt.newValue;
                             EditorUtility.SetDirty(currentSquad);
                         });
-                        bindingRow.Add(squadVarPopup);
+                        ReplacePlaceholder(bindingRow, "squad-var-placeholder", squadVarPopup);
+                        if (squadVarPopup.parent == null)
+                            bindingRow.Add(squadVarPopup);
 
+                        // Direction enum (replaces direction-placeholder)
                         EnumField directionField = new EnumField(binding.direction);
                         directionField.AddToClassList("binding-direction-field");
                         directionField.RegisterValueChangedCallback(evt =>
@@ -516,26 +680,38 @@ namespace BehaviourTree.Editor
                                 binding.direction == BindingDirection.FromSquad ? "←" : "↔";
                             EditorUtility.SetDirty(currentSquad);
                         });
-                        bindingRow.Add(directionField);
+                        ReplacePlaceholder(bindingRow, "direction-placeholder", directionField);
+                        if (directionField.parent == null)
+                            bindingRow.Add(directionField);
 
-                        Button removeBindingButton = new Button(() =>
+                        // Remove binding button
+                        Button removeBindingButton = bindingRow.Q<Button>("binding-remove-button");
+                        if (removeBindingButton == null)
+                        {
+                            removeBindingButton = new Button { text = "X" };
+                            removeBindingButton.AddToClassList("binding-remove-button");
+                            bindingRow.Add(removeBindingButton);
+                        }
+                        removeBindingButton.clicked += () =>
                         {
                             group.bindings.RemoveAt(capturedBindingIndex);
                             EditorUtility.SetDirty(currentSquad);
                             BuildBindingGroupsUI();
-                        })
-                        {
-                            text = "X"
                         };
-                        removeBindingButton.AddToClassList("binding-remove-button");
-                        bindingRow.Add(removeBindingButton);
 
-                        groupFoldout.Add(bindingRow);
+                        rowsContainer.Add(bindingRow);
                     }
                 }
 
-                // Add binding button (inside group)
-                Button addBindingButton = new Button(() =>
+                // Add binding button (from template or create fallback)
+                Button addBindingButton = foldoutRoot.Q<Button>("add-binding-to-group-button");
+                if (addBindingButton == null)
+                {
+                    addBindingButton = new Button { text = "+ Add Binding" };
+                    addBindingButton.AddToClassList("binding-add-button");
+                    foldoutRoot.Add(addBindingButton);
+                }
+                addBindingButton.clicked += () =>
                 {
                     if (group.bindings == null)
                         group.bindings = new List<VariableBinding>();
@@ -548,27 +724,24 @@ namespace BehaviourTree.Editor
                     });
                     EditorUtility.SetDirty(currentSquad);
                     BuildBindingGroupsUI();
-                })
-                {
-                    text = "+ Add Binding"
                 };
-                addBindingButton.AddToClassList("binding-add-button");
-                groupFoldout.Add(addBindingButton);
 
-                // Remove group button
-                Button removeGroupButton = new Button(() =>
+                // Remove group button (from template or create fallback)
+                Button removeGroupButton = foldoutRoot.Q<Button>("remove-binding-group-button");
+                if (removeGroupButton == null)
+                {
+                    removeGroupButton = new Button { text = "Remove Group" };
+                    removeGroupButton.AddToClassList("binding-remove-group-button");
+                    foldoutRoot.Add(removeGroupButton);
+                }
+                removeGroupButton.clicked += () =>
                 {
                     currentSquad.bindingGroups.RemoveAt(capturedGroupIndex);
                     EditorUtility.SetDirty(currentSquad);
                     BuildBindingGroupsUI();
-                })
-                {
-                    text = "Remove Group"
                 };
-                removeGroupButton.AddToClassList("binding-remove-group-button");
-                groupFoldout.Add(removeGroupButton);
 
-                bindingGroupsScroll.Add(groupFoldout);
+                bindingGroupsScroll.Add(foldoutRoot);
             }
         }
     }
