@@ -20,7 +20,8 @@ namespace BehaviourTree.Editor
 
         private readonly BlackboardDefinition definition;
         private readonly Type filterType;
-        private readonly Action<BlackboardVariableBase> onVariableSelected;
+        private readonly Action<BlackboardVariableBase, bool> onVariableSelected;
+        private readonly bool defaultToArray;
 
         private TextField searchField;
         private RadioButton radioSingular;
@@ -32,11 +33,12 @@ namespace BehaviourTree.Editor
         private List<BlackboardVariableBase> allVariables;
         private List<BlackboardVariableBase> filteredVariables;
 
-        public VariableSearchPopup(BlackboardDefinition definition, Type filterType, Action<BlackboardVariableBase> onVariableSelected)
+        public VariableSearchPopup(BlackboardDefinition definition, Type filterType, Action<BlackboardVariableBase, bool> onVariableSelected, bool defaultToArray = false)
         {
             this.definition = definition;
             this.filterType = filterType;
             this.onVariableSelected = onVariableSelected;
+            this.defaultToArray = defaultToArray;
         }
 
         public override VisualElement CreateGUI()
@@ -69,7 +71,8 @@ namespace BehaviourTree.Editor
             if (header != null) header.text = "Select Variable";
 
             // Singular selected by default; hide size row (we're picking existing variables)
-            radioSingular.value = true;
+            radioSingular.value = !defaultToArray;
+            radioArray.value = defaultToArray;
             sizeRow.visible = false;
 
             // Radio filter triggers re-filter
@@ -219,7 +222,7 @@ namespace BehaviourTree.Editor
 
             BlackboardVariableBase selectedVariable = filteredVariables[variableListView.selectedIndex];
             editorWindow.Close();
-            onVariableSelected?.Invoke(selectedVariable);
+            onVariableSelected?.Invoke(selectedVariable, radioArray?.value ?? false);
         }
     }
 }

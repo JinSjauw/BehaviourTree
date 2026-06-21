@@ -32,6 +32,21 @@ namespace BehaviourTree.Runtime
             Initialize();
         }
 
+        protected override void OnDisable()
+        {
+            // Deregister all agents — they may outlive the commander
+            for (int i = registeredAgents.Count - 1; i >= 0; i--)
+            {
+                AgentTreeRunner agent = registeredAgents[i];
+                if (agent != null)
+                {
+                    // Clear the agent's commander reference to break the cycle
+                    agent.commander = null;
+                }
+                registeredAgents.RemoveAt(i);
+            }
+        }
+
         private void Update()
         {
             if (evaluator == null || blackBoard == null) return;
@@ -45,6 +60,7 @@ namespace BehaviourTree.Runtime
         /// Agents tick after commander: squad BB has fresh orders from commander.
         /// Each agent reads squad data, pushes own data providers, evaluates,
         /// then writes results back to squad BB.
+        /// The agent index is used as the offset into per-agent squad data slots.
         /// </summary>
         private void TickAgents()
         {
@@ -57,17 +73,18 @@ namespace BehaviourTree.Runtime
                 }
 
                 agent.PushDataProviders();
-                CopySquadsToTree(agent);
+                CopySquadsToTree(agent, i);
                 agent.Evaluate();
-                CopySquadsFromTree(agent);
+                CopySquadsFromTree(agent, i);
             }
         }
 
         /// <summary>
         /// Copies squad data into a tree runner's BB (agent or commander).
-        /// Iterates all squads the tree is registered with.
+        /// When agentOffset is >= 0, per-agent squad variables use it as
+        /// the slot offset to read the correct agent's data.
         /// </summary>
-        private static void CopySquadsToTree(BehaviourTreeRunnerBase runner)
+        private static void CopySquadsToTree(BehaviourTreeRunnerBase runner, int agentOffset = -1)
         {
             List<SquadInstance> squads = GetRunnerSquads(runner);
             if (squads == null || squads.Count == 0) return;
@@ -79,15 +96,17 @@ namespace BehaviourTree.Runtime
             {
                 if (squads[i] != null)
                 {
-                    squads[i].CopyToBB(runner.BlackBoard, treeDef);
+                    squads[i].CopyToBB(runner.BlackBoard, treeDef, agentOffset);
                 }
             }
         }
 
         /// <summary>
         /// Copies tree runner's BB data back to all registered squads.
+        /// When agentOffset is >= 0, per-agent squad variables use it as
+        /// the slot offset to write to the correct agent's slot.
         /// </summary>
-        private static void CopySquadsFromTree(BehaviourTreeRunnerBase runner)
+        private static void CopySquadsFromTree(BehaviourTreeRunnerBase runner, int agentOffset = -1)
         {
             List<SquadInstance> squads = GetRunnerSquads(runner);
             if (squads == null || squads.Count == 0) return;
@@ -99,7 +118,7 @@ namespace BehaviourTree.Runtime
             {
                 if (squads[i] != null)
                 {
-                    squads[i].CopyFromBB(runner.BlackBoard, treeDef);
+                    squads[i].CopyFromBB(runner.BlackBoard, treeDef, agentOffset);
                 }
             }
         }
@@ -154,97 +173,52 @@ namespace BehaviourTree.Runtime
         }
 
         /// <summary>
-        /// Registers an agent with this commander. Assigns agentID, resizes
-        /// strided squad-data BB variables.
+        /// Registers an agent with this commander. The stride is fixed at bake time
+        /// (from the CommanderBlackboardDefinition asset), so no runtime resize occurs.
+        /// Logs an error if the agent count would exceed the available stride capacity.
         /// </summary>
         public void RegisterAgent(AgentTreeRunner agent)
         {
             if (agent == null || registeredAgents.Contains(agent))
                 return;
 
-            registeredAgents.Add(agent);
+            // Verify capacity against the fixed stride set in the asset
+            int maxStride = GetMaxSquadDataStride();
+            if (maxStride > 0 && registeredAgents.Count >= maxStride)
+            {
+                Debug.LogError($"[CommanderTreeRunner] Cannot register agent: squad-data stride ({maxStride}) exceeded. " +
+                               "Increase the stride on squad-data variables in the Commander Blackboard Definition to support more agents.");
+                return;
+            }
 
-            ResizeSquadDataStrides(registeredAgents.Count);
+            registeredAgents.Add(agent);
         }
 
         /// <summary>
-        /// Unregisters an agent. Compacts remaining agent data and resizes
-        /// strided BB variables.
+        /// Unregisters an agent. With fixed strides, no compaction is needed —
+        /// the slot for the removed agent becomes unused and will not be accessed
+        /// (ForEachAgent limits iteration to agentCount).
         /// </summary>
         public void UnregisterAgent(AgentTreeRunner agent)
         {
             if (agent == null) return;
-
-            int removedIndex = registeredAgents.IndexOf(agent);
-            if (removedIndex < 0) return;
-
-            registeredAgents.RemoveAt(removedIndex);
-
-            CompactSquadDataAfterRemoval(removedIndex, registeredAgents.Count + 1);
-
-            ResizeSquadDataStrides(registeredAgents.Count);
+            registeredAgents.Remove(agent);
         }
 
         /// <summary>
-        /// Resizes all squad-data variable strides in the commander BB
-        /// to the given agent count. Preserves existing data.
+        /// Returns the stride of the first squad-data variable in the commander BB,
+        /// or 0 if no squad-data variables exist.
         /// </summary>
-        private void ResizeSquadDataStrides(int newAgentCount)
+        private int GetMaxSquadDataStride()
         {
-            if (blackBoard?.Storage is not ManagedBlackboardStorage storage)
-                return;
-
-            BlackboardDefinition def = blackBoard.Definition;
-            if (def == null) return;
-
-            IReadOnlyList<BlackboardVariableBase> vars = def.GetAllVariables();
-            bool hasSquadData = false;
+            if (blackBoard?.Definition == null) return 0;
+            IReadOnlyList<BlackboardVariableBase> vars = blackBoard.Definition.GetAllVariables();
             for (int i = 0; i < vars.Count; i++)
             {
                 if (vars[i].isSquadData)
-                {
-                    vars[i].Stride = Mathf.Max(1, newAgentCount);
-                    hasSquadData = true;
-                }
+                    return vars[i].Stride;
             }
-
-            if (hasSquadData)
-                storage.ResizeFromVariables(vars);
-        }
-
-        /// <summary>
-        /// Compacts squad-data slots after an agent is removed.
-        /// Shifts data for agents with higher IDs down by one slot.
-        /// </summary>
-        private void CompactSquadDataAfterRemoval(int removedIndex, int oldAgentCount)
-        {
-            if (blackBoard?.Storage is not ManagedBlackboardStorage storage)
-                return;
-
-            BlackboardDefinition def = blackBoard.Definition;
-            if (def == null) return;
-
-            IReadOnlyList<BlackboardVariableBase> vars = def.GetAllVariables();
-            int baseSlot = 0;
-
-            for (int varIndex = 0; varIndex < vars.Count; varIndex++)
-            {
-                BlackboardVariableBase variable = vars[varIndex];
-                int stride = variable.Stride;
-                int effectiveStride = (stride > 1) ? stride : 1;
-
-                if (variable.isSquadData && effectiveStride > 1)
-                {
-                    for (int agentIndex = removedIndex; agentIndex < oldAgentCount - 1; agentIndex++)
-                    {
-                        int srcSlot = baseSlot + agentIndex + 1;
-                        int dstSlot = baseSlot + agentIndex;
-                        storage.SetBoxed(dstSlot, storage.GetBoxed(srcSlot));
-                    }
-                }
-
-                baseSlot += effectiveStride;
-            }
+            return 0;
         }
 
         /// <summary>

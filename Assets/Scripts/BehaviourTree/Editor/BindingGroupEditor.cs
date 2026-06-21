@@ -220,8 +220,8 @@ namespace BehaviourTree.Editor
                     arrowLabel.AddToClassList("binding-arrow");
                     bindingRow.Add(arrowLabel);
                 }
-                arrowLabel.text = binding.direction == BindingDirection.ToSquad ? "←" :
-                    binding.direction == BindingDirection.FromSquad ? "→" : "↔";
+                arrowLabel.text = binding.direction == BindingDirection.ToSquad ? "→" :
+                    binding.direction == BindingDirection.FromSquad ? "←" : "↔";
 
                 // ── Squad variable dropdown (filtered by tree type) ──
                 List<string> squadChoices = BuildFilteredChoices(squadVarNames, squadVarTypes, selectedTreeType);

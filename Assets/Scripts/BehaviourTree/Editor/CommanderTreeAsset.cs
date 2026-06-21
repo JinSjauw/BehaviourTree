@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BehaviourTree.Core;
 using UnityEditor;
 using UnityEngine;
@@ -20,6 +21,9 @@ namespace BehaviourTree.Editor
         /// Used by role dropdowns, variable binding resolution, and runtime agent communication.
         /// </summary>
         public SquadDefinition commanderSquad;
+
+        /// <summary>Commander trees need the actual stride so baked slot offsets match storage.</summary>
+        public override bool PreserveCommanderStride => true;
 
         public override void CreateBlackBoard()
         {
@@ -52,6 +56,24 @@ namespace BehaviourTree.Editor
                 | BlackboardDefinition.EnsureBaseChannel<int>(bbDef, "AgentOrders", isSquadData: true))
             {
                 EditorUtility.SetDirty(bbDef);
+            }
+
+            // Sync stride from the assigned squad so baked slot offsets are correct
+            if (commanderSquad != null)
+            {
+                int maxAgents = commanderSquad.MaxAgents;
+                IReadOnlyList<BlackboardVariableBase> vars = bbDef.GetAllVariables();
+                bool changed = false;
+                for (int i = 0; i < vars.Count; i++)
+                {
+                    if (vars[i].isSquadData && vars[i].Stride != maxAgents)
+                    {
+                        vars[i].Stride = maxAgents;
+                        changed = true;
+                    }
+                }
+                if (changed)
+                    EditorUtility.SetDirty(bbDef);
             }
         }
 

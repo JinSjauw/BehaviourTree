@@ -7,6 +7,12 @@ namespace BehaviourTree.Core
 {
     public class BlackboardDefinition : ScriptableObject
     {
+        /// <summary>The tree asset this baked definition was derived from. Set by TreeBaker.
+        /// Used by SquadInstance to match bindings when the baked definition is a different
+        /// ScriptableObject instance from the original asset definition.</summary>
+        [System.NonSerialized] public BehaviourTreeAssetBase sourceTreeAsset;
+        [System.NonSerialized] public string sourceTreeGuid;
+
         /// <summary>Polymorphic variable storage. Supports any type via BlackboardVariable&lt;T&gt;.</summary>
         [SerializeReference] public List<BlackboardVariableBase> sharedVariables = new();
 

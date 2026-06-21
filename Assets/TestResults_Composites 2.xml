@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Failed(Child)" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.0806572">
+  <test-suite type="TestSuite" id="1080" name="BehaviourTreeEditor" fullname="BehaviourTreeEditor" runstate="Runnable" testcasecount="70" result="Failed" site="Child" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.080657" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1073" name="BehaviourTree.Runtime.Tests.dll" fullname="D:/Dev/BehaviourTreeEditor/Library/ScriptAssemblies/BehaviourTree.Runtime.Tests.dll" runstate="Runnable" testcasecount="70" result="Failed" site="Child" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.072432" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="25884" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1074" name="BehaviourTree" fullname="BehaviourTree" runstate="Runnable" testcasecount="70" result="Failed" site="Child" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.069970" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1075" name="Runtime" fullname="BehaviourTree.Runtime" runstate="Runnable" testcasecount="70" result="Failed" site="Child" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.067694" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1076" name="Tests" fullname="BehaviourTree.Runtime.Tests" runstate="Runnable" testcasecount="70" result="Failed" site="Child" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.065306" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1026" name="CommanderCompositeTests" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" testcasecount="46" result="Failed" site="Child" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.062448" total="6" passed="0" failed="6" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1061" name="GetNearestAgent_ChildRunning_ResumesAtSameAgent" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests.GetNearestAgent_ChildRunning_ResumesAtSameAgent" methodname="GetNearestAgent_ChildRunning_ResumesAtSameAgent" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" seed="1275134432" result="Failed" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.023184" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Unhandled log message: '[Error] [Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                  <stack-trace><![CDATA[BehaviourTree.Core.ManagedBlackboardStorage:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/ManagedBlackboardStorage.cs:220)
+BehaviourTree.Core.BlackBoard:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:456)
+BehaviourTree.Core.BlackBoard:BehaviourTree.Core.IBlackBoardAccess.Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:528)
+(wrapper dynamic-method) object:lambda_method (System.Runtime.CompilerServices.Closure,BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess)
+BehaviourTree.Core.FieldBinding:ReadFromBBGeneric (BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:109)
+BehaviourTree.Core.NodeMethod:ResolveInputsGeneric (BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:303)
+BehaviourTree.Runtime.Tests.CommanderCompositeTests:GetNearestAgent_ChildRunning_ResumesAtSameAgent () (at Assets/Scripts/BehaviourTree/Runtime/Tests/CommanderCompositeTests.cs:1119)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[BB.Initialize] def='' totalSlots=5 serializedRefs.Count=0
+[BB.Initialize]   var[0]='AgentPosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=3 baseSlot=0
+[BB.Initialize]   var[1]='ReferencePosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=1 baseSlot=3
+[BB.Initialize]   var[2]='_targetAgentID' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=1 baseSlot=4
+[BB.Initialize]   slot[0] kind=Value serializedRef='null'
+[BB.Initialize]   slot[1] kind=Value serializedRef='null'
+[BB.Initialize]   slot[2] kind=Value serializedRef='null'
+[BB.Initialize]   slot[3] kind=Value serializedRef='null'
+[BB.Initialize]   slot[4] kind=Value serializedRef='null'
+[Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.
+[Blackboard] Unexpected type in BB: index 3 expected Int32 but found Vector3. Data loss may have occurred.
+[Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.
+[Blackboard] Unexpected type in BB: index 3 expected Int32 but found Vector3. Data loss may have occurred.
+]]></output>
+              </test-case>
+              <test-case id="1058" name="GetNearestAgent_FindsClosest_SelectsCorrectAgent" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests.GetNearestAgent_FindsClosest_SelectsCorrectAgent" methodname="GetNearestAgent_FindsClosest_SelectsCorrectAgent" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" seed="428803643" result="Failed" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.005158" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Unhandled log message: '[Error] [Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                  <stack-trace><![CDATA[BehaviourTree.Core.ManagedBlackboardStorage:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/ManagedBlackboardStorage.cs:220)
+BehaviourTree.Core.BlackBoard:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:456)
+BehaviourTree.Core.BlackBoard:BehaviourTree.Core.IBlackBoardAccess.Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:528)
+(wrapper dynamic-method) object:lambda_method (System.Runtime.CompilerServices.Closure,BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess)
+BehaviourTree.Core.FieldBinding:ReadFromBBGeneric (BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:109)
+BehaviourTree.Core.NodeMethod:ResolveInputsGeneric (BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:303)
+BehaviourTree.Runtime.Tests.CommanderCompositeTests:GetNearestAgent_FindsClosest_SelectsCorrectAgent () (at Assets/Scripts/BehaviourTree/Runtime/Tests/CommanderCompositeTests.cs:1016)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[BB.Initialize] def='' totalSlots=5 serializedRefs.Count=0
+[BB.Initialize]   var[0]='AgentPosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=3 baseSlot=0
+[BB.Initialize]   var[1]='ReferencePosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=1 baseSlot=3
+[BB.Initialize]   var[2]='_targetAgentID' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=1 baseSlot=4
+[BB.Initialize]   slot[0] kind=Value serializedRef='null'
+[BB.Initialize]   slot[1] kind=Value serializedRef='null'
+[BB.Initialize]   slot[2] kind=Value serializedRef='null'
+[BB.Initialize]   slot[3] kind=Value serializedRef='null'
+[BB.Initialize]   slot[4] kind=Value serializedRef='null'
+[Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.
+[Blackboard] Unexpected type in BB: index 3 expected Int32 but found Vector3. Data loss may have occurred.
+]]></output>
+              </test-case>
+              <test-case id="1060" name="GetNearestAgent_NoValidAgents_ReturnsFailure" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests.GetNearestAgent_NoValidAgents_ReturnsFailure" methodname="GetNearestAgent_NoValidAgents_ReturnsFailure" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" seed="532002258" result="Failed" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.004358" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Unhandled log message: '[Error] [Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                  <stack-trace><![CDATA[BehaviourTree.Core.ManagedBlackboardStorage:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/ManagedBlackboardStorage.cs:220)
+BehaviourTree.Core.BlackBoard:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:456)
+BehaviourTree.Core.BlackBoard:BehaviourTree.Core.IBlackBoardAccess.Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:528)
+(wrapper dynamic-method) object:lambda_method (System.Runtime.CompilerServices.Closure,BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess)
+BehaviourTree.Core.FieldBinding:ReadFromBBGeneric (BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:109)
+BehaviourTree.Core.NodeMethod:ResolveInputsGeneric (BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:303)
+BehaviourTree.Runtime.Tests.CommanderCompositeTests:GetNearestAgent_NoValidAgents_ReturnsFailure () (at Assets/Scripts/BehaviourTree/Runtime/Tests/CommanderCompositeTests.cs:1083)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[BB.Initialize] def='' totalSlots=3 serializedRefs.Count=0
+[BB.Initialize]   var[0]='AgentPosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=1 baseSlot=0
+[BB.Initialize]   var[1]='ReferencePosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=1 baseSlot=1
+[BB.Initialize]   var[2]='_targetAgentID' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=1 baseSlot=2
+[BB.Initialize]   slot[0] kind=Value serializedRef='null'
+[BB.Initialize]   slot[1] kind=Value serializedRef='null'
+[BB.Initialize]   slot[2] kind=Value serializedRef='null'
+[Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.
+[Blackboard] Unexpected type in BB: index 1 expected Int32 but found Vector3. Data loss may have occurred.
+]]></output>
+              </test-case>
+              <test-case id="1059" name="GetNearestAgent_SelectsNearestAmongValidPositions" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests.GetNearestAgent_SelectsNearestAmongValidPositions" methodname="GetNearestAgent_SelectsNearestAmongValidPositions" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" seed="546940207" result="Failed" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.005105" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Unhandled log message: '[Error] [Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.'. Use UnityEngine.TestTools.LogAssert.Expect]]></message>
+                  <stack-trace><![CDATA[BehaviourTree.Core.ManagedBlackboardStorage:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/ManagedBlackboardStorage.cs:220)
+BehaviourTree.Core.BlackBoard:Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:456)
+BehaviourTree.Core.BlackBoard:BehaviourTree.Core.IBlackBoardAccess.Get<int> (int) (at Assets/Scripts/BehaviourTree/Core/BlackBoard.cs:528)
+(wrapper dynamic-method) object:lambda_method (System.Runtime.CompilerServices.Closure,BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess)
+BehaviourTree.Core.FieldBinding:ReadFromBBGeneric (BehaviourTree.Core.NodeMethod,BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:109)
+BehaviourTree.Core.NodeMethod:ResolveInputsGeneric (BehaviourTree.Core.IBlackBoardAccess) (at Assets/Scripts/BehaviourTree/Core/NodeMethod.cs:303)
+BehaviourTree.Runtime.Tests.CommanderCompositeTests:GetNearestAgent_SelectsNearestAmongValidPositions () (at Assets/Scripts/BehaviourTree/Runtime/Tests/CommanderCompositeTests.cs:1053)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[BB.Initialize] def='' totalSlots=5 serializedRefs.Count=0
+[BB.Initialize]   var[0]='AgentPosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=3 baseSlot=0
+[BB.Initialize]   var[1]='ReferencePosition' type=UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null stride=1 baseSlot=3
+[BB.Initialize]   var[2]='_targetAgentID' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=1 baseSlot=4
+[BB.Initialize]   slot[0] kind=Value serializedRef='null'
+[BB.Initialize]   slot[1] kind=Value serializedRef='null'
+[BB.Initialize]   slot[2] kind=Value serializedRef='null'
+[BB.Initialize]   slot[3] kind=Value serializedRef='null'
+[BB.Initialize]   slot[4] kind=Value serializedRef='null'
+[Blackboard] Unexpected type in BB: index 0 expected Int32 but found Vector3. Data loss may have occurred.
+[Blackboard] Unexpected type in BB: index 3 expected Int32 but found Vector3. Data loss may have occurred.
+]]></output>
+              </test-case>
+              <test-case id="1063" name="RoundTrip_GetHighestThenSelectAgent_ChildWritesToCorrectSlot" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests.RoundTrip_GetHighestThenSelectAgent_ChildWritesToCorrectSlot" methodname="RoundTrip_GetHighestThenSelectAgent_ChildWritesToCorrectSlot" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" seed="1012594040" result="Failed" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.007657" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 2
+  But was:  0
+]]></message>
+                  <stack-trace><![CDATA[at BehaviourTree.Runtime.Tests.CommanderCompositeTests.RoundTrip_GetHighestThenSelectAgent_ChildWritesToCorrectSlot () [0x00131] in D:\Dev\BehaviourTreeEditor\Assets\Scripts\BehaviourTree\Runtime\Tests\CommanderCompositeTests.cs:1238
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[BB.Initialize] def='' totalSlots=7 serializedRefs.Count=0
+[BB.Initialize]   var[0]='AgentValue' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=3 baseSlot=0
+[BB.Initialize]   var[1]='_targetAgentID' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=1 baseSlot=3
+[BB.Initialize]   var[2]='AgentOrder' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=3 baseSlot=4
+[BB.Initialize]   slot[0] kind=Value serializedRef='null'
+[BB.Initialize]   slot[1] kind=Value serializedRef='null'
+[BB.Initialize]   slot[2] kind=Value serializedRef='null'
+[BB.Initialize]   slot[3] kind=Value serializedRef='null'
+[BB.Initialize]   slot[4] kind=Value serializedRef='null'
+[BB.Initialize]   slot[5] kind=Value serializedRef='null'
+[BB.Initialize]   slot[6] kind=Value serializedRef='null'
+]]></output>
+              </test-case>
+              <test-case id="1062" name="RoundTrip_GetLowestThenSelectAgent_ChildWritesToCorrectSlot" fullname="BehaviourTree.Runtime.Tests.CommanderCompositeTests.RoundTrip_GetLowestThenSelectAgent_ChildWritesToCorrectSlot" methodname="RoundTrip_GetLowestThenSelectAgent_ChildWritesToCorrectSlot" classname="BehaviourTree.Runtime.Tests.CommanderCompositeTests" runstate="Runnable" seed="627334306" result="Failed" start-time="2026-06-21 13:32:08Z" end-time="2026-06-21 13:32:08Z" duration="0.005278" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  Expected: 1
+  But was:  0
+]]></message>
+                  <stack-trace><![CDATA[at BehaviourTree.Runtime.Tests.CommanderCompositeTests.RoundTrip_GetLowestThenSelectAgent_ChildWritesToCorrectSlot () [0x00145] in D:\Dev\BehaviourTreeEditor\Assets\Scripts\BehaviourTree\Runtime\Tests\CommanderCompositeTests.cs:1175
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[[BB.Initialize] def='' totalSlots=7 serializedRefs.Count=0
+[BB.Initialize]   var[0]='AgentValue' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=3 baseSlot=0
+[BB.Initialize]   var[1]='_targetAgentID' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=1 baseSlot=3
+[BB.Initialize]   var[2]='AgentOrder' type=System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089 stride=3 baseSlot=4
+[BB.Initialize]   slot[0] kind=Value serializedRef='null'
+[BB.Initialize]   slot[1] kind=Value serializedRef='null'
+[BB.Initialize]   slot[2] kind=Value serializedRef='null'
+[BB.Initialize]   slot[3] kind=Value serializedRef='null'
+[BB.Initialize]   slot[4] kind=Value serializedRef='null'
+[BB.Initialize]   slot[5] kind=Value serializedRef='null'
+[BB.Initialize]   slot[6] kind=Value serializedRef='null'
+Saving results to: C:/Users/jinzh/AppData/LocalLow/DefaultCompany/BehaviourTreeEditor\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

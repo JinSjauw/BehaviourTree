@@ -3,17 +3,20 @@ using BehaviourTree.Core;
 namespace BehaviourTree.Runtime.Methods
 {
     /// <summary>
-    /// ForEachRole ticks children for agents whose TacticalRole matches the target
+    /// ForEachRole ticks all children for agents whose TacticalRole matches the target
     /// role read from the squad BB. All three values come from squad-def variables.
     /// Continues past child SUCCESS and FAILURE — only RUNNING pauses the loop.
+    /// Resume position tracked via runningAgentIndex (agent) and activeChildIndex (child).
     /// </summary>
     [NodeMethod("ForEachRole", allowedTreeType = AllowedTreeType.Commander)]
     public sealed class ForEachRoleMethod : CompositeMethod
     {
-        /// <summary>Baked slot offset of the AgentRole squad-data variable.
+        /// <summary>Baked slot offset of the AgentRoles squad-data variable.
+        /// Auto-bound to "AgentRoles" by convention — not visible in the inspector.
         /// After ResolveInputsGeneric the field holds the base value;
         /// bindings[0].bbSlotIndex gives the raw offset for per-agent reads.</summary>
-        [SharedVar] public int agentRoleSlot;
+        [SharedVar(IsHidden = true, AutoVariableName = "AgentRoles")]
+        public int agentRoleSlot;
 
         /// <summary>Target role to match. When toggle is OFF: TacticalRole enum dropdown (baked as constant).
         /// When toggle is ON: reads from a squad BB int variable (dynamic per-frame).</summary>
@@ -27,17 +30,20 @@ namespace BehaviourTree.Runtime.Methods
 
             BlackBoard bb = ctx.blackBoard;
             int savedOffset = bb.currentAgentOffset;
-            int startIndex = ctx.runningAgentIndex[nodeIndex];
 
             int roleSlot = GetSlotByName(nameof(agentRoleSlot));
             if (roleSlot < 0) return NodeState.FAILURE;
 
             int targetRoleInt = targetRoleSlot;
 
-            int count = ctx.agentCount;
-            if (count <= 0) return NodeState.FAILURE;
+            int agentCount = ctx.agentCount;
+            if (agentCount <= 0) return NodeState.FAILURE;
 
-            for (int agentIndex = startIndex; agentIndex < count; agentIndex++)
+            int agentIndex = ctx.runningAgentIndex[nodeIndex];
+            int childIndex = ctx.activeChildIndex[nodeIndex];
+            int childCount = node.lastChildIndex - node.firstChildIndex + 1;
+
+            for (; agentIndex < agentCount; agentIndex++)
             {
                 object roleBoxed = bb.GetBoxed(roleSlot + agentIndex);
                 int roleInt = roleBoxed is int roleVal ? roleVal : 0;
@@ -48,20 +54,28 @@ namespace BehaviourTree.Runtime.Methods
 
                 bb.currentAgentOffset = agentIndex;
 
-                NodeState result = TickDispatcher.TickNode(node.firstChildIndex, ref ctx);
-
-                if (result == NodeState.RUNNING)
+                for (; childIndex < childCount; childIndex++)
                 {
-                    ctx.runningAgentIndex[nodeIndex] = agentIndex;
-                    bb.currentAgentOffset = savedOffset;
-                    return NodeState.RUNNING;
+                    int globalChildIndex = node.firstChildIndex + childIndex;
+                    NodeState result = TickDispatcher.TickNode(globalChildIndex, ref ctx);
+
+                    if (result == NodeState.RUNNING)
+                    {
+                        ctx.runningAgentIndex[nodeIndex] = agentIndex;
+                        ctx.activeChildIndex[nodeIndex] = childIndex;
+                        bb.currentAgentOffset = savedOffset;
+                        return NodeState.RUNNING;
+                    }
+
+                    // SUCCESS or FAILURE — continue to next child
                 }
 
-                // SUCCESS or FAILURE — continue to next agent
+                childIndex = 0;
             }
 
             bb.currentAgentOffset = savedOffset;
             ctx.runningAgentIndex[nodeIndex] = 0;
+            ctx.activeChildIndex[nodeIndex] = 0;
             return NodeState.SUCCESS;
         }
     }

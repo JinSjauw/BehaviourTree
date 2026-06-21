@@ -1,5 +1,33 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6666274825932632705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: 
+  children:
+  - {fileID: -4010920271429736121}
+  - {fileID: 7707967759770441163}
+  - {fileID: -4082139158420598114}
+  - {fileID: 6723386113716927207}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 94b072ccf0feff24dbf7b5097f5eb3b9
+  graphPosition: {x: 0, y: 399.99997}
+  runtimeIndex: 1
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+  abortType: 0
 --- !u!114 &-6547581460322908388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14,13 +42,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   nodeName: dwda
   children:
-  - {fileID: -6241964446423491603}
-  - {fileID: 6723386113716927207}
+  - {fileID: -6666274825932632705}
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
   guid: a4c219e3b444846488d06218b9085513
-  graphPosition: {x: -0, y: 280}
+  graphPosition: {x: 0, y: 210}
   runtimeIndex: 0
   compositeType: 1
   methodName: SELECTOR
@@ -44,14 +71,112 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 9428233c120be7b44b1030ded868e5b7
-  graphPosition: {x: -245, y: 490}
-  runtimeIndex: 1
+  graphPosition: {x: -490, y: 630}
+  runtimeIndex: 2
   subTreeAsset: {fileID: 11400000, guid: 8854f5a48d0cdbd4fa53e0503d04ddef, type: 2}
   bindings:
   - subtreeVariableName: testGO
     parentVariableName: TESTGO
   - subtreeVariableName: testInt
-    parentVariableName: TESTINTTTTTTTTTTTTTTTTTTTT
+    parentVariableName: 
+  - subtreeVariableName: AgentAssignedRole
+    parentVariableName: 
+  - subtreeVariableName: AgentReceivedOrder
+    parentVariableName: 
+--- !u!114 &-4082139158420598114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: BB_LogVector3
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 462793fbdcf71c64d9640452d5ddb716
+  graphPosition: {x: 105, y: 630}
+  runtimeIndex: 4
+  leafType: 3
+  methodName: BB_LogVector3
+  fieldEntries:
+  - fieldName: value
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: VECTOR3_MOVETARGET_AGENT
+    fieldTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+--- !u!114 &-4010920271429736121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: CheckOrder
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: d84910597e05b5b41a692779cf1a1524
+  graphPosition: {x: -257, y: 630}
+  runtimeIndex: 2
+  leafType: 2
+  methodName: CheckOrder
+  fieldEntries:
+  - fieldName: receivedOrderSlot
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: AgentReceivedOrder
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: expectedOrder
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: MOVE
+    isOrderConstant: 1
+    intValue: 1
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
 --- !u!114 &-3858515658822153359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,6 +194,8 @@ MonoBehaviour:
   - rid: 3017916911898329240
   - rid: 3017916911898329343
   - rid: 3017916911898329347
+  - rid: 3017916911898329373
+  - rid: 3017916911898329469
   references:
     version: 2
     RefIds:
@@ -97,7 +224,7 @@ MonoBehaviour:
     - rid: 3017916911898329343
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: TEST
+        variableName: TESTGO
         variableStride: 1
         variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
@@ -115,6 +242,28 @@ MonoBehaviour:
         isSquadData: 0
         isSystemVariable: 0
         singleValue: 0
+        arrayValues: []
+    - rid: 3017916911898329373
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: VECTOR3_MOVETARGET_AGENT
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        isSystemVariable: 0
+        singleValue: {x: 2, y: 2, z: 2}
+        arrayValues: []
+    - rid: 3017916911898329469
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: newVariable
+        variableStride: 1
+        variableTypeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        isSystemVariable: 0
+        singleValue: WOW
         arrayValues: []
 --- !u!114 &-3456654351379911066
 MonoBehaviour:
@@ -155,14 +304,16 @@ MonoBehaviour:
   squadConnections:
   - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
     assignedRoles:
-    - ASSAULT
-    - FLANKER
     - TESTROLE
   nodesList:
   - {fileID: -3456654351379911066}
   - {fileID: -6547581460322908388}
   - {fileID: -6241964446423491603}
   - {fileID: 6723386113716927207}
+  - {fileID: -6666274825932632705}
+  - {fileID: -4082139158420598114}
+  - {fileID: -4010920271429736121}
+  - {fileID: 7707967759770441163}
   editorNotes: []
 --- !u!114 &6723386113716927207
 MonoBehaviour:
@@ -182,8 +333,8 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: c87110fa0a02f2e4f85b8248a6513e37
-  graphPosition: {x: 245, y: 490}
-  runtimeIndex: 2
+  graphPosition: {x: 280, y: 630}
+  runtimeIndex: 5
   leafType: 3
   methodName: WaitSeconds
   fieldEntries:
@@ -193,8 +344,49 @@ MonoBehaviour:
     isArray: 0
     variableName: 
     fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
     intValue: 0
-    floatValue: 10
+    floatValue: 2
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+--- !u!114 &7707967759770441163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: LogVariable
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 1a5527161bc409c40a62b997eadfed3f
+  graphPosition: {x: -83, y: 630}
+  runtimeIndex: 3
+  leafType: 3
+  methodName: LogVariable
+  fieldEntries:
+  - fieldName: variable
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: newVariable
+    fieldTypeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}

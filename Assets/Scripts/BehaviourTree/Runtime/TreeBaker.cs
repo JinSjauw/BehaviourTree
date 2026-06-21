@@ -8,12 +8,13 @@ namespace BehaviourTree.Runtime
 {
     public static class TreeBaker
     {
-        public static BlackboardDefinition BakeTree(BehaviourNode root, BehaviourTreeAssetBase asset, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref object[] boxedConstants, ref string[] nodeGuids, out int maxTreeDepth)
+        public static BlackboardDefinition BakeTree(BehaviourNode root, BehaviourTreeAssetBase asset, ref NodeData[] nodeDatas, ref FieldData[] fieldDatas, ref string[] fieldTypeNames, ref object[] boxedConstants, ref string[] nodeGuids, out int maxTreeDepth)
         {
             if (root == null)
             {
                 nodeDatas = Array.Empty<NodeData>();
                 fieldDatas = Array.Empty<FieldData>();
+                fieldTypeNames = Array.Empty<string>();
                 boxedConstants = Array.Empty<object>();
                 nodeGuids = Array.Empty<string>();
                 maxTreeDepth = 0;
@@ -24,6 +25,7 @@ namespace BehaviourTree.Runtime
 
             BlackboardDefinition runtimeBbDef = ScriptableObject.CreateInstance<BlackboardDefinition>();
             runtimeBbDef.name = "RuntimeMerged_BB";
+            runtimeBbDef.sourceTreeAsset = asset;
 
             BlackboardDefinition selfDef = asset != null ? asset.BlackboardDefinition : null;
 
@@ -31,10 +33,13 @@ namespace BehaviourTree.Runtime
             if (selfDef != null)
                 CopyGenericVariables(runtimeBbDef, selfDef);
 
-            // 2. Append commander BB variables (preserving stride for per-agent arrays)
+            // 2. Append commander BB variables.
+            // Commander trees need the actual stride so that baked slot offsets
+            // match the storage layout (which is initialized with the same stride).
+            // Agent trees only need 1 slot per variable (squad data is copied in single-slot).
             BlackboardDefinition commanderDef = asset != null ? asset.CommanderBlackboardDefinition : null;
             if (commanderDef != null)
-                CopyGenericVariables(runtimeBbDef, commanderDef, withStrideOfOne: true);
+                CopyGenericVariables(runtimeBbDef, commanderDef, withStrideOfOne: !asset.PreserveCommanderStride);
 
             IReadOnlyList<BlackboardVariableBase> allVars = runtimeBbDef.GetAllVariables();
             Dictionary<string, int> rootVarIndexByName = new Dictionary<string, int>();
@@ -81,8 +86,10 @@ namespace BehaviourTree.Runtime
 
             fieldDatas = new FieldData[totalFieldDataCount];
             List<object> boxedConstantsList = new List<object>();
-            FillNodeData(nodeDatas, fieldDatas, boxedConstantsList, nodeGuids, instances, firstChild, lastChild, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName);
+            List<string> fieldTypeNamesList = new List<string>();
+            FillNodeData(nodeDatas, fieldDatas, boxedConstantsList, fieldTypeNamesList, nodeGuids, instances, firstChild, lastChild, scopeVarIndexByName, runtimeBbDef, rootVarIndexByName);
             boxedConstants = boxedConstantsList.Count > 0 ? boxedConstantsList.ToArray() : Array.Empty<object>();
+            fieldTypeNames = fieldTypeNamesList.Count > 0 ? fieldTypeNamesList.ToArray() : Array.Empty<string>();
             return runtimeBbDef;
         }
 
@@ -319,6 +326,7 @@ namespace BehaviourTree.Runtime
             NodeData[] nodeDataArray,
             FieldData[] fieldDataArray,
             List<object> boxedConstantsList,
+            List<string> fieldTypeNamesList,
             string[] nodeGuids,
             List<BakedNodeInstance> instances,
             List<int> firstChild,
@@ -361,7 +369,7 @@ namespace BehaviourTree.Runtime
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
                         for (int fieldIndex = 0; fieldIndex < action.fieldEntries.Count; fieldIndex++)
                         {
-                            PackFieldEntryWithArray(action.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, boxedConstantsList, ref currentFieldDataOffset);
+                            PackFieldEntryWithArray(action.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, boxedConstantsList, fieldTypeNamesList, ref currentFieldDataOffset);
                         }
                     }
                 }
@@ -380,7 +388,7 @@ namespace BehaviourTree.Runtime
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
                         for (int fieldIndex = 0; fieldIndex < decorator.fieldEntries.Count; fieldIndex++)
                         {
-                            PackFieldEntryWithArray(decorator.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, boxedConstantsList, ref currentFieldDataOffset);
+                            PackFieldEntryWithArray(decorator.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, boxedConstantsList, fieldTypeNamesList, ref currentFieldDataOffset);
                         }
                     }
                 }
@@ -397,7 +405,7 @@ namespace BehaviourTree.Runtime
                         Dictionary<string, int> map = GetScopeMap(scopePrefix, scopeVarIndexByName, rootVarIndexByName);
                         for (int fieldIndex = 0; fieldIndex < composite.fieldEntries.Count; fieldIndex++)
                         {
-                            PackFieldEntryWithArray(composite.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, boxedConstantsList, ref currentFieldDataOffset);
+                            PackFieldEntryWithArray(composite.fieldEntries[fieldIndex], map, runtimeBbDef, fieldDataArray, boxedConstantsList, fieldTypeNamesList, ref currentFieldDataOffset);
                         }
                     }
                 }
@@ -527,11 +535,13 @@ namespace BehaviourTree.Runtime
             BlackboardDefinition runtimeBbDef,
             FieldData[] fieldDataArray,
             List<object> boxedConstantsList,
+            List<string> fieldTypeNamesList,
             ref int offset)
         {
             if (!entry.isVariable)
             {
-                fieldDataArray[offset++] = PackFieldEntry(entry, varIndexByName, runtimeBbDef, boxedConstantsList);
+                fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
+                fieldDataArray[offset++] = PackFieldEntry(entry, varIndexByName, runtimeBbDef, boxedConstantsList, fieldTypeNamesList);
                 return;
             }
 
@@ -546,6 +556,7 @@ namespace BehaviourTree.Runtime
 #if UNITY_EDITOR
                 Debug.LogWarning($"[TreeBaker] Unresolved variable '{entry.variableName}' — not found in definition. varIndex={varIndex}, varCount={(allVars?.Count ?? -1)}");
 #endif
+                fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
                 fieldDataArray[offset++] = FieldData.FromVariable(-1);
                 return;
             }
@@ -555,16 +566,19 @@ namespace BehaviourTree.Runtime
 
             if (stride > 1)
             {
+                fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
                 fieldDataArray[offset++] = FieldData.FromVariable(baseSlot);
+                fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
                 fieldDataArray[offset++] = FieldData.FromConstant(stride);
             }
             else
             {
-                fieldDataArray[offset++] = PackFieldEntry(entry, varIndexByName, runtimeBbDef, boxedConstantsList);
+                fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
+                fieldDataArray[offset++] = PackFieldEntry(entry, varIndexByName, runtimeBbDef, boxedConstantsList, fieldTypeNamesList);
             }
         }
 
-        private static FieldData PackFieldEntry(NodeFieldEntry entry, Dictionary<string, int> varIndexByName, BlackboardDefinition runtimeBbDef, List<object> boxedConstantsList)
+        private static FieldData PackFieldEntry(NodeFieldEntry entry, Dictionary<string, int> varIndexByName, BlackboardDefinition runtimeBbDef, List<object> boxedConstantsList, List<string> fieldTypeNamesList)
         {
             if (entry.isVariable)
             {
@@ -587,7 +601,15 @@ namespace BehaviourTree.Runtime
                     else
                     {
                         Type expectedType = ResolveFieldType(entry);
-                        if (expectedType != null && !expectedType.IsAssignableFrom(bbType))
+                        if (expectedType == null)
+                        {
+#if UNITY_EDITOR
+                            Debug.LogWarning($"[TreeBaker] PackFieldEntry — cannot verify type for '{entry.variableName}': fieldTypeName is empty. " +
+                                             $"Open the node in the tree editor to re-serialize the field entry.");
+#endif
+                            varIndex = -1;
+                        }
+                        else if (!expectedType.IsAssignableFrom(bbType))
                         {
 #if UNITY_EDITOR
                             Debug.LogWarning($"[TreeBaker] PackFieldEntry type mismatch: '{entry.variableName}' bbType={bbType.Name} expectedType={expectedType.Name} entryFieldTypeName={entry.fieldTypeName}");
@@ -603,6 +625,26 @@ namespace BehaviourTree.Runtime
             // Constant path
             Type constType = ResolveFieldType(entry);
 
+            // Order constants — resolve name → index at bake time so reordering survives
+            if (entry.isOrderConstant && (constType == typeof(int) || constType == typeof(uint)))
+            {
+                int orderIndex = -1;
+                if (!string.IsNullOrEmpty(entry.stringValue))
+                {
+                    OrderRegistry registry = OrderRegistry.FindInstance();
+                    if (registry != null)
+                        orderIndex = registry.GetIndex(entry.stringValue);
+                }
+                if (orderIndex < 0)
+                {
+                    Debug.LogWarning(
+                        $"[TreeBaker] Order '{entry.stringValue}' not found in OrderRegistry. " +
+                        $"Defaulting to 0 for field '{entry.fieldName}'.");
+                    orderIndex = 0;
+                }
+                return FieldData.FromConstant(orderIndex);
+            }
+
             if (constType == typeof(int) || constType == typeof(uint))
                 return FieldData.FromConstant(entry.intValue);
             if (constType == typeof(float))
@@ -612,6 +654,7 @@ namespace BehaviourTree.Runtime
             if (constType != null && constType.IsEnum)
                 return FieldData.FromConstant(entry.intValue);
 
+            // Non-primitive types (Vector3, GameObject, etc.) must use boxed constants
             if (constType != null && boxedConstantsList != null)
             {
                 object boxedValue = GetConstantValue(entry, constType);
@@ -619,6 +662,20 @@ namespace BehaviourTree.Runtime
                 {
                     int boxedIndex = boxedConstantsList.Count;
                     boxedConstantsList.Add(boxedValue);
+                    return FieldData.FromBoxedConstant(boxedIndex);
+                }
+            }
+
+            // Fallback: type couldn't be resolved. Store as boxed constant if we can
+            // infer the value from the entry, otherwise produce a mode-0 zero that
+            // DeserializeFields will safely skip (IsPackedConstantType returns false).
+            if (boxedConstantsList != null)
+            {
+                object fallbackValue = GetConstantValue(entry, constType);
+                if (fallbackValue != null)
+                {
+                    int boxedIndex = boxedConstantsList.Count;
+                    boxedConstantsList.Add(fallbackValue);
                     return FieldData.FromBoxedConstant(boxedIndex);
                 }
             }

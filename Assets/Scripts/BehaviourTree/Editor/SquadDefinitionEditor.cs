@@ -233,7 +233,7 @@ namespace BehaviourTree.Editor
 
         private void OnBindingsExternallyChanged(SquadDefinition squad, object source)
         {
-            if ((Object)this == (Object)source) return;
+            if (ReferenceEquals(this, source)) return;
             if ((Object)squad == (Object)currentSquad)
                 RefreshUI();
         }

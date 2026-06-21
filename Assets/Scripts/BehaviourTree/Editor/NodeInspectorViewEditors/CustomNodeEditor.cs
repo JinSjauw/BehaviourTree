@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using BehaviourTree;
 using BehaviourTree.Core;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 namespace BehaviourTree.Editor
 {
@@ -132,6 +133,15 @@ namespace BehaviourTree.Editor
 
         private void BuildFieldEntries(string selectedMethodName, bool methodChanged)
         {
+            // Dynamic-type nodes (SetVariable, ClearVariable, CompareVariable) have
+            // ParameterCount > 0 but no [SharedVar] C# fields — render a custom inspector.
+            int dynamicParamCount = GetDynamicParameterCount(selectedMethodName);
+            if (dynamicParamCount > 0)
+            {
+                BuildDynamicFieldEntries(selectedMethodName, dynamicParamCount, methodChanged);
+                return;
+            }
+
             List<ParamInfo> paramInfoList = null;
             if (!string.IsNullOrEmpty(selectedMethodName))
                 paramInfoList = MethodMetadataCache.GetParamsForMethod(selectedMethodName);
@@ -159,6 +169,12 @@ namespace BehaviourTree.Editor
                     fieldTypeNameProp.stringValue = info.fieldType?.AssemblyQualifiedName ?? string.Empty;
                     isArrayProp.boolValue = info.isArray;
 
+                    if (methodChanged && info.isOrderDropdown)
+                    {
+                        SerializedProperty isOrderProp = entryProp.FindPropertyRelative("isOrderConstant");
+                        if (isOrderProp != null) isOrderProp.boolValue = true;
+                    }
+
                     EditorGUILayout.BeginVertical("box");
 
                     string typeLabel;
@@ -176,6 +192,18 @@ namespace BehaviourTree.Editor
                     EditorGUILayout.LabelField($"<b>{displayName}</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
 
                     isVariableProp.boolValue = info.isVariable || info.isArray;
+
+                    if (info.isHidden)
+                    {
+                        // Auto-fill variable binding by convention — no UI rendered
+                        if (methodChanged)
+                        {
+                            isVariableProp.boolValue = true;
+                            variableNameProp.stringValue = info.autoVariableName;
+                        }
+                        EditorGUILayout.EndVertical();
+                        continue;
+                    }
 
                     if(info.isToggleVariable)
                     {
@@ -234,6 +262,12 @@ namespace BehaviourTree.Editor
             if (info.isRoleDropdown)
             {
                 DrawRoleDropdown(entryProp);
+                return;
+            }
+
+            if (info.isOrderDropdown)
+            {
+                DrawOrderDropdown(entryProp);
                 return;
             }
 
@@ -414,6 +448,447 @@ namespace BehaviourTree.Editor
                 int newIndex = EditorGUILayout.Popup("Role", currentIndex, roleNames);
                 intValueProp.intValue = newIndex;
             }
+        }
+
+        private void DrawOrderDropdown(SerializedProperty entryProp)
+        {
+            SerializedProperty stringValueProp = entryProp.FindPropertyRelative("stringValue");
+            SerializedProperty intValueProp = entryProp.FindPropertyRelative("intValue");
+            SerializedProperty isOrderProp = entryProp.FindPropertyRelative("isOrderConstant");
+            if (stringValueProp == null || intValueProp == null) return;
+
+            if (isOrderProp != null)
+                isOrderProp.boolValue = true;
+
+            OrderRegistry registry = OrderRegistry.FindInstance();
+            if (registry == null || registry.orderNames == null || registry.orderNames.Count == 0)
+            {
+                EditorGUILayout.HelpBox(
+                    "No OrderRegistry asset found. Create one via Assets > Create > BehaviourTree > Order Registry.",
+                    MessageType.Warning);
+                return;
+            }
+
+            string currentName = stringValueProp.stringValue;
+            int currentIndex = 0;
+            if (!string.IsNullOrEmpty(currentName))
+            {
+                currentIndex = registry.orderNames.IndexOf(currentName);
+                if (currentIndex < 0) currentIndex = 0;
+            }
+
+            if (InspectorView.IsRenderingReadOnly)
+            {
+                string displayName = currentIndex < registry.orderNames.Count
+                    ? registry.orderNames[currentIndex]
+                    : "(unknown)";
+                EditorGUILayout.LabelField("Order", displayName);
+            }
+            else
+            {
+                EditorGUILayout.BeginHorizontal();
+                string buttonLabel = !string.IsNullOrEmpty(currentName) ? currentName : "Select Order...";
+                if (GUILayout.Button(buttonLabel, EditorStyles.popup))
+                {
+                    OrderSearchProvider provider = ScriptableObject.CreateInstance<OrderSearchProvider>();
+                    provider.registry = registry;
+                    provider.onOrderSelected = name =>
+                    {
+                        stringValueProp.stringValue = name;
+                        intValueProp.intValue = registry.orderNames.IndexOf(name);
+                        stringValueProp.serializedObject.ApplyModifiedProperties();
+                    };
+                    SearchWindow.Open(
+                        new SearchWindowContext(GUIUtility.GUIToScreenPoint(
+                            Event.current.mousePosition)), provider);
+                }
+                EditorGUILayout.LabelField(currentIndex.ToString(), GUILayout.Width(30));
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // Dynamic-Type Node Methods (SetVariable, ClearVariable, CompareVariable)
+        // ═══════════════════════════════════════════════════════════════
+
+        private const string SetVariableName = "SetVariable";
+        private const string ClearVariableName = "ClearVariable";
+        private const string CompareVariableName = "CompareVariable";
+        private const string LogVariableName = "LogVariable";
+
+        private static int GetDynamicParameterCount(string methodName)
+        {
+            return methodName switch
+            {
+                SetVariableName => 2,
+                ClearVariableName => 1,
+                CompareVariableName => 3,
+                LogVariableName => 1,
+                _ => 0
+            };
+        }
+
+        private void BuildDynamicFieldEntries(string methodName, int paramCount, bool methodChanged)
+        {
+            // Resize entries on method change
+            if (methodChanged)
+            {
+                while (fieldEntriesProp.arraySize < paramCount)
+                    fieldEntriesProp.InsertArrayElementAtIndex(fieldEntriesProp.arraySize);
+                while (fieldEntriesProp.arraySize > paramCount)
+                    fieldEntriesProp.DeleteArrayElementAtIndex(fieldEntriesProp.arraySize - 1);
+            }
+
+            if (fieldEntriesProp.arraySize < paramCount)
+                return;
+
+            // Read the currently selected type from entry 0's fieldTypeName
+            Type selectedType = null;
+            string typeName = string.Empty;
+            if (fieldEntriesProp.arraySize > 0)
+            {
+                SerializedProperty typeProp = fieldEntriesProp.GetArrayElementAtIndex(0)
+                    .FindPropertyRelative("fieldTypeName");
+                typeName = typeProp?.stringValue ?? string.Empty;
+                if (!string.IsNullOrEmpty(typeName))
+                    selectedType = FieldTypeHelper.TryGetSystemTypeFromName(typeName, out Type resolvedType) ? resolvedType : null;
+            }
+
+            // ── Type picker (shared by all three nodes) ──
+            EditorGUILayout.BeginVertical("box");
+            string typeLabel = selectedType != null ? selectedType.Name : "(none)";
+            EditorGUILayout.LabelField($"<b>Variable Type</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
+
+            if (!InspectorView.IsRenderingReadOnly)
+            {
+                if (GUILayout.Button("Pick Type...", GUILayout.Height(24)))
+                {
+                    VariableTypeSearchPopup popup = new VariableTypeSearchPopup(
+                        (Type varType, bool isArray, int stride, bool isSquadData) =>
+                        {
+                            string newTypeName = varType?.AssemblyQualifiedName ?? string.Empty;
+                            // Update fieldTypeName on all entries
+                            for (int i = 0; i < paramCount && i < fieldEntriesProp.arraySize; i++)
+                            {
+                                SerializedProperty ftProp = fieldEntriesProp.GetArrayElementAtIndex(i)
+                                    .FindPropertyRelative("fieldTypeName");
+                                if (ftProp != null) ftProp.stringValue = newTypeName;
+                            }
+                            // Store array mode on the first entry — drives dropdown filtering
+                            if (fieldEntriesProp.arraySize > 0)
+                            {
+                                fieldEntriesProp.GetArrayElementAtIndex(0)
+                                    .FindPropertyRelative("isArray").boolValue = isArray || isSquadData;
+                            }
+                            // Clear variable selections (type may not match anymore)
+                            for (int i = 0; i < paramCount && i < fieldEntriesProp.arraySize; i++)
+                            {
+                                SerializedProperty varProp = fieldEntriesProp.GetArrayElementAtIndex(i)
+                                    .FindPropertyRelative("variableName");
+                                if (varProp != null) varProp.stringValue = string.Empty;
+                            }
+                            fieldEntriesProp.serializedObject.ApplyModifiedProperties();
+                        }, isSquadContext: true);
+                    PopupWindow.Show(new Rect(GUIUtility.GUIToScreenPoint(Event.current.mousePosition), Vector2.zero), popup);
+                }
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // ── Node-specific fields ──
+            switch (methodName)
+            {
+                case SetVariableName:
+                    DrawSetVariableFields(selectedType);
+                    break;
+                case ClearVariableName:
+                    DrawClearVariableFields(selectedType);
+                    break;
+                case CompareVariableName:
+                    DrawCompareVariableFields(selectedType);
+                    break;
+                case LogVariableName:
+                    DrawLogVariableFields(selectedType);
+                    break;
+            }
+        }
+
+        private void DrawSetVariableFields(Type selectedType)
+        {
+            if (fieldEntriesProp.arraySize < 2) return;
+
+            SerializedProperty targetEntry = fieldEntriesProp.GetArrayElementAtIndex(0);
+            SerializedProperty valueEntry = fieldEntriesProp.GetArrayElementAtIndex(1);
+            bool isArray = fieldEntriesProp.arraySize > 0
+                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
+                : false;
+
+            // Ensure field names are set
+            targetEntry.FindPropertyRelative("fieldName").stringValue = "target";
+            targetEntry.FindPropertyRelative("isVariable").boolValue = true;
+            valueEntry.FindPropertyRelative("fieldName").stringValue = "value";
+
+            // Target variable dropdown
+            DrawVariableDropdownWithSquadFilter(targetEntry.FindPropertyRelative("variableName"), selectedType, isArray);
+
+            EditorGUILayout.Space();
+
+            // Value: toggle between constant and variable
+            SerializedProperty valueIsVar = valueEntry.FindPropertyRelative("isVariable");
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("<b>Value</b>", RichTextLabelStyle);
+
+            valueIsVar.boolValue = EditorGUILayout.Toggle("From Variable", valueIsVar.boolValue);
+
+            if (valueIsVar.boolValue)
+            {
+                DrawVariableDropdownWithSquadFilter(valueEntry.FindPropertyRelative("variableName"), selectedType, isArray);
+            }
+            else
+            {
+                DrawConstantFieldForType(valueEntry, selectedType);
+            }
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawClearVariableFields(Type selectedType)
+        {
+            if (fieldEntriesProp.arraySize < 1) return;
+
+            SerializedProperty targetEntry = fieldEntriesProp.GetArrayElementAtIndex(0);
+            bool isArray = fieldEntriesProp.arraySize > 0
+                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
+                : false;
+
+            targetEntry.FindPropertyRelative("fieldName").stringValue = "target";
+            targetEntry.FindPropertyRelative("isVariable").boolValue = true;
+
+            DrawVariableDropdownWithSquadFilter(targetEntry.FindPropertyRelative("variableName"), selectedType, isArray);
+        }
+
+        private void DrawLogVariableFields(Type selectedType)
+        {
+            if (fieldEntriesProp.arraySize < 1) return;
+
+            SerializedProperty variableEntry = fieldEntriesProp.GetArrayElementAtIndex(0);
+            bool isArray = fieldEntriesProp.arraySize > 0
+                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
+                : false;
+
+            variableEntry.FindPropertyRelative("fieldName").stringValue = "variable";
+            variableEntry.FindPropertyRelative("isVariable").boolValue = true;
+
+            DrawVariableDropdownWithSquadFilter(variableEntry.FindPropertyRelative("variableName"), selectedType, isArray);
+        }
+
+        private void DrawCompareVariableFields(Type selectedType)
+        {
+            if (fieldEntriesProp.arraySize < 3) return;
+
+            SerializedProperty entryA = fieldEntriesProp.GetArrayElementAtIndex(0);
+            SerializedProperty entryB = fieldEntriesProp.GetArrayElementAtIndex(1);
+            SerializedProperty entryOp = fieldEntriesProp.GetArrayElementAtIndex(2);
+            bool isArray = fieldEntriesProp.arraySize > 0
+                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
+                : false;
+
+            entryA.FindPropertyRelative("fieldName").stringValue = "a";
+            entryA.FindPropertyRelative("isVariable").boolValue = true;
+            entryB.FindPropertyRelative("fieldName").stringValue = "b";
+            entryOp.FindPropertyRelative("fieldName").stringValue = "operation";
+            entryOp.FindPropertyRelative("isVariable").boolValue = false;
+            entryOp.FindPropertyRelative("fieldTypeName").stringValue = typeof(int).AssemblyQualifiedName;
+
+            // Variable A
+            DrawVariableDropdownWithSquadFilter(entryA.FindPropertyRelative("variableName"), selectedType, isArray);
+
+            EditorGUILayout.Space();
+
+            // Value B: constant or from variable
+            SerializedProperty bIsVar = entryB.FindPropertyRelative("isVariable");
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("<b>Compare With</b>", RichTextLabelStyle);
+            bIsVar.boolValue = EditorGUILayout.Toggle("From Variable", bIsVar.boolValue);
+
+            if (bIsVar.boolValue)
+            {
+                DrawVariableDropdownWithSquadFilter(entryB.FindPropertyRelative("variableName"), selectedType, isArray);
+            }
+            else
+            {
+                DrawConstantFieldForType(entryB, selectedType);
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // Operation dropdown
+            SerializedProperty intValueProp = entryOp.FindPropertyRelative("intValue");
+            string[] opNames = GetCompareOpNames(selectedType);
+            int currentOp = intValueProp.intValue;
+            if (currentOp < 0 || currentOp >= opNames.Length) currentOp = 0;
+            intValueProp.intValue = EditorGUILayout.Popup("Operation", currentOp, opNames);
+        }
+
+        /// <summary>
+        /// Variable dropdown filtered by type and stride mode (array vs singular).
+        /// When isArray is true, only shows stride > 1 variables (squad data).
+        /// When isArray is false, only shows stride <= 1 variables (singular).
+        /// </summary>
+        private void DrawVariableDropdownWithSquadFilter(SerializedProperty variableNameProp, Type expectedType, bool isArray)
+        {
+            if (expectedType == null)
+            {
+                EditorGUILayout.HelpBox("Select a variable type first using the 'Pick Type' button above.", MessageType.Info);
+                return;
+            }
+
+            BlackboardDefinition blackBoardDef = BehaviourTreeEditor.currentBlackboardDef;
+            if (blackBoardDef == null)
+            {
+                EditorGUILayout.HelpBox("No Blackboard Definition assigned.", MessageType.Warning);
+                return;
+            }
+
+            IReadOnlyList<BlackboardVariableBase> allVars = blackBoardDef.GetAllVariables();
+            if (allVars == null || allVars.Count == 0)
+            {
+                EditorGUILayout.HelpBox("No Blackboard variables added.", MessageType.Warning);
+                return;
+            }
+
+            matchingVars.Clear();
+            matchingVarNames.Clear();
+            for (int variableIndex = 0; variableIndex < allVars.Count; variableIndex++)
+            {
+                BlackboardVariableBase bv = allVars[variableIndex];
+                Type bbType = bv.GetValueType();
+                if (bbType == null) continue;
+                if (bbType != expectedType) continue;
+
+                // Filter by stride: array mode shows stride > 1, singular shows stride <= 1
+                if (isArray)
+                {
+                    if (bv.Stride <= 1) continue;
+                    matchingVars.Add($"{bv.Name} [{bv.Stride}]");
+                }
+                else
+                {
+                    if (bv.Stride > 1) continue;
+                    matchingVars.Add(bv.Name);
+                }
+                matchingVarNames.Add(bv.Name);
+            }
+
+            if (matchingVars.Count == 0)
+            {
+                string modeLabel = isArray ? "array" : "singular";
+                EditorGUILayout.HelpBox(
+                    $"No {modeLabel} variable of type '{expectedType.Name}' in Blackboard. " +
+                    "Use the 'Pick Type' button to change the type or array/singular mode.",
+                    MessageType.Info);
+                variableNameProp.stringValue = "";
+                return;
+            }
+
+            matchingVars.Insert(0, "Select a variable...");
+            matchingVarNames.Insert(0, string.Empty);
+
+            string currentVal = variableNameProp.stringValue;
+            int selectedIndex = matchingVarNames.IndexOf(currentVal);
+            if (selectedIndex < 0) selectedIndex = 0;
+
+            if (InspectorView.IsRenderingReadOnly)
+            {
+                EditorGUILayout.LabelField("Variable", currentVal);
+            }
+            else
+            {
+                string previousVal = variableNameProp.stringValue;
+                selectedIndex = EditorGUILayout.Popup("Variable", selectedIndex, matchingVars.ToArray());
+                variableNameProp.stringValue = matchingVarNames[selectedIndex];
+                if (variableNameProp.stringValue != previousVal)
+                    nodeVisualsChangedThisFrame = true;
+            }
+        }
+
+        /// <summary>
+        /// Renders a constant field appropriate for the given type,
+        /// reading/writing to the NodeFieldEntry's typed value properties.
+        /// </summary>
+        private void DrawConstantFieldForType(SerializedProperty entryProp, Type fieldType)
+        {
+            if (fieldType == null)
+            {
+                EditorGUILayout.HelpBox("No type selected.", MessageType.Warning);
+                return;
+            }
+
+            if (fieldType.IsEnum)
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("intValue");
+                int currentRaw = prop.intValue;
+                Enum current = (Enum)Enum.ToObject(fieldType, currentRaw);
+                Enum next = EditorGUILayout.EnumPopup("Value", current);
+                prop.intValue = Convert.ToInt32(next);
+            }
+            else if (fieldType == typeof(int) || fieldType == typeof(uint))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("intValue");
+                prop.intValue = EditorGUILayout.IntField("Value", prop.intValue);
+            }
+            else if (fieldType == typeof(float))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("floatValue");
+                prop.floatValue = EditorGUILayout.FloatField("Value", prop.floatValue);
+            }
+            else if (fieldType == typeof(bool))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("boolValue");
+                prop.boolValue = EditorGUILayout.Toggle("Value", prop.boolValue);
+            }
+            else if (fieldType == typeof(Vector2))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("vector2Value");
+                prop.vector2Value = EditorGUILayout.Vector2Field("Value", prop.vector2Value);
+            }
+            else if (fieldType == typeof(Vector3))
+            {
+                SerializedProperty prop = entryProp.FindPropertyRelative("vector3Value");
+                prop.vector3Value = EditorGUILayout.Vector3Field("Value", prop.vector3Value);
+            }
+            else if (typeof(UnityEngine.Object).IsAssignableFrom(fieldType))
+            {
+                SerializedProperty prop = fieldType == typeof(GameObject)
+                    ? entryProp.FindPropertyRelative("gameObjectValue")
+                    : entryProp.FindPropertyRelative("transformValue");
+                prop.objectReferenceValue = EditorGUILayout.ObjectField("Value", prop.objectReferenceValue, fieldType, true);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(
+                    $"Type '{fieldType.Name}' is not supported for constant values. Use a variable source instead.",
+                    MessageType.Warning);
+            }
+        }
+
+        /// <summary>
+        /// Returns the subset of VariableCompareOp names applicable to the given type.
+        /// </summary>
+        private static string[] GetCompareOpNames(Type fieldType)
+        {
+            if (fieldType == null)
+                return new[] { "Equal", "NotEqual" };
+
+            if (fieldType == typeof(Vector2) || fieldType == typeof(Vector3))
+                return new[] { "Equal", "NotEqual", "Mag <", "Mag <=", "Mag >", "Mag >=" };
+
+            if (fieldType == typeof(int) || fieldType == typeof(float))
+                return new[] { "Equal", "NotEqual", "Less", "LessOrEqual", "Greater", "GreaterOrEqual" };
+
+            // bool, enum, GameObject, Transform, etc.
+            return new[] { "Equal", "NotEqual" };
         }
 
         private static bool HasValidConditionForAbort(CompositeNode composite, AbortType abortType)

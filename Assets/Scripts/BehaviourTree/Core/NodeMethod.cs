@@ -201,6 +201,23 @@ namespace BehaviourTree.Core
         }
 
         /// <summary>
+        /// Number of parameter slots this method expects. Default 0 means
+        /// "determine from [SharedVar] field count". Override to a positive
+        /// number for dynamic-type nodes that receive FieldData directly
+        /// via <see cref="DeserializeParameters"/> without C# [SharedVar] fields.
+        /// </summary>
+        public virtual int ParameterCount => 0;
+
+        /// <summary>
+        /// Called once during tree initialization for nodes with <see cref="ParameterCount"/> > 0.
+        /// Receives FieldData and type names directly — the node stores slot indices / constant values
+        /// in its own fields. No FieldBindings are created.
+        /// Fields with mode=1 contain slot offsets; mode=0 contain packed constants (use fieldTypeNames
+        /// to interpret float bit patterns); mode=2 contain boxed constants.
+        /// </summary>
+        public virtual void DeserializeParameters(ReadOnlySpan<FieldData> fields, string[] fieldTypeNames, object[] boxedConstants) { }
+
+        /// <summary>
         /// Stable string identifier for this method. Defaults to the class name.
         /// Override or use [NodeMethod("name")] to customize.
         /// </summary>
@@ -255,17 +272,26 @@ namespace BehaviourTree.Core
 
             this.boxedConstants = boxedConstants;
 
-            int fieldCount = Math.Min(this.bindings != null ? this.bindings.Length : 0, fields.Length);
-            for (int i = 0; i < fieldCount; i++)
+            int bindingCount = this.bindings != null ? this.bindings.Length : 0;
+            int fieldIndex = 0;
+            for (int i = 0; i < bindingCount; i++)
             {
+                if (fieldIndex >= fields.Length) break;
+
                 FieldBinding binding = this.bindings[i];
                 if (binding == null) continue;
 
-                ref readonly FieldData fd = ref fields[i];
+                ref readonly FieldData fd = ref fields[fieldIndex];
+                bool isVariableField = fd.IsVariable;
+
                 if (fd.IsConstant)
                 {
-                    object constValue = ReadConstant(fd, binding.fieldInfo.FieldType, boxedConstants);
-                    binding.fieldInfo.SetValue(this, constValue);
+                    Type fieldType = binding.fieldInfo.FieldType;
+                    if (IsPackedConstantType(fieldType))
+                    {
+                        object constValue = ReadConstant(fd, fieldType, boxedConstants);
+                        binding.fieldInfo.SetValue(this, constValue);
+                    }
                     binding.bbSlotIndex = -1;
                 }
                 else if (fd.IsBoxedConstant)
@@ -277,13 +303,21 @@ namespace BehaviourTree.Core
                     binding.bbSlotIndex = -1;
                 }
                 else
-            {
-                binding.bbSlotIndex = fd.value;
-                binding.CompileAccessors(GetType());
+                {
+                    binding.bbSlotIndex = fd.value;
+                    binding.CompileAccessors(GetType());
 #if UNITY_EDITOR
-                //Debug.Log($"[DeserializeFields] '{GetType().Name}' field='{binding.fieldInfo.Name}' bbSlotIndex={binding.bbSlotIndex} fd.value={fd.value}");
+                    //Debug.Log($"[DeserializeFields] '{GetType().Name}' field='{binding.fieldInfo.Name}' bbSlotIndex={binding.bbSlotIndex} fd.value={fd.value}");
 #endif
-            }
+                }
+
+                fieldIndex++;
+
+                // TreeBaker injects a stride constant after variable fields with stride > 1:
+                //   [FromVariable(baseSlot), FromConstant(stride)]
+                // Skip it so the next binding reads the correct FieldData entry.
+                if (isVariableField && fieldIndex < fields.Length - 1 && fields[fieldIndex].IsConstant)
+                    fieldIndex++;
             }
         }
 
@@ -329,6 +363,21 @@ namespace BehaviourTree.Core
         /// across agents and not safe to use here.
         /// </summary>
         public virtual void OnAbort(IBlackBoardAccess bbAccess) { }
+
+        /// <summary>
+        /// Returns true when the given type can be stored in packed constant form (mode=0).
+        /// Only int, float, bool, and enums fit in FieldData's 4-byte value field.
+        /// Everything else (Vector3, GameObject, etc.) must use boxed constants (mode=2).
+        /// </summary>
+        private static bool IsPackedConstantType(Type fieldType)
+        {
+            if (fieldType == null) return false;
+            return fieldType == typeof(int)
+                || fieldType == typeof(uint)
+                || fieldType == typeof(float)
+                || fieldType == typeof(bool)
+                || fieldType.IsEnum;
+        }
 
         private static object ReadConstant(FieldData fd, Type fieldType, object[] boxedConstants)
         {

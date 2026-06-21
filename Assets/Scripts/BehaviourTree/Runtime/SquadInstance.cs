@@ -10,7 +10,10 @@ namespace BehaviourTree.Runtime
     /// 
     /// Bindings are resolved lazily: when a tree registers with this squad,
     /// EnsureResolved() matches the tree's BlackboardDefinition against the
-    /// SquadDefinition's binding groups to build flat [srcSlot, dstSlot] copy arrays.
+    /// SquadDefinition's binding groups to build flat copy arrays.
+    /// 
+    /// Copy arrays use triplets: [srcSlot, dstSlot, stride]. Stride > 1 means
+    /// the squad-side slot is per-agent data and needs an agentOffset applied.
     /// </summary>
     [RequireComponent(typeof(BlackBoard))]
     public class SquadInstance : MonoBehaviour
@@ -37,7 +40,13 @@ namespace BehaviourTree.Runtime
                 blackBoard = GetComponent<BlackBoard>();
 
             if (definition != null)
+            {
+                // OnValidate handles stride in editor but NOT at runtime.
+                // Serialized stride defaults to 1 — we must apply maxAgents stride
+                // before initializing the BB so per-agent storage is sized correctly.
+                definition.EnsureStrideApplied();
                 blackBoard.Initialize(definition.blackboardDefinition);
+            }
 
             copyToCache = new Dictionary<BlackboardDefinition, int[]>();
             copyFromCache = new Dictionary<BlackboardDefinition, int[]>();
@@ -67,7 +76,17 @@ namespace BehaviourTree.Runtime
             for (int i = 0; i < definition.bindingGroups.Count; i++)
             {
                 SquadBindingGroup group = definition.bindingGroups[i];
-                if (group.treeAsset != null && group.treeAsset.BlackboardDefinition == treeDef)
+                if (group.treeAsset == null) continue;
+
+                // Editor: fast path via ScriptableObject reference equality
+                if (treeDef.sourceTreeAsset != null && group.treeAsset == treeDef.sourceTreeAsset)
+                {
+                    matchedGroup = group;
+                    break;
+                }
+                // Build / baked: fall back to GUID matching
+                if (!string.IsNullOrEmpty(group.treeAssetGuid) &&
+                    group.treeAssetGuid == treeDef.sourceTreeGuid)
                 {
                     matchedGroup = group;
                     break;
@@ -106,18 +125,28 @@ namespace BehaviourTree.Runtime
                 int squadBaseSlot = ComputeBaseSlot(squadDef, squadVarIndex);
                 int treeBaseSlot = ComputeBaseSlot(treeDef, treeVarIndex);
 
-                // FromSquad: squad → tree
+                IReadOnlyList<BlackboardVariableBase> squadVars = squadDef.GetAllVariables();
+                int squadStride = 1;
+                if (squadVarIndex >= 0 && squadVarIndex < squadVars.Count)
+                {
+                    BlackboardVariableBase squadVar = squadVars[squadVarIndex];
+                    squadStride = (squadVar.Stride > 1) ? squadVar.Stride : 1;
+                }
+
+                // FromSquad: squad → tree (triplet: srcSlot, dstSlot, stride)
                 if (binding.direction == BindingDirection.FromSquad || binding.direction == BindingDirection.Both)
                 {
                     toTree.Add(squadBaseSlot);
                     toTree.Add(treeBaseSlot);
+                    toTree.Add(squadStride);
                 }
 
-                // ToSquad: tree → squad
+                // ToSquad: tree → squad (triplet: srcSlot, dstSlot, stride)
                 if (binding.direction == BindingDirection.ToSquad || binding.direction == BindingDirection.Both)
                 {
                     fromTree.Add(treeBaseSlot);
                     fromTree.Add(squadBaseSlot);
+                    fromTree.Add(squadStride);
                 }
             }
 
@@ -128,27 +157,77 @@ namespace BehaviourTree.Runtime
         /// <summary>
         /// Copies squad BB values to the given tree's BB, respecting binding directions.
         /// Only copies FromSquad and Both bindings.
+        /// When agentOffset is >= 0, squad-side slots for stride > 1 variables are offset
+        /// by agentOffset to read the correct per-agent data (agent tree, stride=1 on tree side).
+        /// When agentOffset is -1 (commander case), all stride slots are copied —
+        /// both sides have stride > 1 and need a full sync.
         /// </summary>
-        public void CopyToBB(BlackBoard treeBB, BlackboardDefinition treeDef)
+        public void CopyToBB(BlackBoard treeBB, BlackboardDefinition treeDef, int agentOffset = -1)
         {
-            if (!copyToCache.TryGetValue(treeDef, out int[] pairs) || pairs.Length == 0)
+            if (!copyToCache.TryGetValue(treeDef, out int[] triplets) || triplets.Length == 0)
                 return;
 
-            for (int i = 0; i < pairs.Length; i += 2)
-                treeBB.SetBoxed(pairs[i + 1], blackBoard.GetBoxed(pairs[i]));
+            for (int i = 0; i < triplets.Length; i += 3)
+            {
+                int srcSlot = triplets[i];
+                int dstSlot = triplets[i + 1];
+                int stride = triplets[i + 2];
+
+                if (agentOffset >= 0)
+                {
+                    // Per-agent copy: offset only the squad-side slot
+                    int offset = (stride > 1 && agentOffset < stride) ? agentOffset : 0;
+                    treeBB.SetBoxed(dstSlot, blackBoard.GetBoxed(srcSlot + offset));
+                }
+                else if (stride > 1)
+                {
+                    // Commander sync: copy all stride slots (both sides have stride > 1)
+                    for (int j = 0; j < stride; j++)
+                        treeBB.SetBoxed(dstSlot + j, blackBoard.GetBoxed(srcSlot + j));
+                }
+                else
+                {
+                    treeBB.SetBoxed(dstSlot, blackBoard.GetBoxed(srcSlot));
+                }
+            }
         }
 
         /// <summary>
         /// Copies tree BB values back to the squad BB, respecting binding directions.
         /// Only copies ToSquad and Both bindings.
+        /// When agentOffset is >= 0, squad-side slots for stride > 1 variables are offset
+        /// by agentOffset to write to the correct per-agent slot (agent tree, stride=1 on tree side).
+        /// When agentOffset is -1 (commander case), all stride slots are copied —
+        /// both sides have stride > 1 and need a full sync.
         /// </summary>
-        public void CopyFromBB(BlackBoard treeBB, BlackboardDefinition treeDef)
+        public void CopyFromBB(BlackBoard treeBB, BlackboardDefinition treeDef, int agentOffset = -1)
         {
-            if (!copyFromCache.TryGetValue(treeDef, out int[] pairs) || pairs.Length == 0)
+            if (!copyFromCache.TryGetValue(treeDef, out int[] triplets) || triplets.Length == 0)
                 return;
 
-            for (int i = 0; i < pairs.Length; i += 2)
-                blackBoard.SetBoxed(pairs[i + 1], treeBB.GetBoxed(pairs[i]));
+            for (int i = 0; i < triplets.Length; i += 3)
+            {
+                int srcSlot = triplets[i];
+                int dstSlot = triplets[i + 1];
+                int stride = triplets[i + 2];
+
+                if (agentOffset >= 0)
+                {
+                    // Per-agent copy: offset only the squad-side slot
+                    int offset = (stride > 1 && agentOffset < stride) ? agentOffset : 0;
+                    blackBoard.SetBoxed(dstSlot + offset, treeBB.GetBoxed(srcSlot));
+                }
+                else if (stride > 1)
+                {
+                    // Commander sync: copy all stride slots (both sides have stride > 1)
+                    for (int j = 0; j < stride; j++)
+                        blackBoard.SetBoxed(dstSlot + j, treeBB.GetBoxed(srcSlot + j));
+                }
+                else
+                {
+                    blackBoard.SetBoxed(dstSlot, treeBB.GetBoxed(srcSlot));
+                }
+            }
         }
 
         /// <summary>

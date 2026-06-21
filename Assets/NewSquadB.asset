@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: NewSquadB
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SquadDefinition
   blackboardDefinition: {fileID: 5414574867650723179}
+  maxAgents: 8
   availableRoles:
   - name: ASSAULT
     colour: {r: 0.15761836, g: 0.4339623, b: 0.19051646, a: 1}
@@ -28,20 +29,19 @@ MonoBehaviour:
     isFallback: 0
   bindingGroups:
   - treeAsset: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}
+    treeAssetGuid: 779bf886d1e2a554bbd7c7a6ef17f752
     bindings:
-    - treeVariableName: TESTINTTTTTTTTTTTTTTTTTTTT
-      squadVariableName: Test
-      direction: 0
-    - treeVariableName: TESTGO
-      squadVariableName: dwada
-      direction: 1
     - treeVariableName: AgentAssignedRole
       squadVariableName: AgentRoles
       direction: 1
     - treeVariableName: AgentReceivedOrder
       squadVariableName: AgentOrders
       direction: 1
+    - treeVariableName: VECTOR3_MOVETARGET_AGENT
+      squadVariableName: Agent_MoveTargets
+      direction: 2
   - treeAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
+    treeAssetGuid: b5853f780e226014c935b924db589ad3
     bindings:
     - treeVariableName: AgentAssignedRole
       squadVariableName: AgentRoles
@@ -50,6 +50,7 @@ MonoBehaviour:
       squadVariableName: AgentOrders
       direction: 1
   - treeAsset: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
+    treeAssetGuid: 4442794de649112419d78215f53d185d
     bindings:
     - treeVariableName: AgentRoles
       squadVariableName: AgentRoles
@@ -57,6 +58,12 @@ MonoBehaviour:
     - treeVariableName: AgentOrders
       squadVariableName: AgentOrders
       direction: 2
+    - treeVariableName: Agents_MoveTarget_Commander
+      squadVariableName: Agent_MoveTargets
+      direction: 0
+    - treeVariableName: Agents_Attack_Target_Index
+      squadVariableName: TESTATTACKINTINDEX
+      direction: 0
 --- !u!114 &5414574867650723179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70,40 +77,18 @@ MonoBehaviour:
   m_Name: NewSquadB_Schema
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
-  - rid: 3017916894397071654
-  - rid: 3017916898371174682
   - rid: 3017916911898329237
   - rid: 3017916911898329238
+  - rid: 3017916911898329370
+  - rid: 3017916911898329376
   references:
     version: 2
     RefIds:
-    - rid: 3017916894397071654
-      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: Test
-        variableStride: 1
-        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-        isSquadData: 0
-        isSystemVariable: 0
-        singleValue: 0
-        arrayValues: 
-    - rid: 3017916898371174682
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: dwada
-        variableStride: 1
-        variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        isSquadData: 0
-        isSystemVariable: 0
-        singleValue: {fileID: 0}
-        arrayValues: []
     - rid: 3017916911898329237
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: AgentRoles
-        variableStride: 1
+        variableStride: 8
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 1
@@ -114,10 +99,32 @@ MonoBehaviour:
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: AgentOrders
-        variableStride: 1
+        variableStride: 8
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 1
         isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916911898329370
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: Agent_MoveTargets
+        variableStride: 8
+        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 1
+        isSystemVariable: 0
+        singleValue: {x: 0, y: 0, z: 0}
+        arrayValues: []
+    - rid: 3017916911898329376
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TESTATTACKINTINDEX
+        variableStride: 8
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 0
         singleValue: 0
         arrayValues: 

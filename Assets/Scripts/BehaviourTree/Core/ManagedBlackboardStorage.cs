@@ -216,8 +216,11 @@ namespace BehaviourTree.Core
                 return tVal;
             }
 
+            try { return (T)Convert.ChangeType(val, typeof(T)); }
+            catch { }
+
 #if UNITY_EDITOR
-            Debug.LogError($"[Blackboard] Unexpected type in BB: index {index} expected {typeof(T).Name} but found {val?.GetType().Name ?? "null"}. Data loss may have occurred.");
+            Debug.LogWarning($"[Blackboard] Unexpected type in BB: index {index} expected {typeof(T).Name} but found {val?.GetType().Name ?? "null"}. Data loss may have occurred.");
 #endif
             return default;
         }

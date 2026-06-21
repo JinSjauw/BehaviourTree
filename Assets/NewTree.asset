@@ -29,6 +29,8 @@ MonoBehaviour:
     isArray: 0
     variableName: newVariable
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
     intValue: 0
     floatValue: 0
     boolValue: 0
@@ -87,6 +89,8 @@ MonoBehaviour:
     isArray: 0
     variableName: 
     fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
     intValue: 0
     floatValue: 2
     boolValue: 0

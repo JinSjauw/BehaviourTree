@@ -118,6 +118,10 @@ MonoBehaviour:
     parentVariableName: testInt
   - subtreeVariableName: testGO
     parentVariableName: testGO
+  - subtreeVariableName: AgentAssignedRole
+    parentVariableName: 
+  - subtreeVariableName: AgentReceivedOrder
+    parentVariableName: 
 --- !u!114 &2300751862412526686
 MonoBehaviour:
   m_ObjectHideFlags: 0

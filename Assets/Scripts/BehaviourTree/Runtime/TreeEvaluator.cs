@@ -14,6 +14,7 @@ namespace BehaviourTree.Runtime
     {
         private NodeData[] nodeDatas;
         private FieldData[] fieldDatas;
+        private string[] fieldTypeNames;
         private object[] boxedConstants;
         private NodeMethod[] methodInstances;
         private int[] activeChildIndex;
@@ -32,11 +33,17 @@ namespace BehaviourTree.Runtime
         /// </summary>
         public int agentCount;
 
-        public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas, object[] boxedConstants, int maxTreeDepth)
+        public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas, string[] fieldTypeNames, object[] boxedConstants, int maxTreeDepth)
         {
-            Debug.Log("Created Tree Evaluator");
+            if (nodeDatas == null || fieldDatas == null || nodeDatas.Length == 0)
+            {
+                Debug.LogError("TreeEvaluator: nodeDatas or fieldDatas is NULL/empty");
+                return;
+            }
+
             this.nodeDatas = nodeDatas;
             this.fieldDatas = fieldDatas;
+            this.fieldTypeNames = fieldTypeNames;
             this.boxedConstants = boxedConstants;
             nodeStates = new NodeState[nodeDatas.Length];
             activeChildIndex = new int[nodeDatas.Length];
@@ -55,14 +62,24 @@ namespace BehaviourTree.Runtime
 
                 FieldBinding[] bindings = MethodRegistry.GetBindings(name);
                 ReadOnlySpan<FieldData> fields = GetNodeFieldSlice(nodeDatas[i]);
-                instance.DeserializeFields(fields, bindings ?? Array.Empty<FieldBinding>(), boxedConstants);
+                if (bindings != null && bindings.Length > 0)
+                {
+                    instance.DeserializeFields(fields, bindings, boxedConstants);
+                }
+                else if (instance.ParameterCount > 0)
+                {
+                    // Slice fieldTypeNames the same way as fields
+                    string[] nodeTypeNames = null;
+                    int start = nodeDatas[i].fieldDataStartIndex;
+                    int count = nodeDatas[i].fieldDataCount;
+                    if (fieldTypeNames != null && start >= 0 && start + count <= fieldTypeNames.Length)
+                    {
+                        nodeTypeNames = new string[count];
+                        Array.Copy(fieldTypeNames, start, nodeTypeNames, 0, count);
+                    }
+                    instance.DeserializeParameters(fields, nodeTypeNames, boxedConstants);
+                }
                 methodInstances[i] = instance;
-            }
-
-            if (nodeDatas == null || fieldDatas == null || nodeDatas.Length == 0)
-            {
-                Debug.LogError("TreeEvaluator: nodeDatas or fieldDatas is NULL");
-                return;
             }
 
             isInitialized = true;

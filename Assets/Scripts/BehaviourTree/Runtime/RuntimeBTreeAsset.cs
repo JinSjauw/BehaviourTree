@@ -13,6 +13,12 @@ public class RuntimeBehaviourTreeAsset : ScriptableObject
     public FieldData[] runtimeFieldData;
 
     /// <summary>
+    /// Assembly-qualified type names for each field entry, parallel to runtimeFieldData.
+    /// Used by dynamic-type nodes (SetVariable, etc.) to decode packed constants.
+    /// </summary>
+    public string[] fieldTypeNames;
+
+    /// <summary>
     /// Boxed constants for types larger than 4 bytes (Vector2, Vector3, Color, custom types).
     /// Indexed by FieldData.value when FieldData.IsBoxedConstant is true.
     /// </summary>

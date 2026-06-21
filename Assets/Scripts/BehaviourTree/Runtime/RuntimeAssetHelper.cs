@@ -40,6 +40,7 @@ namespace BehaviourTree.Runtime
                         authoringAsset.Root, authoringAsset,
                         ref temp.runtimeNodeData,
                         ref temp.runtimeFieldData,
+                        ref temp.fieldTypeNames,
                         ref temp.boxedConstants,
                         ref temp.runtimeNodeGuids,
                         out temp.maxTreeDepth);

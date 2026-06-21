@@ -8,7 +8,7 @@ using BehaviourTree.Runtime;
 namespace BehaviourTree.Editor
 {
     /// <summary>
-    /// Editor-only cache that scans all NodeMethod subclasses and stores their field metadata.
+    /// Describes a method's parameter as exposed in the node inspector.
     /// </summary>
     public class ParamInfo
     {
@@ -19,6 +19,18 @@ namespace BehaviourTree.Editor
         public bool isToggleVariable;
         public bool isRoleDropdown;
         public int index;
+
+        /// <summary>When true, this field is hidden from the inspector.
+        /// The variableName is auto-filled from autoVariableName.
+        /// The shared var slot offset is still baked normally.</summary>
+        public bool isHidden;
+
+        /// <summary>BB variable name to auto-bind when isHidden is true.</summary>
+        public string autoVariableName;
+
+        /// <summary>When true, constant-mode shows an order search dropdown
+        /// instead of a raw int field. Name stored in stringValue, baker resolves to index.</summary>
+        public bool isOrderDropdown;
     }
 
 #if UNITY_EDITOR
@@ -88,6 +100,9 @@ namespace BehaviourTree.Editor
                 bool isArray = arrayAttribute != null;
                 bool isToggle = varAttribute?.IsToggleVariable ?? false;
                 bool isRoleDropdown = varAttribute?.IsRoleDropdown ?? false;
+                bool isHidden = varAttribute?.IsHidden ?? false;
+                string autoVarName = varAttribute?.AutoVariableName;
+                bool isOrderDropdown = varAttribute?.IsOrderDropdown ?? false;
 
                 paramList.Add(new ParamInfo
                 {
@@ -97,6 +112,9 @@ namespace BehaviourTree.Editor
                     isArray = isArray,
                     isToggleVariable = isToggle,
                     isRoleDropdown = isRoleDropdown,
+                    isHidden = isHidden,
+                    autoVariableName = autoVarName,
+                    isOrderDropdown = isOrderDropdown,
                     index = fieldIndex++
                 });
             }

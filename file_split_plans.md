@@ -172,4 +172,81 @@ Encapsulates the field-entry-to-FieldData compilation subsystem: counting, array
 | — | `public static partial class TreeBaker` declaration |
 | 484–492 | `ResolveFieldType()` |
 | 494–503 | `CountFieldDataForNode()` |
-| 505
+| 505–522 | `IsArrayFieldEntry()` |
+| 524–565 | `PackFieldEntryWithArray()` — dispatch: array (2 FieldData) vs scalar (1 FieldData) |
+| 567–628 | `PackFieldEntry()` — variable path, constant path with type-based dispatch |
+| 630–640 | `GetConstantValue()` |
+| — | Closing brace + namespace close |
+
+**Dependencies**: `ResolveSlotOffset()` stays in core, accessed via partial class. `FieldTypeHelper`, `FieldData`, `BlackboardDefinition`, `NodeFieldEntry` are external types.
+
+---
+
+## 4. BlackBoardView.cs → BlackBoardView.cs + BlackBoardView.ListView.cs
+
+**Current file**: [BlackBoardView.cs](file:///d:/Dev/BehaviourTreeEditor/Assets/Scripts/BehaviourTree/Editor/BlackBoardView.cs) — 584 lines  
+**After split**: 2 files — ~430 + ~155 lines
+
+### BlackBoardView.cs (core — stays)
+
+Retains the top-level view construction, creator UI, rename/type-change detection with asset-wide propagation.
+
+| Lines | Content |
+|---|---|
+| 1–11 | `using` statements + `[UxmlElement]` + partial class declaration + fields |
+| 13–29 | Fields: `blackBoardViewContainer`, `cachedDefinition`, creator fields, ListView fields |
+| 30–53 | Constructor — styling, placeholder, container setup |
+| 55–59 | `IsSquadContext` property |
+| 61–120 | `BuildBlackboardView()` — null-hole filtering, `BuildCreatorUI()`, separator, `LoadEntryTemplate()`, ListView construction with schedule |
+| 122–130 | `LoadEntryTemplate()` — UXML/USS asset loading |
+| 281–327 | `BuildCreatorUI()` — header, name field, add button, `OpenVariableTypePopup()` |
+| 329–338 | `OpenVariableTypePopup()` |
+| 340–366 | `CreateVariable()` |
+| 368–433 | `HandleRenames()`, `SnapshotNameSet()`, `HandleTypeChanges()`, `SnapshotTypeMap()` |
+| 435–583 | `PropagateRename()`, `UpdateTreeNodes()`, `PropagateTypeChange()`, `UpdateTreeNodesType()` |
+| 584 | Closing brace |
+
+**Change**: Remove the `partial` from the class — it's already `partial`. Just extract the ListView methods.
+
+---
+
+### BlackBoardView.ListView.cs (extract)
+
+Encapsulates the ListView item binding: variable rendering per type, stride display, value editors, array element rows, type change.
+
+| Lines | Content |
+|---|---|
+| 1–9 | `using` statements (same as main file) |
+| — | `public partial class BlackBoardView` declaration |
+| 132–133 | ListView section comment |
+| 134–252 | `BindVariableListItem()` — name field, type dropdown, stride, value cell (single/array), delete button, USS application |
+| 254–258 | `UnbindVariableListItem()` |
+| 260–263 | `OnVariableItemIndexChanged()` |
+| 265–279 | `ChangeVariableType()` — reconstructs variable with new type, calls `variableListView.Rebuild()` |
+| — | Closing brace |
+
+**Dependencies**: `cachedDefinition`, `entryTemplate`, `arrayElementTemplate`, `entryStyleSheet`, `variableListView`, `IsSquadContext` — all fields in core partial.
+
+---
+
+## Execution Order
+
+Recommended order to minimize churn:
+
+| Step | File | New Files | Time Estimate |
+|---|---|---|---|
+| 1 | `BlackBoard.cs` | `BlackBoard.Layout.cs`, `BlackBoard.Overrides.cs` | Simple — pure extraction, private methods stay private |
+| 2 | `TreeBaker.cs` | `TreeBaker.FieldPacking.cs` | Simple — static class, no state, clean boundary |
+| 3 | `BlackBoardView.cs` | `BlackBoardView.ListView.cs` | Simple — already `partial`, just move methods |
+| 4 | `SquadDefinitionEditor.cs` | `SquadDefinitionEditor.Roles.cs`, `SquadDefinitionEditor.BindingGroups.cs` | Most complex — 3 files, test window functionality after |
+
+---
+
+## Verification
+
+After each split, verify with:
+1. **Compile** — Unity Editor should reload without errors
+2. **Smoke test** — Open the affected UI/window and confirm it renders
+3. **Existing tests** — Run the relevant test suite
+
+No API surface changes. All extracted methods remain `private` and are accessed via partial class. No `internal` or `public` visibility changes needed.

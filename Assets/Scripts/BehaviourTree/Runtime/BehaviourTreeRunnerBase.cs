@@ -58,7 +58,11 @@ namespace BehaviourTree.Runtime
             }
 
             blackBoard.Initialize(runtimeAsset.blackboardDefinition);
-            evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.boxedConstants, runtimeAsset.maxTreeDepth);
+#if UNITY_EDITOR
+            runtimeAsset.blackboardDefinition.sourceTreeAsset = runtimeAsset.sourceTree as BehaviourTreeAssetBase;
+#endif
+            runtimeAsset.blackboardDefinition.sourceTreeGuid = runtimeAsset.sourceTreeGuid;
+            evaluator = new TreeEvaluator(runtimeAsset.runtimeNodeData, runtimeAsset.runtimeFieldData, runtimeAsset.fieldTypeNames, runtimeAsset.boxedConstants, runtimeAsset.maxTreeDepth);
 
             debugProvider = GetComponent<RuntimeDebugProvider>();
             if (debugProvider == null) debugProvider = gameObject.AddComponent<RuntimeDebugProvider>();

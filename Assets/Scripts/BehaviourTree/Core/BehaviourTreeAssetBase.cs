@@ -19,5 +19,12 @@ namespace BehaviourTree.Core
         public BlackboardDefinition BlackboardDefinition => blackboardDefinition;
         public BlackboardDefinition CommanderBlackboardDefinition => commanderBlackboardDefinition;
         public string DisplayName => name ?? "NO NAME GIVEN";
+
+        /// <summary>
+        /// When true, commander BB variables preserve their stride during baking
+        /// so that per-agent slot offsets match the storage layout. Commander trees
+        /// override this to true; agent trees use the default (false, stride=1).
+        /// </summary>
+        public virtual bool PreserveCommanderStride => false;
     }
 }
