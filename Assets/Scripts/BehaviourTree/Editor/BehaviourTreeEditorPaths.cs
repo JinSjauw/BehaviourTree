@@ -38,5 +38,8 @@ namespace BehaviourTree.Editor
         public const string RoleRowUss = SquadEditorPath + "RoleRow.uss";
         public const string BindingRowUxml = SquadEditorPath + "BindingRow.uxml";
         public const string BindingGroupFoldoutUxml = SquadEditorPath + "BindingGroupFoldout.uxml";
+        public const string SquadConnectionRowUxml = SquadEditorPath + "SquadConnectionRow.uxml";
+        public const string SquadAssignedRoleRowUxml = SquadEditorPath + "SquadAssignedRoleRow.uxml";
+        public const string CommanderTabViewUxml = SquadEditorPath + "CommanderTabView.uxml";
     }
 }

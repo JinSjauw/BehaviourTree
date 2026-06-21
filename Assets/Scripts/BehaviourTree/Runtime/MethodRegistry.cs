@@ -105,6 +105,20 @@ namespace BehaviourTree.Runtime
 
         public static bool IsClassMethod(string methodName) => methodTypeMap.ContainsKey(methodName);
 
+        /// <summary>
+        /// Checks whether a method is compatible with the given tree type,
+        /// based on its [NodeMethod] attribute's allowedTreeType.
+        /// Methods without the attribute default to AllowedTreeType.Any.
+        /// </summary>
+        public static bool IsMethodAllowed(string methodName, AllowedTreeType treeType)
+        {
+            Type type = GetMethodType(methodName);
+            if (type == null) return false;
+            NodeMethodAttribute attr = type.GetCustomAttribute<NodeMethodAttribute>();
+            if (attr == null) return true;
+            return attr.allowedTreeType == AllowedTreeType.Any || attr.allowedTreeType == treeType;
+        }
+
         public static BehaviourNodeType GetCategory(Type methodType)
         {
             if (typeof(ActionMethod).IsAssignableFrom(methodType))    return BehaviourNodeType.ACTION;

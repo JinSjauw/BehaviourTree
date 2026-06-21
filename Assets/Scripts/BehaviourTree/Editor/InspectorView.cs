@@ -25,7 +25,7 @@ public partial class InspectorView : VisualElement
         style.paddingRight = 8;
         style.paddingTop = 8;
         style.paddingBottom = 8;
-        style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
+        style.backgroundColor = GraphEditorTheme.instance.panelBg;
 
         // ── Separator ────────────────────────────────────────────────
         VisualElement separator = new VisualElement
@@ -34,7 +34,7 @@ public partial class InspectorView : VisualElement
             style =
             {
                 height = 1,
-                backgroundColor = new Color(0.4f, 0.4f, 0.4f, 0.6f),
+                backgroundColor = GraphEditorTheme.instance.panelSeparator,
                 marginTop = 6,
                 marginBottom = 6,
                 flexShrink = 0
@@ -92,7 +92,7 @@ public partial class InspectorView : VisualElement
         {
             style =
         {
-            color = Color.grey,
+            color = GraphEditorTheme.instance.panelPlaceholder,
             unityTextAlign = TextAnchor.MiddleCenter,
             marginTop = 40,
             fontSize = 13

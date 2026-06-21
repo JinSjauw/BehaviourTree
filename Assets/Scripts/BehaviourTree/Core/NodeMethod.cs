@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using BehaviourTree;
 using UnityEngine;
@@ -45,10 +46,65 @@ namespace BehaviourTree.Core
             return null;
         }
 
+        /// <summary>Compiled delegate for zero-allocation field read (null → fall back to reflection).</summary>
+        private Action<NodeMethod, IBlackBoardAccess> readDelegate;
+
+        /// <summary>Compiled delegate for zero-allocation field write (null → fall back to reflection).</summary>
+        private Action<NodeMethod, IBlackBoardAccess> writeDelegate;
+
+        /// <summary>True if CompileAccessors ran successfully and both delegates are ready.</summary>
+        public bool IsCompiled => readDelegate != null && writeDelegate != null;
+
+        /// <summary>
+        /// Attempts to compile typed read/write delegates via Expression trees.
+        /// Called once during tree init, after <see cref="bbSlotIndex"/> is assigned.
+        /// Falls back silently — existing reflection path handles unsupported platforms.
+        /// </summary>
+        public void CompileAccessors(Type declaringType)
+        {
+            if (bbSlotIndex < 0 || fieldInfo == null) return;
+            Type fieldType = fieldInfo.FieldType;
+            if (fieldType == null) return;
+
+            try
+            {
+                ParameterExpression instParam = Expression.Parameter(typeof(NodeMethod), "inst");
+                ParameterExpression bbParam = Expression.Parameter(typeof(IBlackBoardAccess), "bb");
+                UnaryExpression castInst = Expression.Convert(instParam, declaringType);
+                MemberExpression fieldExpr = Expression.Field(castInst, fieldInfo);
+                ConstantExpression slotConst = Expression.Constant(bbSlotIndex);
+
+                // Read: ((ConcreteType)inst).field = bb.Get<T>(bbSlotIndex)
+                MethodInfo getMethod = typeof(IBlackBoardAccess).GetMethod("Get")
+                    .MakeGenericMethod(fieldType);
+                MethodCallExpression getCall = Expression.Call(bbParam, getMethod, slotConst);
+                BinaryExpression readBody = Expression.Assign(fieldExpr, getCall);
+                readDelegate = Expression.Lambda<Action<NodeMethod, IBlackBoardAccess>>(
+                    readBody, instParam, bbParam).Compile();
+
+                // Write: bb.Set<T>(bbSlotIndex, ((ConcreteType)inst).field)
+                MethodInfo setMethod = typeof(IBlackBoardAccess).GetMethod("Set")
+                    .MakeGenericMethod(fieldType);
+                MethodCallExpression setCall = Expression.Call(bbParam, setMethod, slotConst, fieldExpr);
+                writeDelegate = Expression.Lambda<Action<NodeMethod, IBlackBoardAccess>>(
+                    setCall, instParam, bbParam).Compile();
+            }
+            catch
+            {
+                // IL2CPP AOT or unsupported type — delegates remain null, reflection fallback handles it.
+            }
+        }
+
         // ── Generic read/write (uses GetBoxed/SetBoxed — with type coercion) ──
 
         public void ReadFromBBGeneric(NodeMethod instance, IBlackBoardAccess bb)
         {
+            if (readDelegate != null)
+            {
+                readDelegate(instance, bb);
+                return;
+            }
+
             if (bbSlotIndex < 0) return;
             object value = bb.GetBoxed(bbSlotIndex);
             if (value != null)
@@ -72,6 +128,12 @@ namespace BehaviourTree.Core
 
         public void WriteToBBGeneric(NodeMethod instance, IBlackBoardAccess bb)
         {
+            if (writeDelegate != null)
+            {
+                writeDelegate(instance, bb);
+                return;
+            }
+
             if (!isOutput || bbSlotIndex < 0) return;
             object value = fieldInfo.GetValue(instance);
             if (value != null)
@@ -196,6 +258,7 @@ namespace BehaviourTree.Core
                 else
             {
                 binding.bbSlotIndex = fd.value;
+                binding.CompileAccessors(GetType());
 #if UNITY_EDITOR
                 //Debug.Log($"[DeserializeFields] '{GetType().Name}' field='{binding.fieldInfo.Name}' bbSlotIndex={binding.bbSlotIndex} fd.value={fd.value}");
 #endif

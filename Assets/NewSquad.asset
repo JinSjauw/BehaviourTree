@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SquadDefinition
   blackboardDefinition: {fileID: 8613412856697111606}
   availableRoles:
-  - FLANKER
+  - name: 
+    colour: {r: 1, g: 1, b: 1, a: 1}
+    maxAmount: 1
+    isFallback: 0
   bindingGroups:
   - treeAsset: {fileID: 11400000, guid: 14fe57e909a146e4297a2d0d1631887e, type: 2}
     bindings:
@@ -33,6 +36,11 @@ MonoBehaviour:
     - treeVariableName: 
       squadVariableName: 
       direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+  - treeAsset: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}
+    bindings:
     - treeVariableName: 
       squadVariableName: 
       direction: 2

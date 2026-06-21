@@ -7,6 +7,9 @@
             <ui:RadioButton name="radio-singular" label="Singular" class="radio-option"/>
             <ui:RadioButton name="radio-array" label="Array" class="radio-option"/>
         </ui:VisualElement>
+        <ui:VisualElement name="squaddata-row" class="size-row" style="align-self: center; display: none;">
+            <ui:Toggle name="squaddata-toggle" label="Squad Data (dynamic array)"/>
+        </ui:VisualElement>
         <ui:VisualElement name="size-row" class="size-row" style="align-self: center; visibility: visible; display: flex;">
             <ui:Label text="Array size:" class="size-label"/>
             <ui:IntegerField name="size-field" value="2" class="size-field"/>

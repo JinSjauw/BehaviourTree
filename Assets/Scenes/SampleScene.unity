@@ -383,162 +383,11 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1 &570381595
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 570381599}
-  - component: {fileID: 570381596}
-  - component: {fileID: 570381597}
-  - component: {fileID: 570381598}
-  m_Layer: 0
-  m_Name: TEST (4)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &570381596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570381595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0720dcbbe15181f4eb6892d02d595b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
-  blackBoard: {fileID: 570381597}
-  runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 0f1c36c72079cf64f8ab53fba50a475f, type: 2}
-  trackedBindingGroups: []
---- !u!114 &570381597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570381595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences: []
-  valueOverrides: []
-  overriddenReferenceSlots: 
---- !u!114 &570381598
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570381595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24b78d4506dce364aa7ca32ec653c9e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.CommanderBindingBridge
-  selfBB: {fileID: 570381597}
-  commanderBB: {fileID: 0}
-  agentID: 3
-  bindings:
-  - commanderVarName: Agents
-    selfVarName: MyRole
-    onlyUpdateCommander: 0
-  - commanderVarName: AgentHealth
-    selfVarName: Health
-    onlyUpdateCommander: 1
---- !u!4 &570381599
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570381595}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &696399349 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1028711573302835588, guid: 01efd14619743994991c2b134f3d8aaa, type: 3}
   m_PrefabInstance: {fileID: 5572016034708701122}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &837731430
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 837731433}
-  - component: {fileID: 837731432}
-  - component: {fileID: 837731431}
-  m_Layer: 0
-  m_Name: TEST (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &837731431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences: []
-  valueOverrides: []
-  overriddenReferenceSlots: 
---- !u!114 &837731432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0720dcbbe15181f4eb6892d02d595b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
-  blackBoard: {fileID: 837731431}
-  runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 6944386662916bd4196eceada7c330d3, type: 2}
-  trackedBindingGroups: []
---- !u!4 &837731433
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837731430}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &923873414
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,7 +399,6 @@ GameObject:
   - component: {fileID: 923873415}
   - component: {fileID: 923873416}
   - component: {fileID: 923873417}
-  - component: {fileID: 923873418}
   - component: {fileID: 923873419}
   m_Layer: 0
   m_Name: TEST
@@ -622,28 +470,6 @@ MonoBehaviour:
   - {fileID: 0}
   valueOverrides: []
   overriddenReferenceSlots: 
---- !u!114 &923873418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 923873414}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24b78d4506dce364aa7ca32ec653c9e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.CommanderBindingBridge
-  selfBB: {fileID: 923873417}
-  commanderBB: {fileID: 0}
-  agentID: 0
-  bindings:
-  - commanderVarName: Agents
-    selfVarName: MyRole
-    onlyUpdateCommander: 0
-  - commanderVarName: AgentHealth
-    selfVarName: Health
-    onlyUpdateCommander: 1
 --- !u!114 &923873419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -658,93 +484,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   testInt: 8
   testGameObject: {fileID: 696399349}
---- !u!1 &1406593630
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1406593634}
-  - component: {fileID: 1406593633}
-  - component: {fileID: 1406593632}
-  - component: {fileID: 1406593631}
-  m_Layer: 0
-  m_Name: TEST (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1406593631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1406593630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24b78d4506dce364aa7ca32ec653c9e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.CommanderBindingBridge
-  selfBB: {fileID: 1406593632}
-  commanderBB: {fileID: 0}
-  agentID: 1
-  bindings:
-  - commanderVarName: Agents
-    selfVarName: MyRole
-    onlyUpdateCommander: 0
-  - commanderVarName: AgentHealth
-    selfVarName: Health
-    onlyUpdateCommander: 1
---- !u!114 &1406593632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1406593630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences: []
-  valueOverrides: []
-  overriddenReferenceSlots: 
---- !u!114 &1406593633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1406593630}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0720dcbbe15181f4eb6892d02d595b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
-  blackBoard: {fileID: 1406593632}
-  runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 0f1c36c72079cf64f8ab53fba50a475f, type: 2}
-  trackedBindingGroups: []
---- !u!4 &1406593634
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1406593630}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1601351501
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,93 +572,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2128948936
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2128948940}
-  - component: {fileID: 2128948939}
-  - component: {fileID: 2128948938}
-  - component: {fileID: 2128948937}
-  m_Layer: 0
-  m_Name: TEST (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &2128948937
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128948936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24b78d4506dce364aa7ca32ec653c9e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.CommanderBindingBridge
-  selfBB: {fileID: 2128948938}
-  commanderBB: {fileID: 0}
-  agentID: 2
-  bindings:
-  - commanderVarName: Agents
-    selfVarName: MyRole
-    onlyUpdateCommander: 0
-  - commanderVarName: AgentHealth
-    selfVarName: Health
-    onlyUpdateCommander: 1
---- !u!114 &2128948938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128948936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences: []
-  valueOverrides: []
-  overriddenReferenceSlots: 
---- !u!114 &2128948939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128948936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0720dcbbe15181f4eb6892d02d595b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
-  blackBoard: {fileID: 2128948938}
-  runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 0f1c36c72079cf64f8ab53fba50a475f, type: 2}
-  trackedBindingGroups: []
---- !u!4 &2128948940
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128948936}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2908911668393476889
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -935,15 +587,15 @@ PrefabInstance:
     - target: {fileID: 547399598991813713, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
       propertyPath: 'registeredAgents.Array.data[1]'
       value: 
-      objectReference: {fileID: 1406593633}
+      objectReference: {fileID: 0}
     - target: {fileID: 547399598991813713, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
       propertyPath: 'registeredAgents.Array.data[2]'
       value: 
-      objectReference: {fileID: 2128948939}
+      objectReference: {fileID: 0}
     - target: {fileID: 547399598991813713, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
       propertyPath: 'registeredAgents.Array.data[3]'
       value: 
-      objectReference: {fileID: 570381596}
+      objectReference: {fileID: 0}
     - target: {fileID: 6382469738846702505, guid: 6d8ca62f1edc6c34bbeb7d2754db3f13, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1020,7 +672,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.CommanderTreeRunner
   blackBoard: {fileID: 2908911668393476892}
   runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: 8854f5a48d0cdbd4fa53e0503d04ddef, type: 2}
+  authoringAsset: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
+  trackedBindingGroups:
+  - targetTree: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
+    targetTreeGuid: b5853f780e226014c935b924db589ad3
+    bindings: []
   registeredAgents: []
 --- !u!114 &2908911668393476892
 MonoBehaviour:
@@ -1035,7 +691,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
   serializedReferences:
-  - {fileID: 0}
   - {fileID: 0}
   valueOverrides: []
   overriddenReferenceSlots: 
@@ -1105,8 +760,4 @@ SceneRoots:
   - {fileID: 5572016034708701122}
   - {fileID: 923873415}
   - {fileID: 1601351506}
-  - {fileID: 1406593634}
-  - {fileID: 2128948940}
-  - {fileID: 570381599}
-  - {fileID: 837731433}
   - {fileID: 2908911668393476889}

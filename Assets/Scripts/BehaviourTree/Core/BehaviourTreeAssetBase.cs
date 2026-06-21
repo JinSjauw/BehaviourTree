@@ -7,7 +7,7 @@ namespace BehaviourTree.Core
     {
         [HideInInspector] public BehaviourNode root;
         [HideInInspector] public BlackboardDefinition blackboardDefinition;
-        [HideInInspector] public CommanderBlackboardDefinition commanderBlackboardDefinition;
+        [HideInInspector] public BlackboardDefinition commanderBlackboardDefinition;
 
         /// <summary>
         /// Squads this tree connects to. Each entry pairs a SquadDefinition
@@ -17,7 +17,7 @@ namespace BehaviourTree.Core
 
         public BehaviourNode Root => root;
         public BlackboardDefinition BlackboardDefinition => blackboardDefinition;
-        public CommanderBlackboardDefinition CommanderBlackboardDefinition => commanderBlackboardDefinition;
+        public BlackboardDefinition CommanderBlackboardDefinition => commanderBlackboardDefinition;
         public string DisplayName => name ?? "NO NAME GIVEN";
     }
 }

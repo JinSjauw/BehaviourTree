@@ -1,5 +1,4 @@
 using BehaviourTree.Core;
-using BehaviourTree.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +32,7 @@ namespace BehaviourTree.Runtime
                 CopyGenericVariables(runtimeBbDef, selfDef);
 
             // 2. Append commander BB variables (preserving stride for per-agent arrays)
-            CommanderBlackboardDefinition commanderDef = asset != null ? asset.CommanderBlackboardDefinition : null;
+            BlackboardDefinition commanderDef = asset != null ? asset.CommanderBlackboardDefinition : null;
             if (commanderDef != null)
                 CopyGenericVariables(runtimeBbDef, commanderDef, withStrideOfOne: true);
 

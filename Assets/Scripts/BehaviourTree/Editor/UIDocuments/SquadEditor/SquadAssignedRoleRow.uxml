@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="assigned-role-row" style="flex-direction: row; align-items: center; margin-bottom: 1px; padding-left: 8px; padding-top: 1px; padding-bottom: 1px; background-color: rgb(41, 41, 41);">
+        <ui:VisualElement name="role-colour-banner" style="width: 12px; height: 12px; margin-right: 6px;"/>
+        <ui:Label name="role-name-label" style="flex-grow: 1; color: rgb(230, 230, 230); font-size: 11px;"/>
+        <ui:Button text="X" name="role-remove-button" style="width: 24px; padding-left: 0; padding-right: 0;"/>
+    </ui:VisualElement>
+</ui:UXML>

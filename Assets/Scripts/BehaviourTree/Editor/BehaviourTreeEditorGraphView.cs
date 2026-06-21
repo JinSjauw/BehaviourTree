@@ -21,6 +21,9 @@ namespace BehaviourTree.Editor
         private Dictionary<string, BehaviourNodeView> nodeViewDict;
         private NodeSearchProvider searchWindow;
         private TextField graphTitleLabel;
+        private Label graphTitleBadge;
+        private GridBackground gridBackground;
+        private VisualElement backgroundTint;
         private CopyPasteHandler copyPasteHandler;
         private BtEdgeConnectorListener edgeConnectorListener;
         private RuntimeDebugManager runtimeDebugManager;
@@ -88,20 +91,45 @@ namespace BehaviourTree.Editor
 
         private void AddGrid()
         {
-            // Grid background
-            GridBackground grid = new GridBackground();
-            Insert(0, grid);
-            grid.StretchToParentSize();
+            // Tinted background layer — sits behind the grid lines
+            backgroundTint = new VisualElement
+            {
+                name = "GraphBackgroundTint"
+            };
+            backgroundTint.StretchToParentSize();
+            backgroundTint.pickingMode = PickingMode.Ignore;
+            Insert(0, backgroundTint);
+
+            // Grid background (transparent, grid lines only)
+            gridBackground = new GridBackground();
+            Insert(1, gridBackground);
+            gridBackground.StretchToParentSize();
         }
 
         private void AddGraphTitle()
         {
+            VisualElement titleContainer = new VisualElement
+            {
+                name = "GraphTitle",
+                style = { flexDirection = FlexDirection.Row, alignItems = Align.Center }
+            };
+
+            graphTitleBadge = new Label("")
+            {
+                name = "GraphTitleBadge",
+                style =
+                {
+                    fontSize = 20,
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    marginRight = 6,
+                }
+            };
+
             graphTitleLabel = new TextField
             {
                 value = "Behaviour Tree",
                 isDelayed = true
             };
-            graphTitleLabel.name = "GraphTitle";
             graphTitleLabel.ClearClassList();
 
             VisualElement input = graphTitleLabel.Q<VisualElement>("unity-text-input");
@@ -117,6 +145,7 @@ namespace BehaviourTree.Editor
                 }
 
                 string newName = evt.newValue?.Trim();
+
                 if (string.IsNullOrEmpty(newName) || newName == tree.name)
                 {
                     RefreshTitle();
@@ -147,7 +176,10 @@ namespace BehaviourTree.Editor
                 AssetDatabase.SaveAssets();
                 RefreshTitle();
             });
-            Add(graphTitleLabel);
+
+            titleContainer.Add(graphTitleBadge);
+            titleContainer.Add(graphTitleLabel);
+            Add(titleContainer);
         }
 
         public void EnsureSearchWindow()
@@ -183,7 +215,13 @@ namespace BehaviourTree.Editor
         {
             EnsureSearchWindow();
             if (tree == null) return;
+
+            // Invalidate cached method lists if tree type changed
+            bool typeChanged = (searchWindow.currentTreeAsset is CommanderTreeAsset) != (tree is CommanderTreeAsset);
             searchWindow.currentTreeAsset = tree;
+            if (typeChanged)
+                searchWindow.InvalidateCache();
+
             SearchWindow.Open(new SearchWindowContext(mousePosition), searchWindow);
         }
 
@@ -218,6 +256,10 @@ namespace BehaviourTree.Editor
             tree = null;
             debugProxiesAreSetup = false;
             graphTitleLabel.SetValueWithoutNotify("Behaviour Tree");
+            if (graphTitleBadge != null)
+                graphTitleBadge.style.display = DisplayStyle.None;
+            if (backgroundTint != null)
+                backgroundTint.style.backgroundColor = GraphEditorTheme.instance.graphBgAgent;
 
             graphViewChanged -= OnGraphViewChanged;
             try
@@ -592,6 +634,7 @@ namespace BehaviourTree.Editor
             }
 
             InitTree(tree);
+            ApplyGridTint(tree);
             ClearAndRebuildViews();
             EnsureRootNodeExists();
             CleanupAndCreateViews();
@@ -639,10 +682,40 @@ namespace BehaviourTree.Editor
                 tree.nodesList = new List<BehaviourNode>();
         }
 
+        private void ApplyGridTint(BaseEditorTreeAsset treeAsset)
+        {
+            if (backgroundTint == null) return;
+            if (treeAsset is CommanderTreeAsset)
+                backgroundTint.style.backgroundColor = GraphEditorTheme.instance.graphBgCommander;
+            else
+                backgroundTint.style.backgroundColor = GraphEditorTheme.instance.graphBgAgent;
+        }
+
         public void RefreshTitle()
         {
             if (graphTitleLabel == null) return;
-            graphTitleLabel.SetValueWithoutNotify(tree != null ? tree.name : "Behaviour Tree");
+            string baseName = tree != null ? tree.name : "Behaviour Tree";
+            graphTitleLabel.SetValueWithoutNotify(baseName);
+
+            if (graphTitleBadge != null)
+            {
+                if (tree == null)
+                {
+                    graphTitleBadge.style.display = DisplayStyle.None;
+                }
+                else if (tree is CommanderTreeAsset)
+                {
+                    graphTitleBadge.text = "[C]";
+                    graphTitleBadge.style.color = GraphEditorTheme.instance.badgeCommander;
+                    graphTitleBadge.style.display = DisplayStyle.Flex;
+                }
+                else
+                {
+                    graphTitleBadge.text = "[A]";
+                    graphTitleBadge.style.color = GraphEditorTheme.instance.badgeAgent;
+                    graphTitleBadge.style.display = DisplayStyle.Flex;
+                }
+            }
         }
 
         public void RefreshAllNodeIcons()

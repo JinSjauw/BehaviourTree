@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="connection-content">
+        <ui:VisualElement name="squad-picker-row" style="flex-direction: row; align-items: center; margin-bottom: 4px;">
+            <ui:Label text="Squad" name="squad-label" style="width: 60px; color: rgb(179, 179, 179);"/>
+            <ui:Button text="Select Squad..." name="select-squad-button" style="flex-grow: 1; margin-right: 4px;"/>
+            <ui:Button text="Open" name="open-squad-button" style="width: 50px; padding-left: 4px; padding-right: 4px;"/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="roles-section" style="margin-bottom: 8px;">
+            <ui:Label text="Roles" name="roles-header" style="color: rgb(179, 179, 179); -unity-font-style: bold; margin-bottom: 4px;"/>
+            <ui:VisualElement name="roles-container"/>
+            <ui:Button text="+ Add Role" name="add-role-button" style="margin-top: 2px;"/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="bindings-section">
+            <ui:Label text="Variable Bindings" name="bindings-header" style="color: rgb(179, 179, 179); -unity-font-style: bold; margin-bottom: 4px; margin-top: 4px;"/>
+            <ui:VisualElement name="bindings-editor-placeholder"/>
+            <ui:Button text="+ Add Binding" name="add-binding-button" style="margin-top: 2px;"/>
+        </ui:VisualElement>
+
+        <ui:Button text="Remove Connection" name="remove-connection-button" style="margin-top: 4px; padding-left: 8px; padding-right: 8px;"/>
+    </ui:VisualElement>
+</ui:UXML>

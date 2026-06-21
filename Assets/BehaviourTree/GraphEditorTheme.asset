@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d821ff4a8cdc2884a806d7ea5f44a53d, type: 3}
+  m_Name: GraphEditorTheme
+  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.GraphEditorTheme
+  graphBgAgent: {r: 0.110204086, g: 0.11632654, b: 0.15, a: 0.7490196}
+  graphBgCommander: {r: 0.140625, g: 0.1125, b: 0.15, a: 0.69803923}
+  panelBg: {r: 0.18, g: 0.18, b: 0.18, a: 1}
+  panelSeparator: {r: 0.4, g: 0.4, b: 0.4, a: 0.6}
+  panelPlaceholder: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  nodeBandRoot: {r: 0.39716092, g: 0.8018868, b: 0.41709813, a: 1}
+  nodeBandAction: {r: 0.8773585, g: 0.4262638, b: 0.4262638, a: 1}
+  nodeBandCondition: {r: 0.9056604, g: 0.7279946, b: 0.2776789, a: 1}
+  nodeBandDecorator: {r: 0.8396226, g: 0.5457458, b: 0.33664113, a: 1}
+  nodeBandSubtree: {r: 0.77857506, g: 0.9528302, b: 0.29214135, a: 1}
+  nodeBandUnknown: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  compositeSelector: {r: 0.26610893, g: 0.32060647, b: 0.8679245, a: 1}
+  compositeSequence: {r: 0.6616507, g: 0.33161268, b: 0.8679245, a: 1}
+  compositeParallel: {r: 0.8962264, g: 0.31706125, b: 0.6782637, a: 1}
+  compositePriority: {r: 0.41006586, g: 0.88629854, b: 0.8962264, a: 1}
+  compositeFallback: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  badgeAgent: {r: 0.4, g: 0.65, b: 0.95, a: 1}
+  badgeCommander: {r: 0.69, g: 0.53, b: 0.8, a: 1}
+  abortSelf: {r: 0.38, g: 0, b: 1, a: 1}
+  abortLowerPriority: {r: 0, g: 0.5986471, b: 1, a: 1}
+  abortBoth: {r: 0.78318024, g: 0, b: 1, a: 1}
+  gridLine: {r: 0.76, g: 0.77, b: 0.75, a: 0.1}
+  gridThickLine: {r: 0.76, g: 0.77, b: 0.75, a: 0.14901961}

@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8214695053943332889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421aea733d4961040b9cad144a682a31, type: 3}
+  m_Name: New Commander Tree Asset_CommanderBB
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CommanderBlackboardDefinition
+  sharedVariables: []
+  maxSize: 8
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &-7327761558591286968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421aea733d4961040b9cad144a682a31, type: 3}
+  m_Name: New Commander Tree Asset_CommanderBB
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CommanderBlackboardDefinition
+  sharedVariables: []
+  maxSize: 8
+  references:
+    version: 2
+    RefIds: []
+--- !u!114 &-4344626505465163001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
+  m_Name: New Commander Tree Asset_CommanderBB
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
+  sharedVariables:
+  - rid: 3017916898371174761
+  references:
+    version: 2
+    RefIds:
+    - rid: 3017916898371174761
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: newVariable
+        variableStride: 1
+        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        singleValue: 0
+        arrayValues: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ee0a8d9db227047b1741495fd2232d, type: 3}
+  m_Name: CommanderTest
+  m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.CommanderTreeAsset
+  root: {fileID: 703844267353713686}
+  blackboardDefinition: {fileID: -4344626505465163001}
+  commanderBlackboardDefinition: {fileID: -4344626505465163001}
+  squadConnections:
+  - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
+    assignedRoles: []
+  nodesList:
+  - {fileID: 703844267353713686}
+  editorNotes: []
+--- !u!114 &703844267353713686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  nodeName: RootNode
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: ecd2ad023ad000a4787fd5631b1bf4c1
+  graphPosition: {x: 0, y: 0}
+  runtimeIndex: 0
+--- !u!114 &9172470406916706569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421aea733d4961040b9cad144a682a31, type: 3}
+  m_Name: New Commander Tree Asset_CommanderBB
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CommanderBlackboardDefinition
+  sharedVariables: []
+  maxSize: 8
+  references:
+    version: 2
+    RefIds: []

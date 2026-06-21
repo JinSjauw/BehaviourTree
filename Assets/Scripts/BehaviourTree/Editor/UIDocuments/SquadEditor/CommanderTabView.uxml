@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; flex-direction: column; padding-left: 8px; padding-right: 8px; padding-top: 4px; padding-bottom: 4px;">
+        <ui:Label name="empty-state-label" text="Select a tree asset to configure the commander squad." style="color: grey; -unity-text-align: middle-center; flex-grow: 1; font-size: 12px; white-space: normal; margin-top: 20px;"/>
+        <ui:VisualElement name="commander-content" style="flex-grow: 1; flex-direction: column;"/>
+    </ui:VisualElement>
+</ui:UXML>

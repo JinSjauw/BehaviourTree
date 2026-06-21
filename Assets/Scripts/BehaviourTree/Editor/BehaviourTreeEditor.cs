@@ -19,9 +19,11 @@ public class BehaviourTreeEditor : EditorWindow
     private BlackBoardView blackBoardView;
     private TrackedVariablesView trackedVariablesView;
     private SquadTabView squadTabView;
+    private CommanderTabView commanderTabView;
     private ToolbarMenu assetBarMenu;
     private TabView tabView;
     private Tab inspectorTab;
+    private Tab commanderTabInstance;
     private TreeSearchProvider treeSearchProvider;
 
     public static BlackboardDefinition currentBlackboardDef { get; private set; }
@@ -84,6 +86,9 @@ public class BehaviourTreeEditor : EditorWindow
         assetBarMenu = root.Q<ToolbarMenu>("AssetBarMenu");
         tabView = root.Q<TabView>("TabView");
         inspectorTab = tabView?.Q<Tab>("InspectorTab");
+        commanderTabView = new CommanderTabView();
+        commanderTabInstance = new Tab("Commander") { name = "CommanderTab", style = { flexGrow = 1 } };
+        commanderTabInstance.Add(commanderTabView);
 
         if (treeGraphView == null)
         {
@@ -306,11 +311,7 @@ public class BehaviourTreeEditor : EditorWindow
         if (selected != null && selected.TryGetComponent(out BehaviourTreeRunnerBase runner))
         {
             currentRunner = runner;
-
-            if (runner is AgentTreeRunner agentRunner)
-                trackedVariablesView?.Refresh(agentRunner);
-            else
-                trackedVariablesView?.Refresh(null);
+            trackedVariablesView?.Refresh(runner);
 
             return runner.GetSourceTree() as BaseEditorTreeAsset;
         }
@@ -390,8 +391,9 @@ public class BehaviourTreeEditor : EditorWindow
         // Refresh tracked variables view — the binding group depends on currentTree
         if (selectedAsset != null)
         {
-            trackedVariablesView?.Refresh(currentRunner as AgentTreeRunner);
+            trackedVariablesView?.Refresh(currentRunner);
             squadTabView?.Refresh(currentTree);
+            commanderTabView?.Refresh(currentTree);
         }
 
         // Null check for tree asset before using it
@@ -407,7 +409,7 @@ public class BehaviourTreeEditor : EditorWindow
             return;
         }
 
-        if (currentTree.blackboardDefinition == null)
+        if (currentTree.blackboardDefinition == null && currentTree.CommanderBlackboardDefinition == null)
         {
             currentTree.CreateBlackBoard();
         }
@@ -426,7 +428,12 @@ public class BehaviourTreeEditor : EditorWindow
                 inspectorView?.ClearView();
                 treeGraphView.OnNodeSelected = OnNodeSelectionChanged;
                 treeGraphView.PopulateView(currentTree);
-                blackBoardView.BuildBlackboardView(currentTree.blackboardDefinition);
+                if (blackBoardView != null)
+                    blackBoardView.IsSquadContext = currentTree is CommanderTreeAsset;
+                BlackboardDefinition bbDef = currentTree is CommanderTreeAsset
+                    ? currentTree.CommanderBlackboardDefinition
+                    : currentTree.blackboardDefinition;
+                blackBoardView.BuildBlackboardView(bbDef);
             }
             catch (Exception ex)
             {
@@ -437,18 +444,19 @@ public class BehaviourTreeEditor : EditorWindow
 
     private void ConfigureTabsForTreeType()
     {
-        if (tabView == null) return;
+        if (tabView == null || commanderTabInstance == null) return;
 
-        Tab commanderTab = tabView.Q<Tab>("CommanderTab");
-        if (commanderTab == null) return;
+        // Commander tab visible if:
+        // - Runner is CommanderTreeRunner (play mode), OR
+        // - Tree asset is CommanderTreeAsset (editor mode, no runner selected)
+        bool isCommander = currentRunner is CommanderTreeRunner
+            || (currentRunner == null && currentTree is CommanderTreeAsset);
+        bool tabInView = commanderTabInstance.parent == tabView;
 
-        // Commander tab visibility depends on the selected runner, not the tree asset type.
-        // A CommanderTreeRunner may use an AgentTreeAsset while still needing
-        // the Commander tab (e.g., for squad bindings).
-        if (currentRunner is CommanderTreeRunner)
-            commanderTab.style.display = DisplayStyle.Flex;
-        else
-            commanderTab.style.display = DisplayStyle.None;
+        if (isCommander && !tabInView)
+            tabView.Add(commanderTabInstance);
+        else if (!isCommander && tabInView)
+            tabView.Remove(commanderTabInstance);
     }
 
     private void OnProjectChanged()

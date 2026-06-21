@@ -23,6 +23,9 @@ namespace BehaviourTree.Editor
         /// <summary>Set before opening the search window to enable per-tree-type node filtering.</summary>
         public BaseEditorTreeAsset currentTreeAsset;
 
+        /// <summary>Tracks the last tree type we built method lists for, so we rebuild on change.</summary>
+        private AllowedTreeType lastBuiltTreeType = AllowedTreeType.Any;
+
         private void OnDestroy()
         {
             if (identationIcon != null)
@@ -59,8 +62,16 @@ namespace BehaviourTree.Editor
             decoratorMethods = new List<string>();
             compositeMethods = new List<string>();
 
+            // Determine which tree type to filter for
+            AllowedTreeType allowedFor = currentTreeAsset is CommanderTreeAsset
+                ? AllowedTreeType.Commander
+                : AllowedTreeType.Agent;
+
             foreach (string methodName in MethodRegistry.GetMethodNames())
             {
+                // Skip methods not allowed for this tree type
+                if (!MethodRegistry.IsMethodAllowed(methodName, allowedFor)) continue;
+
                 BehaviourNodeType category = MethodRegistry.GetCategory(methodName);
                 switch (category)
                 {
@@ -78,11 +89,20 @@ namespace BehaviourTree.Editor
                         break;
                 }
             }
+
+            lastBuiltTreeType = allowedFor;
         }
 
         public void SetCreationPosition(Vector2 position) => creationPosition = position;
         public void SetPendingConnection(Port port) => pendingConnectionPort = port;
         public void ClearPendingConnection() => pendingConnectionPort = null;
+
+        /// <summary>Invalidates cached method lists and search tree. Call when tree type changes.</summary>
+        public void InvalidateCache()
+        {
+            cachedSearchTree = null;
+            BuildMethodLists();
+        }
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
         {

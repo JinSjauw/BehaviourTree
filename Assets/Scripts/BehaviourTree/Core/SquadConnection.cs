@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviourTree.Core
@@ -15,10 +16,10 @@ namespace BehaviourTree.Core
         public SquadDefinition squad;
 
         /// <summary>
-        /// Agent-only. Role this agent plays in the squad.
+        /// Agent-only. Roles this agent can play in the squad.
         /// Picked from squad.availableRoles (e.g. "Scout", "Flanker").
-        /// Null or empty for commander trees.
+        /// Empty for commander trees.
         /// </summary>
-        public string assignedRole;
+        public List<string> assignedRoles = new List<string>();
     }
 }

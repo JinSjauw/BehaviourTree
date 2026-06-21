@@ -93,13 +93,13 @@ namespace BehaviourTree.Editor
             nodeColorElement.style.backgroundColor =
             NodeSO.NodeType switch
             {
-                BehaviourNodeType.ROOT => Color.green,
+                BehaviourNodeType.ROOT => GraphEditorTheme.instance.nodeBandRoot,
                 BehaviourNodeType.COMPOSITE => GetCompositeColor(NodeSO),
-                BehaviourNodeType.ACTION => Color.red,
-                BehaviourNodeType.CONDITION => Color.yellow,
-                BehaviourNodeType.DECORATOR => Color.chocolate,
-                BehaviourNodeType.SUBTREE => Color.yellowGreen,
-                _ => Color.gray
+                BehaviourNodeType.ACTION => GraphEditorTheme.instance.nodeBandAction,
+                BehaviourNodeType.CONDITION => GraphEditorTheme.instance.nodeBandCondition,
+                BehaviourNodeType.DECORATOR => GraphEditorTheme.instance.nodeBandDecorator,
+                BehaviourNodeType.SUBTREE => GraphEditorTheme.instance.nodeBandSubtree,
+                _ => GraphEditorTheme.instance.nodeBandUnknown
             };
         }
 
@@ -109,14 +109,14 @@ namespace BehaviourTree.Editor
             {
                 return composite.methodName switch
                 {
-                    "SELECTOR" => Color.blue,
-                    "SEQUENCE" => Color.purple,
-                    "PARALLEL" => Color.magenta,
-                    "PRIORITY" => Color.cyan,
-                    _ => Color.gray
+                    "SELECTOR" => GraphEditorTheme.instance.compositeSelector,
+                    "SEQUENCE" => GraphEditorTheme.instance.compositeSequence,
+                    "PARALLEL" => GraphEditorTheme.instance.compositeParallel,
+                    "PRIORITY" => GraphEditorTheme.instance.compositePriority,
+                    _ => GraphEditorTheme.instance.compositeFallback
                 };
             }
-            return Color.gray;
+            return GraphEditorTheme.instance.compositeFallback;
         }
 
         private void SetPortStyles()
@@ -415,9 +415,9 @@ namespace BehaviourTree.Editor
 
             abortTypeIcon.style.backgroundColor = type switch
             {
-                AbortType.Self          => new Color(0.38f, 0f, 1f),
-                AbortType.LowerPriority => new Color(0f, 0.78f, 1f),
-                AbortType.Both          => new Color(1f, 0f, 0.78f),
+                AbortType.Self          => GraphEditorTheme.instance.abortSelf,
+                AbortType.LowerPriority => GraphEditorTheme.instance.abortLowerPriority,
+                AbortType.Both          => GraphEditorTheme.instance.abortBoth,
                 _                       => Color.gray,
             };
 

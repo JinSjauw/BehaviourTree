@@ -27,21 +27,24 @@ MonoBehaviour:
     maxAmount: 1
     isFallback: 0
   bindingGroups:
+  - treeAsset: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}
+    bindings:
+    - treeVariableName: TESTINTTTTTTTTTTTTTTTTTTTT
+      squadVariableName: Test
+      direction: 0
+    - treeVariableName: TESTGO
+      squadVariableName: dwada
+      direction: 1
   - treeAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
+    bindings: []
+  - treeAsset: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
     bindings:
     - treeVariableName: 
       squadVariableName: 
       direction: 2
     - treeVariableName: 
       squadVariableName: 
-      direction: 0
-    - treeVariableName: 
-      squadVariableName: 
       direction: 1
-  - treeAsset: {fileID: 11400000, guid: a66891d86c4d0b44aaacde84d8ab23e1, type: 2}
-    bindings: []
-  - treeAsset: {fileID: 11400000, guid: 8854f5a48d0cdbd4fa53e0503d04ddef, type: 2}
-    bindings: []
 --- !u!114 &5414574867650723179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,20 +59,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
   - rid: 3017916894397071654
-  - rid: 3017916892728525714
+  - rid: 3017916898371174682
   references:
     version: 2
     RefIds:
-    - rid: 3017916892728525714
-      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: dwada
-        variableStride: 1
-        variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        isSquadData: 0
-        singleValue: {x: 0, y: 0, z: 0}
-        arrayValues: []
     - rid: 3017916894397071654
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
@@ -80,3 +73,13 @@ MonoBehaviour:
         isSquadData: 0
         singleValue: 0
         arrayValues: 
+    - rid: 3017916898371174682
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: dwada
+        variableStride: 1
+        variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        singleValue: {fileID: 0}
+        arrayValues: []

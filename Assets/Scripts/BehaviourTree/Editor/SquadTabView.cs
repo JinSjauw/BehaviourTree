@@ -2,51 +2,62 @@ using System.Collections.Generic;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
 using UnityEditor;
-using UnityEditor.UIElements;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 /// <summary>
 /// VisualElement shown in the "Squads" tab of the BehaviourTreeEditor.
-/// Displays the current tree's SquadConnections — which squads it's connected to,
-/// the assigned role, and the per-tree binding table from each squad.
+/// Displays the current tree's squad connections — squad picker, multi-role
+/// assignment, and editable per-tree variable bindings shared with SquadDefinitionEditor.
 /// </summary>
 [UxmlElement("SquadTabView")]
 public partial class SquadTabView : VisualElement
 {
-    // ── UI elements queried from UXML ────────────────────────
     private Label emptyStateLabel;
     private ScrollView connectionsScroll;
     private Button addConnectionButton;
-
-    // ── State ────────────────────────────────────────────────
     private BaseEditorTreeAsset currentTree;
+    private VisualTreeAsset connectionRowTemplate;
+    private VisualTreeAsset assignedRoleRowTemplate;
+    private VisualTreeAsset bindingRowTemplate;
+    private VisualTreeAsset bindingGroupFoldoutTemplate;
 
     public SquadTabView()
     {
         style.flexGrow = 1;
 
-        // Load UXML
-        string uxmlPath = BehaviourTreeEditorPaths.SquadTabViewUxml;
-        VisualTreeAsset treeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
+        VisualTreeAsset treeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            BehaviourTreeEditorPaths.SquadTabViewUxml);
         if (treeAsset != null)
         {
             VisualElement ui = treeAsset.CloneTree();
             Add(ui);
         }
 
-        // Query elements
         emptyStateLabel = this.Q<Label>("empty-state-label");
         connectionsScroll = this.Q<ScrollView>("connections-scroll");
         addConnectionButton = this.Q<Button>("add-connection-button");
 
         if (addConnectionButton != null)
             addConnectionButton.clicked += OnAddConnectionClicked;
+
+        connectionRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            BehaviourTreeEditorPaths.SquadConnectionRowUxml);
+        assignedRoleRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            BehaviourTreeEditorPaths.SquadAssignedRoleRowUxml);
+        bindingRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            BehaviourTreeEditorPaths.BindingRowUxml);
+        bindingGroupFoldoutTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            BehaviourTreeEditorPaths.BindingGroupFoldoutUxml);
+
+        BindingGroupEditor.BindingsChangedForSquad += OnBindingsExternallyChanged;
+        RegisterCallback<DetachFromPanelEvent>(evt =>
+        {
+            BindingGroupEditor.BindingsChangedForSquad -= OnBindingsExternallyChanged;
+        });
     }
 
-    /// <summary>
-    /// Refreshes the tab with squad data from the given tree asset.
-    /// </summary>
     public void Refresh(BaseEditorTreeAsset treeAsset)
     {
         currentTree = treeAsset;
@@ -85,9 +96,10 @@ public partial class SquadTabView : VisualElement
 
     private VisualElement BuildConnectionElement(SquadConnection connection, int connectionIndex)
     {
+        string squadName = connection.squad != null ? connection.squad.name : "No Squad Selected";
         Foldout foldout = new Foldout
         {
-            text = connection.squad != null ? connection.squad.name : "No Squad Selected",
+            text = squadName,
             style =
             {
                 marginBottom = 4,
@@ -100,187 +112,220 @@ public partial class SquadTabView : VisualElement
             }
         };
 
-        // ── Row 1: Squad picker + Open button ──
-        VisualElement headerRow = new VisualElement
+        VisualElement content = connectionRowTemplate != null
+            ? connectionRowTemplate.CloneTree()
+            : new VisualElement();
+
+        // ── Squad picker row ──
+        Button selectSquadButton = content.Q<Button>("select-squad-button");
+        Button openSquadButton = content.Q<Button>("open-squad-button");
+        if (selectSquadButton != null)
         {
-            style =
+            selectSquadButton.text = connection.squad != null ? connection.squad.name : "Select Squad...";
+            selectSquadButton.clicked += () =>
             {
-                flexDirection = FlexDirection.Row,
-                alignItems = Align.Center,
-                marginBottom = 4
-            }
-        };
-
-        ObjectField squadField = new ObjectField("Squad")
-        {
-            objectType = typeof(SquadDefinition),
-            value = connection.squad,
-            style = { flexGrow = 1, marginRight = 4 }
-        };
-        squadField.RegisterValueChangedCallback(evt =>
-        {
-            connection.squad = evt.newValue as SquadDefinition;
-            connection.assignedRole = string.Empty;
-            EditorUtility.SetDirty(currentTree);
-            foldout.text = connection.squad != null ? connection.squad.name : "No Squad Selected";
-            RebuildUI();
-        });
-        headerRow.Add(squadField);
-
-        Button openSquadButton = new Button(() =>
-        {
-            if (connection.squad != null)
-            {
-                SquadDefinitionEditor.OpenWindow();
-                SquadDefinitionEditor wnd = EditorWindow.GetWindow<SquadDefinitionEditor>();
-                wnd.LoadSquad(connection.squad);
-            }
-        })
-        {
-            text = "Open",
-            style = { width = 50, paddingLeft = 4, paddingRight = 4 }
-        };
-        openSquadButton.SetEnabled(connection.squad != null);
-        headerRow.Add(openSquadButton);
-
-        foldout.Add(headerRow);
-
-        // ── Row 2: Role picker ──
-        if (connection.squad != null && connection.squad.availableRoles != null && connection.squad.availableRoles.Count > 0)
-        {
-            VisualElement roleRow = new VisualElement
-            {
-                style =
+                SquadSearchProvider provider = ScriptableObject.CreateInstance<SquadSearchProvider>();
+                provider.onSquadSelected = squad =>
                 {
-                    flexDirection = FlexDirection.Row,
-                    alignItems = Align.Center,
-                    marginBottom = 8
+                    connection.squad = squad;
+                    connection.assignedRoles.Clear();
+                    EditorUtility.SetDirty(currentTree);
+                    RebuildUI();
+                };
+                SearchWindow.Open(new SearchWindowContext(
+                    GUIUtility.GUIToScreenPoint(selectSquadButton.worldBound.position)),
+                    provider);
+            };
+        }
+        if (openSquadButton != null)
+        {
+            openSquadButton.SetEnabled(connection.squad != null);
+            openSquadButton.clicked += () =>
+            {
+                if (connection.squad != null)
+                {
+                    SquadDefinitionEditor wnd = EditorWindow.GetWindow<SquadDefinitionEditor>();
+                    wnd.titleContent = new GUIContent("Squad Editor");
+                    wnd.LoadSquad(connection.squad);
                 }
             };
-
-            Label roleLabel = new Label("Role")
-            {
-                style = { width = 60, color = new Color(0.7f, 0.7f, 0.7f, 1f) }
-            };
-            roleRow.Add(roleLabel);
-
-            List<string> roleNames = new List<string>();
-            for (int i = 0; i < connection.squad.availableRoles.Count; i++)
-                roleNames.Add(connection.squad.availableRoles[i].name);
-
-            PopupField<string> rolePopup = new PopupField<string>(
-                roleNames,
-                string.IsNullOrEmpty(connection.assignedRole) ? 0
-                    : Mathf.Max(0, roleNames.IndexOf(connection.assignedRole)))
-            {
-                style = { flexGrow = 1 }
-            };
-            rolePopup.RegisterValueChangedCallback(evt =>
-            {
-                connection.assignedRole = evt.newValue;
-                EditorUtility.SetDirty(currentTree);
-            });
-            roleRow.Add(rolePopup);
-
-            foldout.Add(roleRow);
         }
 
-        // ── Bindings table (read-only summary from squad's binding group for this tree) ──
-        if (connection.squad != null && connection.squad.bindingGroups != null)
+        // ── Roles section ──
+        VisualElement rolesSection = content.Q<VisualElement>("roles-section");
+        VisualElement rolesContainer = content.Q<VisualElement>("roles-container");
+        Button addRoleButton = content.Q<Button>("add-role-button");
+        bool hasRoles = connection.squad != null
+            && connection.squad.availableRoles != null
+            && connection.squad.availableRoles.Count > 0;
+
+        if (rolesSection != null)
         {
-            SquadBindingGroup matchingGroup = connection.squad.GetBindingGroup(currentTree);
-            if (matchingGroup != null && matchingGroup.bindings != null && matchingGroup.bindings.Count > 0)
+            if (hasRoles)
             {
-                Label bindingsHeader = new Label("Bindings")
+                BuildRoleRows(rolesContainer, connection);
+                if (addRoleButton != null)
                 {
-                    style =
+                    addRoleButton.clicked += () =>
                     {
-                        fontSize = 11,
-                        color = new Color(0.6f, 0.6f, 0.6f, 1f),
-                        unityFontStyleAndWeight = FontStyle.Bold,
-                        marginBottom = 2
-                    }
-                };
-                foldout.Add(bindingsHeader);
-
-                for (int i = 0; i < matchingGroup.bindings.Count; i++)
-                {
-                    VariableBinding binding = matchingGroup.bindings[i];
-                    VisualElement bindingRow = new VisualElement
-                    {
-                        style =
+                        RoleSearchProvider provider = ScriptableObject.CreateInstance<RoleSearchProvider>();
+                        provider.availableRoles = connection.squad.availableRoles;
+                        provider.excludeRoles = new HashSet<string>(connection.assignedRoles);
+                        provider.onRoleSelected = roleName =>
                         {
-                            flexDirection = FlexDirection.Row,
-                            alignItems = Align.Center,
-                            marginBottom = 1,
-                            paddingLeft = 8,
-                            paddingTop = 1,
-                            paddingBottom = 1,
-                            backgroundColor = new Color(0.16f, 0.16f, 0.16f, 1f)
-                        }
+                            connection.assignedRoles.Add(roleName);
+                            EditorUtility.SetDirty(currentTree);
+                            BuildRoleRows(rolesContainer, connection);
+                        };
+                        SearchWindow.Open(new SearchWindowContext(
+                            GUIUtility.GUIToScreenPoint(addRoleButton.worldBound.position)),
+                            provider);
                     };
-
-                    Label treeVarLabel = new Label(binding.treeVariableName ?? "(none)")
-                    {
-                        style = { flexGrow = 1, color = new Color(0.7f, 0.7f, 0.9f, 1f), fontSize = 11 }
-                    };
-                    bindingRow.Add(treeVarLabel);
-
-                    Label arrowLabel = new Label(
-                        binding.direction == BindingDirection.ToSquad ? "→" :
-                        binding.direction == BindingDirection.FromSquad ? "←" : "↔")
-                    {
-                        style =
-                        {
-                            width = 20,
-                            unityTextAlign = TextAnchor.MiddleCenter,
-                            color = new Color(0.5f, 0.5f, 0.5f, 1f),
-                            fontSize = 12,
-                            marginLeft = 2,
-                            marginRight = 2
-                        }
-                    };
-                    bindingRow.Add(arrowLabel);
-
-                    Label squadVarLabel = new Label(binding.squadVariableName ?? "(none)")
-                    {
-                        style = { flexGrow = 1, color = new Color(0.9f, 0.7f, 0.7f, 1f), fontSize = 11 }
-                    };
-                    bindingRow.Add(squadVarLabel);
-
-                    foldout.Add(bindingRow);
                 }
             }
             else
             {
-                Label noBindingsLabel = new Label("No bindings defined. Open the squad editor to add bindings for this tree.")
-                {
-                    style =
-                    {
-                        color = new Color(0.5f, 0.5f, 0.5f, 1f),
-                        fontSize = 11,
-                        whiteSpace = WhiteSpace.Normal,
-                        paddingLeft = 8
-                    }
-                };
-                foldout.Add(noBindingsLabel);
+                rolesSection.RemoveFromHierarchy();
             }
         }
 
-        // ── Remove button ──
-        Button removeConnectionButton = new Button(() =>
+        // ── Bindings section ──
+        VisualElement bindingsSection = content.Q<VisualElement>("bindings-section");
+        VisualElement bindingsPlaceholder = content.Q<VisualElement>("bindings-editor-placeholder");
+        Button addBindingButton = content.Q<Button>("add-binding-button");
+        if (bindingsSection != null && bindingsPlaceholder != null)
         {
-            currentTree.squadConnections.RemoveAt(connectionIndex);
-            EditorUtility.SetDirty(currentTree);
-            RebuildUI();
-        })
-        {
-            text = "Remove Connection",
-            style = { marginTop = 4, paddingLeft = 8, paddingRight = 8 }
-        };
-        foldout.Add(removeConnectionButton);
+            if (connection.squad != null)
+            {
+                SquadBindingGroup bindingGroup = connection.squad.GetOrCreateBindingGroup(currentTree);
+                if (bindingGroup.bindings == null)
+                    bindingGroup.bindings = new List<VariableBinding>();
 
+                SquadDefinition capturedSquad = connection.squad;
+                BindingGroupEditor bindingsEditor = new BindingGroupEditor(
+                    bindingGroup,
+                    currentTree?.BlackboardDefinition,
+                    capturedSquad.blackboardDefinition,
+                    () =>
+                    {
+                        EditorUtility.SetDirty(currentTree);
+                        EditorUtility.SetDirty(capturedSquad);
+                        BindingGroupEditor.NotifyBindingsChanged(capturedSquad, this);
+                    },
+                    bindingRowTemplate,
+                    null,
+                    null,
+                    null,
+                    showAddButton: false);
+
+                int placeholderIndex = bindingsPlaceholder.parent.IndexOf(bindingsPlaceholder);
+                bindingsPlaceholder.parent.Insert(placeholderIndex, bindingsEditor);
+                bindingsPlaceholder.RemoveFromHierarchy();
+
+                if (addBindingButton != null)
+                {
+                    addBindingButton.clicked += () =>
+                    {
+                        if (bindingGroup.bindings == null)
+                            bindingGroup.bindings = new List<VariableBinding>();
+
+                        bindingGroup.bindings.Add(new VariableBinding
+                        {
+                            treeVariableName = null,
+                            squadVariableName = null,
+                            direction = BindingDirection.Both
+                        });
+                        EditorUtility.SetDirty(currentTree);
+                        EditorUtility.SetDirty(capturedSquad);
+                        bindingsEditor.Rebuild();
+                    };
+                }
+            }
+            else
+            {
+                bindingsSection.RemoveFromHierarchy();
+            }
+        }
+
+        // ── Remove connection button ──
+        Button removeConnectionButton = content.Q<Button>("remove-connection-button");
+        if (removeConnectionButton != null)
+        {
+            removeConnectionButton.clicked += () =>
+            {
+                currentTree.squadConnections.RemoveAt(connectionIndex);
+                EditorUtility.SetDirty(currentTree);
+                RebuildUI();
+            };
+        }
+
+        foldout.Add(content);
         return foldout;
+    }
+
+    private void BuildRoleRows(VisualElement container, SquadConnection connection)
+    {
+        container.Clear();
+
+        if (connection.assignedRoles == null || connection.assignedRoles.Count == 0)
+        {
+            Label noRolesLabel = new Label("No roles assigned.")
+            {
+                style =
+                {
+                    color = new Color(0.5f, 0.5f, 0.5f, 1f),
+                    fontSize = 11,
+                    paddingLeft = 8
+                }
+            };
+            container.Add(noRolesLabel);
+            return;
+        }
+
+        for (int i = 0; i < connection.assignedRoles.Count; i++)
+        {
+            int capturedIndex = i;
+            string roleName = connection.assignedRoles[i];
+
+            VisualElement roleRow = assignedRoleRowTemplate != null
+                ? assignedRoleRowTemplate.CloneTree()
+                : new VisualElement();
+
+            VisualElement colourBanner = roleRow.Q<VisualElement>("role-colour-banner");
+            if (colourBanner != null)
+            {
+                Color roleColour = Color.gray;
+                if (connection.squad != null && connection.squad.availableRoles != null)
+                {
+                    for (int j = 0; j < connection.squad.availableRoles.Count; j++)
+                    {
+                        if (connection.squad.availableRoles[j].name == roleName)
+                        {
+                            roleColour = connection.squad.availableRoles[j].colour;
+                            break;
+                        }
+                    }
+                }
+                colourBanner.style.backgroundColor = roleColour;
+            }
+
+            Label roleNameLabel = roleRow.Q<Label>("role-name-label");
+            if (roleNameLabel != null)
+                roleNameLabel.text = roleName;
+
+            Button removeButton = roleRow.Q<Button>("role-remove-button");
+            if (removeButton != null)
+            {
+                removeButton.clicked += () =>
+                {
+                    connection.assignedRoles.RemoveAt(capturedIndex);
+                    EditorUtility.SetDirty(currentTree);
+                    BuildRoleRows(container, connection);
+                };
+            }
+
+            container.Add(roleRow);
+        }
     }
 
     private void OnAddConnectionClicked()
@@ -293,5 +338,19 @@ public partial class SquadTabView : VisualElement
         currentTree.squadConnections.Add(new SquadConnection());
         EditorUtility.SetDirty(currentTree);
         RebuildUI();
+    }
+
+    private void OnBindingsExternallyChanged(SquadDefinition squad, object source)
+    {
+        if (source == this) return;
+        if (currentTree?.squadConnections == null) return;
+        for (int i = 0; i < currentTree.squadConnections.Count; i++)
+        {
+            if ((Object)currentTree.squadConnections[i].squad == (Object)squad)
+            {
+                RebuildUI();
+                return;
+            }
+        }
     }
 }

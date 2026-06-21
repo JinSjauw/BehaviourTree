@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using BehaviourTree.Core;
 using UnityEngine;
 
@@ -7,15 +6,23 @@ namespace BehaviourTree.Runtime
 {
     /// <summary>
     /// Orchestrates a group of agents under a commander behaviour tree.
-    /// Each frame: copies squad data → agent BB, ticks all agents 
-    /// (bridge push → copy commander → evaluate → copy agent), copies agent data → squad,
-    /// copies squad data → commander BB, evaluates commander tree, copies commander → squad.
+    /// Per-frame flow:
+    ///   1. EvaluateCommander:
+    ///      a. Squads → commander BB (agent status from last frame)
+    ///      b. Commander evaluates (reads state, writes orders)
+    ///      c. Commander → squads (orders)
+    ///   2. TickAgents: for each agent
+    ///      a. Squad → agent BB (fresh orders + status)
+    ///      b. Push data providers → agent self BB
+    ///      c. Agent evaluates (reacts to orders)
+    ///      d. Agent → squad BB (reports new status)
+    /// Communication between agents and commander happens exclusively through
+    /// the squad blackboard channel.
     /// </summary>
     [RequireComponent(typeof(BlackBoard))]
     public class CommanderTreeRunner : BehaviourTreeRunnerBase
     {
         [SerializeField] private List<AgentTreeRunner> registeredAgents = new List<AgentTreeRunner>();
-        private CommanderBindingBridge[] cachedBridges;
 
         /// <summary>Squad instances this commander has registered with.</summary>
         [System.NonSerialized] public List<SquadInstance> registeredSquads = new List<SquadInstance>();
@@ -29,44 +36,26 @@ namespace BehaviourTree.Runtime
         {
             if (evaluator == null || blackBoard == null) return;
 
-            TickAgents();
+            PushTrackedBindings();
             EvaluateCommander();
+            TickAgents();
         }
 
         /// <summary>
-        /// Ticks each registered agent:
-        ///   1. Squad → agent BB
-        ///   2. Bridge: push data providers, copy commander → agent
-        ///   3. Agent evaluates
-        ///   4. Bridge: copy agent → commander
-        ///   5. Agent → squad
+        /// Agents tick after commander: squad BB has fresh orders from commander.
+        /// Each agent reads squad data, pushes own data providers, evaluates,
+        /// then writes results back to squad BB.
         /// </summary>
         private void TickAgents()
         {
-            if (cachedBridges == null) return;
-
             for (int i = 0; i < registeredAgents.Count; i++)
             {
                 AgentTreeRunner agent = registeredAgents[i];
-                CommanderBindingBridge bridge = cachedBridges[i];
                 if (agent == null) continue;
 
-                // 1. Squad → agent
+                agent.PushDataProviders();
                 CopySquadsToTree(agent);
-
-                if (bridge != null)
-                {
-                    bridge.PushDataProviders();
-                    bridge.CopyCommanderToAgent();
-                    agent.Evaluate();
-                    bridge.CopyAgentToCommander();
-                }
-                else
-                {
-                    agent.Evaluate();
-                }
-
-                // 5. Agent → squad
+                agent.Evaluate();
                 CopySquadsFromTree(agent);
             }
         }
@@ -122,17 +111,15 @@ namespace BehaviourTree.Runtime
         }
 
         /// <summary>
-        /// Evaluates the commander tree against the commander BB.
-        /// Squad → commander data is copied first, then commander → squad after evaluation.
+        /// Commander evaluates first: reads agent status from squad BB (last frame),
+        /// runs the commander behaviour tree, writes orders back to squad BB.
         /// </summary>
         private void EvaluateCommander()
         {
-            // Squad → commander
             CopySquadsToTree(this);
 
             evaluator.Evaluate(blackBoard);
 
-            // Commander → squad
             CopySquadsFromTree(this);
 
             if (debugProvider != null)
@@ -145,64 +132,36 @@ namespace BehaviourTree.Runtime
 
         protected override void OnPostInitialize()
         {
-            // Disable independent update on registered agents — we tick them manually
-            cachedBridges = new CommanderBindingBridge[registeredAgents.Count];
+            ResolveTrackedBindings();
+
             for (int i = 0; i < registeredAgents.Count; i++)
             {
                 AgentTreeRunner agent = registeredAgents[i];
                 if (agent != null)
                 {
-                    agent.Initialize(); // Ensure agent BB is initialized before resolving bridge
+                    agent.Initialize();
                     agent.RunIndependently = false;
-                    CommanderBindingBridge bridge = agent.GetComponent<CommanderBindingBridge>();
-                    cachedBridges[i] = bridge;
-                    if (bridge != null)
-                    {
-                        bridge.ResolveBindings();
-                    }
                 }
             }
         }
 
         /// <summary>
         /// Registers an agent with this commander. Assigns agentID, resizes
-        /// strided squad-data BB variables, and wires up the bridge.
+        /// strided squad-data BB variables.
         /// </summary>
         public void RegisterAgent(AgentTreeRunner agent)
         {
             if (agent == null || registeredAgents.Contains(agent))
                 return;
 
-            int agentID = registeredAgents.Count;
             registeredAgents.Add(agent);
 
-            // Resize commander BB squad-data strides to accommodate the new agent
             ResizeSquadDataStrides(registeredAgents.Count);
-
-            CommanderBindingBridge bridge = agent.GetComponent<CommanderBindingBridge>();
-            if (bridge != null)
-            {
-                // Set agentID via reflection (field is serialized private)
-                FieldInfo agentIdField = typeof(CommanderBindingBridge).GetField("agentID",
-                    BindingFlags.NonPublic | BindingFlags.Instance);
-                if (agentIdField != null)
-                    agentIdField.SetValue(bridge, agentID);
-            }
-
-            // Rebuild bridge cache
-            CommanderBindingBridge[] newCache = new CommanderBindingBridge[registeredAgents.Count];
-            if (cachedBridges != null)
-            {
-                for (int i = 0; i < cachedBridges.Length; i++)
-                    newCache[i] = cachedBridges[i];
-            }
-            newCache[agentID] = bridge;
-            cachedBridges = newCache;
         }
 
         /// <summary>
-        /// Unregisters an agent. Compacts remaining agent data, resizes
-        /// strided BB variables, and updates remaining agent IDs.
+        /// Unregisters an agent. Compacts remaining agent data and resizes
+        /// strided BB variables.
         /// </summary>
         public void UnregisterAgent(AgentTreeRunner agent)
         {
@@ -213,30 +172,9 @@ namespace BehaviourTree.Runtime
 
             registeredAgents.RemoveAt(removedIndex);
 
-            // Compact remaining agent data in strided variables
             CompactSquadDataAfterRemoval(removedIndex, registeredAgents.Count + 1);
 
-            // Resize squad-data strides to new agent count
             ResizeSquadDataStrides(registeredAgents.Count);
-
-            // Update agent IDs for agents shifted down
-            for (int i = removedIndex; i < registeredAgents.Count; i++)
-            {
-                CommanderBindingBridge bridge = registeredAgents[i]?.GetComponent<CommanderBindingBridge>();
-                if (bridge != null)
-                {
-                    FieldInfo agentIdField = typeof(CommanderBindingBridge).GetField("agentID",
-                        BindingFlags.NonPublic | BindingFlags.Instance);
-                    if (agentIdField != null)
-                        agentIdField.SetValue(bridge, i);
-                }
-            }
-
-            // Rebuild bridge cache
-            CommanderBindingBridge[] newCache = new CommanderBindingBridge[registeredAgents.Count];
-            for (int i = 0; i < registeredAgents.Count; i++)
-                newCache[i] = registeredAgents[i]?.GetComponent<CommanderBindingBridge>();
-            cachedBridges = newCache;
         }
 
         /// <summary>
@@ -289,7 +227,6 @@ namespace BehaviourTree.Runtime
 
                 if (variable.isSquadData && effectiveStride > 1)
                 {
-                    // Shift slots: for each agent after the removed one, copy its data down
                     for (int agentIndex = removedIndex; agentIndex < oldAgentCount - 1; agentIndex++)
                     {
                         int srcSlot = baseSlot + agentIndex + 1;
@@ -323,6 +260,5 @@ namespace BehaviourTree.Runtime
         {
             registeredSquads.Remove(squad);
         }
-
     }
 }

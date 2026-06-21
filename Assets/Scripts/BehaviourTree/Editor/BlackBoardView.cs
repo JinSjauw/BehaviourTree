@@ -34,7 +34,7 @@ public partial class BlackBoardView : VisualElement
         style.paddingRight = 8;
         style.paddingTop = 8;
         style.paddingBottom = 8;
-        style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
+        style.backgroundColor = GraphEditorTheme.instance.panelBg;
 
         blackBoardViewContainer = new VisualElement { style = { flexGrow = 1 } };
         Add(blackBoardViewContainer);
@@ -43,7 +43,7 @@ public partial class BlackBoardView : VisualElement
         {
             style =
             {
-                color = Color.grey,
+                color = GraphEditorTheme.instance.panelPlaceholder,
                 unityTextAlign = TextAnchor.MiddleCenter,
                 marginTop = 40,
                 fontSize = 13
@@ -51,6 +51,12 @@ public partial class BlackBoardView : VisualElement
         };
         blackBoardViewContainer.Add(placeholder);
     }
+
+    /// <summary>
+    /// When true, the type-creation popup shows a SquadData toggle that creates
+    /// dynamically-resized array variables. Set by commander/squad editors.
+    /// </summary>
+    public bool IsSquadContext { get; set; }
 
     public void BuildBlackboardView(BlackboardDefinition blackboardDefinition)
     {
@@ -74,7 +80,7 @@ public partial class BlackBoardView : VisualElement
                 style =
                 {
                     height = 1,
-                    backgroundColor = new Color(0.4f, 0.4f, 0.4f, 0.6f),
+                    backgroundColor = GraphEditorTheme.instance.panelSeparator,
                     marginTop = 6,
                     marginBottom = 6,
                     flexShrink = 0
@@ -191,7 +197,13 @@ public partial class BlackBoardView : VisualElement
 
         // ── Value cell ──────────────────────────────────
         valueCell.Clear();
-        if (currentType != null
+
+        // SquadData stride is runtime-managed — no editor values to show
+        if (variable.isSquadData)
+        {
+            // value cell intentionally left empty for SquadData variables
+        }
+        else if (currentType != null
             && VariableTypeRegistry.TryGetFieldFactory(currentType, out Func<VisualElement> factory)
             && VariableTypeRegistry.TryGetBinder(currentType, out Action<VisualElement, BlackboardVariableBase, int> binder))
         {
@@ -221,7 +233,7 @@ public partial class BlackBoardView : VisualElement
         {
             valueCell.Add(new Label($"(no editor for {currentType?.Name ?? "null"})")
             {
-                style = { color = Color.grey }
+                style = { color = GraphEditorTheme.instance.panelPlaceholder }
             });
         }
 
@@ -318,14 +330,14 @@ public partial class BlackBoardView : VisualElement
     {
         // worldBound returns window-space coordinates including the window header
         // — PopupWindow.Show accepts them directly, per Unity docs.
-        VariableTypeSearchPopup popup = new VariableTypeSearchPopup((Type type, bool isArray, int stride) =>
+        VariableTypeSearchPopup popup = new VariableTypeSearchPopup((Type type, bool isArray, int stride, bool isSquadData) =>
         {
-            CreateVariable(type, isArray, stride);
-        });
+            CreateVariable(type, isArray, stride, isSquadData);
+        }, IsSquadContext);
         UnityEditor.PopupWindow.Show(creatorButton.worldBound, popup);
     }
 
-    private void CreateVariable(Type selectedType, bool isArray, int stride)
+    private void CreateVariable(Type selectedType, bool isArray, int stride, bool isSquadData = false)
     {
         if (cachedDefinition == null) return;
 
@@ -341,6 +353,7 @@ public partial class BlackBoardView : VisualElement
         variable.Name = name;
         variable.Stride = stride;
         variable.IsArray = isArray;
+        variable.isSquadData = isSquadData;
 
         Undo.RecordObject(cachedDefinition, "Add Blackboard Variable");
         if (cachedDefinition.sharedVariables == null)
