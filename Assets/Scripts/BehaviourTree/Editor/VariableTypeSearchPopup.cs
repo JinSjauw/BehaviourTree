@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BehaviourTree.Core;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -26,11 +27,9 @@ namespace BehaviourTree.Editor
         private TextField searchField;
         private RadioButton radioSingular;
         private RadioButton radioArray;
-        private VisualElement squaddataRow;
-        private Toggle squaddataToggle;
+        private RadioButton radioSquadData;
         private VisualElement sizeRow;
         private IntegerField sizeField;
-        private Label sizeLabel;
         private ListView typeListView;
 
         private List<Type> allTypes;
@@ -67,11 +66,9 @@ namespace BehaviourTree.Editor
             searchField = root.Q<TextField>("search-field");
             radioSingular = root.Q<RadioButton>("radio-singular");
             radioArray = root.Q<RadioButton>("radio-array");
-            squaddataRow = root.Q<VisualElement>("squaddata-row");
-            squaddataToggle = root.Q<Toggle>("squaddata-toggle");
+            radioSquadData = root.Q<RadioButton>("radio-squad-data");
             sizeRow = root.Q<VisualElement>("size-row");
             sizeField = root.Q<IntegerField>("size-field");
-            sizeLabel = root.Q<Label>("size-label");
             typeListView = root.Q<ListView>("type-list");
 
             // Singular selected by default, size row hidden
@@ -79,7 +76,7 @@ namespace BehaviourTree.Editor
             sizeRow.visible = false;
 
             if (isSquadContext)
-                squaddataRow.style.display = DisplayStyle.Flex;
+                radioSquadData.style.display = DisplayStyle.Flex;
 
             // Show/hide size row based on radio selection
             radioSingular.RegisterValueChangedCallback(evt =>
@@ -87,7 +84,6 @@ namespace BehaviourTree.Editor
                 if (evt.newValue)
                 {
                     sizeRow.visible = false;
-                    UpdateSquadDataUI();
                 }
             });
             radioArray.RegisterValueChangedCallback(evt =>
@@ -95,15 +91,15 @@ namespace BehaviourTree.Editor
                 if (evt.newValue)
                 {
                     sizeRow.visible = true;
-                    UpdateSquadDataUI();
                 }
             });
-
-            // SquadData toggle forces array mode and adjusts size label
-            if (squaddataToggle != null)
+            radioSquadData.RegisterValueChangedCallback(evt =>
             {
-                squaddataToggle.RegisterValueChangedCallback(OnSquadDataToggled);
-            }
+                if (evt.newValue)
+                {
+                    sizeRow.visible = false;
+                }
+            });
 
             // Configure ListView data & bindings
             typeListView.itemsSource = filteredTypes;
@@ -214,46 +210,11 @@ namespace BehaviourTree.Editor
 
             Type selectedType = filteredTypes[typeListView.selectedIndex];
             bool isArray = radioArray.value;
-            bool isSquad = squaddataToggle?.value ?? false;
+            bool isSquad = radioSquadData.value;
             int stride = isArray ? Mathf.Max(1, sizeField.value) : 1;
 
             editorWindow.Close();
             onTypeSelected?.Invoke(selectedType, isArray, stride, isSquad);
-        }
-
-        private void OnSquadDataToggled(ChangeEvent<bool> evt)
-        {
-            UpdateSquadDataUI();
-        }
-
-        private void UpdateSquadDataUI()
-        {
-            if (squaddataToggle == null) return;
-
-            bool isSquad = squaddataToggle.value;
-
-            if (isSquad)
-            {
-                // Force array mode for SquadData
-                if (!radioArray.value)
-                    radioArray.value = true;
-                // Show size row but label it as dynamic
-                sizeRow.visible = true;
-                if (sizeLabel != null)
-                    sizeLabel.text = "Array size:";
-                if (sizeField != null)
-                {
-                    sizeField.value = 1;
-                    sizeField.SetEnabled(false);
-                }
-            }
-            else
-            {
-                if (sizeField != null)
-                    sizeField.SetEnabled(true);
-                if (sizeLabel != null)
-                    sizeLabel.text = "Array size:";
-            }
         }
     }
 }

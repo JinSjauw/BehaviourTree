@@ -141,6 +141,8 @@ MonoBehaviour:
   sharedVariables:
   - rid: 3017916852249821269
   - rid: 3017916852249821270
+  - rid: 3017916911898329233
+  - rid: 3017916911898329234
   references:
     version: 2
     RefIds:
@@ -152,6 +154,7 @@ MonoBehaviour:
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 0
+        isSystemVariable: 0
         singleValue: 0
         arrayValues: 
     - rid: 3017916852249821270
@@ -162,8 +165,31 @@ MonoBehaviour:
         variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         isSquadData: 0
+        isSystemVariable: 0
         singleValue: {fileID: 0}
         arrayValues: []
+    - rid: 3017916911898329233
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentAssignedRole
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916911898329234
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentReceivedOrder
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
 --- !u!114 &8764137446109216688
 MonoBehaviour:
   m_ObjectHideFlags: 0

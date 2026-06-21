@@ -99,5 +99,70 @@ namespace BehaviourTree.Core
             }
             return null;
         }
+
+        private void OnValidate()
+        {
+            // Ensure squad BB has base channel variables
+            if (blackboardDefinition != null)
+            {
+                BlackboardDefinition.EnsureBaseChannel<int>(blackboardDefinition, "AgentRoles",
+                    isSquadData: true);
+                BlackboardDefinition.EnsureBaseChannel<int>(blackboardDefinition, "AgentOrders",
+                    isSquadData: true);
+            }
+
+            // Ensure auto-bindings for each connected tree
+            if (bindingGroups != null)
+            {
+                for (int groupIndex = 0; groupIndex < bindingGroups.Count; groupIndex++)
+                {
+                    SquadBindingGroup group = bindingGroups[groupIndex];
+                    if (group?.treeAsset == null) continue;
+
+                    bool isCommander = group.treeAsset.CommanderBlackboardDefinition != null;
+                    string roleTreeVar = isCommander ? "AgentRoles" : "AgentAssignedRole";
+                    string orderTreeVar = isCommander ? "AgentOrders" : "AgentReceivedOrder";
+                    BindingDirection orderDir = isCommander
+                        ? BindingDirection.Both
+                        : BindingDirection.FromSquad;
+
+                    EnsureBinding(group, "AgentRoles", roleTreeVar, BindingDirection.FromSquad);
+                    EnsureBinding(group, "AgentOrders", orderTreeVar, orderDir);
+                }
+            }
+        }
+
+        private static void EnsureBinding(
+            SquadBindingGroup group, string squadVar, string treeVar, BindingDirection direction)
+        {
+            if (group.bindings == null)
+                group.bindings = new List<VariableBinding>();
+
+            for (int bindingIndex = 0; bindingIndex < group.bindings.Count; bindingIndex++)
+            {
+                VariableBinding binding = group.bindings[bindingIndex];
+                if (binding != null && binding.squadVariableName == squadVar)
+                {
+                    // Update existing binding if values differ
+                    if (binding.treeVariableName != treeVar || binding.direction != direction)
+                    {
+                        binding.treeVariableName = treeVar;
+                        binding.direction = direction;
+                        Debug.LogWarning(
+                            $"[BaseChannel] Repaired binding: squad.{squadVar} → tree.{treeVar} ({direction}).");
+                    }
+                    return;
+                }
+            }
+
+            group.bindings.Add(new VariableBinding
+            {
+                squadVariableName = squadVar,
+                treeVariableName = treeVar,
+                direction = direction
+            });
+            Debug.LogWarning(
+                $"[BaseChannel] Auto-created binding: squad.{squadVar} → tree.{treeVar} ({direction}).");
+        }
     }
 }

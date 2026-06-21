@@ -27,6 +27,21 @@ public partial class BlackBoardView : VisualElement
     private VisualTreeAsset arrayElementTemplate;
     private StyleSheet entryStyleSheet;
 
+    /// <summary>
+    /// Tracks callback references per visual element so they can be properly
+    /// unregistered on unbind. Prevents stale-lambda accumulation when the
+    /// ListView reorders/recycles items.
+    /// </summary>
+    private sealed class CallbackHandles
+    {
+        public EventCallback<ChangeEvent<string>> nameCallback;
+        public EventCallback<ChangeEvent<string>> typeCallback;
+        public EventCallback<ChangeEvent<int>> strideCallback;
+        public Action deleteAction;
+    }
+
+    private readonly Dictionary<VisualElement, CallbackHandles> boundCallbacks = new();
+
     public BlackBoardView()
     {
         style.flexGrow = 1;
@@ -131,7 +146,7 @@ public partial class BlackBoardView : VisualElement
 
     // ── ListView bind/unbind/reorder ─────────────────────────────────
 
-    private void BindVariableListItem(VisualElement ve, int index)
+    private void BindVariableListItem(VisualElement variableEntry, int index)
     {
         if (cachedDefinition?.sharedVariables == null) return;
         if (index < 0 || index >= cachedDefinition.sharedVariables.Count) return;
@@ -142,24 +157,38 @@ public partial class BlackBoardView : VisualElement
         Type currentType = variable.GetValueType();
         int stride = variable.Stride;
 
-        TextField nameField = ve.Q<TextField>("name-field");
-        DropdownField typeDropdown = ve.Q<DropdownField>("type-dropdown");
-        VisualElement strideContainer = ve.Q<VisualElement>("stride-container");
-        IntegerField strideField = ve.Q<IntegerField>("stride-field");
-        VisualElement valueCell = ve.Q<VisualElement>("value-cell");
-        Button deleteButton = ve.Q<Button>("delete-button");
+        VisualElement entryContainer = variableEntry.Q<VisualElement>("entry-row");
+        TextField nameField = variableEntry.Q<TextField>("name-field");
+        DropdownField typeDropdown = variableEntry.Q<DropdownField>("type-dropdown");
+        VisualElement strideContainer = variableEntry.Q<VisualElement>("stride-container");
+        IntegerField strideField = variableEntry.Q<IntegerField>("stride-field");
+        VisualElement valueCell = variableEntry.Q<VisualElement>("value-cell");
+        Button deleteButton = variableEntry.Q<Button>("delete-button");
 
         // ── Name ────────────────────────────────────────
         nameField.SetValueWithoutNotify(variable.Name);
-        nameField.RegisterValueChangedCallback(evt =>
+
+        if (variable.isSystemVariable)
+        {
+            nameField.SetEnabled(false);
+            entryContainer.style.backgroundColor = GraphEditorTheme.instance.systemVariableRow;
+        }
+        else if (variable.isSquadData)
+        {
+            entryContainer.style.backgroundColor = GraphEditorTheme.instance.squadDataRow;
+        }
+
+        CallbackHandles handles = new();
+        handles.nameCallback = evt =>
         {
             variable.Name = evt.newValue;
             EditorUtility.SetDirty(cachedDefinition);
-        });
+        };
+        nameField.RegisterValueChangedCallback(handles.nameCallback);
 
         // ── Type dropdown ───────────────────────────────
         List<Type> types = VariableTypeRegistry.Types.ToList();
-        typeDropdown.choices = types.Select(t => FieldTypeHelper.GetDisplayName(t)).ToList();
+        typeDropdown.choices = types.Select(type => FieldTypeHelper.GetDisplayName(type)).ToList();
         int typeIndex = -1;
         if (currentType != null)
         {
@@ -169,7 +198,11 @@ public partial class BlackBoardView : VisualElement
             }
         }
         typeDropdown.index = typeIndex;
-        typeDropdown.RegisterValueChangedCallback(evt =>
+
+        if (variable.isSystemVariable)
+            typeDropdown.SetEnabled(false);
+
+        typeDropdown.RegisterValueChangedCallback(handles.typeCallback = evt =>
         {
             int newIndex = types.FindIndex(t => FieldTypeHelper.GetDisplayName(t) == evt.newValue);
             if (newIndex >= 0 && types[newIndex] != currentType)
@@ -181,7 +214,11 @@ public partial class BlackBoardView : VisualElement
         {
             strideContainer.style.display = DisplayStyle.Flex;
             strideField.SetValueWithoutNotify(stride);
-            strideField.RegisterValueChangedCallback(evt =>
+
+            if (variable.isSystemVariable)
+                strideField.SetEnabled(false);
+
+            strideField.RegisterValueChangedCallback(handles.strideCallback = evt =>
             {
                 int newStride = Mathf.Max(1, evt.newValue);
                 variable.Stride = newStride;
@@ -199,7 +236,7 @@ public partial class BlackBoardView : VisualElement
         valueCell.Clear();
 
         // SquadData stride is runtime-managed — no editor values to show
-        if (variable.isSquadData)
+        if (variable.isSquadData || variable.isSystemVariable)
         {
             // value cell intentionally left empty for SquadData variables
         }
@@ -238,23 +275,77 @@ public partial class BlackBoardView : VisualElement
         }
 
         // ── Delete ──────────────────────────────────────
-        deleteButton.clicked += () =>
+        if (variable.isSystemVariable)
         {
-            Undo.RecordObject(cachedDefinition, "Remove Variable");
-            cachedDefinition.sharedVariables.RemoveAt(index);
-            EditorUtility.SetDirty(cachedDefinition);
-            variableListView.Rebuild();
-        };
+            if(deleteButton != null && deleteButton.visible) deleteButton.visible = false;
+        }
+        else
+        {
+            handles.deleteAction = () =>
+            {
+                Undo.RecordObject(cachedDefinition, "Remove Variable");
+                cachedDefinition.sharedVariables.RemoveAt(index);
+                EditorUtility.SetDirty(cachedDefinition);
+                variableListView.Rebuild();
+            };
+            deleteButton.clicked += handles.deleteAction;
+        }
+
+        boundCallbacks[variableEntry] = handles;
 
         // ── Apply USS ───────────────────────────────────
-        if (entryStyleSheet != null && !ve.styleSheets.Contains(entryStyleSheet))
-            ve.styleSheets.Add(entryStyleSheet);
+        if (entryStyleSheet != null && !variableEntry.styleSheets.Contains(entryStyleSheet))
+            variableEntry.styleSheets.Add(entryStyleSheet);
     }
 
     private void UnbindVariableListItem(VisualElement ve, int index)
     {
         VisualElement valueCell = ve.Q<VisualElement>("value-cell");
         valueCell?.Clear();
+
+        if (boundCallbacks.TryGetValue(ve, out CallbackHandles handles))
+        {
+            TextField nameField = ve.Q<TextField>("name-field");
+            DropdownField typeDropdown = ve.Q<DropdownField>("type-dropdown");
+            IntegerField strideField = ve.Q<IntegerField>("stride-field");
+            Button deleteButton = ve.Q<Button>("delete-button");
+
+            if (nameField != null && handles.nameCallback != null)
+                nameField.UnregisterValueChangedCallback(handles.nameCallback);
+            if (typeDropdown != null && handles.typeCallback != null)
+                typeDropdown.UnregisterValueChangedCallback(handles.typeCallback);
+            if (strideField != null && handles.strideCallback != null)
+                strideField.UnregisterValueChangedCallback(handles.strideCallback);
+            if (deleteButton != null && handles.deleteAction != null)
+                deleteButton.clicked -= handles.deleteAction;
+
+            boundCallbacks.Remove(ve);
+        }
+
+        // Reset mutable UI state to defaults so stale values don't bleed through
+        TextField nameFieldReset = ve.Q<TextField>("name-field");
+        if (nameFieldReset != null)
+            nameFieldReset.SetEnabled(true);
+
+        DropdownField typeDropdownReset = ve.Q<DropdownField>("type-dropdown");
+        if (typeDropdownReset != null)
+            typeDropdownReset.SetEnabled(true);
+
+        IntegerField strideFieldReset = ve.Q<IntegerField>("stride-field");
+        if (strideFieldReset != null)
+            strideFieldReset.SetEnabled(true);
+
+        Button deleteButtonReset = ve.Q<Button>("delete-button");
+        if (deleteButtonReset != null)
+            deleteButtonReset.visible = true;
+
+        VisualElement entryContainer = ve.Q<VisualElement>("entry-row");
+        if (entryContainer != null)
+            entryContainer.style.backgroundColor = StyleKeyword.Null;
+
+        VisualElement strideContainer = ve.Q<VisualElement>("stride-container");
+        if (strideContainer != null)
+            strideContainer.style.display = DisplayStyle.None;
     }
 
     private void OnVariableItemIndexChanged(int oldIndex, int newIndex)

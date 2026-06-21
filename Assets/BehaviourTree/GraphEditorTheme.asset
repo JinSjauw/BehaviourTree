@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d821ff4a8cdc2884a806d7ea5f44a53d, type: 3}
   m_Name: GraphEditorTheme
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.GraphEditorTheme
-  graphBgAgent: {r: 0.110204086, g: 0.11632654, b: 0.15, a: 0.7490196}
-  graphBgCommander: {r: 0.140625, g: 0.1125, b: 0.15, a: 0.69803923}
+  graphBgAgent: {r: 0.089411765, g: 0.09537254, b: 0.14901961, a: 0.7490196}
+  graphBgCommander: {r: 0.113725506, g: 0.08196079, b: 0.14901961, a: 0.7490196}
   panelBg: {r: 0.18, g: 0.18, b: 0.18, a: 1}
   panelSeparator: {r: 0.4, g: 0.4, b: 0.4, a: 0.6}
   panelPlaceholder: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  systemVariableRow: {r: 0.19886744, g: 0.14520481, b: 0.262, a: 1}
+  squadDataRow: {r: 0.12527475, g: 0.27362642, b: 0.3, a: 1}
   nodeBandRoot: {r: 0.39716092, g: 0.8018868, b: 0.41709813, a: 1}
   nodeBandAction: {r: 0.8773585, g: 0.4262638, b: 0.4262638, a: 1}
   nodeBandCondition: {r: 0.9056604, g: 0.7279946, b: 0.2776789, a: 1}

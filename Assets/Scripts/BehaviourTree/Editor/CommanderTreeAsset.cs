@@ -27,6 +27,7 @@ namespace BehaviourTree.Editor
             {
                 // Existing commander tree — bridge to the base field
                 blackboardDefinition = commanderBlackboardDefinition;
+                EnsureCommanderChannels(blackboardDefinition);
                 EditorUtility.SetDirty(this);
                 AssetDatabase.SaveAssets();
                 return;
@@ -37,8 +38,28 @@ namespace BehaviourTree.Editor
 
             commanderBlackboardDefinition = created;
             blackboardDefinition = created;
+            EnsureCommanderChannels(created);
             AssetDatabase.AddObjectToAsset(created, this);
             AssetDatabase.SaveAssets();
+        }
+
+        private void OnValidate()
+        {
+            BlackboardDefinition bbDef = blackboardDefinition ?? commanderBlackboardDefinition;
+            if (bbDef == null) return;
+
+            if (BlackboardDefinition.EnsureBaseChannel<int>(bbDef, "AgentRoles", isSquadData: true)
+                | BlackboardDefinition.EnsureBaseChannel<int>(bbDef, "AgentOrders", isSquadData: true))
+            {
+                EditorUtility.SetDirty(bbDef);
+            }
+        }
+
+        private static void EnsureCommanderChannels(BlackboardDefinition bbDef)
+        {
+            BlackboardDefinition.EnsureBaseChannel<int>(bbDef, "AgentRoles", isSquadData: true);
+            BlackboardDefinition.EnsureBaseChannel<int>(bbDef, "AgentOrders", isSquadData: true);
+            EditorUtility.SetDirty(bbDef);
         }
     }
 }

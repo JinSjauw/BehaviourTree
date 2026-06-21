@@ -65,41 +65,56 @@ MonoBehaviour:
   m_Name: NewTreeB_BB_Definition
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
-  - rid: 3017916810423697922
-  - rid: 3017916810423697921
-  - rid: 3017916810423698009
+  - rid: 3017916911898329239
+  - rid: 3017916911898329240
+  - rid: 3017916911898329343
+  - rid: 3017916911898329347
   references:
     version: 2
     RefIds:
-    - rid: 3017916810423697921
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
-      data:
-        variableName: TESTGO
-        variableStride: 1
-        variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        isSquadData: 0
-        singleValue: {fileID: 0}
-        arrayValues: []
-    - rid: 3017916810423697922
+    - rid: 3017916911898329239
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: TESTINTTTTTTTTTTTTTTTTTTTT
+        variableName: AgentAssignedRole
         variableStride: 1
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 0
-        singleValue: 2
+        isSystemVariable: 1
+        singleValue: 0
         arrayValues: 
-    - rid: 3017916810423698009
-      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+    - rid: 3017916911898329240
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: newVariable
+        variableName: AgentReceivedOrder
         variableStride: 1
-        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916911898329343
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TEST
+        variableStride: 1
+        variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         isSquadData: 0
-        singleValue: {x: 43, y: 43}
+        isSystemVariable: 0
+        singleValue: {fileID: 0}
+        arrayValues: []
+    - rid: 3017916911898329347
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: TEST
+        variableStride: 1
+        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        isSystemVariable: 0
+        singleValue: 0
         arrayValues: []
 --- !u!114 &-3456654351379911066
 MonoBehaviour:
@@ -141,8 +156,8 @@ MonoBehaviour:
   - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
     assignedRoles:
     - ASSAULT
-    - TESTROLE
     - FLANKER
+    - TESTROLE
   nodesList:
   - {fileID: -3456654351379911066}
   - {fileID: -6547581460322908388}

@@ -17,6 +17,56 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &-7778027923350255107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: ForEachRole
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 5d64b3f299a252d4c84609c4a0023c2b
+  graphPosition: {x: -258, y: 105}
+  runtimeIndex: -1
+  compositeType: 1
+  methodName: ForEachRole
+  fieldEntries:
+  - fieldName: agentRoleSlot
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: targetRoleSlot
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  abortType: 0
 --- !u!114 &-7327761558591286968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47,19 +97,56 @@ MonoBehaviour:
   m_Name: New Commander Tree Asset_CommanderBB
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
-  - rid: 3017916898371174761
+  - rid: 3017916911898329235
+  - rid: 3017916911898329236
+  - rid: 3017916911898329353
+  - rid: 3017916911898329352
   references:
     version: 2
     RefIds:
-    - rid: 3017916898371174761
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+    - rid: 3017916911898329235
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentRoles
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916911898329236
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentOrders
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916911898329352
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: wadw
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        isSystemVariable: 0
+        singleValue: {x: 0, y: 0}
+        arrayValues: []
+    - rid: 3017916911898329353
+      type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: newVariable
         variableStride: 1
-        variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+        variableTypeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-        isSquadData: 0
-        singleValue: 0
+        isSquadData: 1
+        isSystemVariable: 0
+        singleValue: 
         arrayValues: []
 --- !u!114 &11400000
 MonoBehaviour:
@@ -81,7 +168,10 @@ MonoBehaviour:
     assignedRoles: []
   nodesList:
   - {fileID: 703844267353713686}
+  - {fileID: 3670556756399005401}
+  - {fileID: -7778027923350255107}
   editorNotes: []
+  commanderSquad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
 --- !u!114 &703844267353713686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,6 +192,30 @@ MonoBehaviour:
   guid: ecd2ad023ad000a4787fd5631b1bf4c1
   graphPosition: {x: 0, y: 0}
   runtimeIndex: 0
+--- !u!114 &3670556756399005401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: ForEachAgent
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: ForEachAgent
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 544aa721afdaa3a4d9b468ed7e7025c1
+  graphPosition: {x: -396, y: -163}
+  runtimeIndex: -1
+  compositeType: 1
+  methodName: ForEachAgent
+  fieldEntries: []
+  abortType: 0
 --- !u!114 &9172470406916706569
 MonoBehaviour:
   m_ObjectHideFlags: 0

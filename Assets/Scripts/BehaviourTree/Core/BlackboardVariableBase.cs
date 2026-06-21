@@ -42,6 +42,12 @@ namespace BehaviourTree.Core
         /// </summary>
         public bool isSquadData;
 
+        /// <summary>
+        /// When true, the variable is a base communication channel managed by the system.
+        /// Cannot be deleted, renamed, re-typed, or have its stride changed by the user.
+        /// </summary>
+        public bool isSystemVariable;
+
     /// <summary>Resolves the System.Type from the stored type name.</summary>
     public Type GetValueType()
     {

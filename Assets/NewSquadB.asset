@@ -35,16 +35,28 @@ MonoBehaviour:
     - treeVariableName: TESTGO
       squadVariableName: dwada
       direction: 1
+    - treeVariableName: AgentAssignedRole
+      squadVariableName: AgentRoles
+      direction: 1
+    - treeVariableName: AgentReceivedOrder
+      squadVariableName: AgentOrders
+      direction: 1
   - treeAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
-    bindings: []
+    bindings:
+    - treeVariableName: AgentAssignedRole
+      squadVariableName: AgentRoles
+      direction: 1
+    - treeVariableName: AgentReceivedOrder
+      squadVariableName: AgentOrders
+      direction: 1
   - treeAsset: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
     bindings:
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
-    - treeVariableName: 
-      squadVariableName: 
+    - treeVariableName: AgentRoles
+      squadVariableName: AgentRoles
       direction: 1
+    - treeVariableName: AgentOrders
+      squadVariableName: AgentOrders
+      direction: 2
 --- !u!114 &5414574867650723179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,6 +72,8 @@ MonoBehaviour:
   sharedVariables:
   - rid: 3017916894397071654
   - rid: 3017916898371174682
+  - rid: 3017916911898329237
+  - rid: 3017916911898329238
   references:
     version: 2
     RefIds:
@@ -71,6 +85,7 @@ MonoBehaviour:
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 0
+        isSystemVariable: 0
         singleValue: 0
         arrayValues: 
     - rid: 3017916898371174682
@@ -81,5 +96,28 @@ MonoBehaviour:
         variableTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         isSquadData: 0
+        isSystemVariable: 0
         singleValue: {fileID: 0}
         arrayValues: []
+    - rid: 3017916911898329237
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentRoles
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916911898329238
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentOrders
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 

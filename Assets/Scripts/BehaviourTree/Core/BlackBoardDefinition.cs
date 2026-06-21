@@ -82,5 +82,50 @@ namespace BehaviourTree.Core
             sharedVariables.Add(clone);
             return clone;
         }
+
+        /// <summary>
+        /// Ensures a base channel variable exists on the definition. If the variable
+        /// already exists, repairs isSystemVariable if needed and warns on type mismatch.
+        /// Returns true if a new variable was created (caller should SetDirty).
+        /// </summary>
+        public static bool EnsureBaseChannel<T>(
+            BlackboardDefinition bbDef, string name, bool isSquadData)
+        {
+            if (bbDef == null || bbDef.sharedVariables == null)
+                return false;
+
+            BlackboardVariableBase existing = bbDef.FindVariable(name);
+            if (existing != null)
+            {
+                bool changed = false;
+
+                if (existing.GetValueType() != typeof(T))
+                {
+                    Debug.LogWarning(
+                        $"[BaseChannel] '{name}' has wrong type " +
+                        $"(expected {typeof(T).Name}, got {existing.GetValueType()?.Name ?? "null"}).");
+                }
+
+                if (!existing.isSystemVariable)
+                {
+                    existing.isSystemVariable = true;
+                    changed = true;
+                }
+
+                return changed;
+            }
+
+            Debug.LogWarning($"[BaseChannel] Missing '{name}' on '{bbDef.name}' — auto-creating.");
+
+            bbDef.AddVariable<T>(name, stride: 1, initialValue: default);
+            BlackboardVariableBase created = bbDef.FindVariable(name);
+            if (created != null)
+            {
+                created.isSquadData = isSquadData;
+                created.isSystemVariable = true;
+            }
+
+            return true;
+        }
     }
 }

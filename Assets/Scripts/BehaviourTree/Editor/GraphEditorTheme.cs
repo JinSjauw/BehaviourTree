@@ -34,6 +34,10 @@ namespace BehaviourTree.Editor
         public Color panelSeparator   = new(0.40f, 0.40f, 0.40f, 0.60f);
         public Color panelPlaceholder = Color.grey;
 
+        [Header("Blackboard")]
+        public Color systemVariableRow = new(0.70f, 0.40f, 0.10f, 0.30f);  // matches compositeCommander
+        public Color squadDataRow      = new(0.15f, 0.45f, 0.50f, 0.30f);  // teal
+
         [Header("Node Type Bands")]
         public Color nodeBandRoot      = Color.green;
         public Color nodeBandAction    = Color.red;
