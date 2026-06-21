@@ -10,6 +10,13 @@ public partial class InspectorView : VisualElement
     public static bool IsRenderingReadOnly { get; private set; }
     public static Dictionary<string, string> CurrentProxyMappings { get; private set; }
 
+    /// <summary>
+    /// Current scroll offset inside the inspector's BeginScrollView.
+    /// Exposed so IMGUI editors (e.g. CustomNodeEditor) can correct GetLastRect()
+    /// coordinates that are in scroll-content space.
+    /// </summary>
+    public static Vector2 InspectorScrollOffset { get; private set; }
+
     private VisualElement inspectorViewContainer;
     private IMGUIContainer cachedInspectorContainer;
 
@@ -63,6 +70,9 @@ public partial class InspectorView : VisualElement
         {
             if (editor != null && editor.target)
             {
+                // Capture scroll offset for popup anchoring in IMGUI editors
+                InspectorScrollOffset = inspectorScrollPos;
+
                 if (isReadOnly) EditorGUI.BeginDisabledGroup(true);
                 IsRenderingReadOnly = isReadOnly;
                 CurrentProxyMappings = currentNodeView?.VariableMappings;
@@ -84,6 +94,7 @@ public partial class InspectorView : VisualElement
 
                 IsRenderingReadOnly = false;
                 CurrentProxyMappings = null;
+                InspectorScrollOffset = Vector2.zero;
                 if (isReadOnly) EditorGUI.EndDisabledGroup();
             }
         });

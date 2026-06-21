@@ -20,12 +20,14 @@ namespace BehaviourTree.Editor
 
         private readonly BlackboardDefinition definition;
         private readonly Type filterType;
+        private readonly bool isSquadContext;
         private readonly Action<BlackboardVariableBase, bool> onVariableSelected;
         private readonly bool defaultToArray;
 
         private TextField searchField;
         private RadioButton radioSingular;
         private RadioButton radioArray;
+        private RadioButton radioSquadData;
         private VisualElement sizeRow;
         private ListView variableListView;
         private Label emptyStateLabel;
@@ -33,10 +35,11 @@ namespace BehaviourTree.Editor
         private List<BlackboardVariableBase> allVariables;
         private List<BlackboardVariableBase> filteredVariables;
 
-        public VariableSearchPopup(BlackboardDefinition definition, Type filterType, Action<BlackboardVariableBase, bool> onVariableSelected, bool defaultToArray = false)
+        public VariableSearchPopup(BlackboardDefinition definition, Type filterType, Action<BlackboardVariableBase, bool> onVariableSelected, bool defaultToArray = false, bool isSquadContext = false)
         {
             this.definition = definition;
             this.filterType = filterType;
+            this.isSquadContext = isSquadContext;
             this.onVariableSelected = onVariableSelected;
             this.defaultToArray = defaultToArray;
         }
@@ -62,6 +65,7 @@ namespace BehaviourTree.Editor
             searchField = root.Q<TextField>("search-field");
             radioSingular = root.Q<RadioButton>("radio-singular");
             radioArray = root.Q<RadioButton>("radio-array");
+            radioSquadData = root.Q<RadioButton>("radio-squad-data");
             sizeRow = root.Q<VisualElement>("size-row");
             variableListView = root.Q<ListView>("type-list");
             emptyStateLabel = root.Q<Label>("empty-state-label");
@@ -75,9 +79,14 @@ namespace BehaviourTree.Editor
             radioArray.value = defaultToArray;
             sizeRow.visible = false;
 
+            // Show squad data radio when in squad context
+            if (isSquadContext)
+                radioSquadData.style.display = DisplayStyle.Flex;
+
             // Radio filter triggers re-filter
             radioSingular.RegisterValueChangedCallback(evt => { if (evt.newValue) ApplyFilters(); });
             radioArray.RegisterValueChangedCallback(evt => { if (evt.newValue) ApplyFilters(); });
+            radioSquadData.RegisterValueChangedCallback(evt => { if (evt.newValue) ApplyFilters(); });
 
             // Configure ListView
             variableListView.itemsSource = filteredVariables;
@@ -131,12 +140,28 @@ namespace BehaviourTree.Editor
         {
             string query = (searchField?.value ?? string.Empty).Trim();
             bool showArrays = radioArray?.value ?? false;
+            bool showSquad = radioSquadData?.value ?? false;
 
             filteredVariables.Clear();
 
             for (int i = 0; i < allVariables.Count; i++)
             {
                 BlackboardVariableBase variable = allVariables[i];
+
+                // Skip system variables
+                if (variable.isSystemVariable) continue;
+
+                // Squad-data / Singular / Array radio filter
+                if (showSquad)
+                {
+                    if (!variable.isSquadData) continue;
+                }
+                else
+                {
+                    if (variable.isSquadData) continue;
+                    bool isArray = variable.Stride > 1;
+                    if (showArrays != isArray) continue;
+                }
 
                 // Type filter — only show variables whose value type matches the member type
                 if (filterType != null)
@@ -145,10 +170,6 @@ namespace BehaviourTree.Editor
                     if (varType != filterType)
                         continue;
                 }
-
-                // Singular/Array filter
-                bool isArray = variable.IsArray || variable.Stride > 1;
-                if (showArrays != isArray) continue;
 
                 // Text search
                 if (!string.IsNullOrEmpty(query))

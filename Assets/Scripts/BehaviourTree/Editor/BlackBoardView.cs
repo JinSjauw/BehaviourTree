@@ -138,6 +138,7 @@ public partial class BlackBoardView : VisualElement
         }).Every(100);
 
         // Undo/redo — rebuild ListView and re-run propagation
+        Undo.undoRedoPerformed -= OnUndoRedoPerformed;
         Undo.undoRedoPerformed += OnUndoRedoPerformed;
         RegisterCallback<DetachFromPanelEvent>(OnDetach);
     }
@@ -510,6 +511,8 @@ public partial class BlackBoardView : VisualElement
             Debug.LogWarning("[BlackBoardView] Variable name cannot be empty.");
             return;
         }
+
+        name = MakeUniqueName(name, -1);
 
         Type sharedVarType = typeof(BlackboardVariable<>).MakeGenericType(selectedType);
         BlackboardVariableBase variable = (BlackboardVariableBase)Activator.CreateInstance(sharedVarType);

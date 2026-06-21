@@ -140,7 +140,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: d84910597e05b5b41a692779cf1a1524
-  graphPosition: {x: -257, y: 630}
+  graphPosition: {x: -245, y: 630}
   runtimeIndex: 2
   leafType: 2
   methodName: CheckOrder
@@ -161,10 +161,10 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   - fieldName: expectedOrder
-    isVariable: 0
-    isToggleVariable: 0
+    isVariable: 1
+    isToggleVariable: 1
     isArray: 0
-    variableName: 
+    variableName: AgentAssignedRole
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     stringValue: MOVE
     isOrderConstant: 1

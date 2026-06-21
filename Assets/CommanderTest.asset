@@ -78,6 +78,7 @@ MonoBehaviour:
   - rid: 3017916911898329367
   - rid: 3017916911898329375
   - rid: 3017916911898329524
+  - rid: 3017916911898329612
   references:
     version: 2
     RefIds:
@@ -136,6 +137,17 @@ MonoBehaviour:
         isSystemVariable: 0
         singleValue: 0
         arrayValues: 
+    - rid: 3017916911898329612
+      type: {class: 'BlackboardVariable`1[[UnityEngine.Vector2, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: newVariable
+        variableStride: 1
+        variableTypeName: UnityEngine.Vector2, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        isSquadData: 0
+        isSystemVariable: 0
+        singleValue: {x: 0, y: 0}
+        arrayValues: []
 --- !u!114 &-3776059615971867780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +220,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: b766421846dd8cd44b581e7238cd7786
-  graphPosition: {x: -665, y: 560}
+  graphPosition: {x: -679.074, y: 560}
   runtimeIndex: 3
   leafType: 2
   methodName: CompareVariable
@@ -229,10 +241,10 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   - fieldName: b
-    isVariable: 0
+    isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: 
+    variableName: WOWOWOWWOWOWOW
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     stringValue: 
     isOrderConstant: 0
@@ -251,7 +263,7 @@ MonoBehaviour:
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     stringValue: 
     isOrderConstant: 0
-    intValue: 5
+    intValue: 0
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -305,7 +317,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 99e25f56956ea7b49b32c6b4eb3ec55e
-  graphPosition: {x: -48.212753, y: 560}
+  graphPosition: {x: -35, y: 560}
   runtimeIndex: 6
   leafType: 3
   methodName: LogVariable
@@ -440,7 +452,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: b6e2301e5dc0509459e2bf8ec0467468
-  graphPosition: {x: -578.99994, y: 770}
+  graphPosition: {x: -560, y: 770}
   runtimeIndex: 7
   leafType: 3
   methodName: SetVariable
@@ -448,10 +460,9 @@ MonoBehaviour:
   - fieldName: target
     isVariable: 1
     isToggleVariable: 0
-    isArray: 1
-    variableName: Agents_MoveTarget_Commander
-    fieldTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+    isArray: 0
+    variableName: WOWOWOWWOWOWOW
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     stringValue: 
     isOrderConstant: 0
     intValue: 0
@@ -462,12 +473,11 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   - fieldName: value
-    isVariable: 0
+    isVariable: 1
     isToggleVariable: 0
     isArray: 0
-    variableName: 
-    fieldTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+    variableName: WOWOWOWWOWOWOW
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     stringValue: 
     isOrderConstant: 0
     intValue: 323
@@ -523,7 +533,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 42693dee718473143a940be0ed971af8
-  graphPosition: {x: 409.664, y: 560}
+  graphPosition: {x: 385, y: 560}
   runtimeIndex: 10
   leafType: 3
   methodName: LogVariable
@@ -653,7 +663,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 15fa117e0239f9e48a768dd80171651a
-  graphPosition: {x: -333.9999, y: 770}
+  graphPosition: {x: -328.00015, y: 770}
   runtimeIndex: 8
   leafType: 3
   methodName: SendOrder
@@ -677,11 +687,11 @@ MonoBehaviour:
     isVariable: 0
     isToggleVariable: 0
     isArray: 0
-    variableName: 
+    variableName: WOWOWOWWOWOWOW
     fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    stringValue: MOVE
+    stringValue: ATTACK
     isOrderConstant: 1
-    intValue: 1
+    intValue: 0
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
@@ -729,7 +739,7 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   - fieldName: value
-    isVariable: 0
+    isVariable: 1
     isToggleVariable: 0
     isArray: 0
     variableName: 
