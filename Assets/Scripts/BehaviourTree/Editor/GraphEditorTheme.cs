@@ -47,6 +47,7 @@ namespace BehaviourTree.Editor
         public Color compositeSequence  = Color.purple;
         public Color compositeParallel  = Color.magenta;
         public Color compositePriority  = Color.cyan;
+        public Color compositeCommander = new(0.70f, 0.40f, 0.10f);  // orange-brown
         public Color compositeFallback  = Color.gray;
 
         [Header("Title Badges")]

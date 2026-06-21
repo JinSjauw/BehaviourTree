@@ -18,6 +18,14 @@ namespace BehaviourTree.Core
         /// Value types are stored as null. </summary>
         [SerializeField] private List<UnityEngine.Object> serializedReferences = new();
 
+        /// <summary>
+        /// Transient offset applied to all slot-index reads/writes by commander composites
+        /// (ForEachAgent, SelectAgent). When non-zero, GetBoxed/SetBoxed/Get/Set resolve to
+        /// storage[index + currentAgentOffset]. Set by composites, cleared after subtree returns.
+        /// Squad-data variables are value-typed so serializedReferences sync is skipped when offset != 0.
+        /// </summary>
+        [System.NonSerialized] public int currentAgentOffset;
+
         /// <summary>Per-component overrides for value-type variables (int, float, bool, Vector2/3/4, Color, enum).
         /// Keyed by variable name + element index — survives definition reorders without remapping. </summary>
         [SerializeField] private List<BlackboardValueOverride> valueOverrides = new();
@@ -445,7 +453,7 @@ namespace BehaviourTree.Core
 #endif
                 return default;
             }
-            return storage.Get<T>(index);
+            return storage.Get<T>(index + currentAgentOffset);
         }
 
         /// <summary>Set a value by index in the blackboard array.</summary>
@@ -459,10 +467,12 @@ namespace BehaviourTree.Core
                 return;
             }
 
-            storage.Set(index, value);
+            int effectiveIndex = index + currentAgentOffset;
+            storage.Set(effectiveIndex, value);
 
-            // Keep serialized reference in sync for reference types
-            if (definition != null && index >= 0 && index < serializedReferences.Count)
+            // Keep serialized reference in sync for reference types.
+            // Skip when offset is active — squad-data variables are value types.
+            if (currentAgentOffset == 0 && definition != null && index >= 0 && index < serializedReferences.Count)
             {
                 if (storage.GetSlotKind(index) == BlackboardSlotKind.Reference)
                 {
@@ -483,7 +493,7 @@ namespace BehaviourTree.Core
         {
             if (storage == null)
                 return null;
-            return storage.GetBoxed(index);
+            return storage.GetBoxed(index + currentAgentOffset);
         }
 
         /// <summary>Set a boxed value by slot index. Used by the bridge for type-agnostic copying.</summary>
@@ -491,9 +501,12 @@ namespace BehaviourTree.Core
         {
             if (storage == null)
                 return;
-            storage.SetBoxed(index, value);
 
-            if (definition != null && index >= 0 && index < serializedReferences.Count)
+            int effectiveIndex = index + currentAgentOffset;
+            storage.SetBoxed(effectiveIndex, value);
+
+            // Skip serializedReferences sync when offset is active — squad-data is value-typed.
+            if (currentAgentOffset == 0 && definition != null && index >= 0 && index < serializedReferences.Count)
             {
                 if (storage.GetSlotKind(index) == BlackboardSlotKind.Reference)
                 {

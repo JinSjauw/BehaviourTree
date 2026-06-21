@@ -154,11 +154,11 @@ namespace BehaviourTree.Editor
             }
             else
             {
-                foreach (Type t in allTypes)
+                foreach (Type type in allTypes)
                 {
-                    string displayName = FieldTypeHelper.GetDisplayName(t);
+                    string displayName = FieldTypeHelper.GetDisplayName(type);
                     if (displayName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-                        filteredTypes.Add(t);
+                        filteredTypes.Add(type);
                 }
             }
 

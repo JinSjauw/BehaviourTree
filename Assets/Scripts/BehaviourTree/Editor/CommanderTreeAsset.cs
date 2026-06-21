@@ -14,6 +14,13 @@ namespace BehaviourTree.Editor
     [CreateAssetMenu(menuName = "BehaviourTree/Commander Tree")]
     public class CommanderTreeAsset : BaseEditorTreeAsset
     {
+        /// <summary>
+        /// The squad this commander uses to order its own agents.
+        /// Distinct from squadConnections (which lists compatible squads the tree can join).
+        /// Used by role dropdowns, variable binding resolution, and runtime agent communication.
+        /// </summary>
+        public SquadDefinition commanderSquad;
+
         public override void CreateBlackBoard()
         {
             if (commanderBlackboardDefinition != null)

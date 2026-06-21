@@ -201,7 +201,7 @@ namespace BehaviourTree.Editor
                     }
                     else
                     {
-                        DrawConstantField(entryProp, info.fieldType);
+                        DrawConstantField(entryProp, info);
                     }
 
                     EditorGUILayout.EndVertical();
@@ -227,8 +227,16 @@ namespace BehaviourTree.Editor
                 fieldEntriesProp.DeleteArrayElementAtIndex(fieldEntriesProp.arraySize - 1);
         }
 
-        private void DrawConstantField(SerializedProperty entryProp, Type fieldType)
+        private void DrawConstantField(SerializedProperty entryProp, ParamInfo info)
         {
+            Type fieldType = info.fieldType;
+
+            if (info.isRoleDropdown)
+            {
+                DrawRoleDropdown(entryProp);
+                return;
+            }
+
             if (fieldType != null && fieldType.IsEnum)
             {
                 SerializedProperty prop = entryProp.FindPropertyRelative("intValue");
@@ -361,6 +369,52 @@ namespace BehaviourTree.Editor
         }
 
         // ── Conditional Abort Validation ──
+
+        private void DrawRoleDropdown(SerializedProperty entryProp)
+        {
+            SerializedProperty intValueProp = entryProp.FindPropertyRelative("intValue");
+            if (intValueProp == null) return;
+
+            BaseEditorTreeAsset tree = BehaviourTreeEditor.currentTree;
+
+            CommanderTreeAsset commanderTree = tree as CommanderTreeAsset;
+            if (commanderTree == null)
+            {
+                EditorGUILayout.HelpBox("Role dropdown only available on commander trees.", MessageType.Warning);
+                return;
+            }
+
+            SquadDefinition squad = commanderTree.commanderSquad;
+            if (squad == null)
+            {
+                EditorGUILayout.HelpBox("No commander squad assigned. Configure it in the Commander tab.", MessageType.Warning);
+                return;
+            }
+
+            if (squad.availableRoles == null || squad.availableRoles.Count == 0)
+            {
+                EditorGUILayout.HelpBox("No roles defined in the commander squad.", MessageType.Warning);
+                return;
+            }
+
+            List<SquadRole> roles = squad.availableRoles;
+            string[] roleNames = new string[roles.Count];
+            for (int roleIndex = 0; roleIndex < roles.Count; roleIndex++)
+                roleNames[roleIndex] = roles[roleIndex].name;
+
+            int currentIndex = intValueProp.intValue;
+            if (currentIndex < 0 || currentIndex >= roles.Count) currentIndex = 0;
+
+            if (InspectorView.IsRenderingReadOnly)
+            {
+                EditorGUILayout.LabelField("Role", roleNames[currentIndex]);
+            }
+            else
+            {
+                int newIndex = EditorGUILayout.Popup("Role", currentIndex, roleNames);
+                intValueProp.intValue = newIndex;
+            }
+        }
 
         private static bool HasValidConditionForAbort(CompositeNode composite, AbortType abortType)
         {

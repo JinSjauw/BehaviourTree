@@ -53,20 +53,6 @@ public partial class CommanderTabView : VisualElement
         RebuildUI();
     }
 
-    private SquadConnection GetOrCreateConnection()
-    {
-        if (currentTree.squadConnections == null)
-            currentTree.squadConnections = new List<SquadConnection>();
-
-        if (currentTree.squadConnections.Count == 0)
-        {
-            currentTree.squadConnections.Add(new SquadConnection());
-            EditorUtility.SetDirty(currentTree);
-        }
-
-        return currentTree.squadConnections[0];
-    }
-
     private void RebuildUI()
     {
         commanderContent.Clear();
@@ -79,7 +65,9 @@ public partial class CommanderTabView : VisualElement
             return;
         }
 
-        SquadConnection connection = GetOrCreateConnection();
+        CommanderTreeAsset commanderTree = currentTree as CommanderTreeAsset;
+        if (commanderTree == null) return;
+
         commanderContent.style.display = DisplayStyle.Flex;
         emptyStateLabel.style.display = DisplayStyle.None;
 
@@ -93,13 +81,13 @@ public partial class CommanderTabView : VisualElement
 
         if (selectSquadButton != null)
         {
-            selectSquadButton.text = connection.squad != null ? connection.squad.name : "Select Squad...";
+            selectSquadButton.text = commanderTree.commanderSquad != null ? commanderTree.commanderSquad.name : "Select Squad...";
             selectSquadButton.clicked += () =>
             {
                 SquadSearchProvider provider = ScriptableObject.CreateInstance<SquadSearchProvider>();
                 provider.onSquadSelected = squad =>
                 {
-                    connection.squad = squad;
+                    commanderTree.commanderSquad = squad;
                     EditorUtility.SetDirty(currentTree);
                     RebuildUI();
                 };
@@ -111,14 +99,14 @@ public partial class CommanderTabView : VisualElement
 
         if (openSquadButton != null)
         {
-            openSquadButton.SetEnabled(connection.squad != null);
+            openSquadButton.SetEnabled(commanderTree.commanderSquad != null);
             openSquadButton.clicked += () =>
             {
-                if (connection.squad != null)
+                if (commanderTree.commanderSquad != null)
                 {
                     SquadDefinitionEditor wnd = EditorWindow.GetWindow<SquadDefinitionEditor>();
                     wnd.titleContent = new GUIContent("Squad Editor");
-                    wnd.LoadSquad(connection.squad);
+                    wnd.LoadSquad(commanderTree.commanderSquad);
                 }
             };
         }
@@ -130,13 +118,14 @@ public partial class CommanderTabView : VisualElement
 
         if (bindingsSection != null && bindingsPlaceholder != null)
         {
-            if (connection.squad != null)
+            if (commanderTree.commanderSquad != null)
             {
-                SquadBindingGroup bindingGroup = connection.squad.GetOrCreateBindingGroup(currentTree);
+                SquadDefinition squad = commanderTree.commanderSquad;
+                SquadBindingGroup bindingGroup = squad.GetOrCreateBindingGroup(currentTree);
                 if (bindingGroup.bindings == null)
                     bindingGroup.bindings = new List<VariableBinding>();
 
-                SquadDefinition capturedSquad = connection.squad;
+                SquadDefinition capturedSquad = squad;
                 BindingGroupEditor bindingsEditor = new BindingGroupEditor(
                     bindingGroup,
                     currentTree?.BlackboardDefinition,
@@ -182,7 +171,7 @@ public partial class CommanderTabView : VisualElement
             }
         }
 
-        // Commander has exactly one connection — hide the remove button
+        // Commander has exactly one squad — hide the remove button
         Button removeConnectionButton = rowContent.Q<Button>("remove-connection-button");
         removeConnectionButton?.RemoveFromHierarchy();
 
@@ -196,8 +185,9 @@ public partial class CommanderTabView : VisualElement
     private void OnBindingsExternallyChanged(SquadDefinition squad, object source)
     {
         if (source == this) return;
-        if (currentTree?.squadConnections == null || currentTree.squadConnections.Count == 0) return;
-        if ((Object)currentTree.squadConnections[0].squad == (Object)squad)
+        CommanderTreeAsset commanderTree = currentTree as CommanderTreeAsset;
+        if (commanderTree == null) return;
+        if ((Object)commanderTree.commanderSquad == (Object)squad)
             RebuildUI();
     }
 }

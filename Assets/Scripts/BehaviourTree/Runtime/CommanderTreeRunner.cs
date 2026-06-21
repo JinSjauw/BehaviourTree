@@ -51,7 +51,10 @@ namespace BehaviourTree.Runtime
             for (int i = 0; i < registeredAgents.Count; i++)
             {
                 AgentTreeRunner agent = registeredAgents[i];
-                if (agent == null) continue;
+                if (agent == null)
+                {
+                    continue;
+                }
 
                 agent.PushDataProviders();
                 CopySquadsToTree(agent);
@@ -75,7 +78,9 @@ namespace BehaviourTree.Runtime
             for (int i = 0; i < squads.Count; i++)
             {
                 if (squads[i] != null)
+                {
                     squads[i].CopyToBB(runner.BlackBoard, treeDef);
+                }
             }
         }
 
@@ -93,7 +98,9 @@ namespace BehaviourTree.Runtime
             for (int i = 0; i < squads.Count; i++)
             {
                 if (squads[i] != null)
+                {
                     squads[i].CopyFromBB(runner.BlackBoard, treeDef);
+                }
             }
         }
 
@@ -118,6 +125,7 @@ namespace BehaviourTree.Runtime
         {
             CopySquadsToTree(this);
 
+            evaluator.agentCount = registeredAgents.Count;
             evaluator.Evaluate(blackBoard);
 
             CopySquadsFromTree(this);

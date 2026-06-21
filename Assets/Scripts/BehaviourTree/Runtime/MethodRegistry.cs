@@ -119,6 +119,18 @@ namespace BehaviourTree.Runtime
             return attr.allowedTreeType == AllowedTreeType.Any || attr.allowedTreeType == treeType;
         }
 
+        /// <summary>
+        /// Returns true if the method is restricted to Commander trees only
+        /// (AllowedTreeType.Commander, not Any or Agent).
+        /// </summary>
+        public static bool IsCommanderOnly(string methodName)
+        {
+            Type type = GetMethodType(methodName);
+            if (type == null) return false;
+            NodeMethodAttribute attr = type.GetCustomAttribute<NodeMethodAttribute>();
+            return attr != null && attr.allowedTreeType == AllowedTreeType.Commander;
+        }
+
         public static BehaviourNodeType GetCategory(Type methodType)
         {
             if (typeof(ActionMethod).IsAssignableFrom(methodType))    return BehaviourNodeType.ACTION;

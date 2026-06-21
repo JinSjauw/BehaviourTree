@@ -83,11 +83,16 @@ namespace BehaviourTree.Core
                     readBody, instParam, bbParam).Compile();
 
                 // Write: bb.Set<T>(bbSlotIndex, ((ConcreteType)inst).field)
-                MethodInfo setMethod = typeof(IBlackBoardAccess).GetMethod("Set")
-                    .MakeGenericMethod(fieldType);
-                MethodCallExpression setCall = Expression.Call(bbParam, setMethod, slotConst, fieldExpr);
-                writeDelegate = Expression.Lambda<Action<NodeMethod, IBlackBoardAccess>>(
-                    setCall, instParam, bbParam).Compile();
+                // Skip when isOutput is false (toggle variables) — the non-compiled path in
+                // WriteToBBGeneric checks isOutput and correctly skips the write.
+                if (isOutput)
+                {
+                    MethodInfo setMethod = typeof(IBlackBoardAccess).GetMethod("Set")
+                        .MakeGenericMethod(fieldType);
+                    MethodCallExpression setCall = Expression.Call(bbParam, setMethod, slotConst, fieldExpr);
+                    writeDelegate = Expression.Lambda<Action<NodeMethod, IBlackBoardAccess>>(
+                        setCall, instParam, bbParam).Compile();
+                }
             }
             catch
             {
@@ -178,6 +183,22 @@ namespace BehaviourTree.Core
 
         /// <summary>Blackboard accessor. Available during Execute().</summary>
         protected IBlackBoardAccess BB => bbAccess;
+
+        /// <summary>
+        /// Looks up the raw BB slot index for a [SharedVar] field by its C# field name.
+        /// Returns -1 if the field is not found or has no BB binding.
+        /// Preferred over positional bindings[N].bbSlotIndex which breaks on reorder.
+        /// </summary>
+        protected int GetSlotByName(string fieldName)
+        {
+            if (bindings == null) return -1;
+            foreach (FieldBinding binding in bindings)
+            {
+                if (binding.fieldInfo != null && binding.fieldInfo.Name == fieldName)
+                    return binding.bbSlotIndex;
+            }
+            return -1;
+        }
 
         /// <summary>
         /// Stable string identifier for this method. Defaults to the class name.

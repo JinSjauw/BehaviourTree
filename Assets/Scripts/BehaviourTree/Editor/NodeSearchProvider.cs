@@ -14,6 +14,7 @@ namespace BehaviourTree.Editor
         private List<string> conditionMethods;
         private List<string> decoratorMethods;
         private List<string> compositeMethods;
+        private List<string> commanderCompositeMethods;
         private List<SearchTreeEntry> cachedSearchTree;
         private BehaviourTreeEditorGraphView graphView;
         private Vector2 creationPosition;
@@ -61,6 +62,7 @@ namespace BehaviourTree.Editor
             conditionMethods = new List<string>();
             decoratorMethods = new List<string>();
             compositeMethods = new List<string>();
+            commanderCompositeMethods = new List<string>();
 
             // Determine which tree type to filter for
             AllowedTreeType allowedFor = currentTreeAsset is CommanderTreeAsset
@@ -85,10 +87,19 @@ namespace BehaviourTree.Editor
                         decoratorMethods.Add(methodName);
                         break;
                     case BehaviourNodeType.COMPOSITE:
-                        compositeMethods.Add(methodName);
+                        if (MethodRegistry.IsCommanderOnly(methodName))
+                            commanderCompositeMethods.Add(methodName);
+                        else
+                            compositeMethods.Add(methodName);
                         break;
                 }
             }
+
+            SortList(actionMethods);
+            SortList(conditionMethods);
+            SortList(decoratorMethods);
+            SortList(compositeMethods);
+            SortList(commanderCompositeMethods);
 
             lastBuiltTreeType = allowedFor;
         }
@@ -121,6 +132,17 @@ namespace BehaviourTree.Editor
                     string methodName = compositeMethods[i];
                     string displayName = ToDisplayName(methodName);
                     searchList.Add(new SearchTreeEntry(new GUIContent(displayName, identationIcon))
+                        { level = 2, userData = methodName });
+                }
+            }
+            // Commander-specific composites
+            if (commanderCompositeMethods.Count > 0)
+            {
+                searchList.Add(new SearchTreeGroupEntry(new GUIContent("Commander"), 1));
+                for (int i = 0; i < commanderCompositeMethods.Count; i++)
+                {
+                    string methodName = commanderCompositeMethods[i];
+                    searchList.Add(new SearchTreeEntry(new GUIContent(methodName, identationIcon))
                         { level = 2, userData = methodName });
                 }
             }
@@ -248,6 +270,11 @@ namespace BehaviourTree.Editor
             return methodName;
         }
 
+        private static void SortList(List<string> list)
+        {
+            list.Sort((a, b) => string.CompareOrdinal(a, b));
+        }
+
         public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
         {
             if (graphView == null || !graphView.HasTree)
@@ -272,7 +299,7 @@ namespace BehaviourTree.Editor
                     }
                     case string methodName:
                     {
-                        if (compositeMethods.Contains(methodName))
+                        if (compositeMethods.Contains(methodName) || commanderCompositeMethods.Contains(methodName))
                             createdNodeView = graphView.CreateCompositeNode(methodName, creationPosition);
                         else if (decoratorMethods.Contains(methodName))
                             createdNodeView = graphView.CreateDecoratorNode(methodName, creationPosition);

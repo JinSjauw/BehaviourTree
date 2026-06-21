@@ -27,6 +27,7 @@ MonoBehaviour:
   compositeSequence: {r: 0.6616507, g: 0.33161268, b: 0.8679245, a: 1}
   compositeParallel: {r: 0.8962264, g: 0.31706125, b: 0.6782637, a: 1}
   compositePriority: {r: 0.41006586, g: 0.88629854, b: 0.8962264, a: 1}
+  compositeCommander: {r: 0.34796405, g: 0.06959773, b: 0.8679245, a: 1}
   compositeFallback: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   badgeAgent: {r: 0.4, g: 0.65, b: 0.95, a: 1}
   badgeCommander: {r: 0.69, g: 0.53, b: 0.8, a: 1}

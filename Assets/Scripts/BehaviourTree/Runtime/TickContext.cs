@@ -23,6 +23,18 @@ namespace BehaviourTree.Runtime
         public NodeMethod[] methodInstances;
         public NodeState[] nodeStates;
         public int[] activeChildIndex;
+        /// <summary>
+        /// Per-node running agent index for ForEachAgent composites.
+        /// Saves loop position across RUNNING frames so the composite resumes
+        /// on the correct agent on the next tick.
+        /// </summary>
+        public int[] runningAgentIndex;
+        /// <summary>
+        /// Current agent count for commander composites. Set by CommanderTreeRunner
+        /// before evaluation so composites read it directly without a BB variable.
+        /// Defaults to 0 (no agents) for non-commander trees.
+        /// </summary>
+        public int agentCount;
         public BlackBoard blackBoard;
 
         /// <summary>

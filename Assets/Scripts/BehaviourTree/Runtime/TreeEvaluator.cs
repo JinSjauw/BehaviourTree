@@ -17,12 +17,20 @@ namespace BehaviourTree.Runtime
         private object[] boxedConstants;
         private NodeMethod[] methodInstances;
         private int[] activeChildIndex;
+        private int[] runningAgentIndex;
         private bool[] lastConditionResult;
         private TickContext tickContext;
         private bool isInitialized = false;
 
         public int currentNodeIndex { get; private set; } = -1;
         public NodeState[] nodeStates;
+
+        /// <summary>
+        /// Current agent count for commander trees. Set by CommanderTreeRunner
+        /// before Evaluate() so composites read ctx.agentCount without BB variables.
+        /// Default 0 for non-commander trees.
+        /// </summary>
+        public int agentCount;
 
         public TreeEvaluator(NodeData[] nodeDatas, FieldData[] fieldDatas, object[] boxedConstants, int maxTreeDepth)
         {
@@ -32,6 +40,7 @@ namespace BehaviourTree.Runtime
             this.boxedConstants = boxedConstants;
             nodeStates = new NodeState[nodeDatas.Length];
             activeChildIndex = new int[nodeDatas.Length];
+            runningAgentIndex = new int[nodeDatas.Length];
             lastConditionResult = new bool[nodeDatas.Length];
 
             // Create class-based method instances for nodes that have methodName set
@@ -83,6 +92,8 @@ namespace BehaviourTree.Runtime
             tickContext.methodInstances = methodInstances;
             tickContext.nodeStates = nodeStates;
             tickContext.activeChildIndex = activeChildIndex;
+            tickContext.runningAgentIndex = runningAgentIndex;
+            tickContext.agentCount = agentCount;
             tickContext.lastConditionResult = lastConditionResult;
             tickContext.blackBoard = blackBoard;
 

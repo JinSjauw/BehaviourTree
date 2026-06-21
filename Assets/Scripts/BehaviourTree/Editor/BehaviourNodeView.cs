@@ -1,5 +1,6 @@
 using BehaviourTree;
 using BehaviourTree.Core;
+using BehaviourTree.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,6 +108,9 @@ namespace BehaviourTree.Editor
         {
             if (node is CompositeNode composite && !string.IsNullOrEmpty(composite.methodName))
             {
+                if (MethodRegistry.IsCommanderOnly(composite.methodName))
+                    return GraphEditorTheme.instance.compositeCommander;
+
                 return composite.methodName switch
                 {
                     "SELECTOR" => GraphEditorTheme.instance.compositeSelector,

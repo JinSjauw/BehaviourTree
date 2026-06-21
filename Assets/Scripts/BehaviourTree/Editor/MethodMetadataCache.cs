@@ -17,6 +17,7 @@ namespace BehaviourTree.Editor
         public bool isVariable;
         public bool isArray;
         public bool isToggleVariable;
+        public bool isRoleDropdown;
         public int index;
     }
 
@@ -86,6 +87,7 @@ namespace BehaviourTree.Editor
                 bool isVar = varAttribute != null;
                 bool isArray = arrayAttribute != null;
                 bool isToggle = varAttribute?.IsToggleVariable ?? false;
+                bool isRoleDropdown = varAttribute?.IsRoleDropdown ?? false;
 
                 paramList.Add(new ParamInfo
                 {
@@ -94,6 +96,7 @@ namespace BehaviourTree.Editor
                     isVariable = isVar,
                     isArray = isArray,
                     isToggleVariable = isToggle,
+                    isRoleDropdown = isRoleDropdown,
                     index = fieldIndex++
                 });
             }

@@ -11,6 +11,12 @@ namespace BehaviourTree.Core
     {
         public bool IsToggleVariable = false;
 
+        /// <summary>
+        /// When true, constant-mode shows a role dropdown pulled from the tree's
+        /// SquadDefinition.availableRoles instead of a raw int field.
+        /// </summary>
+        public bool IsRoleDropdown = false;
+
         public SharedVarAttribute(bool isToggleVariable = false) => IsToggleVariable = isToggleVariable;
     }
 
