@@ -8,6 +8,7 @@ namespace BehaviourTree.Core
     /// mode: 0 = packed constant (int/float/bool/enum in 4 bytes)
     ///       1 = blackboard variable (value holds the slot index)
     ///       2 = boxed constant (value holds index into boxedConstants array)
+    ///       3 = stride marker (value holds the stride for the preceding variable)
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Explicit)]
@@ -42,11 +43,15 @@ namespace BehaviourTree.Core
         /// <summary>Creates a FieldData referencing a boxed constant in the runtime boxedConstants array.</summary>
         public static FieldData FromBoxedConstant(int boxedIndex) => new FieldData { mode = 2, value = boxedIndex };
 
+        /// <summary>Creates a stride marker. Emitted by TreeBaker after variable entries with stride > 1.</summary>
+        public static FieldData FromStride(int stride) => new FieldData { mode = 3, value = stride };
+
         // ── Queries ──────────────────────────────────────────────────
 
         public bool IsVariable => mode == 1;
         public bool IsConstant => mode == 0;
         public bool IsBoxedConstant => mode == 2;
+        public bool IsStrideMarker => mode == 3;
 
         // ── Packed value readers (mode == 0 only) ────────────────────
 

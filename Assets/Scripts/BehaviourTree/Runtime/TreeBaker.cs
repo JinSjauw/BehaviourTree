@@ -569,7 +569,7 @@ namespace BehaviourTree.Runtime
                 fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
                 fieldDataArray[offset++] = FieldData.FromVariable(baseSlot);
                 fieldTypeNamesList.Add(entry.fieldTypeName ?? string.Empty);
-                fieldDataArray[offset++] = FieldData.FromConstant(stride);
+                fieldDataArray[offset++] = FieldData.FromStride(stride);
             }
             else
             {

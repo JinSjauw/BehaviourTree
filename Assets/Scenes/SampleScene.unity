@@ -388,98 +388,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1028711573302835588, guid: 01efd14619743994991c2b134f3d8aaa, type: 3}
   m_PrefabInstance: {fileID: 5572016034708701122}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1601351501
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1601351506}
-  - component: {fileID: 1601351505}
-  - component: {fileID: 1601351504}
-  - component: {fileID: 1601351502}
-  m_Layer: 0
-  m_Name: TEST (5)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1601351502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1601351501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38fbbd4178020d64fb5eb549d925746b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  testInt: -100
-  testGameObject: {fileID: 0}
---- !u!114 &1601351504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1601351501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
-  serializedReferences:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  valueOverrides: []
-  overriddenReferenceSlots: 
---- !u!114 &1601351505
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1601351501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0720dcbbe15181f4eb6892d02d595b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BehaviourTree.Runtime::BehaviourTree.Runtime.TreeRunner
-  blackBoard: {fileID: 1601351504}
-  runtimeAsset: {fileID: 0}
-  authoringAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
-  trackedBindingGroups:
-  - targetTree: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
-    targetTreeGuid: b5853f780e226014c935b924db589ad3
-    bindings:
-    - targetComponent: {fileID: 1601351502}
-      memberName: testInt
-      blackboardVariableName: newVariable
-      isProperty: 0
-      memberTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-  commander: {fileID: 0}
-  squadInstance: {fileID: 0}
---- !u!4 &1601351506
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1601351501}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1785138117
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,6 +502,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3663176800941268547, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[1].bindings.Array.data[0].memberName
+      value: testInt
+      objectReference: {fileID: 0}
+    - target: {fileID: 3663176800941268547, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[1].bindings.Array.data[0].blackboardVariableName
+      value: WOWOWOWWOWOWOW
+      objectReference: {fileID: 0}
     - target: {fileID: 3670761265610961032, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
       propertyPath: m_Name
       value: SquadCommander
@@ -656,9 +572,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2139788414078466395, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: testInt
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2139788414078466395, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
       propertyPath: testGameObject
       value: 
       objectReference: {fileID: 696399349}
+    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.data[0].blackboardVariableName
+      value: DWANGKkkk
+      objectReference: {fileID: 0}
     - target: {fileID: 3398272709075123278, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -720,6 +644,5 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 5572016034708701122}
   - {fileID: 7144530855299658108}
-  - {fileID: 1601351506}
   - {fileID: 5707577659857251300}
   - {fileID: 1785138119}

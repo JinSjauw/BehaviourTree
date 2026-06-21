@@ -54,14 +54,8 @@ MonoBehaviour:
     targetTreeGuid: 779bf886d1e2a554bbd7c7a6ef17f752
     bindings:
     - targetComponent: {fileID: 2139788414078466395}
-      memberName: testGameObject
-      blackboardVariableName: TESTGO
-      isProperty: 0
-      memberTypeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-    - targetComponent: {fileID: 2139788414078466395}
       memberName: testInt
-      blackboardVariableName: TESTINTTTTTTTTTTTTTTTTTTTT
+      blackboardVariableName: DWANGK
       isProperty: 0
       memberTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
   commander: {fileID: 0}
@@ -83,6 +77,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   valueOverrides: []
   overriddenReferenceSlots: 
 --- !u!114 &2139788414078466395
@@ -97,5 +94,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38fbbd4178020d64fb5eb549d925746b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  testInt: 8
+  testInter: 0
   testGameObject: {fileID: 0}

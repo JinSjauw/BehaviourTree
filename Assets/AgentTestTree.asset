@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   nodeName: 
   children:
-  - {fileID: -4010920271429736121}
-  - {fileID: 7707967759770441163}
+  - {fileID: 4617292761223345814}
   - {fileID: -4082139158420598114}
   - {fileID: 6723386113716927207}
   firstChildIndex: 0
@@ -102,7 +101,7 @@ MonoBehaviour:
   comment: 
   guid: 462793fbdcf71c64d9640452d5ddb716
   graphPosition: {x: 105, y: 630}
-  runtimeIndex: 4
+  runtimeIndex: 3
   leafType: 3
   methodName: BB_LogVector3
   fieldEntries:
@@ -187,15 +186,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
-  m_Name: NewTreeB_BB_Definition
+  m_Name: AgentTestTree_BB_Definition
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
   - rid: 3017916911898329239
   - rid: 3017916911898329240
-  - rid: 3017916911898329343
   - rid: 3017916911898329347
   - rid: 3017916911898329373
+  - rid: 3017916911898329577
   - rid: 3017916911898329469
+  - rid: 3017916911898329343
   references:
     version: 2
     RefIds:
@@ -257,7 +257,7 @@ MonoBehaviour:
     - rid: 3017916911898329469
       type: {class: 'BlackboardVariable`1[[System.String, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: newVariable
+        variableName: newVariable223
         variableStride: 1
         variableTypeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
@@ -265,6 +265,17 @@ MonoBehaviour:
         isSystemVariable: 0
         singleValue: WOW
         arrayValues: []
+    - rid: 3017916911898329577
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: DWANGKkkk
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 0
+        isSystemVariable: 0
+        singleValue: 5
+        arrayValues: 
 --- !u!114 &-3456654351379911066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +307,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2337152736176314f8b42c250d167c18, type: 3}
-  m_Name: NewTreeB
+  m_Name: AgentTestTree
   m_EditorClassIdentifier: BehaviourTree.Editor::BehaviourTree.Editor.BehaviourTreeAsset
   root: {fileID: -3456654351379911066}
   blackboardDefinition: {fileID: -3858515658822153359}
@@ -313,8 +324,47 @@ MonoBehaviour:
   - {fileID: -6666274825932632705}
   - {fileID: -4082139158420598114}
   - {fileID: -4010920271429736121}
-  - {fileID: 7707967759770441163}
+  - {fileID: 4617292761223345814}
   editorNotes: []
+--- !u!114 &4617292761223345814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: LogVariable
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 31b9fab105fa0ed41a9aac64cdc2be8f
+  graphPosition: {x: -70, y: 630}
+  runtimeIndex: 2
+  leafType: 3
+  methodName: LogVariable
+  fieldEntries:
+  - fieldName: variable
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: DWANGKkkk
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
 --- !u!114 &6723386113716927207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,7 +384,7 @@ MonoBehaviour:
   comment: 
   guid: c87110fa0a02f2e4f85b8248a6513e37
   graphPosition: {x: 280, y: 630}
-  runtimeIndex: 5
+  runtimeIndex: 4
   leafType: 3
   methodName: WaitSeconds
   fieldEntries:
@@ -348,45 +398,6 @@ MonoBehaviour:
     isOrderConstant: 0
     intValue: 0
     floatValue: 2
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  BlackBoardTypeID: 0
---- !u!114 &7707967759770441163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: LogVariable
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: 
-  children: []
-  firstChildIndex: 0
-  lastChildIndex: 0
-  comment: 
-  guid: 1a5527161bc409c40a62b997eadfed3f
-  graphPosition: {x: -83, y: 630}
-  runtimeIndex: 3
-  leafType: 3
-  methodName: LogVariable
-  fieldEntries:
-  - fieldName: variable
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: newVariable
-    fieldTypeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    stringValue: 
-    isOrderConstant: 0
-    intValue: 0
-    floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}

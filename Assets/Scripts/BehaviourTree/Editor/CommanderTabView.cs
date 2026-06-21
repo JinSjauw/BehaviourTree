@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
+using BehaviourTree.Editor.Propagation;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -41,9 +42,11 @@ public partial class CommanderTabView : VisualElement
             BehaviourTreeEditorPaths.BindingRowUxml);
 
         BindingGroupEditor.BindingsChangedForSquad += OnBindingsExternallyChanged;
+        VariableChangePropagator.ChangesFlushed += OnVariableRenamed;
         RegisterCallback<DetachFromPanelEvent>(evt =>
         {
             BindingGroupEditor.BindingsChangedForSquad -= OnBindingsExternallyChanged;
+            VariableChangePropagator.ChangesFlushed -= OnVariableRenamed;
         });
     }
 
@@ -188,6 +191,12 @@ public partial class CommanderTabView : VisualElement
         CommanderTreeAsset commanderTree = currentTree as CommanderTreeAsset;
         if (commanderTree == null) return;
         if ((Object)commanderTree.commanderSquad == (Object)squad)
+            RebuildUI();
+    }
+
+    private void OnVariableRenamed()
+    {
+        if (currentTree != null)
             RebuildUI();
     }
 }

@@ -14,8 +14,6 @@ namespace BehaviourTree.Runtime
             set => runIndependently = value;
         }
 
-        private List<IBlackboardDataProvider> dataProviders;
-
         /// <summary>Squad instances this agent has registered with.
         /// Populated via RegisterSquad() during spawn or by the commander.</summary>
         [System.NonSerialized] public List<SquadInstance> registeredSquads = new List<SquadInstance>();
@@ -55,27 +53,12 @@ namespace BehaviourTree.Runtime
         {
             if (!runIndependently) return;
 
-            PushDataProviders();
             PushTrackedBindings();
             Evaluate();
         }
 
-        internal void PushDataProviders()
-        {
-            if (dataProviders == null) return;
-
-            for (int i = 0; i < dataProviders.Count; i++)
-            {
-                dataProviders[i].ProvideData(blackBoard);
-            }
-        }
-
         protected override void OnPostInitialize()
         {
-            // Collect all data providers on this GameObject
-            IBlackboardDataProvider[] providers = GetComponentsInChildren<IBlackboardDataProvider>();
-            dataProviders = new List<IBlackboardDataProvider>(providers);
-
             ResolveTrackedBindings();
 
             // Auto-register if commander/squad references are set

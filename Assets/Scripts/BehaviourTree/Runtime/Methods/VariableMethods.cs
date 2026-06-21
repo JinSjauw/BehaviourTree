@@ -127,8 +127,8 @@ namespace BehaviourTree.Runtime.Methods
             if (fields.Length >= 1 && fields[0].IsVariable)
                 variableSlot = fields[0].value;
 
-            // TreeBaker emits stride as a packed constant for array variables (stride > 1)
-            if (fields.Length >= 2 && fields[1].IsConstant)
+            // TreeBaker emits stride marker for variables with stride > 1
+            if (fields.Length >= 2 && fields[1].IsStrideMarker)
                 stride = fields[1].value;
         }
 
@@ -292,10 +292,8 @@ namespace BehaviourTree.Runtime.Methods
             int slot = fields[fieldIndex].value;
             fieldIndex++;
 
-            // A trailing constant is a stride (emitted by TreeBaker for array variables)
-            // ONLY when there are more entries after it. If it's the last entry in the stream,
-            // it belongs to the next parameter (a constant value), not stride.
-            if (fieldIndex < fields.Length && fieldIndex < fields.Length - 1 && fields[fieldIndex].IsConstant)
+            // A trailing stride marker is emitted by TreeBaker for variables with stride > 1.
+            if (fieldIndex < fields.Length && fields[fieldIndex].IsStrideMarker)
                 fieldIndex++; // consume stride
 
             return slot;

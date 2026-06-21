@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
+using BehaviourTree.Editor.Propagation;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -22,6 +23,9 @@ public partial class SquadTabView : VisualElement
     private VisualTreeAsset assignedRoleRowTemplate;
     private VisualTreeAsset bindingRowTemplate;
     private VisualTreeAsset bindingGroupFoldoutTemplate;
+
+    // Preserve foldout expanded state across UI rebuilds (e.g. variable rename)
+    private HashSet<string> expandedConnectionFoldouts = new HashSet<string>();
 
     public SquadTabView()
     {
@@ -52,9 +56,11 @@ public partial class SquadTabView : VisualElement
             BehaviourTreeEditorPaths.BindingGroupFoldoutUxml);
 
         BindingGroupEditor.BindingsChangedForSquad += OnBindingsExternallyChanged;
+        VariableChangePropagator.ChangesFlushed += OnVariableRenamed;
         RegisterCallback<DetachFromPanelEvent>(evt =>
         {
             BindingGroupEditor.BindingsChangedForSquad -= OnBindingsExternallyChanged;
+            VariableChangePropagator.ChangesFlushed -= OnVariableRenamed;
         });
     }
 
@@ -66,6 +72,15 @@ public partial class SquadTabView : VisualElement
 
     private void RebuildUI()
     {
+        // Preserve expanded foldout state before clearing
+        expandedConnectionFoldouts.Clear();
+        for (int i = 0; i < connectionsScroll.childCount; i++)
+        {
+            Foldout foldout = connectionsScroll[i] as Foldout;
+            if (foldout != null && foldout.value)
+                expandedConnectionFoldouts.Add(foldout.text);
+        }
+
         connectionsScroll.Clear();
 
         if (currentTree == null)
@@ -100,6 +115,7 @@ public partial class SquadTabView : VisualElement
         Foldout foldout = new Foldout
         {
             text = squadName,
+            value = expandedConnectionFoldouts.Contains(squadName),
             style =
             {
                 marginBottom = 4,
@@ -352,5 +368,11 @@ public partial class SquadTabView : VisualElement
                 return;
             }
         }
+    }
+
+    private void OnVariableRenamed()
+    {
+        if (currentTree != null)
+            RebuildUI();
     }
 }

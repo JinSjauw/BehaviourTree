@@ -313,10 +313,9 @@ namespace BehaviourTree.Core
 
                 fieldIndex++;
 
-                // TreeBaker injects a stride constant after variable fields with stride > 1:
-                //   [FromVariable(baseSlot), FromConstant(stride)]
+                // TreeBaker injects a stride marker after variable fields with stride > 1.
                 // Skip it so the next binding reads the correct FieldData entry.
-                if (isVariableField && fieldIndex < fields.Length - 1 && fields[fieldIndex].IsConstant)
+                if (isVariableField && fieldIndex < fields.Length && fields[fieldIndex].IsStrideMarker)
                     fieldIndex++;
             }
         }

@@ -105,8 +105,8 @@ MonoBehaviour:
     targetTreeGuid: 4442794de649112419d78215f53d185d
     bindings:
     - targetComponent: {fileID: 2770907021247395634}
-      memberName: testInt
-      blackboardVariableName: newVariable
+      memberName: testInter
+      blackboardVariableName: newVariableWOOW
       isProperty: 0
       memberTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
   registeredAgents: []
@@ -122,5 +122,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38fbbd4178020d64fb5eb549d925746b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestComponent
-  testInt: 0
+  testInter: 0
   testGameObject: {fileID: 0}

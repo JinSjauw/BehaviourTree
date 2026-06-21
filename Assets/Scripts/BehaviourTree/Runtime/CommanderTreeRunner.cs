@@ -12,8 +12,8 @@ namespace BehaviourTree.Runtime
     ///      b. Commander evaluates (reads state, writes orders)
     ///      c. Commander → squads (orders)
     ///   2. TickAgents: for each agent
-    ///      a. Squad → agent BB (fresh orders + status)
-    ///      b. Push data providers → agent self BB
+    ///      a. Push tracked bindings → agent self BB
+    ///      b. Squad → agent BB (fresh orders + status)
     ///      c. Agent evaluates (reacts to orders)
     ///      d. Agent → squad BB (reports new status)
     /// Communication between agents and commander happens exclusively through
@@ -71,8 +71,7 @@ namespace BehaviourTree.Runtime
                 {
                     continue;
                 }
-
-                agent.PushDataProviders();
+                agent.PushTrackedBindings();
                 CopySquadsToTree(agent, i);
                 agent.Evaluate();
                 CopySquadsFromTree(agent, i);

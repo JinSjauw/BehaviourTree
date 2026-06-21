@@ -158,7 +158,8 @@ namespace BehaviourTree.Runtime
                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 }
 
-                binding.variableIndex = blackboardDefinition.GetVariableIndex(binding.blackboardVariableName);
+                int varIndex = blackboardDefinition.GetVariableIndex(binding.blackboardVariableName);
+                binding.variableIndex = ComputeSlotOffset(blackboardDefinition, varIndex);
 
                 trackedBindingsToPush.Add(binding);
             }
@@ -169,7 +170,7 @@ namespace BehaviourTree.Runtime
         /// Called every frame before tree evaluation.
         /// Only pushes bindings from the group matching the active tree asset.
         /// </summary>
-        protected void PushTrackedBindings()
+        internal void PushTrackedBindings()
         {
             if (trackedBindingsToPush == null || trackedBindingsToPush.Count == 0) return;
             if (blackBoard == null) return;
@@ -185,6 +186,24 @@ namespace BehaviourTree.Runtime
 
                 blackBoard.SetBoxed(binding.variableIndex, value);
             }
+        }
+
+        /// <summary>
+        /// Converts a variable index (position in the definition's variable list) to a slot offset
+        /// in the flat blackboard storage, accounting for stride of all preceding variables.
+        /// </summary>
+        private static int ComputeSlotOffset(BlackboardDefinition definition, int varIndex)
+        {
+            if (varIndex < 0) return -1;
+
+            IReadOnlyList<BlackboardVariableBase> vars = definition.GetAllVariables();
+            int slotOffset = 0;
+            for (int i = 0; i < varIndex && i < vars.Count; i++)
+            {
+                int stride = vars[i].Stride;
+                slotOffset += (stride > 1) ? stride : 1;
+            }
+            return slotOffset;
         }
 
         protected virtual void OnDestroy()

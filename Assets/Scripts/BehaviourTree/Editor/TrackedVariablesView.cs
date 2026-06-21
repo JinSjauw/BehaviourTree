@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
+using BehaviourTree.Editor.Propagation;
 using BehaviourTree.Runtime;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -68,6 +70,14 @@ public partial class TrackedVariablesView : VisualElement
         if (addBindingFromSceneButton != null) addBindingFromSceneButton.clicked += OnAddBindingFromSceneClicked;
         if (sceneAddButton != null) sceneAddButton.clicked += OnSceneAddClicked;
 
+        VariableChangePropagator.ChangesFlushed += OnVariablesChanged;
+        Undo.undoRedoPerformed += OnUndoRedoPerformed;
+        RegisterCallback<DetachFromPanelEvent>(evt =>
+        {
+            VariableChangePropagator.ChangesFlushed -= OnVariablesChanged;
+            Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+        });
+
         ShowEmptyState("Select a GameObject with a BehaviourTreeRunner in the scene.");
     }
 
@@ -90,6 +100,8 @@ public partial class TrackedVariablesView : VisualElement
             for (int i = 0; i < activeBindings.Count; i++)
                 displayBindings.Add(activeBindings[i]);
         }
+
+        ValidateBindings();
 
         bindingListView.Rebuild();
 
@@ -259,6 +271,57 @@ public partial class TrackedVariablesView : VisualElement
         Refresh(currentRunner);
     }
 
+    // ── Validation ───────────────────────────────────────────
+
+    private void ValidateBindings()
+    {
+        if (displayBindings == null) return;
+
+        for (int i = 0; i < displayBindings.Count; i++)
+        {
+            TrackedBinding binding = displayBindings[i];
+            string prefix = $"[TrackedBinding #{i + 1}]";
+
+            if (binding.targetComponent == null)
+                Debug.LogWarning($"{prefix} No component selected. Click the component button to pick a source member.");
+
+            if (string.IsNullOrEmpty(binding.memberName))
+                Debug.LogWarning($"{prefix} No member selected. Click the component button to pick a source member.");
+
+            if (string.IsNullOrEmpty(binding.blackboardVariableName))
+                Debug.LogWarning($"{prefix} No blackboard variable selected. Click the variable button to pick a target variable.");
+
+            if (binding.targetComponent != null && !string.IsNullOrEmpty(binding.memberName))
+            {
+                Type componentType = binding.targetComponent.GetType();
+
+                MemberInfo member = binding.isProperty
+                    ? componentType.GetProperty(binding.memberName, BindingFlags.Public | BindingFlags.Instance)
+                    : (MemberInfo)componentType.GetField(binding.memberName, BindingFlags.Public | BindingFlags.Instance);
+
+                if (member == null)
+                {
+                    Debug.LogWarning($"{prefix} Member '{componentType.Name}.{binding.memberName}' no longer exists. The field/property may have been renamed or removed.");
+                }
+                else
+                {
+                    Type actualType = binding.isProperty
+                        ? ((PropertyInfo)member).PropertyType
+                        : ((FieldInfo)member).FieldType;
+
+                    string currentTypeName = actualType.AssemblyQualifiedName;
+                    if (currentTypeName != binding.memberTypeName)
+                    {
+                        string oldTypeDisplay = binding.memberTypeName ?? "unknown";
+                        binding.memberTypeName = currentTypeName;
+                        EditorUtility.SetDirty(currentRunner);
+                        Debug.LogWarning($"{prefix} Member '{componentType.Name}.{binding.memberName}' type changed ({oldTypeDisplay} → {currentTypeName}) — auto-updated.");
+                    }
+                }
+            }
+        }
+    }
+
     // ── Variable Selection ───────────────────────────────────
 
     private void OpenVariablePicker(TrackedBinding binding)
@@ -394,5 +457,54 @@ public partial class TrackedVariablesView : VisualElement
         Button removeButton = element.Q<Button>("remove-button");
         if (removeButton != null)
             removeButton.clickable = new Clickable(() => RemoveBinding(binding));
+
+        // ── Validation: highlight incomplete bindings in yellow ──
+        VisualElement bindingRow = element.Q<VisualElement>("binding-row");
+        if (bindingRow != null)
+        {
+            if (IsBindingComplete(binding))
+                bindingRow.RemoveFromClassList("binding-row-invalid");
+            else
+                bindingRow.AddToClassList("binding-row-invalid");
+        }
+    }
+
+    /// <summary>
+    /// Returns true when component, member, variable are all set AND the member
+    /// still exists on the component with a matching type.
+    /// </summary>
+    private static bool IsBindingComplete(TrackedBinding binding)
+    {
+        if (binding.targetComponent == null) return false;
+        if (string.IsNullOrEmpty(binding.memberName)) return false;
+        if (string.IsNullOrEmpty(binding.blackboardVariableName)) return false;
+
+        Type componentType = binding.targetComponent.GetType();
+
+        MemberInfo member = binding.isProperty
+            ? componentType.GetProperty(binding.memberName, BindingFlags.Public | BindingFlags.Instance)
+            : (MemberInfo)componentType.GetField(binding.memberName, BindingFlags.Public | BindingFlags.Instance);
+
+        if (member == null) return false;
+
+        Type actualType = binding.isProperty
+            ? ((PropertyInfo)member).PropertyType
+            : ((FieldInfo)member).FieldType;
+
+        return actualType.AssemblyQualifiedName == binding.memberTypeName;
+    }
+
+    // ── External-change refresh ────────────────────────────
+
+    private void OnVariablesChanged()
+    {
+        if (currentRunner != null)
+            Refresh(currentRunner);
+    }
+
+    private void OnUndoRedoPerformed()
+    {
+        if (currentRunner != null)
+            Refresh(currentRunner);
     }
 }

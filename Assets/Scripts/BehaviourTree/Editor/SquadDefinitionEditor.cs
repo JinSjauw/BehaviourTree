@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BehaviourTree.Core;
+using BehaviourTree.Editor.Propagation;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
@@ -214,12 +215,14 @@ namespace BehaviourTree.Editor
         {
             EditorApplication.projectChanged += OnProjectChanged;
             BindingGroupEditor.BindingsChangedForSquad += OnBindingsExternallyChanged;
+            VariableChangePropagator.ChangesFlushed += OnVariableRenamed;
         }
 
         private void OnDisable()
         {
             EditorApplication.projectChanged -= OnProjectChanged;
             BindingGroupEditor.BindingsChangedForSquad -= OnBindingsExternallyChanged;
+            VariableChangePropagator.ChangesFlushed -= OnVariableRenamed;
         }
 
         private void OnProjectChanged()
@@ -607,6 +610,12 @@ namespace BehaviourTree.Editor
 
                 bindingGroupsScroll.Add(editor);
             }
+        }
+
+        private void OnVariableRenamed()
+        {
+            if (currentSquad != null)
+                BuildBindingGroupsUI();
         }
     }
 }

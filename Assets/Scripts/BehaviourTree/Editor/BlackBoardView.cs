@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using BehaviourTree.Core;
 using BehaviourTree.Editor;
+using BehaviourTree.Editor.Propagation;
+using BehaviourTree.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,6 +12,7 @@ using UnityEngine.UIElements;
 [UxmlElement("BlackBoardView")]
 public partial class BlackBoardView : VisualElement
 {
+    private VariableChangePropagator propagator;
     private VisualElement blackBoardViewContainer;
     private BlackboardDefinition cachedDefinition;
     private HashSet<string> previousVariableNames = new();
@@ -34,7 +37,8 @@ public partial class BlackBoardView : VisualElement
     /// </summary>
     private sealed class CallbackHandles
     {
-        public EventCallback<ChangeEvent<string>> nameCallback;
+        public EventCallback<FocusOutEvent> nameFocusOutCallback;
+        public EventCallback<KeyDownEvent> nameKeyCallback;
         public EventCallback<ChangeEvent<string>> typeCallback;
         public EventCallback<ChangeEvent<int>> strideCallback;
         public Action deleteAction;
@@ -132,6 +136,10 @@ public partial class BlackBoardView : VisualElement
             HandleRenames();
             HandleTypeChanges();
         }).Every(100);
+
+        // Undo/redo — rebuild ListView and re-run propagation
+        Undo.undoRedoPerformed += OnUndoRedoPerformed;
+        RegisterCallback<DetachFromPanelEvent>(OnDetach);
     }
 
     private void LoadEntryTemplate()
@@ -179,12 +187,32 @@ public partial class BlackBoardView : VisualElement
         }
 
         CallbackHandles handles = new();
-        handles.nameCallback = evt =>
+
+        handles.nameFocusOutCallback = evt =>
         {
-            variable.Name = evt.newValue;
-            EditorUtility.SetDirty(cachedDefinition);
+            string newName = nameField.value?.Trim();
+            if (!string.IsNullOrEmpty(newName) && newName != variable.Name)
+            {
+                newName = MakeUniqueName(newName, index);
+                Undo.RecordObject(cachedDefinition, "Rename Variable");
+                variable.Name = newName;
+                nameField.SetValueWithoutNotify(newName);
+                EditorUtility.SetDirty(cachedDefinition);
+                HandleRenames();
+            }
+            else if (string.IsNullOrEmpty(newName))
+            {
+                nameField.SetValueWithoutNotify(variable.Name);
+            }
         };
-        nameField.RegisterValueChangedCallback(handles.nameCallback);
+        nameField.RegisterCallback(handles.nameFocusOutCallback);
+
+        handles.nameKeyCallback = evt =>
+        {
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+                nameField.Blur();
+        };
+        nameField.RegisterCallback(handles.nameKeyCallback);
 
         // ── Type dropdown ───────────────────────────────
         List<Type> types = VariableTypeRegistry.Types.ToList();
@@ -199,7 +227,7 @@ public partial class BlackBoardView : VisualElement
         }
         typeDropdown.index = typeIndex;
 
-        if (variable.isSystemVariable)
+        if (variable.isSystemVariable || variable.isSquadData)
             typeDropdown.SetEnabled(false);
 
         typeDropdown.RegisterValueChangedCallback(handles.typeCallback = evt =>
@@ -253,6 +281,13 @@ public partial class BlackBoardView : VisualElement
             }
             else
             {
+                string typeName = currentType != null ? FieldTypeHelper.GetDisplayName(currentType) : "?";
+                Foldout foldout = new Foldout
+                {
+                    text = $"{typeName}[{stride}]",
+                    value = false
+                };
+
                 for (int elementIndex = 0; elementIndex < stride; elementIndex++)
                 {
                     VisualElement row = arrayElementTemplate.CloneTree();
@@ -262,8 +297,9 @@ public partial class BlackBoardView : VisualElement
                     editor.style.flexGrow = 1;
                     binder(editor, variable, elementIndex);
                     editorCell.Add(editor);
-                    valueCell.Add(row);
+                    foldout.Add(row);
                 }
+                valueCell.Add(foldout);
             }
         }
         else
@@ -298,6 +334,37 @@ public partial class BlackBoardView : VisualElement
             variableEntry.styleSheets.Add(entryStyleSheet);
     }
 
+    /// <summary>
+    /// Returns a version of <paramref name="name"/> that is unique among
+    /// <c>cachedDefinition.sharedVariables</c>, excluding the entry at
+    /// <paramref name="excludeIndex"/>. Appends "1", "2", etc. as needed.
+    /// </summary>
+    private string MakeUniqueName(string name, int excludeIndex)
+    {
+        if (cachedDefinition?.sharedVariables == null)
+            return name;
+
+        string candidate = name;
+        int suffix = 1;
+        while (true)
+        {
+            bool conflict = false;
+            for (int i = 0; i < cachedDefinition.sharedVariables.Count; i++)
+            {
+                if (i == excludeIndex) continue;
+                BlackboardVariableBase other = cachedDefinition.sharedVariables[i];
+                if (other != null && other.Name == candidate)
+                {
+                    conflict = true;
+                    break;
+                }
+            }
+            if (!conflict) return candidate;
+            candidate = name + suffix;
+            suffix++;
+        }
+    }
+
     private void UnbindVariableListItem(VisualElement ve, int index)
     {
         VisualElement valueCell = ve.Q<VisualElement>("value-cell");
@@ -310,8 +377,13 @@ public partial class BlackBoardView : VisualElement
             IntegerField strideField = ve.Q<IntegerField>("stride-field");
             Button deleteButton = ve.Q<Button>("delete-button");
 
-            if (nameField != null && handles.nameCallback != null)
-                nameField.UnregisterValueChangedCallback(handles.nameCallback);
+            if (nameField != null)
+            {
+                if (handles.nameFocusOutCallback != null)
+                    nameField.UnregisterCallback(handles.nameFocusOutCallback);
+                if (handles.nameKeyCallback != null)
+                    nameField.UnregisterCallback(handles.nameKeyCallback);
+            }
             if (typeDropdown != null && handles.typeCallback != null)
                 typeDropdown.UnregisterValueChangedCallback(handles.typeCallback);
             if (strideField != null && handles.strideCallback != null)
@@ -456,7 +528,7 @@ public partial class BlackBoardView : VisualElement
         variableListView?.Rebuild();
     }
 
-    // ── Rename / type-change detection ──────────────────────────────
+    // ── Rename / type-change / delete detection ────────────────────
 
     private void HandleRenames()
     {
@@ -467,9 +539,22 @@ public partial class BlackBoardView : VisualElement
             List<string> removed = previousVariableNames.Except(currentNames).ToList();
             List<string> added = currentNames.Except(previousVariableNames).ToList();
 
+            VariableChangePropagator p = GetPropagator();
+            p.SetDefinition(cachedDefinition);
+
             int pairCount = Math.Min(removed.Count, added.Count);
             for (int i = 0; i < pairCount; i++)
-                PropagateRename(removed[i], added[i]);
+                p.Rename(removed[i], added[i]);
+
+            // Deletions: leftover removed items with no matching added name
+            for (int i = pairCount; i < removed.Count; i++)
+            {
+                string name = removed[i];
+                string type = previousVariableTypes.TryGetValue(name, out string t) ? t : null;
+                p.Delete(name, type);
+            }
+
+            p.Flush();
         }
 
         previousVariableNames = currentNames;
@@ -491,11 +576,14 @@ public partial class BlackBoardView : VisualElement
     {
         Dictionary<string, string> currentTypes = SnapshotTypeMap();
 
+        VariableChangePropagator p = GetPropagator();
+        p.SetDefinition(cachedDefinition);
+
         if (!typeSyncDone && currentTypes.Count > 0)
         {
             typeSyncDone = true;
             foreach (KeyValuePair<string, string> kvp in currentTypes)
-                PropagateTypeChange(kvp.Key, kvp.Value);
+                p.TypeChange(kvp.Key, null, kvp.Value);
         }
         else
         {
@@ -504,11 +592,24 @@ public partial class BlackBoardView : VisualElement
                 string name = kvp.Key;
                 string newType = kvp.Value;
                 if (previousVariableTypes.TryGetValue(name, out string oldType) && oldType != newType)
-                    PropagateTypeChange(name, newType);
+                    p.TypeChange(name, oldType, newType);
             }
         }
 
+        p.Flush();
         previousVariableTypes = currentTypes;
+    }
+
+    private VariableChangePropagator GetPropagator()
+    {
+        if (propagator == null)
+        {
+            propagator = new VariableChangePropagator();
+            propagator.Register(new TreeNodesPropagationHandler());
+            propagator.Register(new TrackedBindingsPropagationHandler());
+            propagator.Register(new SquadBindingsPropagationHandler());
+        }
+        return propagator;
     }
 
     private Dictionary<string, string> SnapshotTypeMap()
@@ -518,158 +619,30 @@ public partial class BlackBoardView : VisualElement
         foreach (BlackboardVariableBase variable in cachedDefinition.sharedVariables)
         {
             if (variable != null && !string.IsNullOrEmpty(variable.Name))
-                types[variable.Name] = variable.TypeName;
+                types[variable.Name] = variable.GetValueType()?.AssemblyQualifiedName;
         }
         return types;
     }
 
-    // ── Asset-wide propagation ──────────────────────────────────────
+    // ── Undo / redo ──────────────────────────────────────────────
 
-    private void PropagateRename(string oldName, string newName)
+    private void OnUndoRedoPerformed()
     {
-        string[] guids = AssetDatabase.FindAssets("t:BehaviourTreeAssetBase");
-        foreach (string guid in guids)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            BehaviourTreeAssetBase tree = AssetDatabase.LoadAssetAtPath<BehaviourTreeAssetBase>(path);
-            if (tree == null || tree.BlackboardDefinition != cachedDefinition) continue;
+        if (cachedDefinition == null || variableListView == null) return;
 
-            UpdateTreeNodes(tree, oldName, newName);
-        }
+        // itemsSource may point to a stale list reference after undo;
+        // re-assign and rebuild so the ListView reflects the restored state.
+        variableListView.itemsSource = cachedDefinition.sharedVariables;
+        variableListView.Rebuild();
+
+        // Immediately re-run propagation so renames/deletions from undo
+        // are picked up without waiting for the 100ms schedule tick.
+        HandleRenames();
+        HandleTypeChanges();
     }
 
-    private static void UpdateTreeNodes(BehaviourTreeAssetBase treeAsset, string oldName, string newName)
+    private void OnDetach(DetachFromPanelEvent evt)
     {
-        string assetPath = AssetDatabase.GetAssetPath(treeAsset);
-        if (string.IsNullOrEmpty(assetPath)) return;
-
-        UnityEngine.Object[] subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
-
-        foreach (UnityEngine.Object obj in subAssets)
-        {
-            bool changed = false;
-
-            if (obj is LeafNode leaf && leaf.fieldEntries != null)
-            {
-                Undo.RecordObject(leaf, "Rename Blackboard Variable");
-                for (int i = 0; i < leaf.fieldEntries.Count; i++)
-                {
-                    NodeFieldEntry entry = leaf.fieldEntries[i];
-                    if (entry.variableName == oldName)
-                    {
-                        entry.variableName = newName;
-                        leaf.fieldEntries[i] = entry;
-                        changed = true;
-                    }
-                }
-            }
-            else if (obj is DecoratorNode decorator && decorator.fieldEntries != null)
-            {
-                Undo.RecordObject(decorator, "Rename Blackboard Variable");
-                for (int i = 0; i < decorator.fieldEntries.Count; i++)
-                {
-                    NodeFieldEntry entry = decorator.fieldEntries[i];
-                    if (entry.variableName == oldName)
-                    {
-                        entry.variableName = newName;
-                        decorator.fieldEntries[i] = entry;
-                        changed = true;
-                    }
-                }
-            }
-            else if (obj is SubtreeNode subtree && subtree.bindings != null)
-            {
-                Undo.RecordObject(subtree, "Rename Blackboard Variable");
-                for (int i = 0; i < subtree.bindings.Count; i++)
-                {
-                    SubtreeBinding binding = subtree.bindings[i];
-                    if (binding.parentVariableName == oldName)
-                    {
-                        binding.parentVariableName = newName;
-                        subtree.bindings[i] = binding;
-                        changed = true;
-                    }
-                }
-            }
-
-            if (changed)
-            {
-                EditorUtility.SetDirty(obj);
-            }
-        }
-    }
-
-    private void PropagateTypeChange(string variableName, string newTypeName)
-    {
-        string[] guids = AssetDatabase.FindAssets("t:BehaviourTreeAssetBase");
-        foreach (string guid in guids)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            BehaviourTreeAssetBase tree = AssetDatabase.LoadAssetAtPath<BehaviourTreeAssetBase>(path);
-            if (tree == null || tree.BlackboardDefinition != cachedDefinition) continue;
-
-            UpdateTreeNodesType(tree, variableName, newTypeName);
-        }
-    }
-
-    private static void UpdateTreeNodesType(BehaviourTreeAssetBase treeAsset, string variableName, string newTypeName)
-    {
-        string assetPath = AssetDatabase.GetAssetPath(treeAsset);
-        if (string.IsNullOrEmpty(assetPath)) return;
-
-        UnityEngine.Object[] subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
-
-        foreach (UnityEngine.Object obj in subAssets)
-        {
-            bool changed = false;
-
-            if (obj is LeafNode leaf && leaf.fieldEntries != null)
-            {
-                Undo.RecordObject(leaf, "Update Variable Type");
-                for (int i = 0; i < leaf.fieldEntries.Count; i++)
-                {
-                    NodeFieldEntry entry = leaf.fieldEntries[i];
-                    if (entry.variableName == variableName && entry.isVariable)
-                    {
-                        entry.fieldTypeName = newTypeName;
-                        leaf.fieldEntries[i] = entry;
-                        changed = true;
-                    }
-                }
-            }
-            else if (obj is DecoratorNode decorator && decorator.fieldEntries != null)
-            {
-                Undo.RecordObject(decorator, "Update Variable Type");
-                for (int i = 0; i < decorator.fieldEntries.Count; i++)
-                {
-                    NodeFieldEntry entry = decorator.fieldEntries[i];
-                    if (entry.variableName == variableName && entry.isVariable)
-                    {
-                        entry.fieldTypeName = newTypeName;
-                        decorator.fieldEntries[i] = entry;
-                        changed = true;
-                    }
-                }
-            }
-            else if (obj is CompositeNode composite && composite.fieldEntries != null)
-            {
-                Undo.RecordObject(composite, "Update Variable Type");
-                for (int i = 0; i < composite.fieldEntries.Count; i++)
-                {
-                    NodeFieldEntry entry = composite.fieldEntries[i];
-                    if (entry.variableName == variableName && entry.isVariable)
-                    {
-                        entry.fieldTypeName = newTypeName;
-                        composite.fieldEntries[i] = entry;
-                        changed = true;
-                    }
-                }
-            }
-
-            if (changed)
-            {
-                EditorUtility.SetDirty(obj);
-            }
-        }
+        Undo.undoRedoPerformed -= OnUndoRedoPerformed;
     }
 }

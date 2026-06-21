@@ -68,3 +68,7 @@
 .binding-row-remove:hover {
     background-color: rgb(240, 126, 131);
 }
+
+.binding-row-invalid {
+    background-color: rgb(255, 255, 160);
+}

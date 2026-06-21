@@ -34,6 +34,32 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &-5469716873885269925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: ForEachAgent
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: 
+  children:
+  - {fileID: 7147840441266194873}
+  - {fileID: -3776059615971867780}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 607a9ac972760944d8de11bfe986272f
+  graphPosition: {x: 605.41174, y: 560}
+  runtimeIndex: 11
+  compositeType: 1
+  methodName: ForEachAgent
+  fieldEntries: []
+  abortType: 0
 --- !u!114 &-4344626505465163001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,7 +128,7 @@ MonoBehaviour:
     - rid: 3017916911898329524
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
-        variableName: newVariable
+        variableName: WOWOWOWWOWOWOW
         variableStride: 1
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
@@ -110,6 +136,129 @@ MonoBehaviour:
         isSystemVariable: 0
         singleValue: 0
         arrayValues: 
+--- !u!114 &-3776059615971867780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: SendOrder
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 9fc63fd8879602c4bb76d3a83812501d
+  graphPosition: {x: 745.4116, y: 805}
+  runtimeIndex: 13
+  leafType: 3
+  methodName: SendOrder
+  fieldEntries:
+  - fieldName: ordersSlot
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: AgentOrders
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: orderValue
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: PATROL
+    isOrderConstant: 1
+    intValue: 2
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+--- !u!114 &-3035268875043421966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: CompareVariable
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: CompareVariable
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: b766421846dd8cd44b581e7238cd7786
+  graphPosition: {x: -665, y: 560}
+  runtimeIndex: 3
+  leafType: 2
+  methodName: CompareVariable
+  fieldEntries:
+  - fieldName: a
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: WOWOWOWWOWOWOW
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: b
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 5
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: operation
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 5
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
 --- !u!114 &-2361135968173386191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,9 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
   m_Name: SEQUENCE
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
-  nodeName: 
+  nodeName: SEQUENCE
   children:
-  - {fileID: 6297021687247064606}
+  - {fileID: -3035268875043421966}
   - {fileID: 3670556756399005401}
   - {fileID: -328674886990029882}
   - {fileID: -1479149076817108741}
@@ -132,12 +281,12 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: b21a8dc4f1599b04ca140c75a153fc5f
-  graphPosition: {x: 0, y: 175}
-  runtimeIndex: 0
+  graphPosition: {x: -293.21268, y: 385}
+  runtimeIndex: 1
   compositeType: 1
   methodName: SEQUENCE
   fieldEntries: []
-  abortType: 0
+  abortType: 3
 --- !u!114 &-1479149076817108741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,8 +305,8 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 99e25f56956ea7b49b32c6b4eb3ec55e
-  graphPosition: {x: 245, y: 350}
-  runtimeIndex: 4
+  graphPosition: {x: -48.212753, y: 560}
+  runtimeIndex: 6
   leafType: 3
   methodName: LogVariable
   fieldEntries:
@@ -195,8 +344,8 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: 047e7fb0bbb77f645b730e7413324691
-  graphPosition: {x: 50.392937, y: 350}
-  runtimeIndex: 3
+  graphPosition: {x: -258.21268, y: 560}
+  runtimeIndex: 5
   leafType: 3
   methodName: LogVariable
   fieldEntries:
@@ -236,16 +385,44 @@ MonoBehaviour:
     assignedRoles: []
   nodesList:
   - {fileID: 703844267353713686}
-  - {fileID: 3670556756399005401}
+  - {fileID: 6343426872450866019}
   - {fileID: -2361135968173386191}
-  - {fileID: 7114486075539448283}
-  - {fileID: 396016881056808079}
+  - {fileID: 1876380284844789519}
+  - {fileID: -3035268875043421966}
+  - {fileID: 3670556756399005401}
   - {fileID: -328674886990029882}
   - {fileID: -1479149076817108741}
-  - {fileID: 6297021687247064606}
+  - {fileID: 6687625887775436949}
+  - {fileID: 3093231429759605686}
+  - {fileID: -5469716873885269925}
+  - {fileID: 1416342433256135527}
+  - {fileID: 6706064777243468642}
+  - {fileID: 7147840441266194873}
+  - {fileID: -3776059615971867780}
   editorNotes: []
   commanderSquad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
---- !u!114 &396016881056808079
+--- !u!114 &703844267353713686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
+  m_Name: ROOT
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
+  nodeName: RootNode
+  children:
+  - {fileID: 6343426872450866019}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: ecd2ad023ad000a4787fd5631b1bf4c1
+  graphPosition: {x: 0, y: 0}
+  runtimeIndex: 0
+--- !u!114 &1416342433256135527
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -257,14 +434,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: SetVariable
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: 
+  nodeName: SetVariable
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
-  guid: 25f43f14dd4626c4a9e8d69e908739e2
-  graphPosition: {x: -280, y: 595}
-  runtimeIndex: 5
+  guid: b6e2301e5dc0509459e2bf8ec0467468
+  graphPosition: {x: -578.99994, y: 770}
+  runtimeIndex: 7
   leafType: 3
   methodName: SetVariable
   fieldEntries:
@@ -301,7 +478,7 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
---- !u!114 &703844267353713686
+--- !u!114 &1876380284844789519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -310,18 +487,63 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38c03add90752d4c9baab04e36aaf6d, type: 3}
-  m_Name: ROOT
-  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.RootNode
-  nodeName: RootNode
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SEQUENCE
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: 
   children:
-  - {fileID: -2361135968173386191}
+  - {fileID: 6687625887775436949}
+  - {fileID: 3093231429759605686}
+  - {fileID: -5469716873885269925}
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
-  guid: ecd2ad023ad000a4787fd5631b1bf4c1
-  graphPosition: {x: 0, y: 0}
-  runtimeIndex: 0
+  guid: 9f20ab110a0c73a498e5c157ce122c3c
+  graphPosition: {x: 280, y: 385}
+  runtimeIndex: 2
+  compositeType: 1
+  methodName: SEQUENCE
+  fieldEntries: []
+  abortType: 0
+--- !u!114 &3093231429759605686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: LogVariable
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 42693dee718473143a940be0ed971af8
+  graphPosition: {x: 409.664, y: 560}
+  runtimeIndex: 10
+  leafType: 3
+  methodName: LogVariable
+  fieldEntries:
+  - fieldName: variable
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: WOWOWOWWOWOWOW
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
 --- !u!114 &3670556756399005401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,19 +558,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   nodeName: ForEachAgent
   children:
-  - {fileID: 396016881056808079}
-  - {fileID: 7114486075539448283}
+  - {fileID: 1416342433256135527}
+  - {fileID: 6706064777243468642}
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
   guid: 544aa721afdaa3a4d9b468ed7e7025c1
-  graphPosition: {x: -158, y: 350}
-  runtimeIndex: 2
+  graphPosition: {x: -455, y: 560}
+  runtimeIndex: 4
   compositeType: 1
   methodName: ForEachAgent
   fieldEntries: []
   abortType: 0
---- !u!114 &6297021687247064606
+--- !u!114 &6343426872450866019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: SELECTOR
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: 
+  children:
+  - {fileID: -2361135968173386191}
+  - {fileID: 1876380284844789519}
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: ca32d6f75ce351141b25959f65dc8f52
+  graphPosition: {x: 0, y: 175}
+  runtimeIndex: 0
+  compositeType: 1
+  methodName: SELECTOR
+  fieldEntries: []
+  abortType: 0
+--- !u!114 &6687625887775436949
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -358,66 +606,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
-  m_Name: CompareVariable
+  m_Name: WaitSeconds
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
   nodeName: 
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
-  guid: c1aa7392439dc05439d665b2c7b49cfb
-  graphPosition: {x: -350, y: 350}
-  runtimeIndex: 1
-  leafType: 2
-  methodName: CompareVariable
+  guid: e8ee6b9872ddb8042a82d5a25e809069
+  graphPosition: {x: 164, y: 560}
+  runtimeIndex: 9
+  leafType: 3
+  methodName: WaitSeconds
   fieldEntries:
-  - fieldName: a
-    isVariable: 1
-    isToggleVariable: 0
-    isArray: 0
-    variableName: newVariable
-    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    stringValue: 
-    isOrderConstant: 0
-    intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: b
+  - fieldName: duration
     isVariable: 0
     isToggleVariable: 0
     isArray: 0
     variableName: 
-    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     stringValue: 
     isOrderConstant: 0
     intValue: 0
-    floatValue: 0
-    boolValue: 0
-    vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 0, y: 0, z: 0}
-    gameObjectValue: {fileID: 0}
-    transformValue: {fileID: 0}
-  - fieldName: operation
-    isVariable: 0
-    isToggleVariable: 0
-    isArray: 0
-    variableName: 
-    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-    stringValue: 
-    isOrderConstant: 0
-    intValue: 5
-    floatValue: 0
+    floatValue: 3
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
---- !u!114 &7114486075539448283
+--- !u!114 &6706064777243468642
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -429,14 +647,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: SendOrder
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: SendOrder
+  nodeName: 
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
   comment: 
-  guid: 2fa0bb7456d967f4bbfc3dd8a7531c56
-  graphPosition: {x: -20, y: 595}
-  runtimeIndex: 6
+  guid: 15fa117e0239f9e48a768dd80171651a
+  graphPosition: {x: -333.9999, y: 770}
+  runtimeIndex: 8
   leafType: 3
   methodName: SendOrder
   fieldEntries:
@@ -468,6 +686,62 @@ MonoBehaviour:
     boolValue: 0
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
+--- !u!114 &7147840441266194873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: SetVariable
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: cfa9eda408acc1e4babb72186d783da7
+  graphPosition: {x: 507.99997, y: 805}
+  runtimeIndex: 12
+  leafType: 3
+  methodName: SetVariable
+  fieldEntries:
+  - fieldName: target
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 1
+    variableName: Agents_MoveTarget_Commander
+    fieldTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  - fieldName: value
+    isVariable: 0
+    isToggleVariable: 0
+    isArray: 0
+    variableName: 
+    fieldTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 323
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 344, y: 4545454, z: 454545}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
