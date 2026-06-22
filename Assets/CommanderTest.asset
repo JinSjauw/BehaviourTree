@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: SendOrder
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: 
+  nodeName: SendOrder
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
@@ -529,7 +529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
   m_Name: LogVariable
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
-  nodeName: 
+  nodeName: LogVariable
   children: []
   firstChildIndex: 0
   lastChildIndex: 0
