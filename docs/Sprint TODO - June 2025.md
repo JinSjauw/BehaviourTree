@@ -12,11 +12,11 @@
 | 1 | Conditional Aborts | ✅ Done |
 | 2 | GameObject → Add TreeRunner + BehaviourTree Button | ⬜ Pending |
 | 3 | Overhaul Graph Inspector UI | ✅ Done |
-| 4 | Commander Module UX Improvements | ⬜ Pending |
-| 5 | Commander Nodes (Hardcoded for Speed) | ⬜ Pending |
+| 4 | Commander Module UX Improvements | ✅ Done |
+| 5 | Commander Nodes (Hardcoded for Speed) | 🔄 In Progress |
 | 6 | NodeView Visual Overhaul (UI Toolkit) | ✅ Done |
 | 7 | Smooth Blackboard Add-Variable UI | ✅ Done |
-| 8 | Rewrite Node Palette | ⬜ Pending |
+| 8 | Rewrite Node Palette | 🔄 In Progress |
 | 9 | Bugs & Polish Before Playtest | 🔄 In Progress |
 | 10 | Graph Editor Sticky Notes | ✅ Done |
 
@@ -77,8 +77,8 @@
 
 - [x] Add tab system: **Blackboard** | **Tracked Variables** | **Commander**
 - [x] **Blackboard tab** — current variable list (read/write)
-- [ ] **Tracked Variables tab** — shows `[BlackboardTrack]` annotated fields from agent components, mapping to blackboard variable names
-- [ ] **Commander tab** — commander tree related variables (shared variables, commander→agent mappings)
+- [x] **Tracked Variables tab** — shows `[BlackboardTrack]` annotated fields from agent components, mapping to blackboard variable names
+- [x] **Commander tab** — commander tree related variables (shared variables, commander→agent mappings)
 
 ### 3.2 Node Inspector Section (lower half)
 
@@ -100,54 +100,54 @@
 
 ### 4.1 Type Hierarchy: AgentTreeAsset / CommanderTreeAsset
 
-- [ ] Split `BehaviourTreeAsset` into a base class with two subclasses:
+- [x] Split `BehaviourTreeAsset` into a base class with two subclasses:
   - `AgentTreeAsset` — identical to current tree behaviour, all existing nodes available
   - `CommanderTreeAsset` — largely the same structure but:
     - Commander-specific nodes accessible in addition to standard nodes (Suppress, Flank, Ambush, etc.)
     - Agent-only nodes that are coupled to a single agent are filtered out of the node palette
-- [ ] Keep existing `.asset` files backward-compatible (default to `AgentTreeAsset`)
+- [x] Keep existing `.asset` files backward-compatible (default to `AgentTreeAsset`)
 
 ### 4.2 Commander Blackboard Binding Tab
 
-- [ ] Add an extra tab to the commander tree editor (alongside Inspector / Blackboard)
-- [ ] Tab contains a dropdown listing every `BehaviourTreeAsset` in the project
-- [ ] Selecting an agent tree asset from the dropdown creates a **binding** between the two trees
-- [ ] In the binding, the user maps fields between the two blackboard schemas:
+- [x] Add an extra tab to the commander tree editor (alongside Inspector / Blackboard)
+- [x] Tab contains a dropdown listing every `BehaviourTreeAsset` in the project
+- [x] Selecting an agent tree asset from the dropdown creates a **binding** between the two trees
+- [x] In the binding, the user maps fields between the two blackboard schemas:
   - Commander blackboard variables ↔ Agent blackboard variables
   - Each binding row: commander var name → agent var name
-- [ ] Bindings are persisted on the `CommanderTreeAsset`
+- [x] Bindings are persisted on the `CommanderTreeAsset`
 
 ### 4.3 CommanderBindingBridge Component Integration
 
-- [ ] `CommanderBindingBridge` already exists on the same GameObject as the agent `TreeRunner`
-- [ ] Component holds a reference to a `CommanderTreeAsset`
-- [ ] On load / init:
+- [x] `CommanderBindingBridge` already exists on the same GameObject as the agent `TreeRunner`
+- [x] Component holds a reference to a `CommanderTreeAsset`
+- [x] On load / init:
   - Retrieves all existing bindings that this commander asset type has with this agent asset type
   - Loads those bindings into the runtime bridge
-- [ ] Any updates made on the component at runtime are reflected back into the commander asset's persisted bindings
-- [ ] Two-way sync: editing bindings in the commander editor tab updates the bridge; bridge runtime changes update the asset
+- [x] Any updates made on the component at runtime are reflected back into the commander asset's persisted bindings
+- [x] Two-way sync: editing bindings in the commander editor tab updates the bridge; bridge runtime changes update the asset
 
 ### 4.4 Agent Registration & Per-Agent Array Access
 
-- [ ] Commander tree holds a **collection of registered agents** (dynamic at runtime, configured in editor)
-- [ ] When an agent registers (via `CommanderBindingBridge`), it is assigned an **agent ID** (index into the collection)
-- [ ] Commander blackboard variables with stride > 1 are backed by arrays: one slot per agent
+- [x] Commander tree holds a **collection of registered agents** (dynamic at runtime, configured in editor)
+- [x] When an agent registers (via `CommanderBindingBridge`), it is assigned an **agent ID** (index into the collection)
+- [x] Commander blackboard variables with stride > 1 are backed by arrays: one slot per agent
   - Example: `AgentRole[8]` → stride=8 → 8 agents, each reads `AgentRole[agentID]`
   - Agent reads only its own slot via its assigned ID; commander reads/writes all slots
-- [ ] **Agents Data tab** in the commander editor:
+- [x] **Agents Data tab** in the commander editor:
   - Displays all per-agent array variables as a table (rows = agents, columns = variables)
   - Agent name/ID on the left, each variable column shows the value for that agent's slot
   - Row count matches the commander's `maxSize` (max agents)
   - Design-time defaults for each agent slot can be configured here
-- [ ] `CommanderBindingBridge` stores the assigned agent ID received on registration
-- [ ] Agent's `TreeRunner` uses the bridge's agent ID to offset into per-agent blackboard arrays
+- [x] `CommanderBindingBridge` stores the assigned agent ID received on registration
+- [x] Agent's `TreeRunner` uses the bridge's agent ID to offset into per-agent blackboard arrays
 
 ### 4.5 Polish
 
-- [ ] Clean up commander setup flow (create, assign, link)
-- [ ] Better error messages and validation (missing bindings, unlinked agents)
-- [ ] Visual indicators in tree view for commander-connected nodes
-- [ ] Streamline agent registration / deregistration
+- [x] Clean up commander setup flow (create, assign, link)
+- [x] Better error messages and validation (missing bindings, unlinked agents)
+- [x] Visual indicators in tree view for commander-connected nodes
+- [x] Streamline agent registration / deregistration
 
 ---
 

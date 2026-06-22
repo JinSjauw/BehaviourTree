@@ -80,6 +80,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   valueOverrides: []
   overriddenReferenceSlots: 
 --- !u!114 &3663176800941268547
@@ -98,15 +99,12 @@ MonoBehaviour:
   runtimeAsset: {fileID: 0}
   authoringAsset: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
   trackedBindingGroups:
-  - targetTree: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
-    targetTreeGuid: b5853f780e226014c935b924db589ad3
-    bindings: []
   - targetTree: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
     targetTreeGuid: 4442794de649112419d78215f53d185d
     bindings:
     - targetComponent: {fileID: 2770907021247395634}
-      memberName: testInter
-      blackboardVariableName: newVariableWOOW
+      memberName: testInt
+      blackboardVariableName: WOWOWOWWOWOWOW
       isProperty: 0
       memberTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
   registeredAgents: []
@@ -122,5 +120,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38fbbd4178020d64fb5eb549d925746b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestComponent
-  testInter: 0
+  testInt: 0
   testGameObject: {fileID: 0}

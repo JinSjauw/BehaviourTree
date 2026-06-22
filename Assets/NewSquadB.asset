@@ -40,9 +40,6 @@ MonoBehaviour:
     - treeVariableName: VECTOR3_MOVETARGET_AGENT
       squadVariableName: Agent_MoveTargets
       direction: 2
-    - treeVariableName: DWANGKkkk
-      squadVariableName: TESTATTACKINTINDEX
-      direction: 2
   - treeAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
     treeAssetGuid: b5853f780e226014c935b924db589ad3
     bindings:
@@ -67,9 +64,6 @@ MonoBehaviour:
     - treeVariableName: Agents_Attack_Target_Index
       squadVariableName: TESTATTACKINTINDEX
       direction: 0
-    - treeVariableName: WOWOWOWWOWOWOW
-      squadVariableName: TESTATTACKINTINDEX
-      direction: 2
 --- !u!114 &5414574867650723179
 MonoBehaviour:
   m_ObjectHideFlags: 0

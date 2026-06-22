@@ -502,14 +502,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3663176800941268547, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
-      propertyPath: trackedBindingGroups.Array.data[1].bindings.Array.data[0].memberName
-      value: testInt
-      objectReference: {fileID: 0}
-    - target: {fileID: 3663176800941268547, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
-      propertyPath: trackedBindingGroups.Array.data[1].bindings.Array.data[0].blackboardVariableName
-      value: WOWOWOWWOWOWOW
-      objectReference: {fileID: 0}
     - target: {fileID: 3670761265610961032, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
       propertyPath: m_Name
       value: SquadCommander
@@ -579,10 +571,6 @@ PrefabInstance:
       propertyPath: testGameObject
       value: 
       objectReference: {fileID: 696399349}
-    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
-      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.data[0].blackboardVariableName
-      value: DWANGKkkk
-      objectReference: {fileID: 0}
     - target: {fileID: 3398272709075123278, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

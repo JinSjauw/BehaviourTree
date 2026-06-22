@@ -110,7 +110,6 @@ namespace BehaviourTree.Runtime
                 TrackedBindingGroup group = trackedBindingGroups[i];
                 if (group == null || group.bindings == null) continue;
 
-                // Match by GUID — works in both editor and build
                 if (!string.IsNullOrEmpty(activeGuid) && group.targetTreeGuid == activeGuid)
                 {
                     activeBindings = group.bindings;
@@ -118,12 +117,10 @@ namespace BehaviourTree.Runtime
                 }
 
 #if UNITY_EDITOR
-                // Fallback: match by direct reference (old data without GUIDs)
                 if (activeBindings == null && authoringAsset != null && group.targetTree == authoringAsset)
                     activeBindings = group.bindings;
 #endif
 
-                // Fallback: use first group with no identity set (very old data)
 #if UNITY_EDITOR
                 if (activeBindings == null && group.targetTree == null && string.IsNullOrEmpty(group.targetTreeGuid))
 #else
@@ -132,7 +129,6 @@ namespace BehaviourTree.Runtime
                     activeBindings = group.bindings;
             }
 
-            // Last resort: use the first group
             if (activeBindings == null && trackedBindingGroups.Count > 0)
                 activeBindings = trackedBindingGroups[0].bindings;
 

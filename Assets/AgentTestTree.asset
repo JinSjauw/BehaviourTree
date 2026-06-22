@@ -1,5 +1,44 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9044440428726027259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ea6a75b13e47c46a1b18839e2630f4, type: 3}
+  m_Name: BB_LogInt
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.LeafNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 258bbf678bda0fb408ef53de86489bf9
+  graphPosition: {x: -280, y: 630}
+  runtimeIndex: 2
+  leafType: 3
+  methodName: BB_LogInt
+  fieldEntries:
+  - fieldName: value
+    isVariable: 1
+    isToggleVariable: 0
+    isArray: 0
+    variableName: DWANGKkkk
+    fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    stringValue: 
+    isOrderConstant: 0
+    intValue: 0
+    floatValue: 0
+    boolValue: 0
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    gameObjectValue: {fileID: 0}
+    transformValue: {fileID: 0}
+  BlackBoardTypeID: 0
 --- !u!114 &-6666274825932632705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
   nodeName: 
   children:
+  - {fileID: -9044440428726027259}
   - {fileID: 4617292761223345814}
   - {fileID: -4082139158420598114}
   - {fileID: 6723386113716927207}
@@ -101,7 +141,7 @@ MonoBehaviour:
   comment: 
   guid: 462793fbdcf71c64d9640452d5ddb716
   graphPosition: {x: 105, y: 630}
-  runtimeIndex: 3
+  runtimeIndex: 4
   leafType: 3
   methodName: BB_LogVector3
   fieldEntries:
@@ -140,7 +180,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: d84910597e05b5b41a692779cf1a1524
-  graphPosition: {x: -245, y: 630}
+  graphPosition: {x: -580.1869, y: 408}
   runtimeIndex: 2
   leafType: 2
   methodName: CheckOrder
@@ -325,6 +365,7 @@ MonoBehaviour:
   - {fileID: -4082139158420598114}
   - {fileID: -4010920271429736121}
   - {fileID: 4617292761223345814}
+  - {fileID: -9044440428726027259}
   editorNotes: []
 --- !u!114 &4617292761223345814
 MonoBehaviour:
@@ -345,7 +386,7 @@ MonoBehaviour:
   comment: 
   guid: 31b9fab105fa0ed41a9aac64cdc2be8f
   graphPosition: {x: -70, y: 630}
-  runtimeIndex: 2
+  runtimeIndex: 3
   leafType: 3
   methodName: LogVariable
   fieldEntries:
@@ -384,7 +425,7 @@ MonoBehaviour:
   comment: 
   guid: c87110fa0a02f2e4f85b8248a6513e37
   graphPosition: {x: 280, y: 630}
-  runtimeIndex: 4
+  runtimeIndex: 5
   leafType: 3
   methodName: WaitSeconds
   fieldEntries:

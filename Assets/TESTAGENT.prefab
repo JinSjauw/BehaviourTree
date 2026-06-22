@@ -55,7 +55,7 @@ MonoBehaviour:
     bindings:
     - targetComponent: {fileID: 2139788414078466395}
       memberName: testInt
-      blackboardVariableName: DWANGK
+      blackboardVariableName: DWANGKkkk
       isProperty: 0
       memberTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
   commander: {fileID: 0}
@@ -94,5 +94,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38fbbd4178020d64fb5eb549d925746b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  testInter: 0
+  testInt: 0
   testGameObject: {fileID: 0}

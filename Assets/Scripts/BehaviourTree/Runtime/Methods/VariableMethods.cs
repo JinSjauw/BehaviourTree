@@ -33,7 +33,11 @@ namespace BehaviourTree.Runtime.Methods
     [NodeMethod("SetVariable")]
     public sealed class SetVariable : ActionMethod
     {
-        public override int ParameterCount => 2;
+        public override DynamicParamDescriptor[] GetDynamicParamDescriptors() => new[]
+        {
+            new DynamicParamDescriptor { label = "Target", kind = DynamicParamKind.Variable, index = 0 },
+            new DynamicParamDescriptor { label = "Value",  kind = DynamicParamKind.Toggle,   index = 1 },
+        };
 
         private int targetSlot = -1;
         private int valueSourceSlot = -1;
@@ -86,7 +90,10 @@ namespace BehaviourTree.Runtime.Methods
     [NodeMethod("ClearVariable")]
     public sealed class ClearVariable : ActionMethod
     {
-        public override int ParameterCount => 1;
+        public override DynamicParamDescriptor[] GetDynamicParamDescriptors() => new[]
+        {
+            new DynamicParamDescriptor { label = "Target", kind = DynamicParamKind.Variable, index = 0 },
+        };
 
         private int targetSlot = -1;
 
@@ -117,7 +124,10 @@ namespace BehaviourTree.Runtime.Methods
     [NodeMethod("LogVariable")]
     public sealed class LogVariable : ActionMethod
     {
-        public override int ParameterCount => 1;
+        public override DynamicParamDescriptor[] GetDynamicParamDescriptors() => new[]
+        {
+            new DynamicParamDescriptor { label = "Variable", kind = DynamicParamKind.Variable, index = 0 },
+        };
 
         private int variableSlot = -1;
         private int stride = 1;
@@ -163,7 +173,27 @@ namespace BehaviourTree.Runtime.Methods
     [NodeMethod("CompareVariable")]
     public sealed class CompareVariable : ConditionMethod
     {
-        public override int ParameterCount => 3;
+        private static bool IsVectorType(Type t) => t == typeof(Vector2) || t == typeof(Vector3) || t == typeof(Vector4);
+        private const int MagnitudeOpStart = 6; // MagnitudeLess
+
+        public override DynamicParamDescriptor[] GetDynamicParamDescriptors() => new[]
+        {
+            new DynamicParamDescriptor { label = "Operand A",   kind = DynamicParamKind.Variable,  index = 0 },
+            new DynamicParamDescriptor { label = "Compare With", kind = DynamicParamKind.Toggle,   index = 1 },
+            new DynamicParamDescriptor
+            {
+                label = "Operation", kind = DynamicParamKind.Operation, index = 2,
+                operationEnumType = typeof(VariableCompareOp),
+                getAvailableOpIndices = (type) =>
+                {
+                    // Magnitude ops only apply to Vector types
+                    if (type != null && IsVectorType(type)) return null; // all ops
+                    int[] nonMag = new int[MagnitudeOpStart];
+                    for (int i = 0; i < MagnitudeOpStart; i++) nonMag[i] = i;
+                    return nonMag;
+                }
+            },
+        };
 
         private int slotA = -1;
         private int slotB = -1;

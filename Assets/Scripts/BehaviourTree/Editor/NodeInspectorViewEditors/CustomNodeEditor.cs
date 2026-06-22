@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using BehaviourTree;
 using BehaviourTree.Core;
+using BehaviourTree.Runtime;
 using System;
 using UnityEditor.Experimental.GraphView;
 
@@ -138,12 +139,12 @@ namespace BehaviourTree.Editor
 
         private void BuildFieldEntries(string selectedMethodName, bool methodChanged)
         {
-            // Dynamic-type nodes (SetVariable, ClearVariable, CompareVariable) have
-            // ParameterCount > 0 but no [SharedVar] C# fields — render a custom inspector.
-            int dynamicParamCount = GetDynamicParameterCount(selectedMethodName);
-            if (dynamicParamCount > 0)
+            // Dynamic-type nodes: descriptors drive the inspector layout.
+            // If GetDynamicParamDescriptors() returns non-null, defer to generic dynamic renderer.
+            NodeMethod temp = MethodRegistry.CreateInstance(selectedMethodName);
+            if (temp?.GetDynamicParamDescriptors() != null)
             {
-                BuildDynamicFieldEntries(selectedMethodName, dynamicParamCount, methodChanged);
+                BuildDynamicFieldEntries(selectedMethodName, methodChanged);
                 return;
             }
 
@@ -527,123 +528,136 @@ namespace BehaviourTree.Editor
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // Dynamic-Type Node Methods (SetVariable, ClearVariable, CompareVariable)
+        // Dynamic-Type Node Methods — driven by GetDynamicParamDescriptors
+        // Adding a new dynamic node: override GetDynamicParamDescriptors()
+        // on the NodeMethod subclass — NO editor changes required.
         // ═══════════════════════════════════════════════════════════════
 
-        private const string SetVariableName = "SetVariable";
-        private const string ClearVariableName = "ClearVariable";
-        private const string CompareVariableName = "CompareVariable";
-        private const string LogVariableName = "LogVariable";
-
-        private static int GetDynamicParameterCount(string methodName)
+        private void BuildDynamicFieldEntries(string methodName, bool methodChanged)
         {
-            return methodName switch
+            NodeMethod temp = MethodRegistry.CreateInstance(methodName);
+            DynamicParamDescriptor[] descriptors = temp?.GetDynamicParamDescriptors();
+            if (descriptors == null || descriptors.Length == 0)
             {
-                SetVariableName => 2,
-                ClearVariableName => 1,
-                CompareVariableName => 3,
-                LogVariableName => 1,
-                _ => 0
-            };
-        }
+                // No descriptors — this is a legacy [SharedVar]-based node, not dynamic
+                if (methodChanged) fieldEntriesProp.ClearArray();
+                return;
+            }
 
-        private void BuildDynamicFieldEntries(string methodName, int paramCount, bool methodChanged)
-        {
+            int realCount = descriptors.Length;
+
             // Resize entries on method change
             if (methodChanged)
             {
-                while (fieldEntriesProp.arraySize < paramCount)
-                    fieldEntriesProp.InsertArrayElementAtIndex(fieldEntriesProp.arraySize);
-                while (fieldEntriesProp.arraySize > paramCount)
+                while (fieldEntriesProp.arraySize < realCount)
+                {
+                    int insertIndex = fieldEntriesProp.arraySize;
+                    fieldEntriesProp.InsertArrayElementAtIndex(insertIndex);
+                    InitNewEntryFromDescriptor(fieldEntriesProp.GetArrayElementAtIndex(insertIndex), descriptors[insertIndex]);
+                }
+                while (fieldEntriesProp.arraySize > realCount)
                     fieldEntriesProp.DeleteArrayElementAtIndex(fieldEntriesProp.arraySize - 1);
             }
 
-            if (fieldEntriesProp.arraySize < paramCount)
+            if (fieldEntriesProp.arraySize < realCount)
                 return;
 
-            // Read the currently selected type from entry 0's fieldTypeName
-            Type selectedType = null;
-            string typeName = string.Empty;
-            if (fieldEntriesProp.arraySize > 0)
-            {
-                SerializedProperty typeProp = fieldEntriesProp.GetArrayElementAtIndex(0)
-                    .FindPropertyRelative("fieldTypeName");
-                typeName = typeProp?.stringValue ?? string.Empty;
-                if (!string.IsNullOrEmpty(typeName))
-                    selectedType = FieldTypeHelper.TryGetSystemTypeFromName(typeName, out Type resolvedType) ? resolvedType : null;
-            }
+            // Read the shared type from entry 0's fieldTypeName
+            Type selectedType = ResolveEntryType(0);
+            bool isArray = fieldEntriesProp.arraySize > 0
+                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
+                : false;
 
-            // ── Type display (read-only; type changes via filter button next to variable dropdown) ──
             EditorGUILayout.BeginVertical("box");
 
+            // ── Type header ──
             string typeLabel = selectedType != null ? selectedType.Name : "(none)";
             EditorGUILayout.LabelField($"<b>Variable Type</b> : <color=lightblue>{typeLabel}</color>", RichTextLabelStyle);
-
             EditorGUILayout.Space();
 
-            // ── Node-specific fields ──
-            switch (methodName)
+            // ── Generic parameter rows ──
+            for (int i = 0; i < realCount; i++)
             {
-                case SetVariableName:
-                    DrawSetVariableFields(selectedType);
-                    break;
-                case ClearVariableName:
-                    DrawClearVariableFields(selectedType);
-                    break;
-                case CompareVariableName:
-                    DrawCompareVariableFields(selectedType);
-                    break;
-                case LogVariableName:
-                    DrawLogVariableFields(selectedType);
-                    break;
+                DynamicParamDescriptor desc = descriptors[i];
+                SerializedProperty entry = fieldEntriesProp.GetArrayElementAtIndex(i);
+                Type paramType = ResolveEntryType(i);
+
+                switch (desc.kind)
+                {
+                    case DynamicParamKind.Variable:
+                        DrawVariableParamRow(entry, desc, paramType, isArray);
+                        break;
+                    case DynamicParamKind.Toggle:
+                        DrawToggleParamRow(entry, desc, paramType, isArray);
+                        break;
+                    case DynamicParamKind.Constant:
+                        DrawConstantFieldForType(entry, paramType);
+                        break;
+                    case DynamicParamKind.Operation:
+                        DrawOperationParamRow(entry, desc, paramType);
+                        break;
+                }
             }
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawSetVariableFields(Type selectedType)
+        private Type ResolveEntryType(int entryIndex)
         {
-            if (fieldEntriesProp.arraySize < 2) return;
+            if (entryIndex >= fieldEntriesProp.arraySize) return null;
+            string typeName = fieldEntriesProp.GetArrayElementAtIndex(entryIndex)
+                .FindPropertyRelative("fieldTypeName")?.stringValue;
+            if (string.IsNullOrEmpty(typeName)) return null;
+            return FieldTypeHelper.TryGetSystemTypeFromName(typeName, out Type t) ? t : null;
+        }
 
-            SerializedProperty targetEntry = fieldEntriesProp.GetArrayElementAtIndex(0);
-            SerializedProperty valueEntry = fieldEntriesProp.GetArrayElementAtIndex(1);
-            bool isArray = fieldEntriesProp.arraySize > 0
-                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
-                : false;
+        /// <summary>Sets initial defaults on a newly created entry from its descriptor.</summary>
+        private static void InitNewEntryFromDescriptor(SerializedProperty entry, DynamicParamDescriptor desc)
+        {
+            entry.FindPropertyRelative("fieldName").stringValue = desc.label.ToLowerInvariant().Replace(" ", "");
+            entry.FindPropertyRelative("isVariable").boolValue =
+                desc.kind == DynamicParamKind.Variable || desc.kind == DynamicParamKind.Toggle;
+            if (desc.kind == DynamicParamKind.Operation && desc.operationEnumType != null)
+                entry.FindPropertyRelative("fieldTypeName").stringValue = typeof(int).AssemblyQualifiedName;
+        }
 
-            // Ensure field names are set
-            targetEntry.FindPropertyRelative("fieldName").stringValue = "target";
-            targetEntry.FindPropertyRelative("isVariable").boolValue = true;
-            valueEntry.FindPropertyRelative("fieldName").stringValue = "value";
+        // ── Row helpers — one per DynamicParamKind ──
 
-            // Target variable dropdown (with search + filter buttons)
-            DrawDynamicVariableField(targetEntry.FindPropertyRelative("variableName"), selectedType, isArray, "Target");
+        /// <summary>Variable picker row: dropdown + S (search) + F (filter) buttons inline.</summary>
+        private void DrawVariableParamRow(SerializedProperty entry, DynamicParamDescriptor desc, Type paramType, bool isArray)
+        {
+            SerializedProperty variableNameProp = entry.FindPropertyRelative("variableName");
+            DrawDynamicVariableField(variableNameProp, paramType, isArray, desc.label, desc.allowedTypes);
+        }
 
-            EditorGUILayout.Space();
+        /// <summary>Toggle row: variable dropdown OR constant field + C/V toggle button.</summary>
+        private void DrawToggleParamRow(SerializedProperty entry, DynamicParamDescriptor desc, Type paramType, bool isArray)
+        {
+            SerializedProperty isVarProp = entry.FindPropertyRelative("isVariable");
+            SerializedProperty variableNameProp = entry.FindPropertyRelative("variableName");
 
-            // Value: toggle between constant and variable
-            SerializedProperty valueIsVar = valueEntry.FindPropertyRelative("isVariable");
-            EditorGUILayout.LabelField("<b>Value</b>", RichTextLabelStyle);
+            EditorGUILayout.LabelField($"<b>{desc.label}</b>", RichTextLabelStyle);
 
             EditorGUILayout.BeginHorizontal();
 
-            if (valueIsVar.boolValue)
+            if (isVarProp.boolValue)
             {
-                DrawVariableDropdownWithSquadFilter(valueEntry.FindPropertyRelative("variableName"), selectedType, isArray);
+                DrawVariableDropdownWithSquadFilter(variableNameProp, paramType, isArray);
             }
             else
             {
-                DrawConstantFieldForType(valueEntry, selectedType);
+                DrawConstantFieldForType(entry, paramType);
             }
 
             GUILayout.FlexibleSpace();
 
             // C/V toggle button
             {
-                string toggleLabel = valueIsVar.boolValue ? "C" : "V";
-                string toggleTooltip = valueIsVar.boolValue ? "Switch to constant" : "Switch to variable";
+                string toggleLabel = isVarProp.boolValue ? "C" : "V";
+                string toggleTooltip = isVarProp.boolValue ? "Switch to constant" : "Switch to variable";
                 if (GUILayout.Button(new GUIContent(toggleLabel, toggleTooltip), GUILayout.Width(SmallButtonWidth), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
                 {
-                    valueIsVar.boolValue = !valueIsVar.boolValue;
+                    EditorUtility.SetDirty(target);
+                    isVarProp.boolValue = !isVarProp.boolValue;
                     nodeVisualsChangedThisFrame = true;
                 }
             }
@@ -651,97 +665,32 @@ namespace BehaviourTree.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawClearVariableFields(Type selectedType)
+        /// <summary>Operation row: enum dropdown from descriptor.operationEnumType, with optional per-type filtering.</summary>
+        private void DrawOperationParamRow(SerializedProperty entry, DynamicParamDescriptor desc, Type paramType)
         {
-            if (fieldEntriesProp.arraySize < 1) return;
+            if (desc.operationEnumType == null || !desc.operationEnumType.IsEnum) return;
 
-            SerializedProperty targetEntry = fieldEntriesProp.GetArrayElementAtIndex(0);
-            bool isArray = fieldEntriesProp.arraySize > 0
-                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
-                : false;
+            int[] availableIndices = desc.getAvailableOpIndices?.Invoke(paramType);
+            bool hasFilter = availableIndices != null && availableIndices.Length > 0;
 
-            targetEntry.FindPropertyRelative("fieldName").stringValue = "target";
-            targetEntry.FindPropertyRelative("isVariable").boolValue = true;
+            string[] displayNames = hasFilter
+                ? Array.ConvertAll(availableIndices, i => Enum.GetName(desc.operationEnumType, i))
+                : Enum.GetNames(desc.operationEnumType);
 
-            DrawDynamicVariableField(targetEntry.FindPropertyRelative("variableName"), selectedType, isArray, "Target");
-        }
+            SerializedProperty intValueProp = entry.FindPropertyRelative("intValue");
+            int currentVal = intValueProp.intValue;
 
-        private void DrawLogVariableFields(Type selectedType)
-        {
-            if (fieldEntriesProp.arraySize < 1) return;
+            // Map current value to a display index
+            int displayIndex = hasFilter
+                ? Array.IndexOf(availableIndices, currentVal)
+                : currentVal;
+            if (displayIndex < 0 || displayIndex >= displayNames.Length) displayIndex = 0;
 
-            SerializedProperty variableEntry = fieldEntriesProp.GetArrayElementAtIndex(0);
-            bool isArray = fieldEntriesProp.arraySize > 0
-                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
-                : false;
+            int newDisplayIndex = EditorGUILayout.Popup(desc.label, displayIndex, displayNames, GUILayout.Width(FieldLabelWidth + DropdownFieldWidth));
 
-            variableEntry.FindPropertyRelative("fieldName").stringValue = "variable";
-            variableEntry.FindPropertyRelative("isVariable").boolValue = true;
-
-            DrawDynamicVariableField(variableEntry.FindPropertyRelative("variableName"), selectedType, isArray, "Variable");
-        }
-
-        private void DrawCompareVariableFields(Type selectedType)
-        {
-            if (fieldEntriesProp.arraySize < 3) return;
-
-            SerializedProperty entryA = fieldEntriesProp.GetArrayElementAtIndex(0);
-            SerializedProperty entryB = fieldEntriesProp.GetArrayElementAtIndex(1);
-            SerializedProperty entryOp = fieldEntriesProp.GetArrayElementAtIndex(2);
-            bool isArray = fieldEntriesProp.arraySize > 0
-                ? fieldEntriesProp.GetArrayElementAtIndex(0).FindPropertyRelative("isArray").boolValue
-                : false;
-
-            entryA.FindPropertyRelative("fieldName").stringValue = "a";
-            entryA.FindPropertyRelative("isVariable").boolValue = true;
-            entryB.FindPropertyRelative("fieldName").stringValue = "b";
-            entryOp.FindPropertyRelative("fieldName").stringValue = "operation";
-            entryOp.FindPropertyRelative("isVariable").boolValue = false;
-            entryOp.FindPropertyRelative("fieldTypeName").stringValue = typeof(int).AssemblyQualifiedName;
-
-            // Variable A
-            DrawDynamicVariableField(entryA.FindPropertyRelative("variableName"), selectedType, isArray, "Operand A");
-
-            EditorGUILayout.Space();
-
-            // Value B: constant or from variable
-            SerializedProperty bIsVar = entryB.FindPropertyRelative("isVariable");
-            EditorGUILayout.LabelField("<b>Compare With</b>", RichTextLabelStyle);
-
-            EditorGUILayout.BeginHorizontal();
-
-            if (bIsVar.boolValue)
-            {
-                DrawVariableDropdownWithSquadFilter(entryB.FindPropertyRelative("variableName"), selectedType, isArray);
-            }
-            else
-            {
-                DrawConstantFieldForType(entryB, selectedType);
-            }
-
-            GUILayout.FlexibleSpace();
-
-            // C/V toggle button
-            {
-                string toggleLabel = bIsVar.boolValue ? "C" : "V";
-                string toggleTooltip = bIsVar.boolValue ? "Switch to constant" : "Switch to variable";
-                if (GUILayout.Button(new GUIContent(toggleLabel, toggleTooltip), GUILayout.Width(SmallButtonWidth), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                {
-                    bIsVar.boolValue = !bIsVar.boolValue;
-                    nodeVisualsChangedThisFrame = true;
-                }
-            }
-
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space();
-
-            // Operation dropdown
-            SerializedProperty intValueProp = entryOp.FindPropertyRelative("intValue");
-            string[] opNames = GetCompareOpNames(selectedType);
-            int currentOp = intValueProp.intValue;
-            if (currentOp < 0 || currentOp >= opNames.Length) currentOp = 0;
-            intValueProp.intValue = EditorGUILayout.Popup("Operation", currentOp, opNames, GUILayout.Width(FieldLabelWidth + DropdownFieldWidth));
+            // Map display index back to enum value
+            if (newDisplayIndex >= 0 && newDisplayIndex < displayNames.Length)
+                intValueProp.intValue = hasFilter ? availableIndices[newDisplayIndex] : newDisplayIndex;
         }
 
         /// <summary>
@@ -830,7 +779,7 @@ namespace BehaviourTree.Editor
         /// Draws the primary variable field for dynamic-type nodes with two inline
         /// buttons: a search button (variable by name) and a filter button (change type).
         /// </summary>
-        private void DrawDynamicVariableField(SerializedProperty variableNameProp, Type selectedType, bool isArray, string label)
+        private void DrawDynamicVariableField(SerializedProperty variableNameProp, Type selectedType, bool isArray, string label, Type[] allowedTypes = null)
         {
             if (InspectorView.IsRenderingReadOnly)
             {
@@ -896,6 +845,7 @@ namespace BehaviourTree.Editor
                     (BlackboardVariableBase chosen, bool chosenIsArray) =>
                     {
                         if (chosen == null) return;
+                        EditorUtility.SetDirty(target);
                         // Auto-configure type and array mode from chosen variable
                         Type varType = chosen.GetValueType();
                         string newTypeName = varType?.AssemblyQualifiedName ?? string.Empty;
@@ -925,6 +875,7 @@ namespace BehaviourTree.Editor
                 VariableTypeSearchPopup popup = new VariableTypeSearchPopup(
                     (Type varType, bool varIsArray, int stride, bool isSquadData) =>
                     {
+                        EditorUtility.SetDirty(target);
                         string newTypeName = varType?.AssemblyQualifiedName ?? string.Empty;
                         for (int i = 0; i < fieldEntriesProp.arraySize; i++)
                         {

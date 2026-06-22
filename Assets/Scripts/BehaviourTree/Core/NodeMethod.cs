@@ -165,6 +165,62 @@ namespace BehaviourTree.Core
     }
 
     // ═══════════════════════════════════════════════════════════════════
+    // DynamicParamDescriptor — self-describing parameter layout for
+    // dynamic-type nodes that use DeserializeParameters instead of
+    // [SharedVar] C# fields. Each descriptor maps to one FieldData entry.
+    // ═══════════════════════════════════════════════════════════════════
+
+    /// <summary>Kind of a dynamic parameter in the node inspector.</summary>
+    public enum DynamicParamKind
+    {
+        /// <summary>Blackboard variable picker with inline S+F buttons.</summary>
+        Variable,
+        /// <summary>Toggle between constant (typed field) and variable (dropdown). Shows C/V button.</summary>
+        Toggle,
+        /// <summary>Read-only constant value. No variable binding.</summary>
+        Constant,
+        /// <summary>Enum dropdown for operation selection (e.g. Equal, Less, Greater).</summary>
+        Operation,
+    }
+
+    /// <summary>
+    /// Describes one parameter slot for a dynamic-type node method.
+    /// Returned by <see cref="NodeMethod.GetDynamicParamDescriptors"/>.
+    /// When non-null, the editor renders a generic inspector from these descriptors
+    /// instead of requiring per-node hardcoded switch cases.
+    /// </summary>
+    public struct DynamicParamDescriptor
+    {
+        /// <summary>UI label shown in the inspector.</summary>
+        public string label;
+
+        /// <summary>Controls what UI is rendered for this parameter.</summary>
+        public DynamicParamKind kind;
+
+        /// <summary>Index into the fieldEntries array for this parameter.</summary>
+        public int index;
+
+        /// <summary>
+        /// When non-null, the F (filter) popup only shows these types.
+        /// Null means any type is allowed. Ignored for non-Variable / non-Toggle kinds.
+        /// </summary>
+        public Type[] allowedTypes;
+
+        /// <summary>
+        /// For Operation kind: the enum type to render as a dropdown.
+        /// Only used when kind == DynamicParamKind.Operation.
+        /// </summary>
+        public Type operationEnumType;
+
+        /// <summary>
+        /// For Operation kind: optional per-type filter. Receives the current variable
+        /// type and returns the subset of enum value indices to display in the dropdown.
+        /// Return null to show all enum values. Only used when kind == DynamicParamKind.Operation.
+        /// </summary>
+        public Func<Type, int[]> getAvailableOpIndices;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
     // NodeMethod — abstract base
     // ═══════════════════════════════════════════════════════════════════
 
@@ -205,11 +261,23 @@ namespace BehaviourTree.Core
         /// "determine from [SharedVar] field count". Override to a positive
         /// number for dynamic-type nodes that receive FieldData directly
         /// via <see cref="DeserializeParameters"/> without C# [SharedVar] fields.
+        /// When <see cref="GetDynamicParamDescriptors"/> returns non-null, this value
+        /// is derived from descriptors.Length automatically.
         /// </summary>
-        public virtual int ParameterCount => 0;
+        public virtual int ParameterCount => GetDynamicParamDescriptors()?.Length ?? 0;
 
         /// <summary>
-        /// Called once during tree initialization for nodes with <see cref="ParameterCount"/> > 0.
+        /// Returns the parameter layout for dynamic-type nodes. Null means
+        /// "use [SharedVar] C# field binding" (legacy path).
+        /// Non-null means the editor renders a generic inspector from these descriptors
+        /// and the baker knows this node uses <see cref="DeserializeParameters"/>.
+        /// Each descriptor maps to one FieldData entry by position (descriptors[i] → entry i).
+        /// </summary>
+        public virtual DynamicParamDescriptor[] GetDynamicParamDescriptors() => null;
+
+        /// <summary>
+        /// Called once during tree initialization for nodes with dynamic parameters
+        /// (<see cref="GetDynamicParamDescriptors"/> returns non-null).
         /// Receives FieldData and type names directly — the node stores slot indices / constant values
         /// in its own fields. No FieldBindings are created.
         /// Fields with mode=1 contain slot offsets; mode=0 contain packed constants (use fieldTypeNames
