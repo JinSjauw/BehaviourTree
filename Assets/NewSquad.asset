@@ -14,36 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SquadDefinition
   blackboardDefinition: {fileID: 8613412856697111606}
   availableRoles:
-  - name: 
-    colour: {r: 1, g: 1, b: 1, a: 1}
+  - name: WOWOW
+    colour: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     maxAmount: 1
     isFallback: 0
   bindingGroups:
   - treeAsset: {fileID: 11400000, guid: 14fe57e909a146e4297a2d0d1631887e, type: 2}
+    treeAssetGuid: 14fe57e909a146e4297a2d0d1631887e
     bindings:
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
+    - treeVariableName: AgentAssignedRole
+      squadVariableName: AgentRoles
+      direction: 1
+    - treeVariableName: AgentReceivedOrder
+      squadVariableName: AgentOrders
+      direction: 1
   - treeAsset: {fileID: 11400000, guid: 779bf886d1e2a554bbd7c7a6ef17f752, type: 2}
+    treeAssetGuid: 779bf886d1e2a554bbd7c7a6ef17f752
     bindings:
-    - treeVariableName: 
-      squadVariableName: 
-      direction: 2
+    - treeVariableName: AgentAssignedRole
+      squadVariableName: AgentRoles
+      direction: 1
+    - treeVariableName: AgentReceivedOrder
+      squadVariableName: AgentOrders
+      direction: 1
 --- !u!114 &8613412856697111606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57,6 +50,8 @@ MonoBehaviour:
   m_Name: NewSquad_Schema
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
   sharedVariables:
+  - rid: 3017916935835746549
+  - rid: 3017916935835746550
   - rid: 3017916869405311518
   - rid: 3017916869405311519
   references:
@@ -70,6 +65,7 @@ MonoBehaviour:
         variableTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 0
+        isSystemVariable: 0
         singleValue: 0
         arrayValues: []
     - rid: 3017916869405311519
@@ -80,5 +76,28 @@ MonoBehaviour:
         variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         isSquadData: 0
+        isSystemVariable: 0
         singleValue: {x: 0, y: 0, z: 0}
         arrayValues: []
+    - rid: 3017916935835746549
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentRoles
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916935835746550
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentOrders
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 

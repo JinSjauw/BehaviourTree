@@ -49,21 +49,22 @@ public partial class TrackedVariablesView : VisualElement
 
         // Query elements
 
-        bindingListView = this.Q<ListView>("binding-list-view");
-        addBindingButton = this.Q<Button>("add-binding-button");
-        addBindingFromSceneButton = this.Q<Button>("add-binding-from-scene-button");
-        sceneObjectRow = this.Q<VisualElement>("scene-object-row");
-        sceneGameObjectField = this.Q<ObjectField>("scene-gameobject-field");
+        bindingListView = this.Q<ListView>("tracked-list-view");
+        addBindingButton = this.Q<Button>("tracked-add-binding-btn");
+        addBindingFromSceneButton = this.Q<Button>("tracked-add-scene-btn");
+        sceneObjectRow = this.Q<VisualElement>("tracked-scene-row");
+        sceneGameObjectField = this.Q<ObjectField>("tracked-scene-field");
         sceneGameObjectField.objectType = typeof(GameObject);
         sceneGameObjectField.allowSceneObjects = true;
 
-        sceneAddButton = this.Q<Button>("scene-add-button");
+        sceneAddButton = this.Q<Button>("tracked-scene-add-btn");
         emptyStateLabel = this.Q<Label>("empty-state-label");
 
         // Configure ListView
         bindingListView.makeItem = MakeBindingRow;
         bindingListView.bindItem = BindBindingRow;
         bindingListView.itemsSource = displayBindings;
+        bindingListView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
 
         // Wire buttons
         if (addBindingButton != null) addBindingButton.clicked += OnAddBindingClicked;
@@ -386,7 +387,7 @@ public partial class TrackedVariablesView : VisualElement
         int index = displayBindings.IndexOf(binding);
         if (index < 0) return null;
         VisualElement row = bindingListView.GetRootElementForIndex(index);
-        return row?.Q<Button>("component-member-button");
+        return row?.Q<Button>("tracked-member-btn");
     }
 
     private VisualElement GetVariableButtonForBinding(TrackedBinding binding)
@@ -394,7 +395,7 @@ public partial class TrackedVariablesView : VisualElement
         int index = displayBindings.IndexOf(binding);
         if (index < 0) return null;
         VisualElement row = bindingListView.GetRootElementForIndex(index);
-        return row?.Q<Button>("variable-button");
+        return row?.Q<Button>("tracked-variable-btn");
     }
 
     // ── Source GameObjects ───────────────────────────────────
@@ -435,7 +436,7 @@ public partial class TrackedVariablesView : VisualElement
         if (numLabel != null)
             numLabel.text = (index + 1).ToString();
 
-        Button memberButton = element.Q<Button>("component-member-button");
+        Button memberButton = element.Q<Button>("tracked-member-btn");
         if (memberButton != null)
         {
             string componentDisplay = binding.targetComponent != null
@@ -446,7 +447,7 @@ public partial class TrackedVariablesView : VisualElement
             memberButton.clickable = new Clickable(() => OpenMemberPicker(binding));
         }
 
-        Button variableButton = element.Q<Button>("variable-button");
+        Button variableButton = element.Q<Button>("tracked-variable-btn");
         if (variableButton != null)
         {
             variableButton.text = !string.IsNullOrEmpty(binding.blackboardVariableName)
@@ -459,13 +460,13 @@ public partial class TrackedVariablesView : VisualElement
             removeButton.clickable = new Clickable(() => RemoveBinding(binding));
 
         // ── Validation: highlight incomplete bindings in yellow ──
-        VisualElement bindingRow = element.Q<VisualElement>("binding-row");
-        if (bindingRow != null)
+        VisualElement trackedRow = element.Q<VisualElement>("tracked-row");
+        if (trackedRow != null)
         {
             if (IsBindingComplete(binding))
-                bindingRow.RemoveFromClassList("binding-row-invalid");
+                trackedRow.RemoveFromClassList("tracked-row--invalid");
             else
-                bindingRow.AddToClassList("binding-row-invalid");
+                trackedRow.AddToClassList("tracked-row--invalid");
         }
     }
 

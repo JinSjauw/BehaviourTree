@@ -189,6 +189,7 @@ namespace BehaviourTree.Editor
                 int treeIndex = GetSelectedIndex(treeChoices, binding.treeVariableName);
                 PopupField<string> treeVarPopup = new PopupField<string>(treeChoices, treeIndex);
                 treeVarPopup.AddToClassList("binding-tree-var");
+                treeVarPopup.style.overflow = Overflow.Hidden;
                 treeVarPopup.RegisterValueChangedCallback(evt =>
                 {
                     string selected = evt.newValue;
@@ -228,6 +229,7 @@ namespace BehaviourTree.Editor
                 int squadIndex = GetSelectedIndex(squadChoices, binding.squadVariableName);
                 PopupField<string> squadVarPopup = new PopupField<string>(squadChoices, squadIndex);
                 squadVarPopup.AddToClassList("binding-squad-var");
+                squadVarPopup.style.overflow = Overflow.Hidden;
                 squadVarPopup.RegisterValueChangedCallback(evt =>
                 {
                     string selected = evt.newValue;
@@ -254,6 +256,7 @@ namespace BehaviourTree.Editor
                 // ── Direction enum ──
                 EnumField directionField = new EnumField(binding.direction);
                 directionField.AddToClassList("binding-direction-field");
+                directionField.style.overflow = Overflow.Hidden;
                 directionField.RegisterValueChangedCallback(evt =>
                 {
                     binding.direction = (BindingDirection)evt.newValue;

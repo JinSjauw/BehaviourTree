@@ -18,6 +18,7 @@ namespace BehaviourTree.Editor
         // ── Blackboard / variable editing ────────────────────
         public const string BlackboardVariableEntryUxml = BasePath + "BlackboardVariableEntry.uxml";
         public const string BlackboardVariableEntryUss = BasePath + "BlackboardVariableEntry.uss";
+        public const string BlackboardCreatorUxml = BasePath + "BlackboardCreator.uxml";
         public const string ArrayElementRowUxml = BasePath + "ArrayElementRow.uxml";
         public const string ArrayElementRowUss = BasePath + "ArrayElementRow.uss";
         public const string VariableTypeSearchPopupUxml = BasePath + "VariableTypeSearchPopup.uxml";
@@ -39,6 +40,7 @@ namespace BehaviourTree.Editor
         public const string BindingRowUxml = SquadEditorPath + "BindingRow.uxml";
         public const string BindingGroupFoldoutUxml = SquadEditorPath + "BindingGroupFoldout.uxml";
         public const string SquadConnectionRowUxml = SquadEditorPath + "SquadConnectionRow.uxml";
+        public const string SquadConnectionFoldoutUxml = SquadEditorPath + "SquadConnectionFoldout.uxml";
         public const string SquadAssignedRoleRowUxml = SquadEditorPath + "SquadAssignedRoleRow.uxml";
         public const string CommanderTabViewUxml = SquadEditorPath + "CommanderTabView.uxml";
     }

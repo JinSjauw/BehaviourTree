@@ -208,7 +208,7 @@ namespace BehaviourTree.Runtime
         /// Returns the stride of the first squad-data variable in the commander BB,
         /// or 0 if no squad-data variables exist.
         /// </summary>
-        private int GetMaxSquadDataStride()
+        public int GetMaxSquadDataStride()
         {
             if (blackBoard?.Definition == null) return 0;
             IReadOnlyList<BlackboardVariableBase> vars = blackBoard.Definition.GetAllVariables();

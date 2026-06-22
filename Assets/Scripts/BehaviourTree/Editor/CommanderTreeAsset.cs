@@ -22,6 +22,18 @@ namespace BehaviourTree.Editor
         /// </summary>
         public SquadDefinition commanderSquad;
 
+        /// <summary>Maximum number of agents this commander can lead. Drives stride on squad-data variables.</summary>
+        [SerializeField, Min(1)] private int maxSquadSize = 8;
+        public int MaxSquadSize
+        {
+            get => maxSquadSize;
+            set
+            {
+                maxSquadSize = Mathf.Max(1, value);
+                SyncStrideToBlackboard();
+            }
+        }
+
         /// <summary>Commander trees need the actual stride so baked slot offsets match storage.</summary>
         public override bool PreserveCommanderStride => true;
 
@@ -32,6 +44,7 @@ namespace BehaviourTree.Editor
                 // Existing commander tree — bridge to the base field
                 blackboardDefinition = commanderBlackboardDefinition;
                 EnsureCommanderChannels(blackboardDefinition);
+                SyncStrideToBlackboard();
                 EditorUtility.SetDirty(this);
                 AssetDatabase.SaveAssets();
                 return;
@@ -43,12 +56,15 @@ namespace BehaviourTree.Editor
             commanderBlackboardDefinition = created;
             blackboardDefinition = created;
             EnsureCommanderChannels(created);
+            SyncStrideToBlackboard();
             AssetDatabase.AddObjectToAsset(created, this);
             AssetDatabase.SaveAssets();
         }
 
         private void OnValidate()
         {
+            maxSquadSize = Mathf.Max(1, maxSquadSize);
+
             BlackboardDefinition bbDef = blackboardDefinition ?? commanderBlackboardDefinition;
             if (bbDef == null) return;
 
@@ -58,23 +74,31 @@ namespace BehaviourTree.Editor
                 EditorUtility.SetDirty(bbDef);
             }
 
-            // Sync stride from the assigned squad so baked slot offsets are correct
-            if (commanderSquad != null)
+            SyncStrideToBlackboard();
+        }
+
+        /// <summary>
+        /// Syncs the stride of all squad-data variables in the commander BB definition
+        /// to match maxSquadSize. Called from the setter, OnValidate, and CreateBlackBoard
+        /// so baked slot offsets never diverge from the configured squad size.
+        /// </summary>
+        private void SyncStrideToBlackboard()
+        {
+            BlackboardDefinition bbDef = blackboardDefinition ?? commanderBlackboardDefinition;
+            if (bbDef == null) return;
+
+            IReadOnlyList<BlackboardVariableBase> vars = bbDef.GetAllVariables();
+            bool changed = false;
+            for (int i = 0; i < vars.Count; i++)
             {
-                int maxAgents = commanderSquad.MaxAgents;
-                IReadOnlyList<BlackboardVariableBase> vars = bbDef.GetAllVariables();
-                bool changed = false;
-                for (int i = 0; i < vars.Count; i++)
+                if (vars[i].isSquadData && vars[i].Stride != maxSquadSize)
                 {
-                    if (vars[i].isSquadData && vars[i].Stride != maxAgents)
-                    {
-                        vars[i].Stride = maxAgents;
-                        changed = true;
-                    }
+                    vars[i].Stride = maxSquadSize;
+                    changed = true;
                 }
-                if (changed)
-                    EditorUtility.SetDirty(bbDef);
             }
+            if (changed)
+                EditorUtility.SetDirty(bbDef);
         }
 
         private static void EnsureCommanderChannels(BlackboardDefinition bbDef)

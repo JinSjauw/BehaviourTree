@@ -420,7 +420,7 @@ MonoBehaviour:
   definition: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
   commanderPrefab: {fileID: 3670761265610961032, guid: 9eb98e8cc016c794cb3e52cc1050a22f, type: 3}
   agentPrefab: {fileID: 5641053610404493760, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
-  agentCount: 8
+  agentCount: 15
   spawnOnStart: 1
 --- !u!4 &1785138119
 Transform:
@@ -571,6 +571,26 @@ PrefabInstance:
       propertyPath: testGameObject
       value: 
       objectReference: {fileID: 696399349}
+    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.data[1].isProperty
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.data[1].memberName
+      value: didAwake
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.data[1].memberTypeName
+      value: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206121644289852624, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+      propertyPath: trackedBindingGroups.Array.data[0].bindings.Array.data[1].targetComponent
+      value: 
+      objectReference: {fileID: 7144530855299658109}
     - target: {fileID: 3398272709075123278, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -624,6 +644,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+--- !u!114 &7144530855299658109 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8457813580101075853, guid: a826b7d7922cf6f43a406c5a7873171e, type: 3}
+  m_PrefabInstance: {fileID: 7144530855299658108}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de84ed8973a25ae4a9ee5f6fb88c2f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackBoard
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

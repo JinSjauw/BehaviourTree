@@ -88,6 +88,8 @@ public class BehaviourTreeEditor : EditorWindow
         inspectorTab = tabView?.Q<Tab>("InspectorTab");
         commanderTabView = new CommanderTabView();
         commanderTabInstance = new Tab("Commander") { name = "CommanderTab", style = { flexGrow = 1 } };
+        commanderTabInstance.AddToClassList("tab-container-styling");
+        commanderTabView.AddToClassList("tab-styling");
         commanderTabInstance.Add(commanderTabView);
 
         if (treeGraphView == null)

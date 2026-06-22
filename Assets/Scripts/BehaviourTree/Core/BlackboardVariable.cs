@@ -110,7 +110,10 @@ namespace BehaviourTree.Core
             {
                 Name = Name,
                 Stride = Stride,
-                singleValue = singleValue
+                singleValue = singleValue,
+                isSquadData = isSquadData,
+                isSystemVariable = isSystemVariable,
+                IsArray = IsArray
             };
             if (arrayValues != null)
             {

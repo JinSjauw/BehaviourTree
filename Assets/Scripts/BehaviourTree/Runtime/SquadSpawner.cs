@@ -92,16 +92,10 @@ namespace BehaviourTree.Runtime
 
         private void SpawnSquad()
         {
-            // 1 — Squad instance
-            GameObject squadGo = new GameObject($"[Squad] {definition.name}");
-            squadInstance = squadGo.AddComponent<SquadInstance>();
-            squadInstance.Initialize(definition);
-
-            // 2 — Commander
+            // 1 — Commander (create first so we can read maxSquadSize)
             if (commanderPrefab == null)
             {
                 Debug.LogError("[SquadSpawner] Commander prefab is null.");
-                Destroy(squadGo);
                 return;
             }
 
@@ -112,18 +106,29 @@ namespace BehaviourTree.Runtime
             {
                 Debug.LogError($"[SquadSpawner] Commander prefab '{commanderPrefab.name}' has no CommanderTreeRunner component.");
                 Destroy(commanderGo);
-                Destroy(squadGo);
                 return;
             }
 
             commanderRunner.Initialize();
+
+            // 2 — Get max squad size from the commander asset
+            int maxSize = commanderRunner.GetMaxSquadDataStride();
+            if (maxSize <= 0)
+                maxSize = 8;
+
+            // 3 — Squad instance
+            GameObject squadGo = new GameObject($"[Squad] {definition.name}");
+            squadInstance = squadGo.AddComponent<SquadInstance>();
+            squadInstance.Initialize(definition, maxSize);
+
+            // 4 — Register commander with squad
             commanderRunner.RegisterSquad(squadInstance);
 
-            // 3 — Agents (clamped to squad's max capacity)
-            int effectiveCount = Mathf.Min(agentCount, definition.MaxAgents);
-            if (agentCount > definition.MaxAgents)
+            // 5 — Agents (clamped to commander's max squad size)
+            int effectiveCount = Mathf.Min(agentCount, maxSize);
+            if (agentCount > maxSize)
             {
-                Debug.LogWarning($"[SquadSpawner] agentCount ({agentCount}) exceeds SquadDefinition.MaxAgents ({definition.MaxAgents}). Clamping to {effectiveCount}.");
+                Debug.LogWarning($"[SquadSpawner] agentCount ({agentCount}) exceeds commander's maxSquadSize ({maxSize}). Clamping to {effectiveCount}.");
             }
             for (int i = 0; i < effectiveCount; i++)
             {

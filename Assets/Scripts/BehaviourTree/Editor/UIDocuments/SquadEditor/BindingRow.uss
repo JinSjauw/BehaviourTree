@@ -3,18 +3,20 @@
 
 .unity-popup-field {
     flex-grow: 1;
-    min-width: 25px;
-    width: 100px;
+    width: 20%;
     max-width: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .unity-enum-field {
     flex-grow: 1;
-    width: 50px;
-    max-width: 100px;
-    min-width: 15px;
-    text-overflow: ellipsis;
+    width: 10%;
+    max-width: none;
+}
+
+/* Target inner text elements for ellipsis */
+.unity-popup-field__input > *,
+.unity-enum-field__input > * {
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

@@ -1,0 +1,50 @@
+:root {
+    flex-grow: 1;
+}
+
+.tab-content-root {
+    height: auto;
+    align-self: auto;
+    flex-grow: 1;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;
+}
+
+.unity-tab-view__content-viewport {
+    background-color: rgb(58, 58, 58);
+    border-bottom-width: 0.5px;
+    border-left-color: rgb(32, 32, 32);
+    border-right-color: rgb(32, 32, 32);
+    border-top-color: rgb(32, 32, 32);
+    border-bottom-color: rgb(32, 32, 32);
+}
+
+.tab-styling {
+    flex-grow: 1;
+    flex-shrink: 1;
+    background-color: rgb(46, 46, 46);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.tab-title {
+    flex-grow: 0;
+    -unity-font-style: bold;
+    font-size: 14px;
+    margin-top: 4px;
+    padding-top: 0;
+    padding-right: 2px;
+    padding-bottom: 0;
+    padding-left: 0;
+    margin-left: 0;
+    margin-right: 0;
+    left: -3px;
+}
+
+#container > #connections-scroll > #unity-content-and-vertical-scroll-container > #unity-content-viewport {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    margin-top: 10px;
+}

@@ -1,19 +1,20 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True" style="flex-grow: 1;">
     <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/BehaviourTreeEditor.uss?fileID=7433441132597879392&amp;guid=f5b57338203a14a4380802d587fdec85&amp;type=3#BehaviourTreeEditor"/>
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TabContentStyle.uss?fileID=7433441132597879392&amp;guid=8f92422b15060c441845a2cf4623c6d8&amp;type=3#TabContentStyle"/>
     <uie:Toolbar>
         <uie:ToolbarMenu text="Assets" name="AssetBarMenu"/>
     </uie:Toolbar>
     <SplitView fixed-pane-index="0" fixed-pane-initial-dimension="380" orientation="Horizontal">
         <ui:VisualElement name="InspectorPane" style="flex-grow: 1; flex-shrink: 1; height: 100%; width: 400px;">
             <ui:TabView name="TabView" style="height: 45%; flex-grow: 1; min-height: auto; flex-shrink: 1; display: flex;">
-                <ui:Tab label="Shared" name="SharedVariablesTab" style="flex-grow: 1; flex-shrink: 1;">
-                    <BlackBoardView name="BlackBoardView" style="flex-grow: 1; flex-shrink: 1; border-top-left-radius: 8px; border-top-right-radius: 8px; padding-top: 0; padding-left: 0; padding-bottom: 0; padding-right: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;"/>
+                <ui:Tab label="Shared" name="SharedVariablesTab" class="tab-container-styling">
+                    <BlackBoardView name="black-board-view" class="tab-styling"/>
                 </ui:Tab>
-                <ui:Tab label="Tracked" name="TrackedVariablesTab" style="flex-grow: 1;">
-                    <TrackedVariablesView name="tracked-variables-view" style="flex-grow: 1; flex-shrink: 1; background-color: rgb(46, 46, 46); border-top-left-radius: 8px; border-top-right-radius: 8px;"/>
+                <ui:Tab label="Tracked" name="TrackedVariablesTab" class="tab-container-styling">
+                    <TrackedVariablesView name="tracked-variables-view" class="tab-styling"/>
                 </ui:Tab>
-                <ui:Tab label="Squads" name="SquadsTab" style="flex-grow: 1;">
-                    <SquadTabView name="squad-tab-view" style="flex-grow: 1;"/>
+                <ui:Tab label="Squads" name="SquadsTab" class="tab-container-styling">
+                    <SquadTabView name="squad-tab-view" class="tab-styling"/>
                 </ui:Tab>
             </ui:TabView>
             <InspectorView enabled="true" style="flex-grow: 1; width: auto; display: flex; visibility: visible; min-height: auto; max-height: none; height: 55%; margin-top: 0; margin-right: 12px; margin-bottom: 12px; margin-left: 12px; flex-shrink: 1; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;"/>

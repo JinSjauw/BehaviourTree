@@ -1,14 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TrackedBindingRow.uss?fileID=7433441132597879392&amp;guid=03be9d577f8804b43b4aec1060b97078&amp;type=3#TrackedBindingRow"/>
-    <ui:VisualElement name="binding-row" class="binding-row">
-        <ui:Label name="row-number" class="binding-row-num"/>
-        <ui:VisualElement name="component-member" class="binding-row-component">
-            <ui:Button name="component-member-button" class="component-member-button"/>
+    <ui:VisualElement name="tracked-row" class="tracked-row" style="margin-top: 6px; margin-bottom: 6px;">
+        <ui:Label name="row-number" class="tracked-row__num"/>
+        <ui:VisualElement name="tracked-member-cell" class="tracked-cell" style="margin-right: 4px;">
+            <ui:Button name="tracked-member-btn" class="tracked-cell-button"/>
         </ui:VisualElement>
-        <ui:Label text="→" class="binding-row-arrow"/>
-        <ui:VisualElement name="variable" class="binding-row-variable">
-            <ui:Button name="variable-button" class="variable-button"/>
+        <ui:Label text="→" class="tracked-row__arrow"/>
+        <ui:VisualElement name="tracked-variable-cell" class="tracked-cell" style="margin-left: 4px; margin-right: 4px;">
+            <ui:Button name="tracked-variable-btn" class="tracked-cell-button"/>
         </ui:VisualElement>
-        <ui:Button text="X" name="remove-button" class="binding-row-remove"/>
+        <ui:Button text="X" name="remove-button" class="tracked-row__remove"/>
     </ui:VisualElement>
 </ui:UXML>

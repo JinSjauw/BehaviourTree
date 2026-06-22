@@ -36,14 +36,7 @@ GridBackground {
     width: auto;
 }
 
-.unity-tab-view__content-viewport {
-    background-color: rgb(58, 58, 58);
-    border-bottom-width: 0.5px;
-    border-left-color: rgb(32, 32, 32);
-    border-right-color: rgb(32, 32, 32);
-    border-top-color: rgb(32, 32, 32);
-    border-bottom-color: rgb(32, 32, 32);
-}
+
 
 .unity-tab {
     margin-top: 8px;
@@ -86,4 +79,10 @@ GridBackground {
 }
 
 #InspectorSeparator {
+}
+
+
+
+.tab-container-styling {
+    flex-grow: 1;
 }

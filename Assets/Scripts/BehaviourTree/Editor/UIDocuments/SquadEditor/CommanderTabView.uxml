@@ -1,5 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TabContentStyle.uss?fileID=7433441132597879392&amp;guid=8f92422b15060c441845a2cf4623c6d8&amp;type=3#TabContentStyle"/>
     <ui:VisualElement style="flex-grow: 1; flex-direction: column; padding-left: 8px; padding-right: 8px; padding-top: 4px; padding-bottom: 4px;">
+        <ui:Label text="Commander Squad Config" name="title" class="tab-title"/>
         <ui:Label name="empty-state-label" text="Select a tree asset to configure the commander squad." style="color: grey; -unity-text-align: middle-center; flex-grow: 1; font-size: 12px; white-space: normal; margin-top: 20px;"/>
         <ui:VisualElement name="commander-content" style="flex-grow: 1; flex-direction: column;"/>
     </ui:VisualElement>

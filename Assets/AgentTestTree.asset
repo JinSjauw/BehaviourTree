@@ -39,6 +39,30 @@ MonoBehaviour:
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0
+--- !u!114 &-8718807355741943886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 464cd23f50ca02c4083d3fedc631de61, type: 3}
+  m_Name: PARALLEL
+  m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.CompositeNode
+  nodeName: 
+  children: []
+  firstChildIndex: 0
+  lastChildIndex: 0
+  comment: 
+  guid: 35bbe7182f0cfa141afe9c759959b674
+  graphPosition: {x: -313, y: 244}
+  runtimeIndex: -1
+  compositeType: 1
+  methodName: PARALLEL
+  fieldEntries: []
+  abortType: 0
 --- !u!114 &-6666274825932632705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,7 +204,7 @@ MonoBehaviour:
   lastChildIndex: 0
   comment: 
   guid: d84910597e05b5b41a692779cf1a1524
-  graphPosition: {x: -580.1869, y: 408}
+  graphPosition: {x: -724, y: 619}
   runtimeIndex: 2
   leafType: 2
   methodName: CheckOrder
@@ -355,7 +379,7 @@ MonoBehaviour:
   squadConnections:
   - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
     assignedRoles:
-    - TESTROLE
+    - ASSAULT
   nodesList:
   - {fileID: -3456654351379911066}
   - {fileID: -6547581460322908388}
@@ -366,6 +390,7 @@ MonoBehaviour:
   - {fileID: -4010920271429736121}
   - {fileID: 4617292761223345814}
   - {fileID: -9044440428726027259}
+  - {fileID: -8718807355741943886}
   editorNotes: []
 --- !u!114 &4617292761223345814
 MonoBehaviour:

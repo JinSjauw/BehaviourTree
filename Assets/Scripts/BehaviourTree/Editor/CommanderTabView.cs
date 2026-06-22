@@ -182,6 +182,19 @@ public partial class CommanderTabView : VisualElement
         VisualElement rolesSection = rowContent.Q<VisualElement>("roles-section");
         rolesSection?.RemoveFromHierarchy();
 
+        // Commander uses max-member-field for maxSquadSize — show & wire it
+        IntegerField maxMemberField = rowContent.Q<IntegerField>("max-member-field");
+        if (maxMemberField != null)
+        {
+            maxMemberField.style.display = DisplayStyle.Flex;
+            maxMemberField.value = commanderTree.MaxSquadSize;
+            maxMemberField.RegisterValueChangedCallback(evt =>
+            {
+                commanderTree.MaxSquadSize = evt.newValue;
+                EditorUtility.SetDirty(currentTree);
+            });
+        }
+
         commanderContent.Add(rowContent);
     }
 

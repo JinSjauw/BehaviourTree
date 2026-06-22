@@ -13,6 +13,6 @@
             <ui:IntegerField name="size-field" value="2" class="size-field"/>
         </ui:VisualElement>
         <ui:ListView name="type-list" selection-type="Single" class="type-list" style="background-color: rgb(39, 39, 39); margin-top: 3px; margin-right: 3px; margin-bottom: 3px; margin-left: 3px; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;"/>
-        <ui:Label name="empty-state-label" text="No valid blackboard variables" style="display: none; -unity-text-align: middle-center; color: rgb(140, 140, 140); padding-top: 40px; padding-bottom: 40px; font-size: 12px;"/>
+        <ui:Label name="empty-state-label" text="No valid blackboard variables" style="display: none; -unity-text-align: middle-center; color: rgb(140, 140, 140); padding-top: 40px; padding-bottom: 40px; font-size: 12px; white-space: normal;"/>
     </ui:VisualElement>
 </ui:UXML>

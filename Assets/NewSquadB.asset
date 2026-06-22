@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: NewSquadB
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SquadDefinition
   blackboardDefinition: {fileID: 5414574867650723179}
-  maxAgents: 8
   availableRoles:
   - name: ASSAULT
     colour: {r: 0.15761836, g: 0.4339623, b: 0.19051646, a: 1}
@@ -39,7 +38,7 @@ MonoBehaviour:
       direction: 1
     - treeVariableName: VECTOR3_MOVETARGET_AGENT
       squadVariableName: Agent_MoveTargets
-      direction: 2
+      direction: 1
   - treeAsset: {fileID: 11400000, guid: b5853f780e226014c935b924db589ad3, type: 2}
     treeAssetGuid: b5853f780e226014c935b924db589ad3
     bindings:

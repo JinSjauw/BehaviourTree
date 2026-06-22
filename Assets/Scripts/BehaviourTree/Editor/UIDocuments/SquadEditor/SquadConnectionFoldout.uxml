@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/SquadEditor/SquadConnectionFoldout.uss?fileID=7433441132597879392&amp;guid=574dee6fba73cdf4fa03131f0ab9e10a&amp;type=3#SquadConnectionFoldout"/>
+    <ui:VisualElement name="squad-connection-container" class="squad-connection-container" style="background-color: rgb(56, 56, 56);">
+        <ui:Foldout name="connection-foldout" style="margin-bottom: 4px; margin-top: 4px; padding-left: 4px; padding-right: 4px; padding-top: 2px; padding-bottom: 2px; margin-right: 0;"/>
+    </ui:VisualElement>
+</ui:UXML>

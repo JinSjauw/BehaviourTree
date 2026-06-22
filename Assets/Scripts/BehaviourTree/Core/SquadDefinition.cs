@@ -58,10 +58,6 @@ namespace BehaviourTree.Core
         /// <summary>The squad's own blackboard schema. Defines all shared squad data variables.</summary>
         public BlackboardDefinition blackboardDefinition;
 
-        /// <summary>Maximum number of agents this squad can hold. Drives stride on all squad-data variables.</summary>
-        [SerializeField, Min(1)] private int maxAgents = 8;
-        public int MaxAgents => maxAgents;
-
         /// <summary>
         /// Roles available in this squad, with colour, max amount, and fallback settings.
         /// Agents pick one role. Commander trees iterate over roles.
@@ -112,13 +108,13 @@ namespace BehaviourTree.Core
         }
 
         /// <summary>
-        /// Applies maxAgents as the stride to all squad-data variables in the blackboard definition.
-        /// Called by OnValidate (editor) and SquadInstance.Initialize (runtime) to ensure
-        /// per-agent storage is correctly sized regardless of serialized stride values.
+        /// Applies the given maxAgents as the stride to all squad-data variables
+        /// in the blackboard definition. Called before BB initialization to ensure
+        /// per-agent storage is correctly sized.
         /// The YAML stays at stride=1 intentionally — definitions are editor schemas;
         /// stride is a runtime sizing concern applied before BB initialization.
         /// </summary>
-        public void EnsureStrideApplied()
+        public void EnsureStrideApplied(int maxAgents)
         {
             if (blackboardDefinition == null) return;
 
@@ -132,8 +128,6 @@ namespace BehaviourTree.Core
 
         private void OnValidate()
         {
-            maxAgents = Mathf.Max(1, maxAgents);
-
             // Ensure squad BB has base channel variables
             if (blackboardDefinition != null)
             {
@@ -141,8 +135,6 @@ namespace BehaviourTree.Core
                     isSquadData: true);
                 BlackboardDefinition.EnsureBaseChannel<int>(blackboardDefinition, "AgentOrders",
                     isSquadData: true);
-
-                EnsureStrideApplied();
             }
 
             // Ensure auto-bindings for each connected tree

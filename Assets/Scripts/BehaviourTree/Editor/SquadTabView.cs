@@ -20,9 +20,9 @@ public partial class SquadTabView : VisualElement
     private Button addConnectionButton;
     private BaseEditorTreeAsset currentTree;
     private VisualTreeAsset connectionRowTemplate;
+    private VisualTreeAsset connectionFoldoutTemplate;
     private VisualTreeAsset assignedRoleRowTemplate;
     private VisualTreeAsset bindingRowTemplate;
-    private VisualTreeAsset bindingGroupFoldoutTemplate;
 
     // Preserve foldout expanded state across UI rebuilds (e.g. variable rename)
     private HashSet<string> expandedConnectionFoldouts = new HashSet<string>();
@@ -48,12 +48,12 @@ public partial class SquadTabView : VisualElement
 
         connectionRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
             BehaviourTreeEditorPaths.SquadConnectionRowUxml);
+        connectionFoldoutTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+            BehaviourTreeEditorPaths.SquadConnectionFoldoutUxml);
         assignedRoleRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
             BehaviourTreeEditorPaths.SquadAssignedRoleRowUxml);
         bindingRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
             BehaviourTreeEditorPaths.BindingRowUxml);
-        bindingGroupFoldoutTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
-            BehaviourTreeEditorPaths.BindingGroupFoldoutUxml);
 
         BindingGroupEditor.BindingsChangedForSquad += OnBindingsExternallyChanged;
         VariableChangePropagator.ChangesFlushed += OnVariableRenamed;
@@ -112,21 +112,16 @@ public partial class SquadTabView : VisualElement
     private VisualElement BuildConnectionElement(SquadConnection connection, int connectionIndex)
     {
         string squadName = connection.squad != null ? connection.squad.name : "No Squad Selected";
-        Foldout foldout = new Foldout
-        {
-            text = squadName,
-            value = expandedConnectionFoldouts.Contains(squadName),
-            style =
-            {
-                marginBottom = 4,
-                marginTop = 4,
-                paddingLeft = 4,
-                paddingRight = 4,
-                paddingTop = 2,
-                paddingBottom = 2,
-                backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f)
-            }
-        };
+
+        VisualElement foldoutRoot = connectionFoldoutTemplate != null
+            ? connectionFoldoutTemplate.CloneTree()
+            : new VisualElement();
+        Foldout foldout = foldoutRoot.Q<Foldout>("connection-foldout");
+        if (foldout == null)
+            foldout = new Foldout();
+
+        foldout.text = squadName;
+        foldout.value = expandedConnectionFoldouts.Contains(squadName);
 
         VisualElement content = connectionRowTemplate != null
             ? connectionRowTemplate.CloneTree()
@@ -276,7 +271,8 @@ public partial class SquadTabView : VisualElement
         }
 
         foldout.Add(content);
-        return foldout;
+        foldout.contentContainer.style.marginRight = 15;
+        return foldoutRoot;
     }
 
     private void BuildRoleRows(VisualElement container, SquadConnection connection)

@@ -28,6 +28,7 @@ public partial class BlackBoardView : VisualElement
     private ListView variableListView;
     private VisualTreeAsset entryTemplate;
     private VisualTreeAsset arrayElementTemplate;
+    private VisualTreeAsset creatorTemplate;
     private StyleSheet entryStyleSheet;
 
     /// <summary>
@@ -49,11 +50,6 @@ public partial class BlackBoardView : VisualElement
     public BlackBoardView()
     {
         style.flexGrow = 1;
-        style.paddingLeft = 8;
-        style.paddingRight = 8;
-        style.paddingTop = 8;
-        style.paddingBottom = 8;
-        style.backgroundColor = GraphEditorTheme.instance.panelBg;
 
         blackBoardViewContainer = new VisualElement { style = { flexGrow = 1 } };
         Add(blackBoardViewContainer);
@@ -89,46 +85,39 @@ public partial class BlackBoardView : VisualElement
         if (cachedDefinition?.sharedVariables != null)
             cachedDefinition.sharedVariables.RemoveAll(v => v == null);
 
-        if (cachedDefinition != null)
-        {
-            BuildCreatorUI();
+        // ── Build UI from template ────────────────────────────────
+        BuildCreatorUI();  // always load template (has ListView + creator + separator)
 
-            // Separator
-            VisualElement separator = new VisualElement
-            {
-                style =
-                {
-                    height = 1,
-                    backgroundColor = GraphEditorTheme.instance.panelSeparator,
-                    marginTop = 6,
-                    marginBottom = 6,
-                    flexShrink = 0
-                }
-            };
-            blackBoardViewContainer.Add(separator);
-        }
+        // Hide creator section when no definition is loaded
+        Label creatorHeader = blackBoardViewContainer.Q<Label>("creator-header");
+        if (creatorHeader != null)
+            creatorHeader.visible = cachedDefinition != null;
+        if (creatorRow != null)
+            creatorRow.visible = cachedDefinition != null;
+        VisualElement separator = blackBoardViewContainer.Q<VisualElement>("separator");
+        if (separator != null)
+            separator.visible = cachedDefinition != null;
 
-        // ── ListView (replaces IMGUI ReorderableList) ────────────────
+        // ── ListView configuration ────────────────────────────────
         LoadEntryTemplate();
 
-        variableListView = new ListView
+        variableListView = blackBoardViewContainer.Q<ListView>("variable-list-view");
+        if (variableListView != null)
         {
-            reorderable = true,
-            reorderMode = ListViewReorderMode.Animated,
-            showBorder = true,
-            showFoldoutHeader = false,
-            showAddRemoveFooter = false,
-            selectionType = SelectionType.None,
-            virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
-            fixedItemHeight = 24,
-            style = { flexGrow = 1, flexShrink = 1 },
-            itemsSource = cachedDefinition?.sharedVariables,
-            makeItem = () => entryTemplate.CloneTree(),
-            bindItem = BindVariableListItem,
-            unbindItem = UnbindVariableListItem,
-        };
-        variableListView.itemIndexChanged += OnVariableItemIndexChanged;
-        blackBoardViewContainer.Add(variableListView);
+            variableListView.reorderable = true;
+            variableListView.reorderMode = ListViewReorderMode.Animated;
+            variableListView.showBorder = true;
+            variableListView.showFoldoutHeader = false;
+            variableListView.showAddRemoveFooter = false;
+            variableListView.selectionType = SelectionType.None;
+            variableListView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
+            variableListView.fixedItemHeight = 24;
+            variableListView.itemsSource = cachedDefinition?.sharedVariables;
+            variableListView.makeItem = () => entryTemplate.CloneTree();
+            variableListView.bindItem = BindVariableListItem;
+            variableListView.unbindItem = UnbindVariableListItem;
+            variableListView.itemIndexChanged += OnVariableItemIndexChanged;
+        }
 
         // Periodic rename/type-change detection
         schedule.Execute(() =>
@@ -149,6 +138,8 @@ public partial class BlackBoardView : VisualElement
             entryTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.BlackboardVariableEntryUxml);
         if (arrayElementTemplate == null)
             arrayElementTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.ArrayElementRowUxml);
+        if (creatorTemplate == null)
+            creatorTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(BehaviourTreeEditorPaths.BlackboardCreatorUxml);
         if (entryStyleSheet == null)
             entryStyleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(BehaviourTreeEditorPaths.BlackboardVariableEntryUss);
     }
@@ -446,48 +437,61 @@ public partial class BlackBoardView : VisualElement
 
     private void BuildCreatorUI()
     {
-        // ── Header ───────────────────────────────────────────────────
-        Label header = new Label("Add Variable")
+        LoadEntryTemplate();
+
+        if (creatorTemplate != null)
         {
-            style =
-            {
-                fontSize = 14,
-                unityFontStyleAndWeight = FontStyle.Bold,
-                marginBottom = 6,
-                marginTop = 4
-            }
-        };
-        blackBoardViewContainer.Add(header);
+            VisualElement creatorRoot = creatorTemplate.CloneTree();
+            blackBoardViewContainer.Add(creatorRoot);
 
-        // ── Row: Name │ Add ──────────────────────────────────────────
-        creatorRow = new VisualElement
+            creatorNameField = creatorRoot.Q<TextField>("creator-name-field");
+            creatorButton = creatorRoot.Q<Button>("creator-button");
+            creatorRow = creatorRoot.Q<VisualElement>("creator-row");
+            creatorButton.clicked += () => OpenVariableTypePopup();
+        }
+        else
         {
-            style =
+            // Fallback — build inline if template is missing
+            Label header = new Label("Add Variable")
             {
-                flexDirection = FlexDirection.Row,
-                marginBottom = 4,
-                flexShrink = 0,
-                alignItems = Align.Center
-            }
-        };
+                style =
+                {
+                    fontSize = 14,
+                    unityFontStyleAndWeight = FontStyle.Bold,
+                    marginBottom = 6,
+                    marginTop = 4
+                }
+            };
+            blackBoardViewContainer.Add(header);
 
-        creatorNameField = new TextField { style = { flexGrow = 1, marginRight = 4 }, value = "newVariable" };
-
-        creatorButton = new Button(() => OpenVariableTypePopup())
-        {
-            text = "Add",
-            style =
+            creatorRow = new VisualElement
             {
-                width = 60,
-                height = 21,
-                flexShrink = 0
-            }
-        };
+                style =
+                {
+                    flexDirection = FlexDirection.Row,
+                    marginBottom = 4,
+                    flexShrink = 0,
+                    alignItems = Align.Center
+                }
+            };
 
-        creatorRow.Add(creatorNameField);
-        creatorRow.Add(creatorButton);
+            creatorNameField = new TextField { style = { flexGrow = 1, marginRight = 4 }, value = "newVariable" };
 
-        blackBoardViewContainer.Add(creatorRow);
+            creatorButton = new Button(() => OpenVariableTypePopup())
+            {
+                text = "Add",
+                style =
+                {
+                    width = 60,
+                    height = 21,
+                    flexShrink = 0
+                }
+            };
+
+            creatorRow.Add(creatorNameField);
+            creatorRow.Add(creatorButton);
+            blackBoardViewContainer.Add(creatorRow);
+        }
     }
 
     private void OpenVariableTypePopup()

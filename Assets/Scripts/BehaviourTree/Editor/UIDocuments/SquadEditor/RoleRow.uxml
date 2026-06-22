@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/RoleRow.uss?fileID=7433441132597879392&amp;guid=7cf1c54e6bc324a43b7f6418f016358b&amp;type=3#RoleRow"/>
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/SquadEditor/RoleRow.uss?fileID=7433441132597879392&amp;guid=1958ff1b3e601814a9cfc7fabe102dfa&amp;type=3#RoleRow"/>
     <ui:VisualElement name="Container" style="flex-grow: 1; flex-direction: row; margin-top: 4px; margin-bottom: 4px;">
         <ui:VisualElement name="background-row" style="flex-grow: 1; position: absolute; left: 0; height: 25px; width: 100%; flex-direction: row-reverse; border-top-left-radius: 4px; border-bottom-left-radius: 4px;">
             <ui:VisualElement name="role-color-banner" style="flex-grow: 1; background-color: rgb(135, 49, 49); width: auto; flex-direction: column; margin-right: 50px; border-top-left-radius: 4px; border-top-right-radius: 0; border-bottom-left-radius: 4px;"/>

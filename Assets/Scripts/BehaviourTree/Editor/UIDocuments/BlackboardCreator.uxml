@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TabContentStyle.uss?fileID=7433441132597879392&amp;guid=8f92422b15060c441845a2cf4623c6d8&amp;type=3#TabContentStyle"/>
+    <ui:VisualElement name="container" class="tab-content-root">
+        <ui:Label name="creator-header" text="Add Variable" class="tab-title"/>
+        <ui:VisualElement name="creator-row" style="flex-direction: row; margin-bottom: 4px; flex-shrink: 0; align-items: center;">
+            <ui:TextField name="creator-name-field" value="newVariable" style="flex-grow: 1; margin-right: 4px;"/>
+            <ui:Button name="creator-button" text="Add" style="width: 60px; height: 21px; flex-shrink: 0;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="separator" style="height: 1px; background-color: rgba(255, 255, 255, 0.1); margin-top: 6px; margin-bottom: 6px; flex-shrink: 0;"/>
+        <ui:ListView name="variable-list-view" style="flex-grow: 1; flex-shrink: 1;"/>
+    </ui:VisualElement>
+</ui:UXML>

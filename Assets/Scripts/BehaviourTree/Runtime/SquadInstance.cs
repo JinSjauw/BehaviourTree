@@ -32,8 +32,9 @@ namespace BehaviourTree.Runtime
 
         /// <summary>
         /// Initializes the squad's own BlackBoard from the SquadDefinition's schema.
+        /// maxAgents drives stride on squad-data variables and comes from the commander.
         /// </summary>
-        public void Initialize(SquadDefinition squadDefinition)
+        public void Initialize(SquadDefinition squadDefinition, int maxAgents)
         {
             definition = squadDefinition;
             if (blackBoard == null)
@@ -42,9 +43,10 @@ namespace BehaviourTree.Runtime
             if (definition != null)
             {
                 // OnValidate handles stride in editor but NOT at runtime.
-                // Serialized stride defaults to 1 — we must apply maxAgents stride
-                // before initializing the BB so per-agent storage is sized correctly.
-                definition.EnsureStrideApplied();
+                // Serialized stride defaults to 1 — we must apply the commander's
+                // maxAgents stride before initializing the BB so per-agent storage
+                // is sized correctly.
+                definition.EnsureStrideApplied(maxAgents);
                 blackBoard.Initialize(definition.blackboardDefinition);
             }
 

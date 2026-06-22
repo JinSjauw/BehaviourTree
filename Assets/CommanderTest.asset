@@ -77,8 +77,8 @@ MonoBehaviour:
   - rid: 3017916911898329236
   - rid: 3017916911898329367
   - rid: 3017916911898329375
-  - rid: 3017916911898329524
   - rid: 3017916911898329612
+  - rid: 3017916911898329524
   references:
     version: 2
     RefIds:
@@ -86,7 +86,7 @@ MonoBehaviour:
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: AgentRoles
-        variableStride: 8
+        variableStride: 10
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 1
@@ -97,7 +97,7 @@ MonoBehaviour:
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: AgentOrders
-        variableStride: 8
+        variableStride: 10
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 1
@@ -108,7 +108,7 @@ MonoBehaviour:
       type: {class: 'BlackboardVariable`1[[UnityEngine.Vector3, UnityEngine.CoreModule]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: Agents_MoveTarget_Commander
-        variableStride: 8
+        variableStride: 10
         variableTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         isSquadData: 1
@@ -119,7 +119,7 @@ MonoBehaviour:
       type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
       data:
         variableName: Agents_Attack_Target_Index
-        variableStride: 8
+        variableStride: 10
         variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         isSquadData: 1
@@ -394,7 +394,9 @@ MonoBehaviour:
   commanderBlackboardDefinition: {fileID: -4344626505465163001}
   squadConnections:
   - squad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
-    assignedRoles: []
+    assignedRoles:
+    - TESTROLE
+    - ASSAULT
   nodesList:
   - {fileID: 703844267353713686}
   - {fileID: 6343426872450866019}
@@ -413,6 +415,7 @@ MonoBehaviour:
   - {fileID: -3776059615971867780}
   editorNotes: []
   commanderSquad: {fileID: 11400000, guid: 1a38812a9d7455c4f958ca3951c65e4d, type: 2}
+  maxSquadSize: 10
 --- !u!114 &703844267353713686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,7 +480,7 @@ MonoBehaviour:
     isVariable: 0
     isToggleVariable: 0
     isArray: 0
-    variableName: WOWOWOWWOWOWOW
+    variableName: Agents_MoveTarget_Commander
     fieldTypeName: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
     stringValue: 
@@ -486,7 +489,7 @@ MonoBehaviour:
     floatValue: 0
     boolValue: 0
     vector2Value: {x: 0, y: 0}
-    vector3Value: {x: 12, y: 12, z: 121}
+    vector3Value: {x: 12, y: 232, z: 121}
     gameObjectValue: {fileID: 0}
     transformValue: {fileID: 0}
   BlackBoardTypeID: 0

@@ -14,7 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.SquadDefinition
   blackboardDefinition: {fileID: 1648481453334215580}
   availableRoles: []
-  bindingGroups: []
+  bindingGroups:
+  - treeAsset: {fileID: 11400000, guid: 4442794de649112419d78215f53d185d, type: 2}
+    treeAssetGuid: 4442794de649112419d78215f53d185d
+    bindings:
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
+    - treeVariableName: 
+      squadVariableName: 
+      direction: 2
 --- !u!114 &1648481453334215580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27,7 +39,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82a0807de4b2de84da3dfb40d273bf41, type: 3}
   m_Name: NewSquadTESTW_Schema
   m_EditorClassIdentifier: BehaviourTree.Core::BehaviourTree.Core.BlackboardDefinition
-  sharedVariables: []
+  sharedVariables:
+  - rid: 3017916935835746778
+  - rid: 3017916935835746779
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3017916935835746778
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentRoles
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 
+    - rid: 3017916935835746779
+      type: {class: 'BlackboardVariable`1[[System.Int32, mscorlib]]', ns: BehaviourTree.Core, asm: BehaviourTree.Core}
+      data:
+        variableName: AgentOrders
+        variableStride: 1
+        variableTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        isSquadData: 1
+        isSystemVariable: 1
+        singleValue: 0
+        arrayValues: 

@@ -1,23 +1,26 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="connection-content">
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/SquadEditor/SquadConnectionRow.uss?fileID=7433441132597879392&amp;guid=15d11b8af22324e4da94ebb67be09618&amp;type=3#SquadConnectionRow"/>
+    <ui:VisualElement name="connection-content" style="padding-top: 12px;">
         <ui:VisualElement name="squad-picker-row" style="flex-direction: row; align-items: center; margin-bottom: 4px;">
-            <ui:Label text="Squad" name="squad-label" style="width: 60px; color: rgb(179, 179, 179);"/>
+            <ui:Label text="Squad" name="squad-label"/>
             <ui:Button text="Select Squad..." name="select-squad-button" style="flex-grow: 1; margin-right: 4px;"/>
             <ui:Button text="Open" name="open-squad-button" style="width: 50px; padding-left: 4px; padding-right: 4px;"/>
+            <ui:Button text="X" name="remove-connection-button" class="remove-button"/>
         </ui:VisualElement>
-
+        <ui:IntegerField label="Max Members" value="1" name="max-member-field" style="margin-left: 0; margin-top: 4px; margin-bottom: 8px; display: none;"/>
+        <ui:VisualElement name="section-separator" style="flex-grow: 1; border-top-width: 1px; border-left-color: rgb(196, 196, 196); border-right-color: rgb(196, 196, 196); border-top-color: rgb(196, 196, 196); border-bottom-color: rgb(196, 196, 196); padding-bottom: 0; padding-top: 0; margin-bottom: 6px; margin-top: 2px;"/>
         <ui:VisualElement name="roles-section" style="margin-bottom: 8px;">
             <ui:Label text="Roles" name="roles-header" style="color: rgb(179, 179, 179); -unity-font-style: bold; margin-bottom: 4px;"/>
-            <ui:VisualElement name="roles-container"/>
             <ui:Button text="+ Add Role" name="add-role-button" style="margin-top: 2px;"/>
+            <ui:VisualElement name="roles-container"/>
         </ui:VisualElement>
-
-        <ui:VisualElement name="bindings-section">
+        <ui:VisualElement name="section-separator" style="flex-grow: 1; border-top-width: 1px; border-left-color: rgb(196, 196, 196); border-right-color: rgb(196, 196, 196); border-top-color: rgb(196, 196, 196); border-bottom-color: rgb(196, 196, 196); padding-bottom: 0; padding-top: 0; margin-bottom: 6px; margin-top: 2px;"/>
+        <ui:VisualElement name="bindings-section" style="flex-grow: 1;">
             <ui:Label text="Variable Bindings" name="bindings-header" style="color: rgb(179, 179, 179); -unity-font-style: bold; margin-bottom: 4px; margin-top: 4px;"/>
+            <ui:VisualElement name="button-container" style="flex-grow: 1; flex-direction: row;">
+                <ui:Button text="+ Add Binding" name="add-binding-button" class="binding-button"/>
+            </ui:VisualElement>
             <ui:VisualElement name="bindings-editor-placeholder"/>
-            <ui:Button text="+ Add Binding" name="add-binding-button" style="margin-top: 2px;"/>
         </ui:VisualElement>
-
-        <ui:Button text="Remove Connection" name="remove-connection-button" style="margin-top: 4px; padding-left: 8px; padding-right: 8px;"/>
     </ui:VisualElement>
 </ui:UXML>

@@ -1,28 +1,28 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TrackedVariablesView.uss?fileID=7433441132597879392&amp;guid=83b829dc1cba8564694438691ea77ccd&amp;type=3#TrackedVariablesView"/>
-    <ui:VisualElement class="tracked-view-root" style="height: auto; align-self: auto;">
-        <ui:VisualElement name="add-bindings-section">
-            <ui:Label text="Add Tracked Properties" name="title" style="flex-grow: 1; -unity-font-style: bold; font-size: 14px; margin-top: 4px; padding-top: 0; padding-right: 2px; padding-bottom: 0; padding-left: 0; margin-left: 0; margin-right: 0; left: -3px;"/>
-            <ui:VisualElement name="button-container" class="add-buttons-row" style="flex-shrink: 1; flex-grow: 0;">
-                <ui:Button text="+ Add Binding" name="add-binding-button" class="add-binding-button"/>
-                <ui:Button text="+ Add Binding From Scene" name="add-binding-from-scene-button" class="add-binding-button"/>
+    <Style src="project://database/Assets/Scripts/BehaviourTree/Editor/UIDocuments/TabContentStyle.uss?fileID=7433441132597879392&amp;guid=8f92422b15060c441845a2cf4623c6d8&amp;type=3#TabContentStyle"/>
+    <ui:VisualElement class="tab-content-root">
+        <ui:VisualElement name="tracked-section" class="tracked-section">
+            <ui:Label text="Add Tracked Properties" class="tab-title"/>
+            <ui:VisualElement name="tracked-actions" class="tracked-actions" style="flex-shrink: 1; flex-grow: 0;">
+                <ui:Button text="+ Add Binding" name="tracked-add-binding-btn" class="tracked-action-btn"/>
+                <ui:Button text="+ Add Binding From Scene" name="tracked-add-scene-btn" class="tracked-action-btn"/>
             </ui:VisualElement>
-            <ui:VisualElement name="scene-object-row" class="scene-object-row" style="display: none; overflow: hidden; text-overflow: ellipsis; max-height: none; max-width: initial;">
-                <ui:Label text="Scene GameObject:" class="scene-object-label"/>
-                <uie:ObjectField name="scene-gameobject-field" class="scene-object-field"/>
-                <ui:Button text="Add" name="scene-add-button" class="scene-add-button"/>
+            <ui:VisualElement name="tracked-scene-row" class="tracked-scene-row" style="display: none; overflow: hidden; text-overflow: ellipsis; max-height: none; max-width: initial;">
+                <ui:Label text="Scene GameObject:" class="tracked-scene-label"/>
+                <uie:ObjectField name="tracked-scene-field" class="tracked-scene-field"/>
+                <ui:Button text="Add" name="tracked-scene-add-btn" class="tracked-scene-add-btn" style="flex-shrink: 1;"/>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="list-container" style="flex-grow: 1; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px; padding-top: 8px; padding-right: 8px; padding-bottom: 8px; padding-left: 8px;">
-            <ui:VisualElement name="list-header" class="binding-list-header">
-                <ui:Label text="#" class="header-num"/>
-                <ui:Label text="Component / Member" class="header-component"/>
-                <ui:Label text="→" class="header-arrow"/>
-                <ui:Label text="BB Variable" class="header-variable"/>
-                <ui:Label text="" class="header-remove"/>
-            </ui:VisualElement>
-            <ui:ListView name="binding-list-view" selection-type="None" class="binding-list-view"/>
+        <ui:VisualElement name="tracked-header" class="tracked-header" style="padding: 8px 8px 0 8px; border-width: 1px; border-color: rgb(32, 32, 32); border-bottom-width: 0; padding-bottom: 8px;">
+            <ui:Label text="#" name="Label" class="tracked-header__label"/>
+            <ui:Label text="Component / Member" name="Label" class="tracked-header__label"/>
+            <ui:Label text="→" class="tracked-header__arrow"/>
+            <ui:Label text="BB Variable" class="tracked-header__label"/>
         </ui:VisualElement>
-        <ui:Label name="empty-state-label" class="empty-state-label" style="display: none;"/>
+        <ui:VisualElement name="list-container" style="flex-grow: 1; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px;">
+            <ui:ListView name="tracked-list-view" selection-type="None" class="tracked-list-view" style="flex-grow: 1; border-width: 1px; border-color: rgb(32, 32, 32); padding: 0 8px 8px 8px; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgba(32, 32, 32, 0); border-right-color: rgba(32, 32, 32, 0); border-top-color: rgba(32, 32, 32, 0); border-bottom-color: rgba(32, 32, 32, 0);"/>
+            <ui:Label name="empty-state-label" class="tracked-empty" style="display: none; flex-wrap: wrap; flex-shrink: 1; flex-direction: row;"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

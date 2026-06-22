@@ -454,13 +454,16 @@ namespace BehaviourTree.Runtime
                         clone = (BlackboardVariableBase)Activator.CreateInstance(sharedVarType);
                         clone.Name = sourceVar.Name;
                         clone.Stride = sourceVar.Stride;
+                        clone.isSquadData = sourceVar.isSquadData;
+                        clone.isSystemVariable = sourceVar.isSystemVariable;
+                        clone.IsArray = sourceVar.IsArray;
                     }
                 }
 
                 if (clone == null)
                 {
                     // Last resort stub
-                    clone = new BlackboardVariable<object> { Name = sourceVar.Name, Stride = sourceVar.Stride };
+                    clone = new BlackboardVariable<object> { Name = sourceVar.Name, Stride = sourceVar.Stride, isSquadData = sourceVar.isSquadData, isSystemVariable = sourceVar.isSystemVariable, IsArray = sourceVar.IsArray };
                 }
 
                 if (withStrideOfOne)
